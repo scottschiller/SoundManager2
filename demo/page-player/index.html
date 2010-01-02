@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2 Demo: Play MP3 links on a page, "page as playlist" style</title>
+<link rel="stylesheet" type="text/css" href="css/demo.css" />
+<link rel="stylesheet" type="text/css" href="css/page-player.css" />
+<style type="text/css">
+ul.playlist li .comment {font-size:0.65em;opacity:0.5}
+</style>
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript">
+
+/* --------
+
+  Config override: This demo uses shiny flash 9 stuff, overwriting Flash 8-based defaults
+  Alternate PP_CONFIG object must be defined before page-player JS is included/executed.
+  Alternately, edit the config in page-player.js to simply use the values below by default
+
+-------- */
+
+var PP_CONFIG = {
+  flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
+  usePeakData: true,     // [Flash 9 only] whether or not to show peak data (left/right channel values) - nor noticable on CPU
+  useWaveformData: true, // [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
+  useEQData: false,      // [Flash 9 only] show EQ (frequency spectrum) data
+  useFavIcon: true,      // try to apply peakData to address bar (Firefox + Opera) - performance note: appears to make Firefox 3 do some temporary, heavy disk access/swapping/garbage collection at first(?)
+  useMovieStar: true     // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
+}
+
+</script>
+<script type="text/javascript" src="script/page-player.js"></script>
+<script type="text/javascript">
+
+// demo only..
+var is_shiny = false;
+function setTheme(sTheme) {
+  var o = pagePlayer.getElementsByClassName('playlist','ul');
+  for (var i=o.length; i--;) {
+    o[i].className = 'playlist'+(pagePlayer.cssBase?' '+pagePlayer.cssBase:'')+(sTheme?' '+sTheme:'')+(is_shiny?' shiny':'');
+  }
+  return false;
+}
+function setShiny(bShiny) {
+  is_shiny = bShiny;
+  var o = pagePlayer.getElementsByClassName('playlist','ul');
+  var sClass = 'shiny';
+  for (var i=o.length; i--;) {
+    if (!bShiny) {
+	  pagePlayer.removeClass(o[i],sClass);
+	} else {
+	  pagePlayer.addClass(o[i],sClass);
+	}
+  }
+}
+</script>
+</head>
+
+<body>
+
+<div id="left">
+
+ <h1><a href="http://schillmania.com/projects/soundmanager2/" title="Play a page of mp3s with javascript via SoundManager 2">SoundManager 2</a> Demo: "Page as a playlist"</h1>
+
+ <h2 style="margin-top:0px;border:none">Muxtape.com-style UI, MP3/AAC Player Example</h2>
+ <p class="note">*CSS 3 border-radius supported only by Firefox 2.x+, Safari (2.x?) as of 04/2008 - perhaps IE 8 RTM..</p>
+
+ <p style="margin-top:1.5em;color:#333">This page uses shiny features which require Flash 9. The <a href="basic.html" title="Basic page player demo">default config</a> uses Flash 8.</p>
+
+ <ul class="playlist">
+  <li><a href="../mpc/audio/CRASH_1.mp3">Crash cymbal</a></li>
+  <li><a href="../_mp3/bass.mp3">Bass</a></li>
+  <li><a href="../_mp3/sine,%20square,%20sawtooth,%20rando.mp3">440 Hz sine, square, sawtooth, pink noise, random</a></li>
+  <li><a href="../_mp3/1hz-10khz-sweep.mp3">1Hz - 10KHz sweep</a></li>
+  <!-- files from the web (note that ID3 and waveformData information will *not* load from remote domains without permission, due to Flash security restrictions) -->
+  <li><a href="http://freshly-ground.com/misc/music/20060826%20-%20Armstrong.mp3">20060826 - Armstrong</a></li>
+  <li><a href="http://freshly-ground.com/misc/music/carl-3-barlp.mp3">Barrlping with Carl <span class="comment">(featureblend.com)</span></a></li>
+  <li><a href="http://freshly-ground.com/data/audio/binaural/Mak.mp3" class="exclude">Angry cow sound with "exclude" CSS class <span class="comment">(Browser follows link normally)</span></a></li>
+ </ul>
+
+ <h2>MPEG4 / H.264 + HE-AAC (Flash "MovieStar" 9.0r115+) format support - audio-only example</h2>
+ <h3>A subset of MPEG4 <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">is supported</a> including AAC, FLV, MP4, M4A, MOV, MP4V, 3GP and 3G2 files.</h3>
+ <p>MEPG4 video can be shown while playing these files, too. See the <a href="../video/" onclick="if (!document.domain) this.href=this.href+'index.html'">video demo</a>.</p>
+
+ </div>
+
+ <ul class="playlist">
+  <li><a href="http://freshly-ground.com/data/video/Rain%20on%20Car%20Roof.aac">Rain on Car Roof <span class="comment">(MPEG4 .AAC audio, 128 kbps AAC-LC exported from QuickTime)</span></a></li>
+  <li><a href="http://freshly-ground.com/data/video/Jellyfish.mov">Jellyfish <span class="comment">(848x480 H.264 video, playing audio portion only)</span></a></li>
+ </ul>
+
+ <div id="control-template">
+  <!-- control markup inserted dynamically after each link -->
+  <div class="controls">
+   <div class="statusbar">
+    <div class="loading"></div>
+     <div class="position"></div>
+   </div>
+  </div>
+  <div class="timing">
+   <div id="sm2_timing" class="timing-data">
+    <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span></div>
+  </div>
+  <div class="peak">
+   <div class="peak-box"><span class="l"></span><span class="r"></span>
+   </div>
+  </div>
+ </div>
+
+ <div id="spectrum-container" class="spectrum-container">
+  <div class="spectrum-box">
+   <div class="spectrum"></div>
+  </div>
+ </div>
+
+ <h3 style="margin-top:1em">Basics</h3>
+
+ <p class="note">Don't want a Flash 9 requirement, EQ/waveform, perhaps less CPU? See Flash 8-based <a href="basic.html" title="Page as playlist demo">basic demo</a>.</p>
+
+ <p>Clicking a title will start loading + playing, or pause, a sound.</p>
+ <p>Once loading, click (or click and drag) on the loading/position bar to seek within the sound.</p>
+ <p>The document title reflects the currently-playing sound, and by default the list will play sequentially if left alone. (This is configurable.)</p>
+ 
+ <h3>Themes</h3>
+ <p>Just for fun, a few color schemes (visible when playing/paused):</p>
+ <ul class="themes">
+  <li><a href="#" onclick="return setTheme('dark')">&lt;ul class="playlist dark"&gt;</a> - #333 and #666, mostly</li>
+  <li><a href="#" onclick="return setTheme('gold')">&lt;ul class="playlist gold"&gt;</a> - Frontin' the bling</li>
+  <li><a href="#" onclick="return setTheme('bubblegum')">&lt;ul class="playlist bubblegum"&gt;</a> - ZOMG PONIES!!!ONEONEONE</li>
+  <li><a href="#" onclick="return setTheme('')">&lt;ul class="playlist"&gt;</a> (default)</li>
+ </ul>
+ 
+ <form style="margin:0px;padding:0px" action="#" onsubmit="return false">
+  <div>
+   <input id="makeShiny" name="makeShiny" type="checkbox" onchange="setShiny(this.checked)" value="Shiny" /> <label for="makeShiny">Also add "shiny", eg. &lt;ul class="shiny playlist"&gt;...</label>
+  </div>
+ </form>
+ <script type="text/javascript">document.getElementById('makeShiny').checked=false;</script>
+
+ <h2 id="metadata">Experimental (Alpha) Variant: MP3 "Metadata": Annotations / notes / sub-tracks</h2>
+ <p>A potential approach to noting interesting moments in sounds, scene changes, new tracks in seamless DJ mixes etc. Keep in mind this is a single MP3 being loaded, but annotations are placed along the timeline as shown.</p>
+ <p>A "metadata" element contains a nested list of data (UL/LI combination) - in this case, a summary of each scene - and the time at which this item occurs/begins. In order to help with positioning, the total length of the sound is also specified up-front. View the source code of this page for the details.</p>
+
+ <ul class="playlist">
+
+  <li>
+   <a href="http://freshly-ground.com/data/audio/binaural/A%20Virtual%20Haircut%20in%20San%20Francisco%20%283%20Scenes%29.mp3">A Virtual Haircut (3 scenes)</a>
+   <div class="metadata">
+    <div class="duration">4:43</div> <!-- total track time (for positioning while loading, until determined -->
+    <ul>
+     <li><p>Electric razor</p><span>0:00</span></li> <!-- first scene -->
+     <li><p>Water, scissors</p><span>2:41</span></li> <!-- start time of second scene -->
+     <li><p>More razor work</p><span>4:00</span></li>
+    </ul>
+   </div>
+  </li>
+
+  <li>
+   <a href="http://freshly-ground.com/data/audio/binaural/Rubber%20Chicken%20Launch%20%28office%29.mp3">Rubber Chicken Launch (Office)</a>
+   <div class="metadata">
+    <div class="duration">0:47</div>
+    <ul>
+     <li><p>First attempt</p><span>0:00</span></li>
+     <li><p>Fire!</p><span>0:02</span></li>
+     <li><p>"Too much angle"</p><span>0:05</span></li>
+     <li><p>Random chicken noise</p><span>0:18</span></li>
+     <li><p>"Wait a second"</p><span>0:31</span></li>
+     <li><p>Derrr..</p><span>0:34</span></li>
+     <li><p>Launch attempt #2</p><span>0:36</span></li>
+     <li><p>"Wrong angle"</p><span>0:39</span></li>
+     <li><p>"Fail"</p><span>0:42</span></li>
+    </ul>
+   </div>
+  </li>
+
+ </ul>
+
+ <h2>How It Works</h2>
+
+ <p>This example uses <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to find links to MP3 files within an unordered list, and makes them playable "in-place" on a page. The script assigns CSS classes to links' parent LI nodes to indicate their state (playing/paused, etc.)</p>
+
+ <h3>Progressive Enhancement</h3>
+
+ <p>This provides a nice HTML base for all browsers and user agents, and enhances progressively for those with Javascript and Flash. Links pointing to MP3s are assigned an onclick handler which intercepts the click (preventing the browser from following the link and unloading the page. SM2 will then create sound objects as needed to play the MP3s. In the event there is an error at runtime or a lack of support (no JS/Flash etc.), the browser will simply load the MP3s directly as it normally would. This includes iPhones, etc.</p>
+
+ <h3>HTML Fragments (UI Element Templates)</h3>
+ <p>Each item in the playlist has its own set of controls and progress indicators, etc. This content is defined once as a hidden template of HTML in-page separate from the playlist markup and is cloned for each item as needed. This can be easily styled with CSS as well, of course.</p>
+
+<h2>I'd like to use this.</h2>
+<p>See this <a href="basic.html" title="Page as playlist demo">basic demo</a> for reference.</p>
+<p>The basic demo uses the default Flash 8 configuration, but you can easily change this to use Flash 9 features. The only difference in code is the configuration.</p>
+
+<p>A reminder that if loading from the local filesystem, Flash will deny access to remote (network/internet) URLs by default unless whitelisted via the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash Player Global Security Settings Page</a>. Some URLs in this example are remote to demonstrate this.</p>
+
+<h2>Configuration + Options</h2>
+
+<h3>Default configuration</h3>
+
+<p>Behaviours such as auto-start and UI elements like VU meters and spectrum graphs are easy configurable, using an object literal format as shown below.</p>
+<p>The page player config (see related page-player.js file) as below.</p>
+<p>The custom parameters used to make this demo page are highlighted in red.</p>
+<pre><code>  <span>// ( within page-player.js )</span>
+
+  this.config = {
+    flashVersion: <span style="color:red">9</span>,       <span>// version of Flash to tell SoundManager to use - either 8 or 9.</span>
+    usePeakData: <span style="color:red">true</span>,     <span>// [Flash 9 only] show peak (VU-meter) data</span>
+    useFavIcon: <span style="color:red">true</span>,      <span>// try to show peakData in address bar (Firefox + Opera) - requires usePeakData = true too, of course.</span>
+    useWaveformData: <span style="color:red">true</span>, <span>// [Flash 9 only] true: show raw waveform data - WARNING: CPU-intensive</span>
+    useEQData: false,      <span>// [Flash 9 only] show EQ (frequency spectrum) data - WARNING: CPU-intensive</span>
+    fillGraph: false,      <span>// [Flash 9 only] draw full lines instead of only top (peak) spectrum points</span>
+    allowRightClick:true,  <span>// let users right-click MP3 links ("save as...", etc.) or discourage (can't prevent.)</span>
+    useThrottling: false,  <span>// try to rate-limit potentially-expensive calls (eg. dragging position around)</span>
+    autoStart: false,      <span>// begin playing first sound when page loads</span>
+    playNext: true,        <span>// stop after one sound, or play through list until end</span>
+    updatePageTitle: true, <span>// change the page title while playing sounds</span>
+    emptyTime: '-:--'      <span>// null/undefined timer values (before data is available)</span>
+  }
+</code></pre>
+
+<h3>Per-page configuration override</h3>
+
+<p>Alternately, you may override the defaults on a per-page basis by defining an "alternate configuration" object <b>before</b> the page-player.js file has been included in your source code:</p>
+
+<pre><code>  <span>// ( before page-player.js )</span>
+
+  var PP_CONFIG = {
+    flashVersion: 9,       <span>// version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.</span>
+    usePeakData: true,     <span>// [Flash 9 only] whether or not to show peak data (no notable CPU cost)</span>
+    useWaveformData: true  <span>// [Flash 9 only] show raw waveform data. WARNING: Experimental, likely CPU-heavy</span>
+  }</code></pre>
+</div>
+
+<p>Any options specified in PP_CONFIG will override the defaults defined in page-player.js.</p>
+
+ <h3>Basic CSS</h3>
+
+<pre>
+ If you want to make your own UI from scratch, here is the base:
+
+ ul.playlist {}
+
+ Default + hover state, "click to play":
+
+ li.sm2_link {}
+ li.sm2_link:hover {}
+
+ Playing + hover state, "click to pause":
+
+ li.sm2_playing {}
+ li.sm2_playing:hover {}
+
+ Paused + hover state, "click to resume":
+
+ li.sm2_paused {}
+ li.sm2_paused:hover {}
+</pre>
+
+<p>The positioning (load status / control bar) template is also applied after each MP3 link, from an element named "control-template"</p>
+
+<p>"loading" and "position" have background colors applied, and have their width adjusted dynamically by SM2 as the sound(s) load/play. "timing" is replaced with the current time / duration, eg. 1:23 / 4:20</p>
+<p>The class names applied can be edited within the source JS also, for convenience.</p>
+<p>The controls are shown and hidden via the same dynamic CSS updates. See the source CSS for the timing / status bar layout.</p>
+
+<h2>Performance Considerations</h2>
+<h3>Experimental Flash 9 features</h3>
+<ul class="tight" style="padding-top:1px">
+ <li>
+  <h4>Dynamic "favicon" VU meter</h4>
+  <p>The VU meter "favicon" option as shown in the address/location bar for Firefox and Opera can cause a lot of disk access in Firefox (2.x/3.0 at time of writing, from what has been reported.) It may be garbage collection-related.</p>
+  <p>The behaviour seems to be connected to the dynamic swapping of &lt;link&gt; elements with data: URIs containing the VU meter data, and looks to be noticeable with the first sound played - after which point things settle down. Perhaps the browser is attempting to cache the favicon data being assigned.</p>
+ </li>
+ <li>
+  <h4>Waveform/spectrum visualization graph</h4>
+  <p>Enabling the waveformData and/or eqData features will result in some heavy DOM calls (manipulation of 256 &lt;div&gt; elements with each "frame" drawn) which can eat up a good amount of CPU and may make really old computers cower in fear.</p>
+  <p>Ultimately, the UI refresh rate will simply be limited if a CPU ceiling is hit, and audio playback should not be affected.</p>
+ </li>
+</ul>
+
+<p><a href="http://schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project home</a></p>
+
+</div>
+
+</body>
+</html>

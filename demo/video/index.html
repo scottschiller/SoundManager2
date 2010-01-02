@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2 Video demo: Play MOV, FLV, MP4 etc.</title>
+<link rel="stylesheet" type="text/css" href="../page-player/css/demo.css" />
+<link rel="stylesheet" type="text/css" href="../page-player/css/page-player.css" />
+<style type="text/css">
+
+/* Video-only demo stuff */
+
+ul.playlist li .comment {font-size:0.65em;opacity:0.5}
+
+ul.playlist li.sm2_playing a.sm2_link, ul.playlist li.sm2_paused a.sm2_link {
+ margin-right:2.5em;
+}
+
+ul.playlist li .comment {
+ display:block;
+ opacity:0.65;
+}
+
+</style>
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript">
+
+/* --------
+
+  Config override: This demo uses shiny flash 9 stuff, overwriting Flash 8-based defaults
+  Alternate PP_CONFIG object must be defined before page-player JS is included/executed.
+  Alternately, edit the config in page-player.js to simply use the values below by default
+
+-------- */
+
+var PP_CONFIG = {
+  flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
+  useMovieStar: true,    // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
+  useVideo: true         // show video when applicable
+}
+
+</script>
+<script type="text/javascript" src="../page-player/script/page-player.js"></script>
+<script type="text/javascript">
+
+// override some page player metadata things
+
+pagePlayer.events.metadata = function() {
+  // video-only stuff
+  var sm = soundManager;
+  sm._wD('video metadata: '+this.width+'x'+this.height);
+  // set the SWF width and height..
+  sm.oMC.style.width = this.width+'px';	
+  sm.oMC.style.height = this.height+'px';
+
+  document.getElementById('sm2-movie-box').style.width = this.width+'px';
+  document.getElementById('movie-box').style.width = ((parseInt(document.getElementById('movie-playlist').offsetWidth)+this.width+24)+'px');
+  var item = null;
+  var md = ['<h3 style="margin-top:0.5em;margin-bottom:0px;padding-bottom:0px;width:auto;min-width:1px;max-width:100%;float:none">Video metadata</h3>'];
+  for (item in this.metadata) {
+    md.push('<b>'+item+'</b>: '+this.metadata[item]);
+  }
+  document.getElementById('movie-info').innerHTML = md.join('<br />');
+
+  // ugly positioning hack: make left column match the right if it's taller.
+  // abs-positioning is used because firefox eats up more CPU if in a two-column floated layout, interestingly.
+
+  var oP = document.getElementById('movie-playlist');
+  var boxHeight = parseInt(document.getElementById('sm2-movie-box').offsetHeight);
+  if (oP.offsetHeight < boxHeight) {
+    oP.style.height = boxHeight+'px';
+  } else {
+    oP.style.height = 'auto';
+  }
+
+}
+
+
+// demo only..
+var is_shiny = false;
+function setTheme(sTheme) {
+  var o = pagePlayer.getElementsByClassName('playlist','ul');
+  for (var i=o.length; i--;) {
+    o[i].className = 'playlist'+(pagePlayer.cssBase?' '+pagePlayer.cssBase:'')+(sTheme?' '+sTheme:'')+(is_shiny?' shiny':'');
+  }
+  return false;
+}
+function setShiny(bShiny) {
+  is_shiny = bShiny;
+  var o = pagePlayer.getElementsByClassName('playlist','ul');
+  var sClass = 'shiny';
+  for (var i=o.length; i--;) {
+    if (!bShiny) {
+	  pagePlayer.removeClass(o[i],sClass);
+	} else {
+	  pagePlayer.addClass(o[i],sClass);
+	}
+  }
+}
+</script>
+</head>
+
+<body>
+
+<div id="left">
+
+ <h1>SoundManager 2: "MovieStar" MPEG4/H.264 Video Demo</h1>
+
+ <h2 style="margin-top:0px;border:none">MPEG4 / H.264 + HE-AAC (Flash "MovieStar" 9.0r115+) video support - <em>experimental</em></h2>
+ <h3 style="border-bottom:none;margin-bottom:0.5em">A subset of MPEG4 <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">is supported</a> including FLV, MP4, M4A, MOV, MP4V, 3GP and 3G2 files.</h3>
+
+ <div id="movie-box" style="position:relative;clear:both;margin-right:1em;background:#fff">
+	
+	<!-- I hacked this together quickly with inline style blocks etc., you can do better. I know you can. :D -->
+
+	 <div id="movie-playlist" style="position:relative;width:320px;font-size:xx-small">
+
+		<ul class="playlist">
+		  <li><a href="http://freshly-ground.com/data/video/Jellyfish.mov">Jellyfish <span class="comment">(848x480, H.264)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/Jack Dempsey Cichlids.flv">Jack Dempsey Cichlids <span class="comment">(320x240 .FLV of my fish, from YouTube)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/schillmania-xmaslightsmashfest07.mov">Smash Christmas Lights! <span class="comment">(640x480 H.264)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/Clouds Over Kal Lake-2048kbps-h264.mov">Clouds Over Kal Lake <span class="comment">(800x600, 2048 kbps H.264 .MOV)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/rubber-chicken-iPhone.m4v">Rubber Chicken 1 <span class="comment">(iPhone-compat. H.264 .M4V, max 900 kbps)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/rubber-chicken-iPhone-cell.3gp">Rubber Chicken 2 <span class="comment">(iPhone-compat. .3GP , max 50 kbps)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/20060820 - Scratch Practice (DJ Cam) - 512kbps.mp4">Scratch Practice (DJ Cam) <span class="comment">(512 kbps H.264 .MP4, mature language)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/Basil Vs. Caterpillar-816x458-2048kbps.mov">Basil Vs. Caterpillar <span class="comment">(816x458, 2048 kbps H.264)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/Clock-1632x916.mp4">Clock <span class="comment">(1632x916, "HD" .MP4 - CPU fires <strong>probable</strong>.)</span></li>
+		  <li><a href="http://freshly-ground.com/data/video/20080716 - Cilantro Time Lapse.mp4">Cilantro Time Lapse <span class="comment">(1600x1200 .MP4, CPU fires <strong>almost certain</strong>.)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/Granville Island Water Park (Hi-Fi).mp4">Granville Island Water Park <span class="comment">(MP4+MiniDisc Audio)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/Tesla Coils at Maker Faire 2007.mp4">Tesla Coils at Maker Faire <span class="comment">(MP4)</span></a></li>
+		 </ul>
+
+	 </div>
+	
+	 <div id="sm2-movie-box" style="position:absolute;left:320px;top:0px;margin-left:1em">
+		<div id="sm2-container" style="position:relative;xclear:both;width:1px;height:1px"><!-- .swf ends up here --></div>
+		<div id="movie-info"></div>
+	 </div>
+
+ <div style="clear:both">&nbsp;</div>
+
+ </div>
+
+ <div style="clear:both">&nbsp;</div>
+
+
+ <div id="control-template">
+  <!-- control markup inserted dynamically after each link -->
+  <div class="controls">
+   <div class="statusbar">
+    <div class="loading"></div>
+     <div class="position"></div>
+   </div>
+  </div>
+  <div class="timing">
+   <div id="sm2_timing" class="timing-data">
+    <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span></div>
+  </div>
+  <div class="peak">
+   <div class="peak-box"><span class="l"></span><span class="r"></span>
+   </div>
+  </div>
+ </div>
+
+ <div id="spectrum-container" class="spectrum-container">
+  <div class="spectrum-box">
+   <div class="spectrum"></div>
+  </div>
+ </div>
+
+ <h2>How It Works</h2>
+
+ <p>This example uses <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to find and play links to MPEG4 files within an unordered list, and makes them playable "in-place" on a page. The script assigns CSS classes to links' parent LI nodes to indicate their state (playing/paused, etc.)</p>
+
+ <h3>Progressive Enhancement</h3>
+
+ <p>This provides a nice HTML base for all browsers and user agents, and enhances progressively for those with Javascript and Flash. Links pointing to MPEG4 videos are assigned an onclick handler which intercepts the click (preventing the browser from following the link and unloading the page. SM2 will then create sound objects as needed to play the videos. In the event there is an error at runtime or a lack of support (no JS/Flash etc.), the browser will simply load the video file directly as it normally would. This includes iPhones, etc.</p>
+
+ <h3>HTML Fragments (UI Element Templates)</h3>
+ <p>Each item in the playlist has its own set of controls and progress indicators, etc. This content is defined once as a hidden template of HTML in-page separate from the playlist markup and is cloned for each item as needed. This can be easily styled with CSS as well, of course.</p>
+
+<h2>Performance Observations</h2>
+
+ <p>Some CPU overhead is incurred from JS updating HTML UI showing load, progress etc vs. playing video alone. Compare with the <a href="basic.html">basic video demo</a>.</p>
+ <p>Firefox also seems to take up more CPU if the .SWF is nested in a floated multi-column layout, so this demo uses absolute positioning. Positioning the .SWF absolutely from the document root as an overlay may work best for performance.</p>
+
+
+<h2>I'd like to use this.</h2>
+<p>See the <a href="basic.html" title="Basic javascript video player">basic example</a> which has a simple template, and code which enables MovieStar mode (ie., video ability) in SoundManager 2.</p>
+
+<p style="margin-top:2em;font-size:0.9em;color:#333">If you want to also smash christmas lights as in the video, check out <a href="http://www.schillmania.com/?theme=2007&christmas=1" title="Break christmas lights with javascript sound!">Christmas Light Smashfest 2007</a> with a modern browser for best effect.</p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: Technical Notes</title>
+<meta name="description" content="Requirements and Specifications for SoundManager 2, the Javascript Sound API" />
+<meta name="keywords" content="javascript sound, javascript audio, technical specifications, requirements, licensing" />
+<meta name="robots" content="all" />
+<meta name="author" content="Scott Schiller" />
+<meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
+<meta name="language" content="en-us" />
+<link rel="stylesheet" type="text/css" media="screen" href="../../demo/index.css" />
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript" src="../../demo/index.js"></script>
+<script type="text/javascript">
+	soundManager.debugMode = true;
+	soundManager.url = '../../';
+	soundManager.onload = function() {
+	}
+</script>
+</head>
+
+<body>
+	
+<div id="content">
+
+ <div id="top">
+
+  <h1>SoundManager 2: Technical Notes</h1>
+
+	<div id="nav">
+	 <ul>
+
+	  <li>
+	   <a href="../../">Home</a>
+	  </li>
+
+	  <li>
+	   <a href="#">Demos</a>
+	   <ul>
+		<li><a href="../../demo/api/">API Examples</a></li>
+	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
+		<li><a href="../../demo/page-player/">Muxtape-style UI</a></li>
+		<li><a href="../../demo/video/">MPEG4 Video Player</a></li>
+		<li><a href="../../demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
+	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
+		<li><a href="../../demo/christmas-lights/">Christmas Lights</a></li>
+		<li><a href="../../demo/animation/">Animation 1</a></li>
+		<li><a href="../../demo/animation-2a/">Animation 2a</a></li>
+		<li><a href="../../demo/animation-2b/">Animation 2b</a></li>
+		<li><a href="../../demo/template/">Basic Template</a></li>
+	   </ul>
+	  </li>
+
+	  <li>
+	   <a href="../getstarted/">Getting Started</a>
+	   <ul>
+		<li><a href="../getstarted/#how-sm2-works">How SoundManager 2 works</a></li>
+		<li><a href="../getstarted/#basic-inclusion">Including SM2 on your site</a></li>
+		<li><a href="../getstarted/#troubleshooting">Troubleshooting</a></li>
+	   </ul>
+	  </li>
+
+	  <li>
+	   <a href="..">Documentation</a>
+	   <ul>
+		<li><a href="../#sm-config">SoundManager Properties</a></li>
+		<li><a href="../#sound-object-properties">Sound Object Properties</a></li>
+		<li><a href="../#smdefaults">Global Sound Defaults</a></li>
+		<li><a href="../#api">SoundManager Core API</a></li>
+		<li><a href="../#smsoundmethods">Sound Object (SMSound) API</a></li>
+	   </ul>
+	  </li>
+	
+	  <li>
+	   <a href="../download/">Download</a>
+	   <ul>
+		<li><a href="../download/#latest">Get SoundManager 2</a></li>
+		<li><a href="../download/#revision-history">Revision History</a></li>
+	   </ul>
+	  </li>
+	
+	  <li>
+	   <strong><a href="../technotes/">Technical Notes</a></strong>
+	   <ul>
+		<li><a href="../technotes/#requirements">System Requirements</a></li>
+		<li><a href="../technotes/#debug-output">Debug + Console Output</a></li>
+	   </ul>
+	  </li>
+
+	  <li>
+	   <a href="../resources/">Resources</a>
+	   <ul>
+		<li><a href="../resources/#licensing">Licensing</a></li>
+		<li><a href="../resources/#related">Related Projects</a></li>
+		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
+		<li><a href="http://schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
+	   </ul>
+	  </li>
+
+	 </ul>
+	 <div class="clear"></div>
+	</div>
+	
+ </div>
+
+ <div id="main" class="triple">
+
+
+		<div id="filter-box" class="columnar">
+
+		 <div class="c1">
+		  <div id="reset-filter"></div>
+	         </div>
+
+		 <div class="c2">
+		  <div id="search-results"><!-- search results for %s --></div>
+	         </div>
+
+		</div>
+		
+		<div class="columnar">
+			
+			<div class="c1">
+				<h2>Requirements + Specifications</h2>
+				<p>What SM2 needs, and how it works.</p>
+			</div>
+			
+			<div class="c2">
+
+			  <div class="f-block c-requirements">
+
+			  <h3>Requirements + Specifications</h3>
+
+			  <h4 style="margin-top:1.5em">Prerequisites (client)</h4>
+
+			  <ul>
+			   <li>Flash plugin, version 8 or higher</li>
+			   <li>Supported Browser</li>
+			  </ul>
+
+			  <h4>Supported Browsers/Platforms</h4>
+
+			  <p>Javascript-to-flash communication is possible through Flash 8's ExternalInterface feature, which (as I understand) uses a standard browser plugin architecture implemented by each browser manufacturer (see <a href="http://www.mozilla.org/projects/plugins/npruntime.html" title="Mozilla plugin scripting reference">NPAPI</a>.) As a result, the following browsers should be supported:</p>
+
+			  <ul>
+			   <li>IE 5.0+, Win32</li>
+			   <li>Netscape 8.0+, Windows/Mac</li>
+			   <li>Mozilla 1.7.5+, Windows/Mac</li>
+			   <li>Firefox 1.0+, Windows/Mac</li>
+			   <li>Firefox 1.5+, Linux (Flash 9 beta)</li>
+			   <li>Safari 1.3+, Mac</li>
+			   <li>Opera 9.10+ (slightly buggy, 9.5+ ideal), Windows/Mac</li>
+			  </ul>
+
+			  <p>For reference, see Adobe's <a href="http://livedocs.macromedia.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&amp;file=00002200.html" title="Adobe ExternalInterface notes">ExternalInterface support page</a> which documents supported browsers.</p>
+
+			  <p>At this time, not all combinations of browser/OS have been tested. Some unlisted configurations may be supported, but have not been explicitly verified to work.</p>
+
+			  </div>
+
+			  <div class="f-block c-requirements">
+
+			  <h4>Unsupported Configurations</h4>
+
+			  <p>The following browser/OS combinations have been reported as buggy, or may be unsupported:</p>
+
+			  <ul>
+			   <li>Konqueror (version unknown)</li>
+			  </ul>
+
+			  </div>
+
+			  <div class="f-block c-limitations">
+
+			  <h3 id="caveats">Caveats + Limitations / FAQ</h3>
+
+			  </div>
+
+			  <div class="f-block c-limitations">
+
+			  <h4>Supported sound format (MP3-only, with caveats)</h4>
+			  <p>SM2 uses Flash's native Sound object for loading and managing sound, so it is subject to the same limitations that Flash 8 is. Perhaps a design decision, the Flash 8 sound object only supports MP3 files through the <code class="in">loadSound()</code> ActionScript method. SM2 is not able to load other sound formats, including audio-only SWF files, due to this limitation. Refer to the <a href="http://livedocs.macromedia.com/flash/8/main/00002668.html" title="Info on Flash 8's sound object">Flash 8 sound object documentation</a> for details.</p>
+
+			  <h4>MP3 Format Caveats</h4>
+			  <p>Additionally, some very low and very high bitrate MP3s, and Variable Bitrate (VBR) MP3s may play either too quickly or too slowly (see <a href="http://www.boutell.com/newfaq/creating/chipmunk.html" title="Flash mp3 chipmunk problem description">"the chipmunk problem"</a>); if you are encountering this issue, try re-encoding at a different bitrate (between 64 kbps and 192 kbps, for example.) Using Constant Bitrate (CBR) encoding may also alleviate this problem.</p>
+			  <p>It has been suggested that sample rates that are neither 22/44 KHz can also contribute to this issue. 44 KHz is the standard CD-spec sample rate, and is recommended for "hi-fi" recordings.</p>
+
+			  <h4>Looping</h4>
+			  <p class="in">Perhaps due to the way Flash dynamically loads and decodes MP3 data, seamless looping doesn't seem to be fully implemented. Loops have a noticeable gap between the finish and start. This has been an issue since the original version of SoundManager. Rather than have a broken feature, the funcionality has been omitted until a solid workaround is found.</p>
+
+			  <h4>Flash 8 limitations with multiShot (overlaying/"chorus") effects</h4>
+			  <p class="in">Regarding "layering" sounds (calling <code>play()</code> on a sound multiple times): Even though a multi-shot option can be specified, it does not work with Flash 8; a single instance of a sound can only have one timeline. The current behaviour is that when <code>multiShot</code> is specified and <code>play()</code> is called on a currently-playing sound, it will restart from the beginning without an overlay.</p>
+			  <p>However, the API does provide some creative ways (<code class="in">onbeforefinish</code> for looping, multiple sound objects for multi-shot layering) of working around these Flash limitations.</p>
+			  <p>It should be noted that sounds can loop seamlessly and be layered when linked and exported to SWF from within the Flash IDE, but SoundManager does not support SWF-based audio.</p>
+
+			  <h4>Flash 9 multiShot capabilities</h4>
+			  <p class="in">The Flash 9-based version of SoundManager2 can successfully layer sounds via "multiShot", truly playing a single sound multiple times on top of itself. However the API will only call certain timing-related methods such as <code>whileplaying()</code> for the first <code>play()</code> "instance" of the sound, to avoid confusion. By contrast, simpler methods such as <code>onfinish()</code> will be called multiple times, one for each instance of <code>play()</code>.</p>
+
+			  <h4 id="id3-parsing">ID3 Parsing</h4>
+			  <p>ID3 data can differ in formatting, version and subsequently be oddly-parsed by Flash. Values may sometimes be repeated across different fields.</p>
+			  <p>ID3 info seems to fail to load for iTunes 7-edited files, perhaps due to the format or inclusion of album artwork (image data.)</p>
+
+			  <h4>Performance Notes: Caching + RAM Obeservations</h4>
+			  <p>Flash appears to use the browser cache (presumably the OS' native, or closest browser,) so the browser's cache size and other settings may affect Flash's cache behaviour. It is safe to assume a 100 MB MP3 will probably not be cached, for example, but a 16 MB one most likely will be.</p>
+			  <p>MP3s appear to be loaded and stored in RAM while loading over HTTP, so memory use needs to be considered for both large MP3s and streaming radio-type applications.</p>
+
+			  <h4>Timing/Latency (JS + Flash, ExternalInterface-related)</h4>
+			  <p>Javascript-to-Flash communication is not instantaneous on slower systems, but can be much better on more modern systems. Latency (timing lag/delays) can be noted in some cases from function call to sound execution. It is possible some performance analysis can help to speed up this area for timing-critical applications involving animation etc., but this area has not been thoroughly investigated yet. Brad Neuberg has some notes on <a href="http://codinginparadise.org/weblog/2006/02/how-to-speed-up-flash-8s.html" title="Brad Neuberg - How To Speed Up ExternalInterface">speeding up ExternalInterface</a> which may be relevant.</p>
+			  <p>Additionally, MP3 files may contain audible gaps at the beginning or end by default when encoded, even if the source (eg. WAVE) file did not. Using optional "nogap" encoding options with programs such as LAME may help to remedy this.</p>
+			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X.</p>
+
+			  </div>
+
+			</div>
+			
+		</div>
+		
+		<div id="debug-output" class="columnar">
+			<div class="c1">
+				<h2>Debug + Console Output</h2>
+				<p>Console-style messaging, useful for troubleshooting start-up and runtime issues.</p>
+			</div>
+			
+			<div class="c2">
+				<h3>Live Debug Output</h3>
+				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to javascript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
+				<p class="in"><code>soundManager.consoleOnly</code> can be set to true to disable HTML output (using <code>console.log()</code>-only methods) as well.</p>
+				<p>For info on SoundManager 2 loading/initialization failures and how to fix them, see <a href="../getstarted/#troubleshooting">troubleshooting</a>.</p>
+				
+				<p>Below is a live example of debug output.</p>
+
+				<div id="soundmanager-debug"></div>
+			</div>
+
+		</div>
+
+	
+	<div id="col3" class="c3">
+
+ 
+  <div id="get-satisfaction" class="box">
+   <div id="gsfn_list_widget">
+    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
+    <div id="gsfn_content"></div>
+    <div class="powered_by"><a href="http://getsatisfaction.com/">Get Satisfaction support network</a></div>
+   </div>
+  <!-- /.box -->
+
+  </div>
+
+ <div id="shortcuts">
+
+<!--
+  <div class="box">
+
+  <h2>Shortcuts<span class="l"></span><span class="r"></span></h2>
+
+  <ul class="first">
+   <li onclick="setFilter(event,'c-')" class="ignore">
+
+    <ul>
+
+     <li>Demos</li>
+     <li>Getting Started</li>
+     <li>Basic Use</li>
+     <li>Download</li>
+     <li>Requirements</li>
+     <li>Limitations</li>
+
+     <li>Debug Output</li>
+     <li>Revision History</li>
+     <li>About</li>
+    </ul>
+
+   </li>
+  </ul>
+
+  </div>
+-->
+
+ </div>
+
+
+
+	</div>
+	
+	<div class="clear"></div>
+
+ <!-- /main -->
+ </div>
+
+ <!-- /content -->
+ </div>
+
+<script type="text/javascript">
+init();
+</script>
+	
+</body>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2 Demo: Play MP3 Links on a page</title>
+<style type="text/css">
+
+/* 
+
+ -------------------------------------------------------------
+
+ In-page demo CSS - see external CSS for actual relevant stuff.
+
+ --------------------------------------------------------------
+
+ */
+
+#soundmanager-debug {
+ /* SM2 debug container (optional, makes debug more useable) */
+ position:absolute;position:fixed;*position:absolute;bottom:10px;right:10px;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);
+}
+
+body {
+ font:75% normal verdana,arial,tahoma,"sans serif";
+}
+
+h1, h2, h3 {
+ font:3em arial,tahoma,verdana;
+ font-weight:normal;
+ margin-bottom:0px;
+}
+
+h1, h2 {
+ letter-spacing:-1px; /* zomg web x.0! ;) */ 
+}
+
+h2 {
+ font-size:2em;
+}
+
+h3 {
+ font-size:1.5em;
+}
+
+h1 a,
+h1 a:hover {
+ color:#000;
+ text-decoration:none;
+}
+
+h1 a:hover {
+ text-decoration:underline;
+}
+
+ul.notes {
+ margin-left:0px;
+ padding-left:1.5em;
+}
+
+.note {
+ margin-top:0px;
+ font-style:italic;
+ color:#999;
+}
+
+pre {
+ font-size:1.2em;
+ _font-size:1em;
+}
+
+#left {
+ max-width:56em;
+}
+
+</style>
+<link rel="stylesheet" type="text/css" href="css/inlineplayer.css" />
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript" src="script/inlineplayer.js"></script>
+</head>
+
+<body>
+
+<div id="left">
+
+ <h1>Demo: <a href="http://schillmania.com/projects/soundmanager2/" title="Play MP3s inline with javascript using SoundManager 2">Make MP3 links playable "in-place"</a></h1>
+
+ <h2>Inline MP3 Player Example: Fancy* CSS 3 version</h2>
+ <p class="note">*CSS 3 border-radius supported only by Firefox 2.x+, Safari (2.x?) as of April 2008 - perhaps IE 8 RTM..</p>
+
+ <ul class="graphic">
+
+  <li><a href="../jsAMP-preview/audio/rain.mp3">Rain</a></li>
+  <li><a href="../jsAMP-preview/audio/walking.mp3">Walking</a></li>
+  <!-- files from the web (note that ID3 information will *not* load from remote domains without permission, Flash restriction) -->
+  <li><a href="http://www.freshly-ground.com/misc/music/carl-3-barlp.mp3">Barrlping with Carl (featureblend.com)</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Mak.mp3">Angry cow sound?</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Things that open, close and roll.mp3">Things that open, close and roll</a></li>
+  <li><a href="http://www.freshly-ground.com/misc/music/20060826%20-%20Armstrong.mp3">20060826 - Armstrong</a></li>
+
+ </ul>
+
+ <h2>How It Works</h2>
+
+ <ul class="notes">
+  <li>Lightweight (single JS click event handler)</li>
+  <li>Uses existing SoundManager 2 API</li>
+  <li>CSS for UI, easy to modify to taste</li>
+ </ul>
+
+ <p>This example uses <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to finds links to MP3 files, and makes them playable "in-place" on a page. The script assigns CSS classes to links to indicate their state (playing/paused, etc.)</p>
+ <p>Links pointing to MP3s are assigned an onclick handler which intercepts the click (preventing the browser from following the link and unloading the page. SM2 will then create sound objects as needed to play the MP3s.</p>
+
+
+ <h3>Static Examples</h3>
+ <p style="margin-top:0px">CSS classes are dynamically applied as follows:</p>
+ <ul class="graphic">
+  <li><a href="#" class="sm2_link" title="'Click to play' state">Default: class="sm2_link"</a></li>
+  <li><a href="#" class="sm2_link sm2_playing" title="'Click to pause' state">Playing: class="sm2_link sm2_playing"</a></li>
+  <li><a href="#" class="sm2_link sm2_paused" title="'Click to resume' state">Paused: class="sm2_link sm2_paused"</a></li>
+ </ul>
+ <p>:hover effects are also active.</p>
+
+ <h2>Flat (CSS-only) style</h2>
+
+ <ul class="flat">
+
+  <li><a href="../jsAMP-preview/audio/going_outside.mp3">Going Outside</a></li>
+  <li><a href="../jsAMP-preview/audio/office_lobby.mp3">Office Lobby Entrance</a></li>
+
+  <!-- files from the web (note that ID3 information will *not* load from remote domains without permission, Flash restriction) -->
+
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Rain 3.mp3">Rain 3</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Frogs @ Yahoo!.mp3">Frogs @ Yahoo!</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Walking past sprinklers, mailbox.mp3">Walking past sprinklers, mailbox</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Cup of Coffee.mp3">Cup of Coffee</a></li>
+
+ </ul>
+
+ <h3>Static Examples</h3>
+
+ <ul class="flat">
+
+  <li><a href="#" class="sm2_link" title="'Click to play' state">Default: class="sm2_link"</a></li>
+  <li><a href="#" class="sm2_link sm2_playing" title="'Click to pause' state">Playing: class="sm2_link sm2_playing"</a></li>
+  <li><a href="#" class="sm2_link sm2_paused" title="'Click to resume' state">Paused: class="sm2_link sm2_paused"</a></li>
+
+ </ul>
+
+
+ <p>
+  <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
+ </p>
+
+ <h3>Basic CSS</h3>
+
+<pre>
+ If you want to make your own UI from scratch, here is the base:
+
+ Default + hover state, "click to play":
+
+ a.sm2_link {}
+ a.sm2_link:hover {}
+
+ Playing + hover state, "click to pause":
+
+ a.sm2_playing {}
+ a.sm2_playing:hover {}
+
+ Paused + hover state, "click to resume":
+
+ a.sm2_paused {}
+ a.sm2_paused:hover {}
+</pre>
+
+ <h3>Other Options</h3>
+ 
+ <p>By default, one sound will be played at a time; you can easily change a "config" object value to turn on playlist-like behaviour (i.e., play the next MP3 when the current one finishes.)</p>
+ 
+<pre>
+// (within inlineplayer.js)
+this.config = {
+ playNext: false // stop after one sound, or play through list until end
+}
+</pre>
+
+ <h3>I'd like to use this.</h3>
+ <p>See this <a href="basic.html" title="basic template: inline mp3 player">basic demo</a> for reference.</p>
+
+</div>
+
+</body>
+</html>

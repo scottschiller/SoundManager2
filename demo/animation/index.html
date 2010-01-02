@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<link rel="stylesheet" href="../template/template.css" media="screen" />
+<link rel="stylesheet" href="css/animation.css" media="screen" />
+<script type="text/javascript" src="../../script/soundmanager2-nodebug-jsmin.js"></script>
+<script type="text/javascript" src="script/animation.js"></script>
+</head>
+<body>
+
+<div style="margin-right:43em">
+	
+<h1>Interval-based animation (with sound)</h1>
+
+<p>
+ Click + drag for fun.
+</p>
+
+<h2>Speeding Up ExternalInterface: Keep .swf in view</h2>
+
+<p>SoundManager 2 now incorporates a "high performance" mode, which has been shown to noticeably improve timing and frequency of flash callbacks. This is important for timing, reducing delay between a JS call and the sound being played, etc.</p>
+
+<p>To reduce audio delay and timing issues from slow JS/Flash communication, SM2 will try to ensure that the flash movie is visible on screen at all times. If hidden or otherwise off-screen, Flash will be given lower priority and thus JS/flash "lag" (ie., delay) will be introduced when trying to play audio "in sync."</p>
+
+<p>Generally, positioning the flash movie using position:fixed and bottom/left or bottom/right 0px is the less-intrusive option.</p>
+
+<p style="margin:0px;padding:0px">
+ <input id="useMouse" name="usemouse" value="usemouse" type="checkbox"> Throw from mouse
+</p>
+<p style="margin:0px;padding:0px">
+ <button id="b-start" onclick="startAnimation()" disabled="disabled">Start</button>
+ <button id="b-stop" onclick="stopAnimation()" disabled="disabled">Stop</button>
+</p>
+
+
+<p>Sound source: <a href="http://freesound.iua.upf.edu/samplesViewSingle.php?id=19987">"Acclivity"</a>, Free Sound Project</p>
+
+</div>
+
+<div id="ball-container" class="balls">
+ <img src="image/ball.gif" alt="" />
+</div>
+
+</body>
+</html>

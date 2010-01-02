@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+     Acoustic drumkit example sounds
+     Source credit: http://www.akaipro.com/arc_kotw.html
+-->
+
+<!-- SoundManager Flash configuration -->
+<!-- Sound IDs are referenced from JS -->
+
+<items baseHref="audio/"> <!-- baseHref is optional, but note the trailing slash if used. -->
+
+ <sound id="s0" href="AMB_BD_1.mp3" />
+ <sound id="s1" href="AMB_FTM2.mp3" />
+ <sound id="s2" href="AMB_HHCL.mp3" />
+ <sound id="s3" href="AMB_HHOP.mp3" />
+ <sound id="s4" href="AMB_HHPD.mp3" />
+ <sound id="s5" href="AMB_HTM.mp3" />
+ <sound id="s6" href="AMB_LTM2.mp3" />
+ <sound id="s7" href="AMB_MTM.mp3" />
+ <sound id="s8" href="AMB_RIM1.mp3" />
+ <sound id="s9" href="AMB_SN13.mp3" />
+ <sound id="s10" href="AMB_SN_5.mp3" />
+ <sound id="s11" href="CHINA_1.mp3" />
+ <sound id="s12" href="CRASH_1.mp3" />
+ <sound id="s13" href="CRASH_5.mp3" />
+ <sound id="s14" href="CRASH_6.mp3" />
+ <sound id="s15" href="RIDE_1.mp3" />
+<!--
+ <sound id="s16" href="RIDE_3.mp3" />
+ <sound id="s17" href="SPLASH_1.mp3" />
+-->
+</items>

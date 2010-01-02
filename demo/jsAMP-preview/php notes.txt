@@ -1,0 +1,25 @@
+<?php
+
+// print out MP3s in a given directory
+// format:
+// <li><a href="/my/music/20060411 - Code 3825.mp3">Code 3825</a></li>
+
+function listMP3s($path) {
+  $dir = $_SERVER['DOCUMENT_ROOT'].$path;
+  $dirlength = strlen($dir);
+  $dh  = opendir($dir);
+  while (false !== ($filename = readdir($dh))) {
+    // print "filename: $filename<br />";
+    if (stristr($filename,'.mp3')) $files[] = $path."/".basename($filename);
+    if ($filename != "." && $filename != ".." && is_dir($dir."/".$filename)) listMP3s($path."/".$filename); // recurse through subdirectories
+    // print ("is dir: ".(($filename != "." && $filename != ".." && is_dir($dir."/".$filename))?"Yes":"No")."<br />");
+  }
+  rsort($files);
+  for ($i=0; $i<sizeof($files); $i++) {
+    print "  <li><a href=\"".dirname($files[$i])."/".rawurlencode(basename($files[$i]))."\">".basename($files[$i])."</a></li>\n";
+  }
+}
+
+listMP3s('/my/music');
+
+?> 

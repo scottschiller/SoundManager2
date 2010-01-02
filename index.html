@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: Javascript Sound For The Web</title>
+<meta name="description" content="Play and control MP3 audio and MPEG-4 video formats using Javascript with SoundManager 2, a cross-browser/platform sound API. BSD licensed." />
+<meta name="keywords" content="javascript sound, javascript audio, javascript play mp3, javascript sound control, javascript video, mp3, mp4, mpeg4, flv video, Scott Schiller, Schill, Schillmania" />
+<meta name="robots" content="all" />
+<meta name="author" content="Scott Schiller" />
+<meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
+<meta name="language" content="en-us" />
+<link rel="stylesheet" type="text/css" href="demo/play-mp3-links/css/inlineplayer.css" />
+<link rel="stylesheet" type="text/css" href="demo/page-player/css/page-player.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="demo/index.css" />
+<script type="text/javascript" src="script/soundmanager2.js"></script>
+<script type="text/javascript">
+var PP_CONFIG = {
+  flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
+  useMovieStar: true,    // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
+  useVideo: true         // show video when applicable
+}
+</script>
+<script type="text/javascript" src="demo/page-player/script/page-player.js"></script>
+<script type="text/javascript" src="demo/play-mp3-links/script/inlineplayer.js"></script>
+<script type="text/javascript">
+
+	var isHome = true;
+	soundManager.bgColor = '#f9f9f9';
+	soundManager.debugMode = false;
+	soundManager.url = './';
+
+	soundManager.onload = function() {
+	  pagePlayer.initDOM();
+	  inlinePlayer = new InlinePlayer();
+	  doChristmasLights();
+	}
+
+	soundManager.onerror = function() {
+	  // failed to load
+	  var o = $('sm2-support');
+	  o.innerHTML = smLoadFailWarning;
+	  o.style.display = 'block';
+	  $('demos').style.display = 'none';
+	}
+	
+	pagePlayer.events.metadata = function() {
+	  // video-only stuff
+	  var sm = soundManager;
+	  // set the SWF width and height..
+	  var sm2c = document.getElementById('sm2-container');
+	  sm2c.style.width = '100%';
+	  sm2c.style.height = parseInt(this.height*(parseInt(sm2c.offsetWidth)/this.width))+'px';
+	}
+	
+	// side note: If it's not december but you want to smash things, try #christmas=1 in the homepage URL.
+	
+</script>
+<script type="text/javascript" src="demo/index.js"></script>
+</head>
+
+<body>
+	
+<div id="content">
+
+ <div id="top">
+  <div id="lights"></div>
+
+  <h1>SoundManager 2</h1>
+  <h2>A Javascript Sound API supporting MP3, MPEG4 Audio and Video.</h2>
+
+	<div id="nav">
+	 <ul>
+
+	  <li>
+	   <strong><a href="#home">Home</a></strong>
+	  </li>
+
+	  <li>
+	   <a href="#">Demos</a>
+	   <ul>
+		<li><a href="demo/api/">API Examples</a></li>
+	    <li><a href="demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
+		<li><a href="demo/page-player/">Muxtape-style UI</a></li>
+		<li><a href="demo/video/">MPEG4 Video Player</a></li>
+		<li><a href="demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
+	    <li><a href="demo/mpc/">Drum Machine (MPC)</a></li>
+		<li><a href="demo/christmas-lights/">Christmas Lights</a></li>
+		<li><a href="demo/animation/">Animation 1</a></li>
+		<li><a href="demo/animation-2a/">Animation 2a</a></li>
+		<li><a href="demo/animation-2b/">Animation 2b</a></li>
+		<li><a href="demo/template/">Basic Template</a></li>
+	   </ul>
+	  </li>
+
+	  <li>
+	   <a href="doc/getstarted/">Getting Started</a>
+	   <ul>
+		<li><a href="doc/getstarted/#how-sm2-works">How SoundManager 2 works</a></li>
+		<li><a href="doc/getstarted/#basic-inclusion">Including SM2 on your site</a></li>
+		<li><a href="doc/getstarted/#troubleshooting">Troubleshooting</a></li>
+	   </ul>
+	  </li>
+
+	  <li>
+	   <a href="doc/">Documentation</a>
+	   <ul>
+		<li><a href="doc/#sm-config">SoundManager Properties</a></li>
+		<li><a href="doc/#sound-object-properties">Sound Object Properties</a></li>
+		<li><a href="doc/#smdefaults">Global Sound Defaults</a></li>
+		<li><a href="doc/#api">SoundManager Core API</a></li>
+		<li><a href="doc/#smsoundmethods">Sound Object (SMSound) API</a></li>
+	   </ul>
+	  </li>
+	
+	  <li>
+	   <a href="doc/download/">Download</a>
+	   <ul>
+		<li><a href="doc/download/#latest">Get SoundManager 2</a></li>
+		<li><a href="doc/download/#revision-history">Revision History</a></li>
+	   </ul>
+
+	  </li>
+	
+	  <li>
+	   <a href="doc/technotes/">Technical Notes</a>
+	   <ul>
+		<li><a href="doc/technotes/#requirements">System Requirements</a></li>
+		<li><a href="doc/technotes/#debug-output">Debug + Console Output</a></li>
+	   </ul>
+	  </li>
+
+	  <li>
+	   <a href="doc/resources/">Resources</a>
+	   <ul>
+		<li><a href="doc/resources/#licensing">Licensing</a></li>
+		<li><a href="doc/resources/#related">Related Projects</a></li>
+		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
+		<li><a href="http://schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
+	   </ul>
+	  </li>
+
+	 </ul>
+	 <div class="clear"></div>
+	</div>
+	
+ </div>
+
+ <div id="main" class="triple">
+	
+	<div id="live-demos" class="columnar">
+
+	 <div class="c1">
+	  	<h2>What SoundManager 2 does</h2>
+		<p>Audio features, accessible from javascript.</p>
+	 </div>
+
+	 <div class="c2">
+		
+		<h3>About SoundManager 2, Features and Live Demos</h3>
+			
+		<div id="demo-box">
+			<p style="color:#333;background:#f9f9f9;border:1px solid #e6e6e6;border-bottom:0px;margin-bottom:0px;padding:0.5em"><strong>Live SoundManager 2 demos, shiny!</strong></p>
+                        <div id="sm2-support" class="demo-block"></div>
+			<div id="demos">
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Playable MP3 links<span class="l"></span><span class="r"></span></h3>
+			<div class="demo-block">
+				<ul class="graphic" style="padding:0.5em 0px 0.25em 0.25em">
+				 <li><a href="demo/jsAMP-preview/audio/rain.mp3" class="exclude norewrite">Rain.mp3</a></li>
+				</ul>
+			</div>
+
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Muxtape-style UI<span class="l"></span><span class="r"></span></h3>
+			<div class="demo-block">
+				<ul class="playlist" style="margin-top:0.5em">
+				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="inline-exclude">Armstrong Beat</a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/binaural/Backyard%20Bees%2C%20Construction%2C%20Traffic.mp3" class="inline-exclude">Bees, Noise, Traffic</a></li>
+				</ul>
+			</div>
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">MPEG-4 Video<span class="l"></span><span class="r"></span></h3>
+			<div style="margin-bottom:1em" class="demo-block">
+				<div id="sm2-container"><!-- SM2 SWF, video, goes here --></div>
+				<ul class="playlist" style="margin-top:0.3em">
+				 <li><a href="http://freshly-ground.com/data/video/xmaslights-iphone.m4v" title="iPhone-compatible H.264 video" class="inline-exclude">JS + Canvas Lights</a></li>
+				 <li><a href="http://freshly-ground.com/data/video/Jack%20Dempsey%20Cichlids.flv" title="Personal .FLV from YouTube" class="inline-exclude">Aquarium</a></li>
+          		        </ul>
+				<p class="note" style="margin-top:3px;margin-bottom:0px;margin-left:0.8em">More: <a href="demo/video/">Video</a> | <a href="demo/page-player/">Muxtape UI</a> | <a href="demo/play-mp3-links/" class="exclude">Play MP3 links</a></p>
+			</div>
+			<div class="clear">&nbsp;</div>
+			</div>
+		</div>
+		
+		<img src="demo/_image/speaker.png" alt="speaker icon" style="float:left;display:inline;width:68px;height:68px;margin:1em 1em 0px 0px" />
+
+		<h4>Javascript Sound For The Web</h4>
+		
+		<p style="margin-top:0px;margin-bottom:0px"><em><em>SoundManager 2 makes it easier to play sounds using Javascript.</em></em></p>
+		<p style="margin-top:0.5em">By wrapping and extending Flash 8's sound API, SoundManager 2 brings solid audio functionality to Javascript. <a href="doc/getstarted/#intro" class="cta">How it works <span>&raquo;</span></a></p>
+			<h4 style="margin-top:1.5em">Features At A Glance</h4>
+			<ul class="standard">
+			 <li>Load, stop, play, pause, mute, setPosition/seek, pan and volume control of sounds from Javascript</li>
+			 <li>Events: onload, whileloading, whileplaying, onfinish and more</li>
+			 <li>ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)</li>
+			 <li>Optional API features with Flash 9+:
+				<ul>
+				 <li>MPEG-4 (HE-AAC/H.264) audio and video support</li>
+				 <li>Sound multiShot (chorusing effect, play a sound many times at once)</li>
+				 <li>Sound waveform/frequency spectrum data (MP3)</li>
+				 <li>Sound peak (L/R channel volume) data (MP3)</li> 
+				</ul>
+			 </li>
+			</ul>
+			
+		<p><a href="doc/download/" class="feature">Get SoundManager 2</a></p>
+
+	</div>
+
+	<div class="clear">&nbsp;</div>
+	
+	<div class="columnar">
+
+	 <div class="c1">
+		 <h2>Playing MP3s with Javascript</h2>
+		 <p>Play audio in one line, or get fancy with multiple options.</p>
+	 </div>
+
+	 <div class="c2">
+		 <h3>How To Play Audio Using SoundManager 2</h3>
+		 <p>Simple ID / URL method:</p>
+		 <code>soundManager.play('<span>mySound</span>','<span>/path/to/an.mp3</span>');</code>
+		 <p>And, setting the volume:</p>
+		 <code>soundManager.setVolume('<span>mySound</span>',<span>50</span>);</code>
+		 <p>More flexible method supporting option parameters as an object literal:</p>
+<pre><code>var mySound = soundManager.createSound({
+  id: '<span>someSound</span>',
+  url: '<span>/path/to/some.mp3</span>',
+  volume: <span>50</span>,
+  onload: <span>soundLoaded</span>
+});
+mySound.play();</code></pre>
+		 <p><a href="demo/api/">See API Demos</a></p>
+	 </div>
+	
+	 </div>
+	
+	 <div class="columnar">
+	
+	 <div class="c1">
+	 	<h2>Using SM2 on your site</h2>
+		<p>How to include SoundManager 2 from HTML, and some basic event handlers.</p>
+	 </div>
+	
+	 <div class="c2">
+		<p>Include the SoundManager 2 core script, tell it where to look for the flash .SWF and provide an onload() handler.</p>
+<pre><code>&lt;script type="text/javascript" src="<span>/path/to/soundmanager2.js</span>"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+soundManager.url = '<span>/path/to/swfs/</span>';
+soundManager.onload = function() {
+  <span>// SM2 is ready to go!</span>
+  <span>// soundManager.createSound(...) calls can now be made, etc.</span>
+}
+&lt;/script&gt;</code></pre>
+
+	 <p><a href="demo/template/">See a basic template demo</a></p>
+
+	 </div>
+	
+	</div>
+
+	<div id="licensing" class="columnar">	
+
+	 <div class="c1">
+	 	<h2>Licensing</h2>
+		<p>BSD licensed.</p>
+	 </div>
+	
+	 <div class="c2">
+		<p>SoundManager 2 is provided under a <a href="license.txt" title="SoundManager 2 BSD license" class="norewrite">BSD license</a>.</p>
+	 </div>
+
+	</div>
+
+    <!-- columnar -->
+	</div>
+	
+	<div class="clear"></div>
+
+  <div id="col3" class="c3">
+
+ 
+  <div id="get-satisfaction" class="box">
+   <div id="gsfn_list_widget">
+    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
+    <div id="gsfn_content"></div>
+    <div class="powered_by"><a href="http://getsatisfaction.com/">Get Satisfaction support network</a></div>
+   </div>
+  <!-- /.box -->
+
+  </div>
+
+
+ <!-- /main -->
+ </div>
+
+ <!-- /content -->
+ </div>
+
+ <div id="control-template">
+  <!-- control markup inserted dynamically after each link -->
+  <div class="controls">
+   <div class="statusbar">
+    <div class="loading"></div>
+     <div class="position"></div>
+   </div>
+  </div>
+  <div class="timing">
+   <div id="sm2_timing" class="timing-data">
+    <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span></div>
+  </div>
+  <div class="peak">
+   <div class="peak-box"><span class="l"></span><span class="r"></span>
+   </div>
+  </div>
+ </div>
+
+ <div id="spectrum-container" class="spectrum-container">
+  <div class="spectrum-box">
+   <div class="spectrum"></div>
+  </div>
+ </div>
+
+<script type="text/javascript">
+init();
+</script>
+
+</div>
+	
+</body>
+
+</html>

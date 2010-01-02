@@ -1,0 +1,100 @@
+/* Demo/example CSS - not needed for general use */
+
+body {
+ font:normal 75% verdana,arial,tahoma,"times new roman","sans serif";
+}
+
+.clear {
+ float:none;
+ clear:both;
+ font-size:1px;
+ line-height:1px;
+ height:1px;
+}
+
+h1, h2 {
+ font-size:1.5em;
+ letter-spacing:-1px;
+ margin:0px;
+}
+
+h2 {
+ font-size:1.2em;
+ font-weight:normal;
+}
+
+#soundmanagermovie {
+ position:absolute;
+ left:-999px;
+ top:-999px;
+}
+
+#mpc {
+ width:37em;
+ padding:1em;
+ border:1px solid #ccc;
+ background:#eee;
+}
+
+#mpc ul {
+ margin:0px;
+ padding:0px;
+}
+
+#mpc ul li {
+ position:relative;
+ float:left;
+ display:inline;
+ width:8em;
+ height:7em;
+ margin:0.5em;
+ background:#999;
+ border:1px solid #333;
+ font:normal 1em/1em "lucida console",terminal,system;
+ padding:0.5em 0px;
+ text-indent:0.5em;
+ cursor:pointer;
+ cursor:hand;
+ color:#ccc;
+ text-transform:uppercase;
+}
+
+#mpc ul li.active {
+ background:#666;
+}
+
+#mpc ul li div {
+ /* progress indicator */
+ position:absolute;
+ left:0px;
+ bottom:1em;
+ font-size:1em;
+ line-height:1em;
+ height:1em;
+ margin:0px 0px 0px 1em;
+ width:6em;
+ background:#888 url(../image/progress.png) no-repeat -256px 0px;
+ background-repeat:no-repeat;
+ border:1px solid #666;
+ visibility:hidden;
+}
+
+#mpc ul li.active div,
+#mpc ul li.loading div {
+ visibility:visible;
+}
+
+#soundmanager-debug {
+ position:absolute;
+ left:42em;
+ top:1em;
+ height:42em;
+ *width:38em;
+ overflow:auto;
+}
+
+#soundmanager-debug div {
+ font:0.8em normal;
+ font-family: "lucida console",system,terminal,verdana,arial; /* IE doesn't seem to obey short-hand font family here? */
+ padding:0px 1em 0.5em 0px;
+}
