@@ -140,7 +140,7 @@ soundManager.nullURL = 'null.mp3';  <span>// (Flash 8 only): URL of silent/blank
 soundManager.url = '/path/to/sm2-swf/'; <span> // path where SM2 .SWF files will be found.</span>
 soundManager.useConsole = true;   <span>  // use firebug/safari console.log()-type debug console if available</span>
 soundManager.useMovieStar = false; <span> // enable <em>experimental</em> support for <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+ MPEG4 audio + video</a></span>
-soundManager.useHighPerformance = true; <span>// position flash hidden on-screen for fast JS/flash callback speed</span>
+soundManager.useHighPerformance = true; <span>// position:fixed flash movie for faster JS/flash callbacks</span>
 soundmanager.waitForWindowLoad = false; <span>// force SM2 to wait for window.onload() before calling soundManager.onload()</span>
 </span></code></pre>
 
@@ -191,9 +191,10 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			
 			<div class="f-block f-flashversion">
 
-		    <p>New Flash 9-only features (<b>alpha</b>):</p>
+		    <p>New Flash 9-only features:</p>
 
 		    <ul>
+		     <li class="in">MPEG-4 (HE-AAC/H.264) video and audio support</li>
 		     <li class="in">True "multi-shot" sound behaviour. <code>play()</code> can be called multiple times, giving a layered, "chorus" effect. Sound will also fire <code>onfinish()</code> multiple times. (Previous behaviour did not layer sounds, but would re-play a single instance.)</li>
 		     <li class="in"><code>waveformData</code> array: 256 waveform data values available while playing sound</li>
 		     <li class="in"><code>eqData</code> array: 256 EQ spectrum data values available while playing sound</li>
@@ -201,17 +202,13 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		    </ul>
 		
 		    </div>
-
-<!--
-		  </div>
--->
 		
 		  <div class="f-block f-usehighperformance">
 			<h4 id="soundmanager-highperformance" title="Recently-added feature" class="new">SoundManager "High Performance" Property</h4>
-			<p>Perhaps intuitively, Flash is given higher priority when positioned within the viewable area of the browser, at least 6px in height (oddly), fully-opaque, visible and displayed on the screen. By default, <code class="in">soundManager.useHighPerformance</code> is enabled and should noticeably reduce JS/flash lag, and also increase the frequency of callbacks such as <code class="in">whileplaying</code>. This has made a huge impact in performance particularly on Mac OS X, and Safari on Windows; animation lag is practically non-existent (see <a href="../demo/animation-2b/" title="SoundManager JS + DOM + sound demo 2b" style="display:inline" onclick="checkDomain(this)">demo</a>). Internet Explorer performance is being looked into.</p>
-			<p>
-		     <code class="in">soundManager.useHighPerformance = true;</code>
-		    </p>
+			<p>Perhaps intuitively, Flash is given higher priority when positioned within the viewable area of the browser, at least 6px in height (oddly), fully-opaque, visible and displayed on the screen. By default, <code class="in">soundManager.useHighPerformance</code> is enabled and should noticeably reduce JS/flash lag and increase the frequency of callbacks such as <code class="in">whileplaying()</code> in some circumstances.</p>
+			<p><code class="in">soundManager.useHighPerformance = true;</code></p>
+			<p>This has made a noticeable impact in responsiveness on Mac OS X, and Safari on Windows; animation lag is practically non-existent (see <a href="../demo/animation-2b/" title="SoundManager JS + DOM + sound demo 2b" style="display:inline" onclick="checkDomain(this)">demo</a>). Firefox on Windows is excluded from this feature by default, as some bugs have been reported related to positioning of the flash movie somehow preventing Flash/JS interaction (and thus, SM2 fails.)</p>
+                        <p>To force high performance to be applied for all browser/OS combos, set <code class="in">soundManager.useHighPerformance = 'always';</code> Regression testing in Firefox on Windows is recommended if you choose to do this.</p>
 			<p>To be least-obtrusive, SM2 attempts to set position:fixed, and uses bottom/left:0px to stay within view (though using wmode=transparent where possible, to be hidden from view.) It occupies an 8x8px square. If you wish to position the movie yourself or show it inline, perhaps for playing video, have a DIV element with the ID of <code class="in">sm2-container</code> present in the DOM for SM2 to reference and it will write the movie there without positioning.</p>
 		  </div>
 		
@@ -272,7 +269,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   </dl>
 
 				  <dl class="f-block f-createvideo">
-				   <dt class="flash9"><span>object:SMSound </span>createVideo(<span>object:options</span>)</dt>
+				   <dt class="flash9" title="Requires Flash 9.0r115+"><span>object:SMSound </span>createVideo(<span>object:options</span>)</dt>
 				   <dd title="object:options">Creates a video with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance which supports video.</dd>
 				   <dd>Functionally identical to <code class="in">createSound()</code>, only with video parameters enabled. Flash 9.0r115+ required, SM2 "movieStar" mode and useVideo parameters must be enabled.</dd>
 				   <dd>Example:
@@ -296,7 +293,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   </dl>
 
 	   <dl class="f-block f-destroyvideo">
-	   <dt class="flash9 new">destroyVideo(<span>id:string</span>)</dt>
+	   <dt class="flash9" title="Requires Flash 9.0r115+">destroyVideo(<span>id:string</span>)</dt>
 	   <dd title="id:string">Stops, unloads and destroys a video specified by ID.</dd>
 	   <dd>Example: <code>soundManager.destroyVideo('<span>myVideo</span>');</code></dd>
 	   </dl>
@@ -324,7 +321,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   </dl>
 
 	   <dl class="f-block f-pauseall">
-	   <dt class="new">pauseAll()</dt>
+	   <dt>pauseAll()</dt>
 	   <dd>Pauses all sounds whose playState is &gt;0. Affects <span>paused</span> property (boolean.)</dd>
 	   <dd>Example: <code>soundManager.pause();</code></dd>
 	   </dl>
@@ -336,7 +333,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   </dl>
 
 	   <dl class="f-block f-resumeall">
-	   <dt class="new">resumeAll()</dt>
+	   <dt>resumeAll()</dt>
 	   <dd title="soundID:string">Resumes all currently-paused sounds.</dd>
 	   <dd>Example: <code>soundManager.resumeAll();</code></dd>
 	   </dl>
@@ -401,9 +398,15 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	-->
 
 	   <dl class="f-block f-getsoundbyid">
-	   <dt>getSoundById(<span>id:string</span>)</dt>
-	   <dd title="id:string">Returns an <code>SMSound</code> object specified by ID.</dd>
+	   <dt><span>object:SMSound </span>getSoundById(<span>id:string</span>)</dt>
+	   <dd title="id:string">Returns an <code>SMSound</code> object specified by ID, or null if there is a problem.</dd>
 	   <dd>Example: <code>var mySMSound = soundManager.getSoundById('<span>mySound</span>');</code></dd>
+	   </dl>
+	
+	   <dl class="f-block f-getmemoryuse" title="Flash 9+ required, recently added">
+		<dt class="flash9" title="Requires Flash 9.0+"><span>number:bytesUsed </span>getMemoryUse()</dt>
+		<dd>Returns the total number of bytes allocated to the Adobe Flash player or Adobe AIR, or 0 if unsupported (Flash 9+ only.) This number may include memory use across all tabs, browsers etc. See <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/System.html#totalMemory" title="System.totalMemory property documentation">system.totalMemory</a> (livedocs.adobe.com)</dd>
+		<dd>Example: <code>var mbUsed = (soundManager.getMemoryUse()/1024/1024).toFixed(2); <span><span>// eg. 12.05 MB</span></span></code></dd>
 	   </dl>
 
 	   <dl class="f-block f-loadfromxml">
@@ -889,18 +892,15 @@ for (prop in this.id3) {
   position: null,       <span>// offset (milliseconds) to seek to within downloaded sound.</span>
   pan: 0,               <span>// "pan" settings, left-to-right, -100 to 100</span>
   stream: true,         <span>// allows playing before entire file has loaded (recommended)</span>
-  usePeakData: false,   <span>// Flash 9+: enable left/right channel peak (level) data</span>
-  useWaveformData:false,<span>// Flash 9+: enable waveform data. Warning: CPU-intensive.</span>
-  useEQData: false,     <span>// Flash 9+: enable EQ spectrum data. Warning: CPU-intensive.</span>
   volume: 100,          <span>// self-explanatory. 0-100, the latter being the max.</span>
   whileloading: null,   <span>// callback function for updating progress (X of Y bytes received)</span>
   whileplaying: null,   <span>// callback during play (position update)</span>
-  <span>// merged soundManager.flash9Options</span>
+  <span>// *** merged soundManager.flash9Options, as applicable ***</span>
   isMovieStar: null,    <span>// "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
   usePeakData: false,   <span>// enable left/right channel peak (level) data</span>
   useWaveformData:false,<span>// enable sound spectrum (raw waveform data) - WARNING: May set CPUs on fire.</span>
   useEQData: false,     <span>// enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.</span>
-  <span>// merged soundManager.movieStarOptions</span>
+  <span>// *** merged soundManager.movieStarOptions, as applicable ***</span>
   onmetadata: null,     <span>// callback for when video width/height etc. are received</span>
   useVideo: false       <span>// if loading movieStar content, whether to show video</span>
 </span>}
@@ -922,7 +922,7 @@ for (prop in this.id3) {
 					
 					  <div class="f-block f-defaultoptions f-flash9options f-moviestaroptions s-ismoviestar s-usepeakdata s-usewaveformdata s-useeqdata s-usevideo">
 
-					  <h3 id="sound-properties-flash9" title="Flash 9-only" class="new flash9">Sound Properties Object: Version-specific Options (Merging)</h3>
+					  <h3 id="sound-properties-flash9" title="Flash 9-only" class="flash9">Sound Properties Object: Version-specific Options (Merging)</h3>
 
 					  <p>Some sound properties object items (eg. <code class="in">usePeakData</code>) are flash version-specific, non-default and are intentionally separated from <code class="in">soundManager.defaultOptions</code>. Flash 9-specific options fall under this category.</p>
 
@@ -942,7 +942,7 @@ soundManager.movieStarOptions = {<span>
 // soundManager.flash9Options.isMovieStar -&gt; soundManager.defaultOptions.isMovieStar, etc.</span></span>
 </code></pre>
 
-					  <h4 id="when-to-modify-version-specific" class="new flash9">defaultOptions.peakData vs. flash9Options.usePeakData</h4>
+					  <h4 id="when-to-modify-version-specific" class="flash9" title="Flash 9+ only">defaultOptions.peakData vs. flash9Options.usePeakData</h4>
 
 					  <p>Note that <code class="in">soundManager.defaultOptions.peakData</code> will be undefined until SoundManager 2 has self-initialized, at which point it determines the flash version to use and creates the .SWF, etc. Only then will defaultOptions be populated with optional option parameters, if applicable.</p>
 
@@ -978,7 +978,8 @@ soundManager.movieStarOptions = {<span>
 <pre class="code"><code>soundManager.features = {<span>
   peakData: <span>[boolean]</span>,
   waveformData: <span>[boolean]</span>,
-  eqData: <span>[boolean]</span>
+  eqData: <span>[boolean]</span>,
+  movieStar: <span>[boolean]</span>
 </span>}</code></pre>
 
 				  <p class="in">Example (checking for <code>peakData</code> support):</p>
@@ -1147,17 +1148,17 @@ soundManager.movieStarOptions = {<span>
 	 <li>consoleOnly</li>
 	 <li>debugMode</li>
 	 <li>defaultOptions</li>
-	 <li class="flash9 new" title="Flash 9-only, recently-added feature">flash9Options</li>
+	 <li class="flash9" title="Flash 9-only">flash9Options</li>
 
      <li>features</li>
      <li>flashVersion</li>
-     <li class="flash9 new" title="Flash 9.0r115+ only, recently-added feature">movieStarOptions</li>
+     <li class="flash9" title="Flash 9.0r115+ only">movieStarOptions</li>
 	 <li>nullURL</li>
 	 <li>url</li>
 
 	 <li>useConsole</li>
 	 <li class="new" title="Recently-added feature">useHighPerformance</li>
-     <li class="new" title="Flash 9+, recently-added featurere">useMovieStar</li>
+     <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
 	 <li>waitForWindowLoad</li>
 	</ul>
 
@@ -1166,19 +1167,20 @@ soundManager.movieStarOptions = {<span>
     <ul>
      <li>canPlayURL()</li>
      <li>createSound()</li>
-	 <li class="new flash9" title="Flash 9.0.r115+ only, recently-added feature">createVideo()</li>
+	 <li class="flash9" title="Flash 9.0.r115+ only">createVideo()</li>
      <li>destroySound()</li>
-	 <li class="new flash9" title="Flash 9.0.r115+ only, recently-added feature">destroyVideo()</li>
+	 <li class="flash9" title="Flash 9.0.r115+ only">destroyVideo()</li>
 
+	 <li class="new flash9" title="Flash 9.0+ only, new feature">getMemoryUse()</li>
      <li>getSoundById()</li>
      <li>loadFromXML()</li>
      <li>mute()</li>
      <li>pause()</li>
-     <li title="Recently-added feature" class="new">pauseAll()</li>
+     <li>pauseAll()</li>
      <li>play()</li>
      <li>resume()</li>
 
-  	 <li title="Recently-added feature" class="new">resumeAll()</li>
+  	 <li>resumeAll()</li>
      <li>setPan()</li>
      <li>setPosition()</li>
      <li>setVolume()</li>
@@ -1222,8 +1224,8 @@ soundManager.movieStarOptions = {<span>
      <li>pan</li>
 
      <li>volume</li>
-     <li title="Flash 9.0r115+ only, recently-added feature" class="new">isMovieStar</li>
-     <li title="Flash 9.0r115+ only, recently-added feature" class="new">useVideo</li>
+     <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
+     <li title="Flash 9.0r115+ only" class="flash9">useVideo</li>
     </ul>
 
     <h4>Dynamic Properties</h4>

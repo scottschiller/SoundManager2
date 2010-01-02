@@ -76,6 +76,7 @@ pagePlayer.events.metadata = function() {
 
 
 // demo only..
+
 var is_shiny = false;
 function setTheme(sTheme) {
   var o = pagePlayer.getElementsByClassName('playlist','ul');
@@ -96,6 +97,15 @@ function setShiny(bShiny) {
 	}
   }
 }
+
+function checkRAM() {
+  if (soundManager.supported()) {
+    document.getElementById('flash-ram-use').innerHTML = (soundManager.getMemoryUse()/1024/1024).toFixed(2)+' MB';
+  }
+}
+
+var t = window.setInterval(checkRAM,500);
+
 </script>
 </head>
 
@@ -188,6 +198,8 @@ function setShiny(bShiny) {
 <p>See the <a href="basic.html" title="Basic javascript video player">basic example</a> which has a simple template, and code which enables MovieStar mode (ie., video ability) in SoundManager 2.</p>
 
 <p style="margin-top:2em;font-size:0.9em;color:#333">If you want to also smash christmas lights as in the video, check out <a href="http://www.schillmania.com/?theme=2007&christmas=1" title="Break christmas lights with javascript sound!">Christmas Light Smashfest 2007</a> with a modern browser for best effect.</p>
+
+<span id="flash-ram-use" title="Flash plugin RAM use (across this browser)" style="position:fixed;_position:absolute;bottom:0.5em;right:0.5em;background:#666;color:#fff;font-weight:bold;padding:0.3em 0.4em;cursor:pointer;cursor:hand" onclick="this.style.display='none'"></span>
 
 </div>
 

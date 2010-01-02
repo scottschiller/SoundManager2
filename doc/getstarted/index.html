@@ -10,6 +10,7 @@
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
 <meta name="language" content="en-us" />
 <link rel="stylesheet" type="text/css" media="screen" href="../../demo/index.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="../../troubleshoot/debug.css" />
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
@@ -18,6 +19,7 @@
 	soundManager.onload = function() {
 	}
 </script>
+<script type="text/javascript" src="../../troubleshoot/debug.js"></script>
 </head>
 
 <body>
@@ -241,6 +243,90 @@ soundManager.onerror = function() {
 			</div>
 			
 			<div class="c2">
+
+				<h3>SoundManager 2 Start-up and Debug Tools</h3>
+				<p>This troubleshooting tool can come in handy for debugging SM2 start-up problems.</p>
+
+				<div id="sm2-test">
+				 <ul class="items">
+
+				  <li id="d-onload" class="default">
+				   <h3><span class="yay">OK</span><span class="boo">FAIL</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>SoundManager 2 start-up</span></h3>
+				   <div id="sm2-startup" class="details">
+				    <p>soundManager.onload() or soundManager.onerror() is ultimately called when start-up completes.</p>
+				    <p>If you're seeing a failure, refer to the below for troubleshooting details for common causes.</p>
+				   </div>
+				  </li>
+
+				  <li id="d-hasflash" class="default">
+				   <h3><span class="yay">OK</span><span class="boo">Error</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>Flash</span></h3>
+				   <div class="details">
+				    <p>The Flash 8 plugin is a minimal requirement for SoundManager 2, but the exact requirement varies based on soundManager.flashVersion. You are currently using <b id="d-flashversion">[unknown]</b>.</p>
+				   </div>
+				  </li>
+
+				  <li id="d-swf" class="default">
+				   <h3><span class="yay">OK</span><span class="boo">Error</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>Flash SWF</span></h3>
+				   <div class="details">
+				    <p>SoundManager 2 must load a flash movie before initialisation can proceed. If you have errors here, check that soundManager.url is correctly defined and that the URL being loaded is correct.</p>
+				   <p>If the Flash movie URL is OK, Flash security is the likely cause. Check the section below.</p>
+				   </div>
+				  </li>
+
+				  <li id="d-flashtojs" class="default">
+				   <h3><span class="yay">OK</span><span class="boo">Error</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>Flash -&gt; JS</span></h3>
+				   <div class="details">
+				    <p>Once the flash component of SM2 has loaded, it tries to make a call to Javascript-land. This is a common point of failure, for security reasons:</p>
+				    <ul>
+				     <li>Offline viewing (file:// or c:\path\): Flash security "whitelisting" is required to allow Flash + JS to work.</li>
+				     <li style="margin-top:0.5em">Online viewing (HTTP/S): Same-domain security rules apply to HTML + Flash content by default (crossdomain.xml/allowDomain() in .AS source required to override.)</li>
+				    </ul>
+
+				    <div id="d-flashtojs-offline">
+				     <h4>Offline viewing: Adding a "trusted location" to the Flash Security Settings Panel</h4>
+				     <p>The Flash Player Global Security Settings Panel is a web-based control panel which allows you to configure Flash security. You will need to add the path of the SoundManager 2 project in order for it to work "offline" (ie., when viewing via file:// or c:/)</p>
+				     <p id="ss"><a href="#screenshots" onclick="document.getElementById('ss-box').style.display = 'block';document.getElementById('ss').style.display='none';return false">Illustrated guide</a>: Adding a "trusted location"</p>
+				     <div id="ss-box" style="display:none">
+					  <h4>Illustrated guide: Adding a "trusted location" in Flash</h4>
+				      <p>Below: Adding a location, and selecting "Browse for folder" (or directory), to whitelist the SoundManager 2 project directory for offline viewing.</p>
+				      <p><img src="../../troubleshoot/fpgss-add-location.png" alt="Adding a location: Browse for the file or directory to whitelist" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
+				      <p><img src="../../troubleshoot/fpgss-added-location.png" alt="Whitelisted location has now been added, JS + Flash will work under this path" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
+				     </div>
+				     <p><a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html" target="_blank" class="feature">Launch the Flash Security Settings Panel</a></p>
+				    </div>
+
+				    <div id="d-flashtojs-online">
+					 <h4>Online viewing: Cross-domain security restrictions</h4>
+				     <p>HTML page on domain A loading .SWF from domain B: Flash security prevents JS + Flash when cross-domain XML file is not available, and/or flash movie was not compiled with allowDomain('domainA') or allowDomain('*') - note that the SWF distributed with SM2 does not use this, you must recompile your own.)</p>
+				    </div>
+
+				   </div>
+				  </li>
+
+				  <li id="d-jstoflash" class="default">
+				   <h3><span class="yay">OK</span><span class="boo">Error</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>JS -&gt; Flash</span></h3>
+				   <div class="details">
+				    <p>At this point, Javascript attempts to respond to Flash's initial outgoing Flash -&gt; JS call, completing the test for JS/flash communication. If SM2 does not receive a response from flash, it will eventually fail.</p>
+				    <p>Offline viewing conditions and cross-domain security rules will prevent Flash &lt;-&gt; JS communication. See the details of Flash -&gt; JS for information.</p>
+				   </div>   
+				  </li>
+
+				  <li id="d-soundtest" class="default">
+				   <h3><span class="yay">OK</span><span class="boo">Error</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>Sound test</span></h3>
+				   <div class="details">
+				    <p>Here, a simple createSound() call is made to test SM2's actual operation. A sound should load and play provided SM2 was able to start successfully.</p>
+				   </div>
+				  </li>
+
+				 </ul>
+				</div>
+				
+				<p>Flash detection code from <a href="http://www.featureblend.com/javascript-flash-detection-library.html" title="Javascript flash detection library">Flash Detect</a> (featureblend.com)</p>
+				
+				<h3>Standalone version of troubleshooting tool</h3>
+				<p class="in">For debugging your development/production environment with this widget, see the <a href="../../troubleshoot/" title="SoundManager 2: Standalone debug widget">troubleshooting</a> subdirectory of the SoundManager 2 package.</p>
+
+
 				<h3>Live Debug Output</h3>
 				<p>SoundManager 2 relies on Javascript and Flash communicating via ExternalInterface, and this is subject to a number of timing, loading and browser security conditions. Because of this complexity, debug information is essential for troubleshooting start-up, loading, initialization and error conditions between Flash and Javascript.</p>
 				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to javascript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
@@ -283,6 +369,7 @@ soundManager.onerror = function() {
 
 <script type="text/javascript">
 init();
+sm2DebugInit();
 </script>
 	
 </body>

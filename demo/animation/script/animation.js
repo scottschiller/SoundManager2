@@ -179,6 +179,7 @@ window.onresize = getWindowCoords;
 
 soundManager.flashVersion = 9;
 soundManager.url = '../../swf/';
+soundManager.useHighPerformance = 'always';
 soundManager.debugMode = false; // disable debug mode
 soundManager.defaultOptions.multiShot = true;
 

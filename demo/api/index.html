@@ -428,8 +428,8 @@ var s = soundManager.createSound({
 s.play();</pre>
 <button onclick="eval(document.getElementById('demo10').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
 
-
 <h2>Demo 11: Inline whileplaying() event assignment</h2>
+<p class="in">Note that when using the Flash 9 version of SM2 with Flash 9 and 10 plugins, flash/OS-related delay conditions may result in the <code>position</code> property being less than the <code>duration</code> property, even by the end of the sound.</p>
 <pre id="demo11">
 var foo = soundManager.createSound({
   id: 'bar',
@@ -446,7 +446,6 @@ foo.options.onfinish = function() { soundManager._writeDebug(this.sID+' stopped.
 
 </pre>
 <button onclick="eval(document.getElementById('demo11').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
-
 
 <h2>Demo 12: 48 KHz MP3 sampling rate playback issue workaround</h2>
 <p>To work around a known "chipmunk" <a href="http://bugs.adobe.com/jira/browse/FP-862">sampling rate issue with 48 KHz MP3s</a> in Flash, one can apparently load a sound using Flash 9 with stream = false, and then call play() once the sound has fully-loaded. Exactly why this works is not known.</p>
@@ -472,6 +471,59 @@ if (!fortyeight.loaded) {
 </pre>
 <button onclick="eval(document.getElementById('demo12').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
 
+<h2>Demo 13: onbeforefinish() testcase</h2>
+<p class="in">This event fires when the sound's position property is equal to or less than <code>onbeforefinishtime</code> msec from the end of the sound, as defined by <code>duration</code>. If unspecified, a default value is used (eg. 5000 msec.)</p>
+<pre id="demo13">
+var d13 = soundManager.createSound({
+  id: 'demo13',
+  url: '../mpc/audio/CRASH_1.mp3',
+  onbeforefinish: function() {
+    alert(this.sID+'.onbeforefinish(): '+this.position+' of '+this.duration);
+  },
+  onbeforefinishtime: 1000
+});
+d13.play();
+</pre>
+<button onclick="eval(document.getElementById('demo13').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+
+<h2>Demo 14</h2>
+<p>Bug testcase (Flash 8 version-specific): creating a sound with autoLoad:true and immediately calling play() does not work.</p>
+<pre id="demo14">
+ var autoLoadTest = soundManager.createSound({
+   id: 'autoLoadTest',
+   url: 'http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3?rnd=' + parseInt(Math.random()*1048576),
+   onload: function() {
+	soundManager._writeDebug(this.sID+' loaded.');
+   },
+   onplay: function() {
+     soundManager._writeDebug('Starting sound: '+this.sID);
+   },
+   autoPlay: false,
+   autoLoad: true,
+   stream: true
+  });
+  // autoLoadTest.play(); // sound will not start
+  setTimeout(autoLoadTest.play,1000); // may work with a delay?
+</pre>
+<p>Under Flash 8, this case does not work as expected. Even with the delay, the sound does not begin playing as soon as expected - sometimes it fires after the sound loads, in fact. For this reason, avoid using <code class="in">autoLoad:true</code> if you intend to play the sound shortly after creating it when using Flash 8.</p>
+<button onclick="eval(document.getElementById('demo14').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+
+<h2>Demo 15</h2>
+<p>Bug testcase (Flash 8 version-specific): onfinish() does not fire with autoPlay:true</p>
+<pre id="demo15">
+var sound = soundManager.createSound({
+ id: 'demo15',
+ url: '../mpc/audio/AMB_SN13.mp3',
+ onfinish: function() {
+  alert(this.sID+' finished (now destroying)');
+  // destroy this sound
+  this.destruct();
+ },
+ autoPlay: true,
+ multiShot: false
+});
+</pre>
+<button onclick="eval(document.getElementById('demo15').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
 
 </div>
 

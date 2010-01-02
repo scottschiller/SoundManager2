@@ -40,6 +40,7 @@ var PP_CONFIG = {
 	  var o = $('sm2-support');
 	  o.innerHTML = smLoadFailWarning;
 	  o.style.display = 'block';
+          $('demo-header').innerHTML = '';
 	  $('demos').style.display = 'none';
 	}
 	
@@ -158,9 +159,13 @@ var PP_CONFIG = {
 	 <div class="c2">
 		
 		<h3>About SoundManager 2, Features and Live Demos</h3>
-			
+		
+		<img src="demo/_image/speaker.png" alt="speaker icon" style="float:left;display:inline;width:68px;height:68px;margin:1em 1em 0px 0px" />
+
+		<h2 style="margin-top:0.33em">SoundManager 2 makes it easier to play sounds using Javascript.</h2>
+		
 		<div id="demo-box">
-			<p style="color:#333;background:#f9f9f9;border:1px solid #e6e6e6;border-bottom:0px;margin-bottom:0px;padding:0.5em"><strong>Live SoundManager 2 demos, shiny!</strong></p>
+			<p id="demo-header" style="color:#333;background:#f9f9f9;border:1px solid #e6e6e6;border-bottom:0px;margin-bottom:0px;padding:0.5em"><strong style="font-size:1.1em;font-weight:bold">Javascript Audio/Video API Demo</strong></p>
                         <div id="sm2-support" class="demo-block"></div>
 			<div id="demos">
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Playable MP3 links<span class="l"></span><span class="r"></span></h3>
@@ -190,11 +195,6 @@ var PP_CONFIG = {
 			</div>
 		</div>
 		
-		<img src="demo/_image/speaker.png" alt="speaker icon" style="float:left;display:inline;width:68px;height:68px;margin:1em 1em 0px 0px" />
-
-		<h4>Javascript Sound For The Web</h4>
-		
-		<p style="margin-top:0px;margin-bottom:0px"><em><em>SoundManager 2 makes it easier to play sounds using Javascript.</em></em></p>
 		<p style="margin-top:0.5em">By wrapping and extending Flash 8's sound API, SoundManager 2 brings solid audio functionality to Javascript. <a href="doc/getstarted/#intro" class="cta">How it works <span>&raquo;</span></a></p>
 			<h4 style="margin-top:1.5em">Features At A Glance</h4>
 			<ul class="standard">

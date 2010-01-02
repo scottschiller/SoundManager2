@@ -127,7 +127,7 @@ var utils = new Utils();
 
 var lastSelected = null;
 
-var smLoadFailWarning = '<p class="error"><strong>Warning: SoundManager failed to load/initialize.</strong> If viewing offline, Flash security is probably the culprit and you will need to <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">add this location (folder) to Flash\'s "trusted" locations</a> (or, view this page over HTTP.)<br><br>Other possibilities are a missing .SWF or lack of Flash/support. Refer to <a href="doc/getstarted/index.html#troubleshooting">troubleshooting</a> for more information.</p>';
+var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.75em"><h3>Oh snap!</h3><p>SoundManager 2 was unable to start.<p>Don\'t worry though, there are a few common causes and guided help is provided via the troubleshooting tool.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature">Troubleshooting</a></p></div>';
 
 function resetFilter(o) {
   // reset everything

@@ -1,0 +1,103 @@
+/* SM2 troubleshooting CSS */
+
+#sm2-test {
+ position:relative;
+ background:#f6f6f6;
+ border:1px solid #eee;
+ padding:3px;
+}
+
+#sm2-test,
+#sm2-test ul.items {
+ -moz-border-radius:3px;
+ -khtml-border-radius:3px;
+ -webkit-border-radius:3px;
+}
+
+#sm2-test ul.items {
+ position:relative;
+ background:#fff;
+ list-style-type:none;
+ margin:0px;
+ padding:0px;
+ border:1px solid #ccc;
+}
+
+#sm2-test ul.items li {
+ position:relative;
+ margin-left:0.5em;
+ padding-left:0.5em;
+ margin-right:0.5em;
+ padding-right:0.5em;
+}
+
+#sm2-test ul.items li h3 {
+ border-bottom:1px solid #ccc;
+}
+
+#sm2-test ul.items li:last-child h3 {
+ border-bottom:none;
+}
+
+#sm2-test ul.items li div.details {
+ border-bottom:1px solid #ccc;
+}
+
+#sm2-test ul.items li:hover div.details {
+ border-bottom:1px solid #ccc;
+}
+
+#sm2-test ul.items li.open:last-child h3,
+#sm2-test ul.items li.fail:last-child h3,
+#sm2-test ul.items li:last-child div.details:last-child {
+ border-bottom:1px solid #fff;
+}
+
+#sm2-test ul.items li div.details {
+ display:none; 
+}
+
+#sm2-test ul.items li.open div.details,
+#sm2-test ul.items li.unknown div.details,
+#sm2-test ul.items li.fail div.details {
+ display:block;
+}
+
+#sm2-test ul.items li span.yay,
+#sm2-test ul.items li span.boo,
+#sm2-test ul.items li span.default,
+#sm2-test ul.items li span.unknown {
+ display:none;
+}
+
+#sm2-test ul.items li span.yay,
+#sm2-test ul.items li.pass span.msg {
+ color:green;
+}
+
+#sm2-test ul.items li span.boo,
+#sm2-test ul.items li.fail span.msg {
+ color:red;
+}
+
+#sm2-test ul.items li span.default,
+#sm2-test ul.items li.default span.msg {
+ color:#ccc;
+}
+
+#sm2-test ul.items li span.unknown,
+#sm2-test ul.items li.unknown span.msg {
+ color:#666;
+}
+
+#sm2-test ul.items li.default span.msg {
+ display:none; /* hide messages in the event a reset occurs */
+}
+
+#sm2-test ul.items li.pass span.yay,
+#sm2-test ul.items li.fail span.boo,
+#sm2-test ul.items li.default span.default,
+#sm2-test ul.items li.unknown span.unknown {
+ float:right;
+ display:inline;
+}

@@ -7,18 +7,18 @@
    Code licensed under the BSD License:
    http://www.schillmania.com/projects/soundmanager2/license.txt
 
-   V2.90a.20081028
+   V2.93a.20090117
 
    Flash 9 / ActionScript 3 version
 */
 
 package {
 
+import flash.system.*;
+import flash.events.*;
 import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
-import flash.system.Security;
-import flash.events.*;
 import flash.media.Sound;
 import flash.media.SoundChannel;
 import flash.media.SoundMixer;
@@ -67,6 +67,7 @@ public class SoundManager2_AS3 extends Sprite {
     ExternalInterface.addCallback('_setPolling', _setPolling);
     ExternalInterface.addCallback('_externalInterfaceTest', _externalInterfaceTest);
     ExternalInterface.addCallback('_disableDebug', _disableDebug);
+    ExternalInterface.addCallback('_getMemoryUse', _getMemoryUse);
     ExternalInterface.addCallback('_loadFromXML', _loadFromXML);
     ExternalInterface.addCallback('_createSound', _createSound);
     ExternalInterface.addCallback('_destroySound', _destroySound);
@@ -712,6 +713,10 @@ try {
       // flash.utils.clearInterval(timer);
       timer.reset();
     }
+  }
+
+  public function _getMemoryUse():String {
+    return System.totalMemory.toString();
   }
 
   // XML handler stuff

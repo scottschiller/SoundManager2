@@ -6,8 +6,7 @@ body {
  -khtml-text-shadow:0 0 0 #fff; /* dumbass safari high contrast font rendering tweak */
 }
 
-#top,
-#top * {
+#top {
  -khtml-text-shadow:0 0 0 #000; /* dumbass safari high contrast font rendering tweak */
 }
 
@@ -234,6 +233,7 @@ h2 {
 
 .triple .columnar .c2 {
  margin-right:21.25em;
+ min-width:20em;
 }
 
 #doc .triple .columnar .c2 {
@@ -494,14 +494,10 @@ ul.standard ul {
  position:relative;
  background:#333;
  color:#fff;
- xpadding:0.25em 0.5em 0.25em 0.5em;
  margin:0px;
  padding:0px;
  height:2.1em;
  line-height:1.65em;
-/*
- margin-bottom:0.5em;
-*/
 }
 
 .c3 h2 {
@@ -511,6 +507,10 @@ ul.standard ul {
 
 .wedge {
  background-color:#3399cc;
+}
+
+.wedge-dark {
+ background:#333;
 }
 
 .wedge .l,
@@ -536,6 +536,7 @@ ul.standard ul {
 }
 
 .wedge .r,
+.wedge-dark .r,
 .c3 h2 .r {
  background:transparent url(../demo/_image/wedge.png) no-repeat -48px 0px;
  position:absolute;
@@ -558,10 +559,22 @@ ul.standard ul {
 .wedge .r {
  margin-top:-16px;
  border-top:none;
- xheight:1.15em;
  height:16px;
  border-bottom:1.7em solid #3399cc;
  background-position:0px -192px;
+}
+
+.wedge-dark .l,
+.wedge-dark .r {
+ border-color:#333;
+}
+
+.wedge-dark .l {
+ background-position:-64px 0px;
+}
+
+.wedge-dark .r {
+ background-position:0px -128px;
 }
 
 .c3 h2 .r.up {
@@ -1048,7 +1061,7 @@ ul.graphic li a.sm2_link {
 
 #sm2-support {
  display:none;
- font-size:x-small;
+ font-size:1em;
 }
 
 #demo-box {
@@ -1071,6 +1084,10 @@ ul.graphic li a.sm2_link {
  padding-top:0.5em;
  margin-top:-0.55em;
  border-top:none;
+}
+
+#revision-list > li {
+ margin-bottom:2em;
 }
 
 /* seasonal decorations */

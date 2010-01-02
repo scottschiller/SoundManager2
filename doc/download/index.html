@@ -129,9 +129,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.92a.20081224</p>
-				<p>Note: SWF assets have been moved to swf/ subdirectory starting with this version.</p>
-				<p><a href="../../download/soundmanagerv292a-20081224.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.92a.20081224</a></p>
+				<p>Current version: 2.93a.20090117</p>
+				<p>New start-up troubleshooting tool, <code class="in">soundManager.getMemoryUse()</code> and API bugfixes. See <a href="#history">revision history</a> for details.</p>
+				<p><a href="../../download/soundmanagerv293a-20090117.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.93a.20090117</a></p>
 			</div>
 			
 		</div>
@@ -149,12 +149,45 @@
 			  <div class="f-block c-revision-history">
 
 			  <h3 id="revision-history">Revision History</h3>
+			
+			  <p>A changelog of sorts.</p>
 
 			  <ul id="revision-list" class="standard">
 
 			   <li class="in">
-			    <h4><b>V2.92a.20081224 (current)</b></h4>
+			    <h3><b>V2.93a.20090117 (current)</b></h3>
 			    <p>The latest and greatest.</p>
+
+			    <ul class="double">
+
+			     <li class="in">
+			      <p class="compact">General Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New SoundManager 2 start-up debugger / troubleshooting tool, built into project home (see <a href="../getstarted/#troubleshooting" title="SM2 troubleshooting">troubleshooting</a>, and a standalone version - see "<a href="../../troubleshoot/" title="SoundManager 2 standalone troubleshooting tool" class="norewrite">troubleshoot/</a>" directory of download package)</li>
+				   <li>New soundManager.getMemoryUse() method (flash 9+.) Returns RAM use for flash plugin (appears to be browser-wide, possibly system-wide by design.) <a href="../../demo/video/" title="SM2 javascript video demo">Video demo</a> includes an example RAM use monitor.</li>
+				   <li>highPerformance disabled by default for Firefox on Windows due to reports of bugs preventing SM2 start-up in some cases. To override the disabling safety check, set <code class="in">soundManager.useHighPerformance = 'always';</code></li>
+				   <li>Updated API demo testcases (<a href="../../demo/api/">API Demo page</a>)</li>
+			      </ul>
+			     </li>
+				
+			     <li>
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li class="in">Fixed Flash 8 bug with <code class="in">autoLoad</code>/<code class="in">autoPlay</code> and <code class="in">playState</code> not being correctly set.</li>
+				   <li class="in">Fixed a bug with <code class="in">onfinish()</code> not firing when <code class="in">autoPlay</code> is used.</li>
+				   <li class="in">Fixed a bug with pan and volume defaults not being correctly inherited and handled</li>
+				   <li class="in">console[method]() now uses apply(), preventing possible Firebug 1.3-related scope issue where this != console</li>
+				   <li class="in">IE now appends (vs. destructive .innerHTML write) SWF movie to target element, appends DIV with className "sm2-object-box"</li>
+				  </ul>
+			     </li>
+
+			      </ul>
+			
+			   </li>
+
+
+			   <li class="in">
+			    <h3><b>V2.92a.20081224</b> (<a href="../../download/soundmanagerv292a-20081224.zip">Download archived version</a>)</h3>
 
 			    <ul class="double">
 
@@ -183,7 +216,7 @@
 
 				
 			   <li class="in">
-			    <h4><b>V2.91a.20081205</b> (<a href="../../download/soundmanagerv291a-20081205.zip">Download archived version</a>)</h4>
+			    <h3><b>V2.91a.20081205</b> (<a href="../../download/soundmanagerv291a-20081205.zip">Download archived version</a>)</h3>
 
 			    <ul class="double">
 
@@ -209,7 +242,7 @@
 			   </li>
 
 			   <li class="in">
-			    <h4><b>V2.90a.20081028 (Old documentation theme) - <a href="http://schillmania.com/projects/soundmanager2/download/soundmanagerv290a-20081028.zip">Download archived version</a></b></h4>
+			    <h3><b>V2.90a.20081028 (Old documentation theme) - <a href="http://schillmania.com/projects/soundmanager2/download/soundmanagerv290a-20081028.zip">Download archived version</a></b></h3>
 
 			    <ul class="double">
 			     <li class="in">
@@ -257,7 +290,7 @@
 			   <!-- not newest -->
 
 			   <li class="in">
-			    <h4><b>V2.80a.20081005</b></h4>
+			    <h3><b>V2.80a.20081005</b></h3>
 
 			    <ul class="double">
 			     <li class="in">
@@ -302,7 +335,7 @@
 			   </li>
 
 			   <li class="in">
-			    <h4><b>V2.78a.20080920</b></h4>
+			    <h3><b>V2.78a.20080920</b></h3>
 
 			    <ul class="double">
 			     <li class="in">
@@ -332,7 +365,7 @@
 			   </li>
 
 			   <li class="in">
-			    <h4><b>V2.78a.20080920</b></h4>
+			    <h3><b>V2.78a.20080920</b></h3>
 
 			    <ul class="double">
 			     <li class="in">
@@ -362,7 +395,7 @@
 			   </li>
 
 			   <li class="old">
-			    <h4><b>V2.77a.20080901</b></h4>
+			    <h3><b>V2.77a.20080901</b></h3>
 
 			    <ul class="double">
 
@@ -383,7 +416,7 @@
 			   </li>
 
 			   <li class="old">
-			    <h4><b>V2.76a.20080808</b></h4>
+			    <h3><b>V2.76a.20080808</b></h3>
 
 			    <ul class="double">
 
@@ -438,7 +471,7 @@
 			   </li>
 
 			   <li class="old">
-			    <h4><b>V2.75a.20080707</b></h4>
+			    <h3><b>V2.75a.20080707</b></h3>
 			    <ul class="nested">
 			     <li class="in">Flash 9 support! (soundmanager2_flash9.swf) - <code>multiShot</code> now actually works (layering/"chorus" effects on sounds), new <code>spectrumData</code> and <code>peakData</code> API features. All existing API features should have parity.</li>
 			     <li class="in">Added <code>soundManager.flashVersion</code> property. Flash 8 is the supplied default.</li>
@@ -458,7 +491,7 @@
 			   </li>
 
 			   <li class="old">
-			    <h4>V2.5b.20080525</h4>
+			    <h3>V2.5b.20080525</h3>
 			    <ul class="nested">
 			     <li class="in">Added <code>waitForWindowLoad</code> for delayed init</li>
 			     <li class="in">Added <code>onpause()</code> and <code>onresume()</code> event handlers</li>
@@ -468,7 +501,7 @@
 			   </li>
 
 			   <li class="old">
-			    <h4>V2.5b.20080505</h4>
+			    <h3>V2.5b.20080505</h3>
 			    <ul class="nested">
 			     <li class="in">To improve startup time, <code>soundManager.go()</code> (<code>createMovie()</code> alias) now fires at <code>document.onDOMContentLoaded()</code> by default if supported. (Otherwise, falls back to <code>window.onload()</code>.)</li>
 			     <li class="in">Improved initialisation routine - <code>soundManager.onerror()</code> is called when the Flash init "times out." Specifically, <code>onerror()</code> is called when Flash fails to make an ExternalInterface (Flash-&gt; JS) call to SM2 within 1 second of <code>window.onload()</code> firing.</li>
@@ -483,7 +516,7 @@
 
 			   <li class="old">
 
-			    <h4>V2.5b.20080501</h4>
+			    <h3>V2.5b.20080501</h3>
 			    <p class="compact"><b>Warning:</b> A little experimental too, read details below.</p>
 			    <p><em>Changelog</em>:</p>
 			    <ul class="nested">
@@ -499,7 +532,7 @@
 
 			   <li class="old">
 
-			    <h4>V2.2.20080420</h4>
+			    <h3>V2.2.20080420</h3>
 			    <p><em>Changelog</em>:</p>
 			    <ul class="nested">
 			     <li>More demos! "<a href="../demo/page-player/" title="Muxtape.com-style playable page of MP3 links">Page as a playlist</a>" (muxtape.com-style) example, "<a href="../demo/play-mp3-links/" title="Play MP3 links in a web page using SoundManager 2">Make MP3 links playable inline</a>" demo</li>
@@ -513,7 +546,7 @@
 
 			   <li class="old">
 
-			    <h4>V2.1.20080331</h4>
+			    <h3>V2.1.20080331</h3>
 			    <p><em>Changelog</em>:</p>
 			    <ul class="nested">
 			     <li class="in">Modified <code>createSound()</code> to return a sound object if successful (more logical)</li>
@@ -532,7 +565,7 @@
 
 			   <li class="old">
 
-			    <h4>V2.0b.20070415</h4>
+			    <h3>V2.0b.20070415</h3>
 			    <p><em>Changelog</em>:</p>
 			    <ul class="nested">
 			     <li class="in">Added <code>destroySound()</code> method</li>
@@ -546,7 +579,7 @@
 
 			   <li class="old">
 
-			    <h4>V2.0b.20070201</h4>
+			    <h3>V2.0b.20070201</h3>
 			    <p class="compact">Second beta?</p>
 			    <p><em>Changelog</em>:</p>
 			    <ul class="nested">
@@ -554,18 +587,18 @@
 			     <li>Added <code class="in">nullURL</code> parameter</li>
 			     <li>Updated documentation</li>
 			    </ul>
-			    <h4>V2.0b.20070123</h4>
-			    <h4>V2.0b.20070118</h4>
-			    <h4>V2.0b.20070115</h4>
+			    <h3>V2.0b.20070123</h3>
+			    <h3>V2.0b.20070118</h3>
+			    <h3>V2.0b.20070115</h3>
 			   </li>
 
 			   <li class="old">
-			    <h4>V2.0b.20070107</h4>
+			    <h3>V2.0b.20070107</h3>
 			    <p class="compact">First beta</p>
 			   </li>
 
 			   <li class="old">
-			    <h4>V2.0a.20060904</h4>
+			    <h3>V2.0a.20060904</h3>
 			    <p class="compact">Prerelease alpha</p>
 			   </li>
 
