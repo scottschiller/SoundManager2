@@ -13,7 +13,6 @@
 <link rel="stylesheet" href="template.css" />
 
 
-
 <!-- SM2 BAREBONES TEMPLATE: START -->
 
 <!-- include SM2 library -->
@@ -69,7 +68,7 @@ soundManager.onload = function() {
   <span>// SM2 has loaded - now you can create and play sounds!</span>
   <em><em>soundManager.createSound('helloWorld','/path/to/hello-world.mp3');
   soundManager.play('helloWorld');</em></em>
-</em></em>}
+};</em></em>
 
 <span style="background:#eee;padding:0.25em">// Option 2: More flexible createSound method (recommended)</span>
 
@@ -78,17 +77,33 @@ soundManager.onload = function() {
     id: 'aSound',
     url: '/path/to/an.mp3'
     <span>// onload: <span>[ event handler function object ],</span></span>
-    <span>// other options here,</span>
+    <span>// other options here..</span>
   });
   mySound.play();
 </em></em>}
+
+<span style="background:#eee;padding:0.25em">// Option 2b: More flexible onready + createSound methods (good for multiple use cases)</span>
+
+soundManager.onready(function(oStatus) {
+  <span>// check if SM2 successfully loaded..</span>
+  <em><em>if (oStatus.success) {</em></em>
+    <span>// SM2 has loaded - now you can create and play sounds!</span>
+    <em><em>var mySound = soundManager.createSound({
+      id: 'aSound',
+      url: '/path/to/an.mp3'
+      <span>// onload: <span>[ event handler function object ],</span></span>
+      <span>// other options here..</span>
+    });
+    mySound.play();
+  }</em></em>
+});</em></em>
 
 &lt;/script&gt;</pre></code>
 
  <h2>Making SM2 wait for window.onload()</h2>
  <p>If you prefer to have the library wait for window.onload() before calling soundManager.onload()/onerror() methods, you can modify SM2's "waitForWindowLoad" property:</p>
 <code>soundManager.waitForWindowLoad = true;</code>
- <h2>Disabling debug output</h2>
+ <h2 style="margin-top:1em">Disabling debug output</h2>
  <p>SoundManager 2 will write to a debug &lt;div&gt; element or a javascript console if available, by default. To disable it, simply set the relevant property to false:</p>
 <code>soundManager.debugMode = false;</code>
  <p>To see related configuration code, refer to the source of this page which basically does all of the above "for real."</p>

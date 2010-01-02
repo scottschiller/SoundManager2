@@ -28,6 +28,11 @@ ul.playlist li .comment {font-size:0.65em;opacity:0.5}
 
 -------- */
 
+// demo only..
+soundManager.useHighPerformance = true; // keep flash on screen, boost performance
+soundManager.useFastPolling = true; // increased JS callback frequency
+soundManager.url = '../../swf/';
+
 var PP_CONFIG = {
   flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
   usePeakData: true,     // [Flash 9 only] whether or not to show peak data (left/right channel values) - nor noticable on CPU
@@ -40,8 +45,6 @@ var PP_CONFIG = {
 </script>
 <script type="text/javascript" src="script/page-player.js"></script>
 <script type="text/javascript">
-// demo only..
-soundManager.useHighPerformance = true;
 var is_shiny = false;
 function setTheme(sTheme) {
   var o = pagePlayer.getElementsByClassName('playlist','ul');
@@ -69,7 +72,7 @@ function setShiny(bShiny) {
 
 <div id="left">
 
- <h1><a href="http://schillmania.com/projects/soundmanager2/" title="Play a page of mp3s with javascript via SoundManager 2">SoundManager 2</a> Demo: "Page as a playlist"</h1>
+ <h1><a href="http://www.schillmania.com/projects/soundmanager2/" title="Play a page of mp3s with javascript via SoundManager 2">SoundManager 2</a> / "Page as a playlist"</h1>
 
  <h2 style="margin-top:0px;border:none">Muxtape.com-style UI, MP3/AAC Player Example</h2>
  <p class="note">*CSS 3 border-radius supported only by Firefox 2.x+, Safari (2.x?) as of 04/2008 - perhaps IE 8 RTM..</p>
@@ -186,7 +189,7 @@ function setShiny(bShiny) {
 
  <h2>How It Works</h2>
 
- <p>This example uses <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to find links to MP3 files within an unordered list, and makes them playable "in-place" on a page. The script assigns CSS classes to links' parent LI nodes to indicate their state (playing/paused, etc.)</p>
+ <p>This example uses <a href="http://www.schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to find links to MP3 files within an unordered list, and makes them playable "in-place" on a page. The script assigns CSS classes to links' parent LI nodes to indicate their state (playing/paused, etc.)</p>
 
  <h3>Progressive Enhancement</h3>
 
@@ -351,7 +354,7 @@ function setShiny(bShiny) {
 </pre>
 </div>
 
-<p><a href="http://schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project home</a></p>
+<p><a href="http://www.schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project home</a></p>
 
 </div>
 

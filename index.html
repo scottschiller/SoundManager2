@@ -45,18 +45,12 @@ var PP_CONFIG = {
 	soundManager.debugMode = false;
 	soundManager.url = 'swf/';
 
-	soundManager.onload = function() {
-	setTimeout(function(){
 if (!navigator.userAgent.match(/msie 6/i)) {
-	  pagePlayer.initDOM();
-	  inlinePlayer = new InlinePlayer();
-	  threeSixtyPlayer = new ThreeSixtyPlayer();
-	  threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
-	  threeSixtyPlayer.init();
+	threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
 }
+	soundManager.onready(function() {
 	  doChristmasLights();
-	},1);
-	}
+	});
 
 	soundManager.onerror = function() {
 	  // failed to load
@@ -140,10 +134,8 @@ function doChristmasLights() {
 		<li><a href="demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="demo/mpc/">Drum Machine (MPC)</a></li>
-		<li><a href="demo/christmas-lights/">Christmas Lights</a></li>
-		<li><a href="demo/animation/">Animation 1</a></li>
-		<li><a href="demo/animation-2a/">Animation 2a</a></li>
-		<li><a href="demo/animation-2b/">Animation 2b</a></li>
+		<li><a href="demo/animation/">DOM/Animation Demos</a></li>
+		<li><a href="demo/flashblock/">FlashBlock Handling</a></li>
 		<li><a href="demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
@@ -191,7 +183,7 @@ function doChristmasLights() {
 		<li><a href="doc/resources/#licensing">Licensing</a></li>
 		<li><a href="doc/resources/#related">Related Projects</a></li>
 		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
-		<li><a href="http://schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
+		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
 
@@ -220,7 +212,7 @@ function doChristmasLights() {
 
 		<h2 class="special" style="margin-top:0.33em">SoundManager 2 makes it easier to play sounds using Javascript.</h2>
 		
-		<p style="margin-top:0.5em">By wrapping and extending Flash 8's sound API, SoundManager 2 brings solid audio functionality to Javascript. <a href="doc/getstarted/#intro" class="cta" style="white-space:nowrap">How it works <span>&raquo;</span></a></p>
+		<p style="margin-top:0.5em">By wrapping and extending the Flash sound API, SoundManager 2 brings solid audio functionality to Javascript. <a href="doc/getstarted/#intro" class="cta" style="white-space:nowrap">How it works <span>&raquo;</span></a></p>
 
 		<div class="clear">&nbsp;</div>
 	
@@ -237,11 +229,11 @@ function doChristmasLights() {
 				</ul>
 			</div>
 			
-			<h3 class="wedge" style="border-bottom:none;margin-top:0px">360&deg; Player UI <i style="font-size:0.9em;opacity:0.75">(experimental)</i><span class="l"></span><span class="r"></span><a href="demo/360-player/" title="360&deg; Player UI demo" class="cta-more">More &raquo;</a></h3>
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">360&deg; Player UI<span class="l"></span><span class="r"></span><a href="demo/360-player/" title="360&deg; Player UI demo" class="cta-more">More &raquo;</a></h3>
 			<div class="demo-block" style="overflow:hidden">
 			 <div style="margin-bottom:16px;margin-left:8px;margin-top:-4px">
-			  <div class="ui360" style="float:left;display:inline;margin-right:16px"><a href="http://www.freshly-ground.com/data/audio/binaural/Mak.mp3" title="Demo MP3" class="exclude inline-exclude">Random</a></div>
-			  <div class="ui360" style="position:absolute;left:50%"><a href="http://www.freshly-ground.com/data/audio/binaural/Rain%20on%20Car%20Roof.mp3" title="Demo MP3" class="exclude inline-exclude">Rain on Car</a></div>
+			  <div class="ui360" style="float:left;display:inline;margin-right:16px"><a href="http://freshly-ground.com/data/audio/binaural/Mak.mp3" title="Demo MP3" class="exclude inline-exclude">Random</a></div>
+			  <div class="ui360" style="position:absolute;left:50%"><a href="http://freshly-ground.com/data/audio/binaural/Rain%20on%20Car%20Roof.mp3" title="Demo MP3" class="exclude inline-exclude">Rain on Car</a></div>
 			  <div class="clear"></div>
 			 </div>
 			</div>
@@ -269,8 +261,8 @@ function doChristmasLights() {
 			<p class="tight compact">A few nifty sites that have implemented SoundManager 2 for driving audio:</p>
 			<p class="inthewild">
 			 <a href="http://muxtape.com/" title="Muxtape"><img src="demo/_image/muxtape-logo.png" alt="Muxtape logo" /></a>
-			 <a href="http://thecloudplayer.com/" title="Soundcloud / The Cloud Player"><img src="demo/_image/soundcloud-thecloudplayer-logo.png" alt="Soundcloud / The Cloud Player logo" /></a>
-			 <a id="favtape" href="http://favtape.com/" title="Favtape.com">Favtape.com</a>
+			 <a id="soundcloud" href="http://thecloudplayer.com/" title="Soundcloud / The Cloud Player"><span>SoundCloud / The Cloud Player</span></a>
+			 <a href="http://8tracks.com/" title="8tracks" style="background:#fff"><img src="demo/_image/8tracks-logo.png" alt="8tracks logo" /></a>
 			</p>
 			
 		</div>
@@ -284,10 +276,11 @@ function doChristmasLights() {
 
 			<h4>Shiny Flash 9 Features</h4>
 
-			<div style="float:right;display:inline;margin:-2em 1.5em 0px 0px;text-align:center;font-size:x-small;white-space:nowrap;padding:0px 0px 0px 1em">
-			 <a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization (experimental)" style="border:none;margin:0px;padding:0px"><img src="demo/_image/360ui-screenshot2.png" alt="" style="margin:0px;padding:0px;border:none" /></a>
-			 <div><a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization (experimental)">360&deg; UI + waveform/spectrum</a></div>
-			 <div><i>Experimental</i>, prototype demo</div>
+			<div style="float:right;display:inline;margin:-0.5em 1.5em 0px 0px;text-align:center;font-size:x-small;white-space:nowrap;padding:0px 0px 0px 1em">
+			 <a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization demo" style="border:none;margin:0px;padding:0px"><img id="demo-360" src="demo/_image/360ui-screenshot3.png" alt="" style="margin:0px;padding:0px;border:none" /></a>
+			 <div><a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization demo">360&deg; UI + waveform/spectrum</a></div>
+			 <div class="note" style="margin-top:0px">Beta-ish, somewhat experimental demo</div>
+			 <script type="text/javascript">document.getElementById('demo-360').src='demo/_image/360ui-screenshot'+(1+parseInt(Math.random()*3))+'.png';</script>
 			</div>
 
 

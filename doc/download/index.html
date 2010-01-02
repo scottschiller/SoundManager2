@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>SoundManager 2: Download</title>
-<meta name="description" content="Get the latest version of SoundManager 2." />
+<meta name="description" content="Get the latest version of SoundManager 2 (BSD licensed.)" />
 <meta name="keywords" content="download, javascript sound, javascript audio api" />
 <meta name="robots" content="all" />
 <meta name="author" content="Scott Schiller" />
@@ -46,10 +46,8 @@
 		<li><a href="../../demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="../../demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
-		<li><a href="../../demo/christmas-lights/">Christmas Lights</a></li>
-		<li><a href="../../demo/animation/">Animation 1</a></li>
-		<li><a href="../../demo/animation-2a/">Animation 2a</a></li>
-		<li><a href="../../demo/animation-2b/">Animation 2b</a></li>
+		<li><a href="../../demo/animation/">DOM/Animation Demos</a></li>
+		<li><a href="../../demo/flashblock/">FlashBlock Handling</a></li>
 		<li><a href="../../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
@@ -96,7 +94,7 @@
 		<li><a href="../resources/#licensing">Licensing</a></li>
 		<li><a href="../resources/#related">Related Projects</a></li>
 		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
-		<li><a href="http://schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
+		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
 
@@ -130,9 +128,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.95a.20090501</p>
-				<p><b>Lots of new goodies!</b> Nifty new "360&deg; UI" canvas + visualization demos, first shot at full-screen video (double-click movie for full-screen), <code>bufferTime</code> for MovieStar content buffering, <code>waveformData</code> now stereo, <code>ondataerror</code> for handling waveform/eq data exceptions, <code class="in">isBuffering</code> and <code>onbufferchange</code> for MovieStar content, Windows timeout issue fix and more. See <a href="#history">revision history</a> for details.</p>
-				<p><a href="../../download/soundmanagerv295a-20090501.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95a.20090501</a></p>
+				<p>Current version: 2.95a.20090717</p>
+				<p><b>New shiny!</b> <code>onready()</code> subscriber method for multiple onload/onerror handlers, <code>useFastPolling</code> for increased whileplaying()/related event callback frequency (higher framerates when drawing EQ/spectrum, etc.), <code>multiShotEvents</code> so onfinish() fires for each shot, new Flashblock demo and more. See <a href="#history">revision history</a> for details.</p>
+				<p><a href="../../download/soundmanagerv295a-20090717.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95a.20090717</a></p>
 			</div>
 			
 		</div>
@@ -156,8 +154,43 @@
 			  <ul id="revision-list" class="standard">
 				
 			   <li class="in">
-			    <h3><b>V2.95a.20090501 (current)</b></h3>
-			    <p>The latest and greatest.</p>
+			    <h3><b>V2.95a.20090717</b></h3>
+			    <p>New features: onready(), fast polling, flash blocking demos etc.</p>
+
+			    <ul class="double">
+
+			     <li class="in">
+			      <p class="compact">API Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New <code>soundManager.onready(myFunction[,scope])</code> method, for asynchronous queueing of <code>onload()</code>-style handlers. Fires when SM2 has finished initializing. Accepts an <i>optional</i> scope parameter to apply to handler; if none given, window object is used. A "status" object is passed to your handler (can be ignored) which includes a <code>success</code> boolean indicating whether SM2 loaded OK or not. Handlers added via onready() after successful initialisation will fire immediately.</li>
+				   <li>New <code>soundManager.oninitmovie()</code> event callback, single assignment similar to <code>onload()</code>. Fires when the flash movie has first been written to (or read from) the DOM. Used internally for a flashblock-handler-related example, custom timeout condition.</li>
+				   <li>New <code>soundManager.useFastPolling</code> property (false by default), enables 1 msec Flash 9+ timer for highest-possible <code>whileplaying()</code> and related JS callback frequency (default is 20 msec.) Use with <code>soundManager.useHighPerformance = true</code> for best performance, frame rates while updating the UI via whileplaying() etc.</li>
+				   <li>New sound option (soundManager.defaultOptions): <code>multiShotEvents</code> (default:false) - enable support for multiShot-style events (currently <code>onfinish()</code> only). Eg. When <code>mySound.play()</code> is called three times, <code>onfinish()</code> will subsequently fire three times.</li>
+			      </ul>
+			     </li>
+
+			     <li>
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li><code>createSound</code> now writes a warning to debug output if the sound ID is a number, or is a string starting with a numeric character. Because SMSound objects are stored in <code>soundManager.sounds[]</code>, while not syntactically invalid, numeric IDs will be treated as array indices and are likely to break things.</li>
+				  </ul>
+			     </li>
+
+			     <li>
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>New flashblock / "click to flash" demo, example of handling blocked conditions and graceful recovery when flash is initially blocked until user chooses to allow it.</li>
+				   <li>Cross-domain-scripting enabled SWF (using <code>allowDomain("*")</code>) included in swf/ directory (in its own .zip file.) Use when you must have domain A loading SM2 .SWF from domain B, or for testing etc and can't compile your own custom x-domain SWF from source.</li>
+				   <li>Documentation, layout and menu tweaks</li>
+				  </ul>
+			     </li>
+
+			    </ul>
+			   </li>
+				
+			   <li class="in">
+			    <h3><b>V2.95a.20090501</b> (<a href="../../download/soundmanagerv295a-20090501.zip">Download archived version</a>)</h3>
+			    <p>Lots of updates.</p>
 
 			    <ul class="double">
 
@@ -183,7 +216,7 @@
 			     <li>
 				  <p class="compact">Miscellaneous</p>
 				  <ul class="nested compact flat">
-				   <li>Shiny new "360&deg; UI" canvas + visualization demos (Warning: experimental prototype code, subject to change etc.)</li>
+				   <li>Shiny new "360&deg; UI" canvas + visualization demos (Warning: Beta-ish code.)</li>
 				   <li>Experimental SM2 exception/error handling + stack trace reporting added, an attempt to make custom errors thrown from SM2 more meaningful (ideally showing the user's call to SM2 where things went wrong in the stack.)</li>
 				   <li>Calling <code>soundObject.load()</code> after directly assigning a value to <code>soundObject.url</code> should now work as expected.</li>
 				   <li><code class="in">soundManager.useHighPerformance</code> update: Now false/disabled by default. Strange bug with JS/flash communication breaking with wmode=opaque on flash, specific (?) to Firefox on windows. SM2 does not normally set wmode. When <code class="in">useHighPerformance = true</code>, wmode=transparent will be used on the flash movie by default.</li>

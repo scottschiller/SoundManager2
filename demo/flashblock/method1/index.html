@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: Flash blocker handling examples</title>
+<meta name="description" content="Demo of SoundManager 2 handling flashblock / &quot;click to flash&quot; blockers gracefully" />
+<meta name="keywords" content="javascript sound, javascript audio, DHTML sound, flashblock, flash blocker, handling flashblock, click to flash" />
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<!-- design template, you don't need this -->
+<link rel="stylesheet" type="text/css" href="../../index.css" />
+<link rel="stylesheet" type="text/css" href="../../debug.css" />
+
+<!-- actual flashblock demo stuff, this is for you -->
+<link rel="stylesheet" type="text/css" href="flashblock.css" />
+<script type="text/javascript" src="../../../script/soundmanager2.js"></script>
+<script type="text/javascript" src="flashblock.js"></script>
+
+<script type="text/javascript">
+// custom demo options, not for your needs
+soundManager.debugMode = true;
+soundManager.url = '../../../swf/';
+
+// flash version URL switch (for this demo page)
+var winLoc = window.location.toString();
+if (winLoc.match(/flash9/i)) {
+  soundManager.flashVersion = 9;
+  if (winLoc.match(/highperformance/i)) {
+	soundManager.useHighPerformance = true;
+  }
+} else if (winLoc.match(/flash8/i)) {
+  soundManager.flashVersion = 8;
+}
+
+</script>
+</head>
+<body>
+
+<div style="margin:1em;max-width:60em;font-size:110%">
+	
+	<h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Flashblock / "click to flash" handling demos</h1>
+
+	<h3>Show SWF inline, wait indefinitely for load</h3>
+
+ <p class="note">You can run this demo with <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal mode) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance mode</a> (higher JS callback frequency).</p>
+
+	<p>Typically SM2 appends a DIV and hides the SWF off-screen. To handle the flash block case and keep the movie in a visible place, a DIV with the ID of "sm2-container" which SoundManager 2 first looks for when starting up is placed in the HTML. The movie is then appended to that element, and is not moved off-screen as it normally would be.</p>
+    <p>Additionally, soundManager.flashLoadTimeout is set to 0 in this case instead of the default of 1000 or so. Because of this, SM2 will never time out and will not fire an error (eg. soundManager.onerror()) where it previously would via time-out if the user doesn't have flash, or the SWF was missing, or other normal error cases. Instead, <code>soundManager.oninitmovie</code> is used to set a timeout which can then make the movie visible.</p>
+	<p>Note that flash blockers may not run when viewing offline (via <code>file://</code>) content, so try viewing this demo online.</p>
+
+	<p>CSS applied to <code>#sm2-container</code>, depending on state:</p>
+<pre class="block"><code>#sm2-container.swf-default {<span><span>/* Initial state: Hide off screen, or show somewhere obvious */</span></span>}
+#sm2-container.swf-timedout {<span><span>/* Didn't load before time-out, show to user: On-screen, red border, etc..? */</span></span>}
+#sm2-container.swf-loaded {<span><span>/* All good: things loaded (no blocker), or after unblock. Move off-screen. */</span></span>}</code></pre>
+	
+	<p>SoundManager 2 load status: <b id="sm2-status">Loading...</b></p>
+	
+	<p>View the source of this page for the details.</p>
+
+	<div id="sm2-container" class="swf-default">
+ 	  <!-- flash is appended here -->
+    </div>
+	
+</div>

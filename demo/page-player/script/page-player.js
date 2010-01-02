@@ -23,8 +23,6 @@ function PagePlayer(oConfigOverride) {
   var isOpera = navigator.userAgent.match(/opera/i);
   var isFirefox = navigator.userAgent.match(/firefox/i);
 
-  sm.url = '../../swf/'; // path to directory containing SM2 SWF
-
   this.config = {
     flashVersion: 8,        // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
     usePeakData: false,     // [Flash 9 only]: show peak data
@@ -1008,7 +1006,9 @@ var Metadata = function(oSound) {
 
 var pagePlayer = new PagePlayer(typeof PP_CONFIG != 'undefined'?PP_CONFIG:null);
 
-soundManager.onload = function() {
-  // soundManager.createSound() etc. may now be called
-  pagePlayer.initDOM();
-}
+soundManager.onready(function() {
+  if (soundManager.supported()) {
+    // soundManager.createSound() etc. may now be called
+    pagePlayer.initDOM();
+  }
+});

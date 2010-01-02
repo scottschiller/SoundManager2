@@ -2,45 +2,53 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<link rel="stylesheet" href="../template/template.css" media="screen" />
-<link rel="stylesheet" href="css/animation.css" media="screen" />
-<script type="text/javascript" src="../../script/soundmanager2-nodebug-jsmin.js"></script>
-<script type="text/javascript" src="script/animation.js"></script>
+<title>SoundManager 2: Animation + Sound Demos</title>
+<link rel="stylesheet" href="../index.css" media="screen" />
 </head>
 <body>
 
-<div style="margin-right:43em">
-	
-<h1>Interval-based animation (with sound)</h1>
+<div style="margin:1em">
 
-<p>
- Click + drag for fun.
-</p>
+<h1>Javascript Animation + Sound Demos using <a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a></h1>
 
-<h2>Speeding Up ExternalInterface: Keep .swf in view</h2>
+<ol>
+ <li><a href="../animation-1/">Interval-based animation (with sound)</a></li>
+ <li><a href="../christmas-lights/">Smashable Christmas Lights</a></li>
+ <li><a href="../animation-2a/">JS-DOM "painting" + Sound, V1</a></li>
+ <li><a href="../animation-2b/">JS-DOM "painting" + Sound, V2</a></li>
+</ol>
 
-<p>SoundManager 2 now incorporates a "high performance" mode, which has been shown to noticeably improve timing and frequency of flash callbacks. This is important for timing, reducing delay between a JS call and the sound being played, etc.</p>
+<p>External demo: <a href="http://www.schillmania.com/content/demos/yui-sm2/noisy-events/">A Noisy DOM</a> - part of a Yahoo! User Interface blog post, <a href="http://www.yuiblog.com/blog/2009/06/30/yui-soundmanager/">Enhancing YUI-based Apps with Audio</a>.</p>
 
-<p>To reduce audio delay and timing issues from slow JS/Flash communication, SM2 will try to ensure that the flash movie is visible on screen at all times. If hidden or otherwise off-screen, Flash will be given lower priority and thus JS/flash "lag" (ie., delay) will be introduced when trying to play audio "in sync."</p>
-
-<p>Generally, positioning the flash movie using position:fixed and bottom/left or bottom/right 0px is the less-intrusive option.</p>
-
-<p style="margin:0px;padding:0px">
- <input id="useMouse" name="usemouse" value="usemouse" type="checkbox"> Throw from mouse
-</p>
-<p style="margin:0px;padding:0px">
- <button id="b-start" onclick="startAnimation()" disabled="disabled">Start</button>
- <button id="b-stop" onclick="stopAnimation()" disabled="disabled">Stop</button>
-</p>
-
-
-<p>Sound source: <a href="http://freesound.iua.upf.edu/samplesViewSingle.php?id=19987">"Acclivity"</a>, Free Sound Project</p>
+<script type="text/javascript">
+function fixLinks() {
+  if (document.location.protocol.match(/http/i)) {
+    return false;
+  }
+  // presumably offline - add index.html to local links, so offline browsing is seamless
+  var l = document.getElementsByTagName('a');
+  var s = null;
+  var tmp = null;
+  var cn = null;
+  for (var i=l.length; i--;) {
+    s = l[i].href.toString();
+    cn = l[i].className;
+    if (!s.match(/http/i) && !cn.match(/norewrite/i) && (s.match(/doc/i) || s.match(/demo/i) || s.match(/../))) {
+      // yep, local.
+      tmp = Math.max(s.lastIndexOf('?'),-1);
+      tmp = Math.max(s.lastIndexOf('#'),tmp);
+      tmp = Math.max(s.lastIndexOf('/')+1,tmp);
+       // console.log(s+' '+s.lastIndexOf('?')+', '+s.lastIndexOf('#')+', '+s.lastIndexOf('/')+' = '+tmp);
+      if (tmp == -1) {
+        tmp = s.length;
+      }
+      if (!s.match(/\.html/i)) {
+        l[i].setAttribute('href',s.substr(0,tmp)+'index.html'+s.substr(tmp));
+      }
+    }
+  }
+}
+fixLinks();
+</script>
 
 </div>
-
-<div id="ball-container" class="balls">
- <img src="image/ball.gif" alt="" />
-</div>
-
-</body>
-</html>

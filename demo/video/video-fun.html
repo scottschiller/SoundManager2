@@ -159,7 +159,7 @@ function SnowStorm() {
   // PROPERTIES
   // ------------------
 
-  var imagePath = 'http://schillmania.com/projects/snowstorm/image/snow/'; // relative path to snow images (including trailing slash)
+  var imagePath = 'http://www.schillmania.com/projects/snowstorm/image/snow/'; // relative path to snow images (including trailing slash)
   var flakesMax = 128;
   var flakesMaxActive = 64;
   var vMaxX = 8;
@@ -560,6 +560,7 @@ soundManager.url = '../../swf/'; // path to directory containing SoundManager2 .
 soundManager.flashVersion = 9; // flash 9.0r115+ required for MovieStar mode
 soundManager.useMovieStar = true; // enable AAC/MPEG4 video in SM2
 soundManager.useHighPerformance = true;
+soundManager.useFastPolling = true;
 soundManager.wmode = 'transparent';
 
 if (window.location.toString().match(/debug/i)) {
@@ -602,7 +603,7 @@ soundManager.onload = function() {
 	});
   }
 
-  addPoke(7900,5);
+  addPoke(8000,5);
   addPoke(9650,5);
   addPoke(10200,5);
   addPoke(10900,5);

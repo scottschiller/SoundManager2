@@ -22,25 +22,40 @@ em em {
  color:#339933;
 }
 
-h1, h2, h3 {
- font:3em normal "Century Gothic","Helvetica Neue Light","Helvetica Neue",georgia,"times new roman","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
- font-weight:normal;
- margin-bottom:0px;
+h1,
+h2.special {
+ letter-spacing:-1px;
+}
+
+h1, h2, h3, h4 {
+ font-family:"helvetica neue",helvetica,verdana,arial,tahoma,"sans serif";
+ font-size:1em;
+ margin:0px;
+ padding:0px;
+ vertical-align:middle;
 }
 
 h1 {
- margin-top:0px;
-}
-
-h1, h2 {
- letter-spacing:-1px; /* zomg web x.0! ;) */ 
+ font-size:2em;
 }
 
 h2 {
- font-size:2em;
- margin-top:0px;
- padding-top:0.5em;
+ font-family:helvetica,arial,verdana,tahoma,"sans serif";
+ font-size:1.5em;
 }
+
+h3 {
+ font-size:1.17em;
+ border-bottom:1px solid #ccc;
+ padding-bottom:0.25em;
+ margin-top:1.5em;
+}
+
+h4 {
+ margin:1.5em 0px 0.5em 0px;
+ font-size:1.1em;
+}
+
 
 p {
  font:normal 1em verdana,tahoma,arial,"sans serif";

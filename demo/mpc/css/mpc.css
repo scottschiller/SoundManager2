@@ -94,7 +94,7 @@ h2 {
 }
 
 #soundmanager-debug div {
- font:0.8em normal;
+ font:normal 0.8em;
  font-family: "lucida console",system,terminal,verdana,arial; /* IE doesn't seem to obey short-hand font family here? */
  padding:0px 1em 0.5em 0px;
 }

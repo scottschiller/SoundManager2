@@ -80,12 +80,13 @@ var mpc = new MPC();
 soundManager.flashVersion = (window.location.toString().match(/#flash8/i)?8:9);
 if (soundManager.flashVersion != 8) {
   soundManager.useHighPerformance = true;
+  soundManager.useFastPolling = true;
 }
 soundManager.url = '../../swf/'; // path to load SWF from (overriding default)
 soundManager.debugMode = false;
 soundManager.consoleOnly = false;
 
-soundManager.onload = function() {
+soundManager.onready(function() {
 
   // This is the "onload" equivalent which is called when SoundManager has been initialised (sounds can be created, etc.)
 
@@ -129,4 +130,4 @@ soundManager.onload = function() {
    soundManager.createSound('mySound','/path/to/some.mp3');
 
   */
-}
+});

@@ -7,7 +7,7 @@
    Code licensed under the BSD License:
    http://www.schillmania.com/projects/soundmanager2/license.txt
 
-   V2.94a.20090206
+   V2.94a.20090717
 
    Flash 8 / ActionScript 2 version
 

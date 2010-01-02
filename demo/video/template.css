@@ -24,7 +24,8 @@ em em {
 }
 
 h1, h2, h3 {
- font:3em normal "Century Gothic","Helvetica Neue Light","Helvetica Neue",georgia,"times new roman","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
+ font-family:"Helvetica Neue",helvetica,"times new roman","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
+ font-size:3em;
  font-weight:normal;
  margin-bottom:0px;
  color:#000;

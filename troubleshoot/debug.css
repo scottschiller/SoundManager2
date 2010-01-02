@@ -32,6 +32,8 @@
 }
 
 #sm2-test ul.items li h3 {
+ padding-top:0.3em;
+ margin-top:0px;
  border-bottom:1px solid #ccc;
 }
 

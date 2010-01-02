@@ -72,7 +72,7 @@ code,
 .code,
 dt,
 #soundmanager-debug {
- font-family:monaco,"VT-100","lucida console",terminal,monospace,courier,system,sans-serif;
+ font-family:monaco,"VT-100","lucida console",monospace,courier,system,sans-serif;
  font-size:11px; /* x-small is 11px on mac, 10px on windows. D'oh. */
  font-weight:normal;
  line-height:1.5em;
@@ -86,8 +86,12 @@ pre {
  line-height:1.75em;
 }
 
-pre span span {
+pre.specialcommentblock span span {
  font-size:x-small;
+}
+
+pre span span {
+ /* font-size:x-small; */
 }
 
 pre.small {
@@ -135,7 +139,7 @@ dd code {
 }
 
 pre code {
- font-family:monaco,"VT-100",terminal,"lucida console",courier,system,sans-serif;
+ font-family:monaco,"VT-100","lucida console",courier,system,sans-serif;
  font-size:11px;
 }
 
@@ -506,6 +510,17 @@ div.clear {
  color:#999;
 }
 
+.note a {
+ color:#666;
+ padding:1px;
+ margin:-1px;
+}
+
+.note a:hover {
+ color:#fff;
+ background:#666;
+}
+
 ul.standard {
  line-height:1.5em;
  padding-left:1.2em;
@@ -681,8 +696,9 @@ ul.standard ul {
 }
 
 .c3 ul li ul li {
- font-family:monaco,"VT-100",terminal,"lucida console",courier,system,sans-serif;
+ font-family:monaco,"VT-100","lucida console",courier,system,sans-serif;
  font-size:x-small;
+ font-size:11px;
  line-height:1.5em;
  text-indent:0.5em;
  padding:0.25em 0.25em 0.25em 0.25em;
@@ -820,7 +836,7 @@ span.nevermind,
 
 #reset-filter {
  position:relative;
- font-family:"Century Gothic","Helvetica Neue Light","Helvetica Neue","Helvetica",helvetica,arial,verdana,sans-serif;
+ font-family:"Helvetica Neue Light","Helvetica Neue","Helvetica",helvetica,arial,verdana,sans-serif;
  font-weight:lighter;
  font-size:2.5em;
  letter-spacing:-1px;
@@ -833,6 +849,7 @@ span.nevermind,
  display:inline;
  margin-left:1em;
  margin-right:0.5em;
+ margin-top:3px;
  line-height:1em;
  white-space:nowrap;
 }
@@ -1012,6 +1029,33 @@ a.cta-more:hover {
  color:#fff;
 }
 
+#soundcloud {
+ width:83px;
+ height:58px;
+ display:inline-block;
+ display:-moz-inline-box;
+ overflow:hidden;
+ background:transparent url(../demo/_image/soundcloud-thecloudplayer-logo.png) no-repeat 0px -59px;
+ margin-right:3px;
+}
+
+#soundcloud span {
+ position:absolute;
+ text-indent:-9999em;
+}
+
+#soundcloud:hover {
+ background-position:0px 0px;
+}
+
+#nav ul li ul {
+ /* eh, why not. */
+ -moz-box-shadow:2px 2px 2px rgba(51,153,204,0.2);
+ -khtml-box-shadow:2px 2px 2px rgba(51,153,204,0.2);
+ -webkit-box-shadow:2px 2px 2px rgba(51,153,204,0.2);
+ box-shadow:2px 2px 2px rgba(51,153,204,0.2);
+}
+
 .newer {
  vertical-align:middle;
 }
@@ -1065,13 +1109,21 @@ a.feature:hover {
  padding:0px;
 }
 
+.inthewild {
+ text-align:center;
+}
+
 .inthewild a,
 .inthewild a img {
  border:none;
 }
 
 .inthewild a {
- margin-right:0.5em;
+ margin-right:1em;
+}
+
+.inthewild a:last-child {
+ margin-right:0px;
 }
 
 .inthewild a,

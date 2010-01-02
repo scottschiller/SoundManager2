@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>360&deg; MP3 player UI demo (SoundManager 2)</title>
+<meta name="description" content="Javascript-driven sound, canvas-based MP3 player UI demo: 360-degree circular control / jog wheel example for playing MP3 links using SoundManager 2, Javascript and Canvas.">
 
 <!-- required -->
 <link rel="stylesheet" type="text/css" href="360player.css" />
@@ -17,6 +18,10 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="script/360player.js"></script>
 
+<script type="text/javascript">
+soundManager.url = '../../swf/';
+</script>
+
 <!-- stuff you don't need -->
 <!-- makes the fonts nicer etc. -->
 <link rel="stylesheet" type="text/css" href="../index.css" />
@@ -27,7 +32,7 @@
 
 #left {
  position:relative;
- width:870px;
+ width:950px;
  max-width:100%;
 }
 
@@ -56,13 +61,11 @@ pre.block {
 
 <div id="left">
 
- <h1><a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; player demo</a></h1>
+ 	<h1><a href="http://www.schillmania.com/projects/soundmanager2/" title="Javascript MP3 player project home">SoundManager 2</a> / <a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; Player</a>: JS + Canvas UI</h1>
 
- <h2>Inline "donut player" example (experimental)</h2>
- <p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI. Load progress, seek, play/pause etc. <b>Warning: Prototype code, subject to change</b>.</p>
- <p class="note" style="color:#666;margin-bottom:0.5em">Also see <a href="canvas-visualization.html" title="Javascript canvas visualization with waveform/eq data">360&deg; UI visualization</a> prototype.</p>
+ <p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI. Load progress, seek, play/pause etc. Also see <a href="canvas-visualization.html" title="Javascript canvas visualization with waveform/eq data">360&deg; UI visualization</a> demo.</p>
 
-<div style="margin-top:0.75em">
+<div style="margin-top:1.25em">
 
 	<div style="float:left;display:inline"> <!-- float is just for this demo layout, you don't need it. -->
  
@@ -111,6 +114,7 @@ pre.block {
 
 <div style="clear:both"></div>
 
+	
  <h3>How This Works</h3>
 
  <p>The script looks for a container element matching <code>div.<span>ui360</span></code>, and then the first link inside of it.</p>
@@ -139,7 +143,7 @@ pre.block {
 
 <h3>Customizing the UI</h3>
 
-<p>The player's default 50x50-pixel canvas is defined both within JavaScript and CSS. For an example with different values, see this <a href="bigger.html" title="360&deg; UI: 150x150-pixel version">150x150-pixel version</a>.</p>
+<p>The player's default 50x50-pixel canvas is defined both within JavaScript and CSS. For an example with different values, see this <a href="canvas-visualization.html" title="360&deg; UI: larger version">larger version</a>.</p>
 
 <pre class="block"><code>threeSixtyPlayer.config = {
   playNext: <span>false</span>, <span><span>// stop after one sound, or play through list until end</span></span>
@@ -188,7 +192,7 @@ soundManager.movieStarOptions.useVideo = true;
 <hr />
 
  <p>
-  <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
+  <a href="http://www.schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
  </p>
 
 

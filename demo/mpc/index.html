@@ -51,9 +51,8 @@
 
  </div>
 
-  <p>
-   <button onmousedown="soundManager._debug()">soundManager._debug()</button>
-  </p>
+  <p id="mpc-debug" class="note">View <a href="#debug=1" onclick="window.location.reload()">with debug output</a></p>
+  <script type="text/javascript">if (window.location.href.toString().match(/debug/i)) { document.getElementById('mpc-debug').style.display = 'none'; }</script>
 
 </div>
 

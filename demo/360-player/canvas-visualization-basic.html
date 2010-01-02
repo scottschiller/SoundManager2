@@ -2,7 +2,8 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>360&deg; MP3 player UI demo (SoundManager 2): Visualization Prototype, basic example</title>
+<title>360&deg; MP3 player UI demo (SoundManager 2): Javascript + Canvas Visualization, basic example</title>
+<meta name="description" content="Basic example of 360-degree circular control for MP3 links, with EQ and spectrum visualization options" />
 
 <!-- required -->
 <link rel="stylesheet" type="text/css" href="360player.css" />
@@ -19,6 +20,10 @@
 <script type="text/javascript" src="script/360player.js"></script>
 
 <script type="text/javascript">
+
+soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
+
+soundManager.useFastPolling = true; // increased JS callback frequency, combined with useHighPerformance = true
 
 threeSixtyPlayer.config.scaleFont = (navigator.userAgent.match(/msie/i)?false:true);
 threeSixtyPlayer.config.showHMSTime = true;
@@ -74,7 +79,7 @@ pre.block {
 
 	<h1><a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; Player Demo</a> - Visualization Example, Basic Template</h1>
 
-	<p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI with visualization options. <b>Warning: Incomplete prototype/experimental code, subject to change.</b></p>
+	<p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI with visualization options. <b>Note: Beta-ish code, no EQ/spectrum support for IE (too slow.)</b></p>
 
 	<div style="clear:left"></div>
 
@@ -101,7 +106,7 @@ pre.block {
 	</div>
 
 	<p style="margin-left:1em">
-	 <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
+	 <a href="http://www.schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
 	</p>
 
 </div>

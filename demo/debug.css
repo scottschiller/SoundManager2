@@ -1,0 +1,25 @@
+#soundmanager-debug {
+ position:fixed;
+ _position:absolute; /* IE <7 */
+ bottom:1em;
+ right:1em;
+ width:38em;
+ height:30em;
+ overflow:auto;
+ padding:0px;
+ margin:1em;
+ font-family:monaco,"VT-100",terminal,"lucida console",courier,system;
+ opacity:0.9;
+ color:#333;
+ border:1px solid #ccddee;
+ -moz-border-radius:3px;
+ -khtml-border-radius:3px;
+ -webkit-border-radius:3px;
+ background:#f3f9ff;
+}
+
+#soundmanager-debug div {
+ font-size:x-small;
+ padding:0.2em;
+ margin:0px;
+}

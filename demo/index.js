@@ -205,7 +205,7 @@ function setFilter(e,sFilterPrefix) {
         utils.addClass(o,'active');
       }
     } else {
-      o.className = 'active';
+      // o.className = 'active';
       utils.addClass(o,'active');
     }
     lastSelected = o;

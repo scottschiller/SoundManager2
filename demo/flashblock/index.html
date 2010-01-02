@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: Flash blocker handling examples</title>
+<meta name="description" content="Demo of SoundManager 2 handling flashblock / &quot;click to flash&quot; blockers gracefully" />
+<meta name="keywords" content="DHTML audio, javascript sound, javascript audio, DHTML sound, work by Scott Schiller, schillmania, javascript to flash communication" />
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<link rel="stylesheet" type="text/css" href="../index.css" />
+</head>
+<body>
+
+<div style="margin:1em;max-width:60em;font-size:110%">
+
+<h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Flashblock / "click to flash" handling demos</h1>
+
+<p>Flash blockers (and related ad blockers) can intercept or otherwise prevent flash movies and SWF URLs from loading, sometimes with the option to "click to start". For SM2 this means the flash may not load at all due to being blocked, or may be eventually allowed to run by the user when they click the SWF.</p>
+
+<p>In this case, we assume the user has a flash blocker of some sort installed which will prevent the flash movie from loading, and will cause a timeout/failure in SM2 as it waits for a response from Flash.</p>
+
+<p>For most use cases, it's best to try to start SM2 normally, and then highlight error/timeout cases as applicable. Alternately if your app absolutely requires sound, you can defer starting of your app until SM2 has successfully loaded. In either case, it is good to set <code>soundManager.flashLoadTimeout = 0</code> so SM2 waits indefinitely for flash to load, rather than firing <code>soundManager.onerror()</code> and related handlers.</p>
+
+<h2>Handling Flash blockers</h2>
+
+<p>By default, SM2 places a "hidden" SWF in the DOM and tries to load right away; it will succeed or fail with a time-out typically no later than one second after document load. The one-second case is what happens when flash is either not present, or is blocked on the user's browser. The way to work around this is to show the movie at first where it can be allowed/whitelisted by the user, at which time SM2 will load.</p>
+
+<h3>Place SWF inline in document at first, reposition (hide) when SM2 loads</h3>
+
+<p>Rather than hide off-screen or in a small space, the SoundManager 2 SWF container is put inline in the document so the user can take action without later interruption after a timeout. In the event SM2 starts without issue, the node can be moved out of view to its regular "hidden" place.</p>
+
+<p>The following demo initially places the movie out of view, but then makes it visible if a timeout is detected. If the user then allows the SWF to load, it loads and SM2 becomes hidden again.</p>
+
+<p><a href="method1/" onclick="if (window.location.protocol != 'http' && !this.href.match(/index/i)) this.href+='index.html'" class="cta"><b>Flashblock demo</b></a></p>
+
+</div>
+
+</body>
+</html>

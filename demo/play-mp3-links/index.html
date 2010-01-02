@@ -25,13 +25,18 @@ body {
 }
 
 h1, h2, h3 {
- font:3em arial,tahoma,verdana;
+ font:2.5em arial,tahoma,verdana;
  font-weight:normal;
  margin-bottom:0px;
 }
 
 h1, h2 {
  letter-spacing:-1px; /* zomg web x.0! ;) */ 
+ margin-top:0.5em;
+}
+
+h2, h3 {
+ color:#333;
 }
 
 h2 {
@@ -81,11 +86,11 @@ pre {
 <body>
 
 <div id="left">
-
- <h1>Demo: <a href="http://schillmania.com/projects/soundmanager2/" title="Play MP3s inline with javascript using SoundManager 2">Make MP3 links playable "in-place"</a></h1>
+	
+ <h1><a href="http://www.schillmania.com/projects/soundmanager2/" title="Play MP3s inline with javascript using SoundManager 2">SoundManager 2</a> / Make MP3 links play in-place</h1>
 
  <h2>Inline MP3 Player Example: Fancy* CSS 3 version</h2>
- <p class="note">*CSS 3 border-radius supported only by Firefox 2.x+, Safari (2.x?) as of April 2008 - perhaps IE 8 RTM..</p>
+ <p class="note">*CSS 3 border-radius supported only by Firefox 2.x+, Safari (2.x?) - sadly, not IE 8.</p>
 
  <ul class="graphic">
 
@@ -107,7 +112,7 @@ pre {
   <li>CSS for UI, easy to modify to taste</li>
  </ul>
 
- <p>This example uses <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to finds links to MP3 files, and makes them playable "in-place" on a page. The script assigns CSS classes to links to indicate their state (playing/paused, etc.)</p>
+ <p>This example uses <a href="http://www.schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to finds links to MP3 files, and makes them playable "in-place" on a page. The script assigns CSS classes to links to indicate their state (playing/paused, etc.)</p>
  <p>Links pointing to MP3s are assigned an onclick handler which intercepts the click (preventing the browser from following the link and unloading the page. SM2 will then create sound objects as needed to play the MP3s.</p>
 
 
@@ -148,7 +153,7 @@ pre {
 
 
  <p>
-  <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
+  <a href="http://www.schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
  </p>
 
  <h3>Basic CSS</h3>

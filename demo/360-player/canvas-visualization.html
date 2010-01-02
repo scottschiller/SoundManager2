@@ -2,7 +2,8 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>360&deg; MP3 player UI demo (SoundManager 2): Visualization Prototype</title>
+<title>360&deg; MP3 player UI demo (SoundManager 2): Javascript + Canvas Visualization</title>
+<meta name="description" content="Javascript + Canvas + SoundManager 2: 360-degree circular control / jog wheel example for playing MP3 links, with EQ and spectrum visualization options" />
 
 <!-- required -->
 <link rel="stylesheet" type="text/css" href="360player.css" />
@@ -19,6 +20,10 @@
 <script type="text/javascript" src="script/360player.js"></script>
 
 <script type="text/javascript">
+
+soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
+
+soundManager.useFastPolling = true; // increased JS callback frequency, combined with useHighPerformance = true
 
 threeSixtyPlayer.config.scaleFont = (navigator.userAgent.match(/msie/i)?false:true);
 threeSixtyPlayer.config.showHMSTime = true;
@@ -86,10 +91,10 @@ pre.block {
 
 <div id="left">
 
- <h1><a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; Player Demo</a> - Visualization Prototype</h1>
+ <h1><a href="http://www.schillmania.com/projects/soundmanager2/" title="Javascript MP3 player project home">SoundManager 2</a> / <a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; Player Demo</a>: JS + Canvas Visualization</h1>
 
- <p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI with visualization options. <b>Warning: Incomplete prototype/experimental code, subject to change.</b></p>
- <p class="note" style="color:#666;margin-bottom:0.5em"><span id="config-link">You can also <a href="#customize" onclick="window.location.href=this.href;window.location.reload()">Customize this UI</a>.</span> Check the <a href="canvas-visualization-basic.html">basic template</a> for a minimal code example; also see the <a href="../360-player/" title="360&deg; player UI">default 360&deg; UI</a>.</p>
+ <p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI with visualization options. <b>Note: Beta-ish code. Spectrum/EQ visualizations disabled for IE due to low performance.</b></p>
+ <p class="note" style="color:#666;margin-bottom:0.5em">You can also <a href="#debug=1" onclick="window.location.href = this.href;window.location.reload()" title="Enable debug mode, show frames per second">show FPS</a><span id="config-link"> or <a href="#customize" onclick="window.location.href=this.href;window.location.reload()">customize the UI</a></span>. Check the <a href="canvas-visualization-basic.html">basic template</a> for a minimal code example; also see the <a href="../360-player/" title="360&deg; player UI">default 360&deg; UI</a>.</p>
 
 	<!-- customization crap -->
 
@@ -219,8 +224,6 @@ pre.block {
 
 	</div>
 
-	<div style="clear:left"></div>
-
 		<!-- here are the MP3 links, which are decorated with the 360 canvas element/UI etc. -->
 
 	 	<h2 style="margin-top:1em">Inline list</h2>
@@ -229,7 +232,7 @@ pre.block {
 
 		<div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3">20060826 - Armstrong Groove</a></div>
 		<div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3">20090119 - Untitled Groove</a></div>
-		<div class="ui360"><a href="../../demo/_mp3/sine,%20square,%20sawtooth,%20rando.mp3">Sine, Square, Sawtooth, Wave (Warning: LOUD)</a></div>
+		<div class="ui360"><a href="../../demo/_mp3/sine,%20square,%20sawtooth,%20rando.mp3">Sine, Square, Sawtooth, Wave (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 	     	<div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20090207%20-%20Loverman.mp3">20090207 - Loverman</a></div>
 
 	    	</div>
@@ -238,16 +241,67 @@ pre.block {
 
 		<div>
 			<div class="ui360"><a href="http://www.freshly-ground.com/data/audio/binaural/Mak.mp3">Angry cow sound?</a></div>
-		 	<div class="ui360"><a href="../../demo/_mp3/1hz-10khz-sweep.mp3">1-10 Khz Sweep (Warning: LOUD)</a></div>
+		 	<div class="ui360"><a href="../../demo/_mp3/1hz-10khz-sweep.mp3">1-10 Khz Sweep (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 		</div>
+		
+
+		<div style="clear:left"></div>
+		
+		<h2 style="clear:left;padding-top:1em">Variant: Annotations/meta-data</h2>
+
+
+		 <ul class="ui360playlist">
+
+		  <li>
+
+		   <div class="ui360">
+		    <a href="http://freshly-ground.com/data/audio/binaural/A%20Virtual%20Haircut%20in%20San%20Francisco%20%283%20Scenes%29.mp3">A Virtual Haircut (3 scenes)</a>
+		    <div class="metadata">
+		     <div class="duration">4:43</div> <!-- total track time (for positioning while loading, until determined -->
+		     <ul>
+		      <li><p>Electric razor</p><span>0:00</span></li> <!-- first scene -->
+		      <li><p>Water, scissors</p><span>2:41</span></li> <!-- start time of second scene -->
+		      <li><p>More razor work</p><span>4:00</span></li>
+		     </ul>
+		    </div>
+		   </div>
+
+		  </li>
+
+		  <li>
+
+		   <div class="ui360">
+		    <a href="http://freshly-ground.com/data/audio/binaural/Rubber%20Chicken%20Launch%20%28office%29.mp3">Rubber Chicken Launch (Office)</a>
+
+			   <div class="metadata">
+			    <div class="duration">0:47</div>
+			    <ul>
+			     <li><p>First attempt</p><span>0:00</span></li>
+			     <li><p>Fire!</p><span>0:02</span></li>
+			     <li><p>"Too much angle"</p><span>0:05</span></li>
+			     <li><p>Random chicken noise</p><span>0:18</span></li>
+			     <li><p>"Wait a second"</p><span>0:31</span></li>
+			     <li><p>Derrr..</p><span>0:34</span></li>
+			     <li><p>Launch attempt #2</p><span>0:36</span></li>
+			     <li><p>"Wrong angle"</p><span>0:39</span></li>
+			     <li><p>"Fail"</p><span>0:42</span></li>
+			    </ul>
+			   </div>
+
+
+		   </div>
+
+		  </li>
+
+		 </ul>
 
 	</div>
 
 
 	<div style="clear:both"></div>
-
+	
 	 <p style="margin-left:1em">
-	  <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
+	  <a href="http://www.schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
 	 </p>
 	
 	<script type="text/javascript">

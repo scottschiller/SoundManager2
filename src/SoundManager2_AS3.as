@@ -7,7 +7,7 @@
    Code licensed under the BSD License:
    http://www.schillmania.com/projects/soundmanager2/license.txt
 
-   V2.95a.20090501
+   V2.95a.20090717
 
    Flash 9 / ActionScript 3 version
 */
@@ -48,6 +48,7 @@ public class SoundManager2_AS3 extends Sprite {
   public var sounds:Array = []; // indexed string array
   public var soundObjects:Dictionary = new Dictionary(); // associative Sound() object Dictionary type
   public var timerInterval:uint = 20;
+  public var timerIntervalHighPerformance:uint = 1; // make callbacks as fast as possible
   public var timer:Timer = null;
   public var pollingEnabled:Boolean = false; // polling (timer) flag - disabled by default, enabled by JS->Flash call
   public var debugEnabled:Boolean = true;    // Flash debug output enabled by default, disabled by JS call
@@ -817,11 +818,12 @@ public class SoundManager2_AS3 extends Sprite {
     soundObjects[sID].setVolume(nVol);
   }
 
-  public function _setPolling(bPolling:Boolean):void {
+  public function _setPolling(bPolling:Boolean=false,bUseHighPerformanceTimer:Boolean=false):void {
     pollingEnabled = bPolling;
     if (timer == null && pollingEnabled) {
-      writeDebug('Enabling polling');
-      timer = new Timer(timerInterval,0);
+	  var nTimerInterval:uint = (bUseHighPerformanceTimer?timerIntervalHighPerformance:timerInterval);
+      writeDebug('Enabling polling (timer interval: '+(nTimerInterval)+')');
+      timer = new Timer(nTimerInterval,0);
       timer.addEventListener(TimerEvent.TIMER, function():void{checkProgress();}); // direct reference eg. checkProgress doesn't work? .. odd.
       timer.start();
     } else if (timer && !pollingEnabled) {

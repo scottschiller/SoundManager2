@@ -45,10 +45,8 @@
 		<li><a href="../demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="../demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="../demo/mpc/">Drum Machine (MPC)</a></li>
-		<li><a href="../demo/christmas-lights/">Christmas Lights</a></li>
-		<li><a href="../demo/animation/">Animation 1</a></li>
-		<li><a href="../demo/animation-2a/">Animation 2a</a></li>
-		<li><a href="../demo/animation-2b/">Animation 2b</a></li>
+		<li><a href="../demo/animation/">DOM/Animation Demos</a></li>
+		<li><a href="../demo/flashblock/">FlashBlock Handling</a></li>
 		<li><a href="../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
@@ -95,7 +93,7 @@
 		<li><a href="resources/#licensing">Licensing</a></li>
 		<li><a href="resources/#related">Related Projects</a></li>
 		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
-		<li><a href="http://schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
+		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
 
@@ -133,15 +131,16 @@
 
 			  <p class="in">SoundManager includes a few global parameters which configure debug mode, flash movie path and other behaviours. At minimum, the <code>url</code> property must assigned a path used to look for the necessary flash movie.</p>
 
-<pre class="small block"><code><span>soundManager.allowPolling = true; <span>  // enable flash status updates. Required for whileloading/whileplaying.</span>
+<pre class="small block specialcommentblock"><code><span>soundManager.allowPolling = true; <span>  // enable flash status updates. Required for whileloading/whileplaying.</span>
 soundManager.consoleOnly = false; <span>  // if console is being used, do not create/write to #soundmanager-debug</span>
 soundManager.debugMode = true;    <span>  // enable debugging output (div#soundmanager-debug, OR console..)</span>
-soundManager.flashLoadTimeout = 750;<span>// ms to wait for flash movie to load before failing (0 = infinity)</span>
+soundManager.flashLoadTimeout =1000;<span>// ms to wait for flash movie to load before failing (0 = infinity)</span>
 soundManager.flashVersion = 8;    <span>  // version of flash to require, either 8 or 9. Some features require 9.</span>
-soundManager.nullURL = 'null.mp3';  <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stopping request.</span>
+soundManager.nullURL = 'null.mp3';  <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span>
 soundManager.url = '/path/to/swf/'; <span>// path (directory) where SM2 .SWF files will be found.</span>
 soundManager.useConsole = true;   <span>  // use firebug/safari console.log()-type debug console if available</span>
-soundManager.useMovieStar = false; <span> // enable <em>alpha</em> support for <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+ MPEG4 audio + video</a></span>
+soundManager.useMovieStar = false; <span> // enable <em>(beta)</em> support for <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+ MPEG4 audio + video</a></span>
+soundManager.useFastPolling = false;<span>// fast timer=higher callback frequency, combine w/useHighPerformance</span>
 soundManager.useHighPerformance = false;<span>// position:fixed flash movie for faster JS/flash callbacks</span>
 soundManager.waitForWindowLoad = false; <span>// always delay soundManager.onload() until after window.onload()</span>
 soundManager.wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HTML on top of flash)</span>
@@ -211,19 +210,24 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		  <div class="f-block f-flashloadtimeout">
 		        <h4 id="soundmanager-flashloadtimeout" title="New feature" class="new">soundManager.flashLoadTimeout</h4>
 			<p class="in">After initializing the flash component during start-up, SM2 will wait for a defined period of time before timing out and calling <code>soundManager.onerror()</code>.</p>
-			<p>The default value is 750 (msec.) Setting a value of 0 disables the timeout and makes SM2 wait indefinitely for a call from the flash component.</p>
+			<p>The default value is 1000 (msec.) Setting a value of 0 disables the timeout and makes SM2 wait indefinitely for a call from the flash component.</p>
 			<p>Setting this parameter to 0 may be useful when attempting to gracefully recover from a flashBlock situation, where the user has whitelisted the movie after it was blocked etc.</p>
 			<p>Note that when the timeout is disabled, soundManager will not fire its onerror() handler if there is an error at the flash loading stage.</p>
 		  </div>
+
+		  <div class="f-block f-usefastpolling f-usehighperformance">
+			<h4 id="soundmanager-usefastpolling">soundManager.useFastPolling</h4>
+			<p>By default <code>useFastPolling = false</code>, and thus SoundManager uses a 20-milisecond timer inside Flash when polling for updated sound properties such as <code>bytesLoaded</code> and data and event callbacks eg. <code>whileloading()</code>, <code>whileplaying()</code> and so on. With <code>useFastPolling = true</code>, a 1-msec timer is used and callback frequency may noticeably increase. This is best combined with <code>useHighPerformance</code> for optimal results.</p>
+		  </div>
 		
-		  <div class="f-block f-usehighperformance">
+		  <div class="f-block f-usehighperformance f-usefastpolling">
 			<h4 id="soundmanager-highperformance">soundManager.useHighPerformance</h4>
 			<p>Perhaps intuitively, Flash is given higher priority when positioned within the viewable area of the browser, at least 6px in height (oddly), fully-opaque, visible and displayed on the screen. By default, <code class="in">soundManager.useHighPerformance</code> is enabled and should noticeably reduce JS/flash lag and increase the frequency of callbacks such as <code class="in">whileplaying()</code> in some circumstances.</p>
 			<p><code class="in">soundManager.useHighPerformance = true;</code></p>
 			<p>This has made a noticeable impact in responsiveness on Mac OS X, and Safari on Windows; animation lag is practically non-existent (see <a href="../demo/animation-2b/" title="SoundManager JS + DOM + sound demo 2b" style="display:inline" onclick="checkDomain(this)">demo</a>). Because setting wmode=transparent and fixed position has been reported to cause some issues, the feature is disabled by default.</p>
 			<p>To be least-obtrusive, SM2 attempts to set position:fixed, and uses bottom/left:0px to stay within view (though using wmode=transparent where possible, to be hidden from view.) It occupies an 8x8px square. If you wish to position the movie yourself or show it inline, perhaps for playing video, have a DIV element with the ID of <code class="in">sm2-container</code> present in the DOM for SM2 to reference and it will write the movie there without positioning.</p>
 		  </div>
-
+		
 		  <div class="f-block f-wmode">
 			<h4 id="soundmanager-wmode">soundManager.wmode</h4>
 			<p>The <code>wmode</code> property is applied directly to the flash movie, and can be either <code>null</code>, <code>'window'</code>, <code>'transparent'</code> or <code>'opaque'</code>. By default if <code>useHighPerformance</code> is enabled, transparency will be attempted by SM2 unless there are known issues with the rendering mode.</p>
@@ -334,8 +338,26 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 	   <dl class="f-block f-mute">
 	   <dt>mute(<span>[id:string]</span>)</dt>
-	   <dd title="id:string">Mutes the sound specified by ID. If no ID specified, all sounds will be muted.</dd>
+	   <dd title="id:string">Mutes the sound specified by ID. If no ID specified, all sounds will be muted. Affects <span>muted</span> property (boolean.)</dd>
 	   <dd>Example: <code>soundManager.mute('<span>mySound</span>');</code></dd>
+	   </dl>
+
+	   <dl id="soundmanager-onready" class="f-block f-onready">
+	   <dt>onready(<span>callback:function(status),[scope]</span>)</dt>
+	   <dd title="callback:function">Queue <code>onload()</code>-style event listener(s) processed at (or immediately, if added after) SM2 initialization, just before <code>soundManager.onload()</code> or <code>onerror()</code> are called. More flexible than single <code>soundManager.onload()</code> event, allows separate scripts to add listeners etc. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
+	   <dd>Example: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
+	   <dd>A "status" object is also passed to the callback, which can be safely ignored. It includes a "success" parameter, indicating the state of <code>soundManager.isSupported()</code>.</dd>
+	   <dd>Example:
+<pre class="block"><code>soundManager.onready(<span>function(oStatus){
+  if (oStatus.success) {
+    alert('Yay, SM2 loaded OK!');	
+  } else {
+    alert('Oh snap, SM2 could not start.');
+  }
+}</span>);</code></pre>
+	   </dd>
+	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
+	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts up.</dd>
 	   </dl>
 
 	   <dl class="f-block f-play">
@@ -370,7 +392,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
   soundManager.reboot(); <span>// and, go!</span>
 }</code></pre>
 	   </dd>
-	   <dd>This method may be helpful when trying to gracefully recover from FlashBlock-type situations where the user has prevented the SWF from loading, but is able to whitelist it.</dd>
+	   <dd>This method may be helpful when trying to gracefully recover from FlashBlock-type situations where the user has prevented the SWF from loading, but is able to whitelist it. For more ideas, see <a href="../demo/flashblock/">Flashblock demo</a>.</dd>
 	   <dd>When using this method also consider <a href="#flashloadtimeout" onclick="clearFilter()">flashLoadTimeout</a>, which can have SM2 wait indefinitely for the flash to load if desired.</dd>
 	   </dl>
 
@@ -417,6 +439,12 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dd>Example: <code>soundManager.stopAll();</code></dd>
 	   </dl>
 
+	   <dl class="f-block f-togglemute">
+	   <dt>toggleMute(<span>id:string</span>)</dt>
+	   <dd title="soundID:string">Mutes/unmutes the sound specified by ID.</dd>
+	   <dd>Example: <code>soundManager.toggleMute('<span>mySound</span>');</code></dd>
+	   </dl>
+
 	   <dl class="f-block f-togglepause">
 	   <dt>togglePause(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Pauses/resumes play on the sound specified by ID.</dd>
@@ -432,7 +460,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 	   <dl class="f-block f-unmute">
 	   <dt>unmute(<span>[id:string]</span>)</dt>
-	   <dd title="id:string">Unmutes the sound specified by ID. If no ID specified, all sounds will be unmuted.</dd>
+	   <dd title="id:string">Unmutes the sound specified by ID. If no ID specified, all sounds will be unmuted. Affects <span>muted</span> property (boolean.)</dd>
 	   <dd>Example: <code>soundManager.unmute('<span>mySound</span>');</code></dd>
 	   </dl>
 
@@ -528,9 +556,15 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   <dd>Example: <code>mySound.resume();</code></dd>
 				   </dl>
 
+				   <dl class="f-block s-togglemute">
+				   <dt>toggleMute()</dt>
+				   <dd>Mutes/unmutes the given sound. Affected <span>muted</span> property (boolean.)</dd>
+				   <dd>Example: <code>mySound.toggleMute();</code></dd>
+				   </dl>
+
 				   <dl class="f-block s-togglepause">
 				   <dt>togglePause()</dt>
-				   <dd title="soundID:string">Pauses/resumes play on the sound specified by ID. Will also start a sound if it is has not yet been played.</dd>
+				   <dd>Pauses/resumes play of the given sound. Will also start a sound if it is has not yet been played.</dd>
 				   <dd>Example: <code>mySound.togglePause();</code></dd>
 				   </dl>
 
@@ -600,7 +634,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 					
 				  <h3>Sound Object Events</h3>
 
-				  <p class="in">Not unlike common javascript objects, each SoundManager <code>SMSound</code> (sound instance) object can fire a number of events including <code>onload</code> and others. Functions can be assigned and will be called as needed, and are scoped to the relevant sound object. Specifically, the <code>this</code> keyword will point to the sound object on which the event fired such that its properties can easily be accessed - eg. within an <code>SMSound</code> event handler, <code>this.sID</code> will give the sound ID.</p>
+				  <p class="in">Like native javascript objects, each SoundManager <code>SMSound</code> (sound instance) object can fire a number of events including <code>onload</code> and others. Functions can be assigned and will be called as needed, and are scoped to the relevant sound object. Specifically, the <code>this</code> keyword will point to the sound object on which the event fired such that its properties can easily be accessed - eg. within an <code>SMSound</code> event handler, <code>this.sID</code> will give the sound ID.</p>
 
 				  </div>
 
@@ -628,7 +662,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   </dl>
 				
 				   <dl class="f-block s-ondataerror s-waveformdata s-eqdata">
-				   <dt title="Flash 9+ only, new" class="flash9 new">ondataerror()</dt>
+				   <dt title="Flash 9+ only" class="flash9">ondataerror()</dt>
 				   <dd>Fires at least once per sound play instance when Flash encounters a security error when trying to call computeSpectrum() internally. This typically happens when sounds are 'inaccessible' due to another Flash movie (eg. YouTube) in another tab which has loaded, and may (or may not be) playing sound. Flash attempts to read the "combined" output to the sound card, and must have security permissions for all sounds as a result. See <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#areSoundsInaccessible()">areSoundsInaccessible()</a> on Adobe for more info.</dd>
 				   <dd>If the offending resource causing the security error is closed or becomes inactive(?), the data will become available again. Intermittent availability will result in intermittent calls to <code>ondataerror()</code>.</dd>
 				   </dl>
@@ -796,6 +830,12 @@ for (prop in this.id3) {
 						   <dd>Because of the potential for false positives, <code>duration</code> and other properties could be checked as a test of whether sound data actually loaded. For more granular state information, see <a href="#readystate" title="SMSound readyState documentation" onclick="resetFilter()">readyState</a>.</dd>
 						   </dl>
 
+						   <dl class="f-block s-muted">
+						   <dt>muted</dt>
+						   <dd>Boolean indicating muted status. True/False.</dd>
+						   <dd>Treat as read-only; use <code>mute()</code>, <code>unmute()</code> and <code>toggleMute()</code> methods to affect state.</dd>
+						   </dl>
+
 						   <dl class="f-block s-playstate">
 						   <dt>playState</dt>
 						   <dd>Numeric value indicating the current playing state of the sound.</dd>
@@ -932,7 +972,7 @@ for (prop in this.id3) {
 				
 				<div class="c2">
 					
-					  <div class="f-block f-defaultoptions s-autoload s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-pan s-volume s-ismoviestar s-onmetadata s-usevideo s-flash9options s-moviestaroptions s-buffertime">
+					  <div class="f-block f-defaultoptions s-autoload s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-pan s-volume s-ismoviestar s-onmetadata s-usevideo s-flash9options s-moviestaroptions s-buffertime">
 
 					  <h3 id="sound-properties">SoundManager Global Sound Object Defaults</h3>
 
@@ -940,14 +980,15 @@ for (prop in this.id3) {
 					  <p><code class="in">soundManager.defaultOptions</code> apply the properties and event handlers as specified above. Defaults are shown below as an example.</p>
 
 <pre class="small block"><code>soundManager.defaultOptions = {<span>
-  autoLoad: false,      <span>// enable automatic loading (otherwise .load() will call with .play())</span>
-  autoPlay: false,      <span>// enable playing of file ASAP (much faster if "stream" is true)</span>
-  multiShot: true,      <span>// let sounds "restart" or "chorus" when played multiple times..</span>
-  onid3: null,          <span>// callback function for "ID3 data is added/available"</span>
-  onload: null,         <span>// callback function for "load finished"</span>
-  onstop: null,         <span>// callback for "user stop"</span>
-  onfinish: null,       <span>// callback function for "sound finished playing"</span>
-  onbeforefinish: null, <span>// callback for "before sound finished playing (at [time])"</span>
+  autoLoad: false,       <span>// enable automatic loading (otherwise .load() will call with .play())</span>
+  autoPlay: false,       <span>// enable playing of file ASAP (much faster if "stream" is true)</span>
+  multiShot: true,       <span>// let sounds "restart" or "chorus" when played multiple times..</span>
+  multiShotEvents: false,<span>// allow events (onfinish()) to fire for each shot, if supported.</span>
+  onid3: null,           <span>// callback function for "ID3 data is added/available"</span>
+  onload: null,          <span>// callback function for "load finished"</span>
+  onstop: null,          <span>// callback for "user stop"</span>
+  onfinish: null,        <span>// callback function for "sound finished playing"</span>
+  onbeforefinish: null,  <span>// callback for "before sound finished playing (at [time])"</span>
   onbeforefinishtime: 5000,    <span>// offset (milliseconds) from sound end, call beforefinish..</span>
   onbeforefinishcomplete: null,<span>// function to call when said sound finishes playing</span>
   onjustbeforefinish: null,    <span>// callback for [n] msec before end of current sound</span>
@@ -1075,23 +1116,37 @@ soundManager.movieStarOptions = {<span>
 			</div>
 			<div class="c2">
 				
-				<div class="f-block f-onload f-onerror">
+				<div class="f-block f-onload f-onerror f-oninitmovie">
 
 			  <p class="in">The following events are attached to the <code>soundManager</code> global object and are useful for detecting the success/failure of the API's initialisation.</p>
 			  <p>Keep in mind that these core events are effectively asynchronous (ie., they may fire long before or after <code class="in">window.onload()</code>) and therefore should not be relied on as the "ready" event for starting your application. Use the standard "DOM content loaded" or window load events for your own initialization routines.</p>
+			  <p>For a more flexible queue-based, addListener-style approach to the onload event, see <code><a href="#soundmanager-onready" title="soundManager.onready() event queueing" onclick="resetFilter()">soundManager.onready()</a></code>.</p>
 
 			  <dl>
+
+
+			   <dt title="object:function">onerror()</dt>
+			   <dd>Function called when SoundManager fails to successfully initialise after Flash attempts an init call via ExternalInterface.</dd>
+			   <dd>Example: <code>soundManager.onerror = <span>function() { alert('SoundManager failed to load'); }</span></code></dd>
+			   <dd>This handler should be called if there is an ExternalInterface problem or other exceptions that fire when the initialisation function is called.</dd>
+			   <dd>If you want multiple listeners for this event, see <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a>.</dd>
+
+	   		   <dt title="object:function">oninitmovie()</dt>
+	   		   <dd>Function called immediately after the SWF is either written to (or retrieved from) the DOM as part of the start-up process. This event can be useful if you wish to implement your own start-up time-out, eg. for handling flash blockers, start-up failures or other custom messaging.</dd>
+	   		   <dd>Example: <code>soundManager.oninitmovie = <span>function(){ alert('SWF init.'); }</span></code></dd>
 
 			   <dt title="object:function">onload()</dt>
 			   <dd>Function called when SoundManager has successfully loaded.</dd>
 			   <dd>Example: <code>soundManager.onload = <span>function() { alert('SoundManager ready to use'); }</span></code></dd>
 			   <dd>Once this function has been called, all core methods will be available to use.</dd>
 			   <dd>Note that <code>onload()</code> is not called when SoundManager fails to load; instead, <code>onerror()</code> is called.</dd>
+			   <dd>If you want multiple listeners for this event, see <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a>.</dd>
 
-			   <dt title="object:function">onerror()</dt>
-			   <dd>Function called when SoundManager fails to successfully initialise after Flash attempts an init call via ExternalInterface.</dd>
-			   <dd>Example: <code>soundManager.onerror = <span>function() { alert('SoundManager failed to load'); }</span></code></dd>
-			   <dd>This handler should be called if there is an ExternalInterface problem or other exceptions that fire when the initialisation function is called.</dd>
+			   <dt title="method(object:function)">onready(<span>callback:function(status),[scope]</span>)</dt>
+			   <dd title="callback:function">Queue <code>onload()</code>-style event listener(s), triggered when soundManager has either started or failed.</dd>
+			   <dd>Example: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
+			   <dd>For more detail and examples, see <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a>.</dd>
+
 			  </dl>
 
 			  </div>
@@ -1218,7 +1273,7 @@ soundManager.movieStarOptions = {<span>
 	<ul>
 
 	 <li>allowPolling</li>
-	 <li class="flash9 new" title="Flash 9.0.r115+ only, new">allowFullScreen</li>
+	 <li class="flash9" title="Flash 9.0.r115+ only">allowFullScreen</li>
      <li>altURL</li>
 	 <li>consoleOnly</li>
 	 <li>debugMode</li>
@@ -1226,14 +1281,15 @@ soundManager.movieStarOptions = {<span>
 	 <li class="flash9" title="Flash 9-only">flash9Options</li>
 
      <li>features</li>
-     <li class="new" title="New feature">flashLoadTimeout</li>
+     <li class="new" title="Recently-added feature">flashLoadTimeout</li>
      <li>flashVersion</li>
-	 <li class="flash9 new" title="Flash 9.0.r115+ only, new">isFullScreen</li>
+	 <li class="flash9" title="Flash 9.0.r115+ only">isFullScreen</li>
      <li class="flash9" title="Flash 9.0r115+ only">movieStarOptions</li>
 	 <li>nullURL</li>
 	 <li>url</li>
 
 	 <li>useConsole</li>
+	 <li class="flash9 new" title="New feature, Flash 9+ only">useFastPolling</li>
 	 <li>useHighPerformance</li>
      <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
 	 <li class="flash9" title="Flash 9.0r115+ only">wmode</li>
@@ -1255,7 +1311,7 @@ soundManager.movieStarOptions = {<span>
      <li>pause()</li>
      <li>pauseAll()</li>
      <li>play()</li>
-     <li class="new" title="New feature">reboot()</li>
+     <li class="new" title="Recently-added feature">reboot()</li>
      <li>resume()</li>
 
   	 <li>resumeAll()</li>
@@ -1266,6 +1322,7 @@ soundManager.movieStarOptions = {<span>
      <li>stop()</li>
 
      <li>stopAll()</li>
+	 <li class="new" title="New feature">toggleMute()</li>
      <li>togglePause()</li>
      <li>unload()</li>
      <li>unmute()</li>
@@ -1274,7 +1331,9 @@ soundManager.movieStarOptions = {<span>
     <h4>Events</h4>
     <ul>
      <li>onerror()</li>
+     <li class="new" title="New feature">oninitmovie()</li>
      <li>onload()</li>
+     <li class="new" title="New feature">onready()</li>
     </ul>
 
    </li>
@@ -1291,6 +1350,7 @@ soundManager.movieStarOptions = {<span>
      <li title="Flash 9+ only" class="flash9">eqData</li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
      <li>multiShot</li>
+     <li class="flash9 new" title="Flash 9-only, new feature">multiShotEvents</li>
      <li>onbeforefinishtime</li>
      <li>onjustbeforefinishtime</li>
      <li>pan</li>
@@ -1315,6 +1375,7 @@ soundManager.movieStarOptions = {<span>
      <li>duration</li>
      <li>durationEstimate</li>
      <li>loaded</li>
+	 <li>muted</li>
      <li>paused</li>
      <li>playState</li>
      <li>position</li>
@@ -1350,6 +1411,7 @@ soundManager.movieStarOptions = {<span>
      <li>setPosition()</li>
      <li>setVolume()</li>
      <li>stop()</li>
+	 <li class="new">toggleMute()</li>
      <li>togglePause()</li>
      <li>unload()</li>
      <li>unmute()</li>

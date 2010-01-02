@@ -6,7 +6,7 @@
 <meta name="author" content="Scott Schiller" />
 <meta name="language" content="en-us" />
 <meta name="keywords" content="javascript sound library api" />
-<meta name="description" content="API demo and code examples for SoundManager 2, javascript sound API" />
+<meta name="description" content="API demo and code examples for SoundManager 2, Javascript Sound method calls and functions etc." />
 
 <link rel="stylesheet" href="../index.css" media="screen" />
 <style type="text/css">
@@ -15,6 +15,7 @@ h1 {
  padding-top:0.2em;
  padding-bottom:0.1em;
  border-bottom:4px solid #000;
+ letter-spacing:-0.03em;
 }
 
 h2 {
@@ -75,9 +76,14 @@ p {
 <script type="text/javascript">
 
 // flash version URL switch (for this demo page)
-if (window.location.toString().match(/flash9/i)) {
+var winLoc = window.location.toString();
+if (winLoc.match(/flash9/i)) {
   soundManager.flashVersion = 9;
-} else if (window.location.toString().match(/flash8/i)) {
+  if (winLoc.match(/highperformance/i)) {
+	soundManager.useHighPerformance = true;
+	soundManager.useFastPolling = true;
+  }
+} else if (winLoc.match(/flash8/i)) {
   soundManager.flashVersion = 8;
 }
 
@@ -85,7 +91,10 @@ soundManager.url = '../../swf/'; // path to SoundManager2 SWF files (note traili
 soundManager.debugMode = true;
 soundManager.consoleOnly = false;
 
-soundManager.onload = function() {
+soundManager.onready(function(oStatus) {
+  if (!oStatus.success) {
+    return false;	
+  }
   // soundManager is initialised, ready to use. Create a sound for this demo page.
 
   if (soundManager.flashVersion > 8) {
@@ -112,13 +121,13 @@ soundManager.onload = function() {
   });
 
   soundManager.createSound({
-    id: '440hz',
+    id: 's440hz',
     url: '../_mp3/440hz.mp3',
     autoLoad: true,
     volume:50
   });
 
-}
+});
 
 function checkRAM() {
   if (soundManager.supported()) {
@@ -147,13 +156,15 @@ function getRandomMP3URL() {
 
 <div id="flash9" style="padding-left:1em;margin-right:38em">
 
- <h1><a href="http://schillmania.com/projects/soundmanager2/" style="color:#000;text-decoration:none">SoundManager 2</a>: API Demo and Code Examples</h1>
+ <h1><a href="http://www.schillmania.com/projects/soundmanager2/" style="color:#000;text-decoration:none">SoundManager 2</a> / API Demo and Code Examples</h1>
 
- <p>You can run the API demos with either <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), or <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a>.</p>
+ <p class="note">You can run the API demos with <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency).</p>
 
  <p>Wondering where to start? The following are some examples showing how to get started with SoundManager 2.</p>
 
  <p>If you're wondering <em>"How to include this script in my page?"</em>, see this <a href="../template/" title="SM2 bare-bones template" onclick="if (!document.domain) this.href=this.href+'index.html'">bare-bones template</a> which should have the minimal, stripped-down code and instructions you need to get started.</p>
+
+ <h2>The basics: onload()/onerror()</h2>
 
  <p>Once you have SM2 included in your page, you merely need to hook into its onload/onerror events:</p>
 
@@ -167,6 +178,22 @@ soundManager.onerror = function() {
   // (SM2 calls will silently return false after this point.)</span>
 </span>}
 </code></pre>
+
+ <h2>Alternate method: Attaching multiple "onready" listeners</h2>
+
+ <p>If you wish to add multiple event handlers from different scripts, you can use <i>onready</i>/<i>addListener</i>-style syntax:</p>
+
+<pre class="block"><code>soundManager.onready(function(oStatus) {
+  <span><span>// oStatus: object containing "success" parameter</span>
+  if (oStatus.success) {
+    <span>// createSound() / play() etc. can now be called</span>
+  } else {
+    <span>// uh-oh, SM2 failed to start - error, unsupported etc.</span>
+  }
+</span>});
+</code></pre>
+
+<p>SoundManager first processes the <code>onready</code> queue in the order items were added, and then fires <code>soundManager.onload()</code> or <code>onerror()</code>. If you call <code>onready()</code> after SM2 has loaded, your callback will be fired immediately.</p>
 
  <h2>A note about initialization</h2>
  
@@ -224,14 +251,15 @@ demo2Sound.play({volume:50});
  <p>This plays an existing sound which was created by soundManager.onload() (for reference, view source of this page.)</p>
 
  <h2>Demo 4a: Play a sequence of sounds via "onfinish", with multiShot</h2>
-<pre>soundManager.play('<span>aDrumSound</span>',{onfinish:function(){soundManager.play('<span>aCymbalSound</span>');}})</pre>
+<pre>soundManager.play('<span>aDrumSound</span>',{multiShotEvents:true,onfinish:function(){soundManager.play('<span>aCymbalSound</span>');}})</pre>
 <p>Differently formatted:</p>
 <pre class="block"><code>soundManager.play('<span>aDrumSound</span>',{
+  multiShotEvents: true, <span>// allow onfinish() to fire for each "shot" (default: only fire onfinish() for last shot.)</span>
   onfinish:function() {
     soundManager.play('<span>aCymbalSound</span>');
   }
 });</code></pre>
- <button onclick="soundManager._writeDebug('Demo 4a',1);soundManager.play('aDrumSound',{onfinish:function(){soundManager.play('aCymbalSound');}})">Do this</button>
+ <button onclick="soundManager._writeDebug('Demo 4a',1);soundManager.play('aDrumSound',{multiShotEvents:true,onfinish:function(){soundManager.play('aCymbalSound');}})">Do this</button>
  <p>This will play an existing sound (created in-page), and uses the "onfinish" handler to make a call to play a second, pre-existing sound.</p>
  <p>Also note that the button can be clicked multiple times, and the sound will be "layered" as multiShot is enabled for both of these sounds when using Flash 9. An onfinish event will also fire as each sound finishes.</p>
  <p><strong>Bug/behaviour note:</strong> Whenever "play" is called on a SMSound object, any parameters passed in will apply to all currently-playing instances of the sound if multiShot is allowed. For example, the onfinish handler from demo 4a will apply to demo 3 if 4a is started while 3 is still playing.</p>
@@ -263,7 +291,9 @@ s.play({
   }
 });
 </code></pre>
+
 <button onclick="return doEval(document.getElementById('demo4c').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
+<p>Note that there are issues with seamlessly-looping sounds, effectively it is not possible with Flash 8/9 at this point. You can try to get creative with <i>onbeforefinish</i> and timing, but it is difficult if not impractical.</p>
  
 <h2>Demo 5a: Set sound parameters, then play</h2>
 <pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>'); <span><span>// predefined/preloaded sound</span></span>
@@ -304,7 +334,7 @@ soundManager.createSound({
 
    this.setVolume(25); <span><span>// new volume for when un-muted..</span></span>
 
-   soundManager.play('<span>440hz</span>',{
+   soundManager.play('<span>s440hz</span>',{
      pan:<span>75</span>,
      onfinish:function() {
        document.getElementById('<span>btn-d5b</span>').disabled = false;
@@ -329,7 +359,7 @@ soundManager.createSound({
  autoLoad:true,
  onload: function() {
    soundManager.mute('<span>880hz</span>'); <span><span>// mute this - alternately, this.mute() would work here</span></span>
-   soundManager.play('<span>440hz</span>',{ <span><span>// play another sound to demo muting</span></span>
+   soundManager.play('<span>s440hz</span>',{ <span><span>// play another sound to demo muting</span></span>
     onfinish: function() {
       document.getElementById('<span>btn-d5c</span>').disabled = false;
     }

@@ -47,10 +47,8 @@
 		<li><a href="../../demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="../../demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
-		<li><a href="../../demo/christmas-lights/">Christmas Lights</a></li>
-		<li><a href="../../demo/animation/">Animation 1</a></li>
-		<li><a href="../../demo/animation-2a/">Animation 2a</a></li>
-		<li><a href="../../demo/animation-2b/">Animation 2b</a></li>
+		<li><a href="../../demo/animation/">DOM/Animation Demos</a></li>
+		<li><a href="../../demo/flashblock/">FlashBlock Handling</a></li>
 		<li><a href="../../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
@@ -97,7 +95,7 @@
 		<li><a href="../resources/#licensing">Licensing</a></li>
 		<li><a href="../resources/#related">Related Projects</a></li>
 		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
-		<li><a href="http://schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
+		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
 
@@ -194,6 +192,8 @@ soundManager.onerror = function() {
   <span><span>// SM2 could not start, no sound support, something broke etc. Handle gracefully.</span></span>
   disableSoundInMyApp(); <span><span>// for example</span></span>
 }</code></pre>
+
+<p>If you want to get fancier, a more flexible <a href="../#soundmanager-onready">soundManager.onready()</a> method can be used in place of the above.</p>
 
 			  </div>
 
@@ -293,7 +293,7 @@ soundManager.onerror = function() {
 				   <h3><span class="yay">OK</span><span class="boo">Error</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>Flash SWF</span></h3>
 				   <div class="details">
 				    <p>SoundManager 2 must load a flash movie before initialisation can proceed. If you have errors here, check that soundManager.url is correctly defined and that the URL being loaded is correct.</p>
-				   <p>If the Flash movie URL is OK, Flash security is the likely cause. Check the section below.</p>
+				   <p>If the Flash movie URL is OK, Flash security or flash blockers are the likely cause. Check the section below.</p>
 				   </div>
 				  </li>
 
@@ -302,7 +302,8 @@ soundManager.onerror = function() {
 				   <div class="details">
 				    <p>Once the flash component of SM2 has loaded, it tries to make a call to Javascript-land. This is a common point of failure, for security reasons:</p>
 				    <ul>
-				     <li>Offline viewing (file:// or c:\path\): Flash security "whitelisting" is required to allow Flash + JS to work.</li>
+				     <li>Offline viewing (file:// or c:\path\) counts as "cross-domain" access. Flash security "whitelisting" is required to allow Flash + JS to work.</li>
+				     <li style="margin-top:0.5em">Flash blockers (FlashBlock, "click to flash" etc.) preventing flash load and start-up - need whitelisting/"allow this domain" to work smoothly. If you suspect blocking is the issue, try the <a href="../../demo/flashblock/">SoundManager 2 Flashblock demo</a>.</li>
 				     <li style="margin-top:0.5em">Online viewing (HTTP/S): Same-domain security rules apply to HTML + Flash content by default (crossdomain.xml/allowDomain() in .AS source required to override.)</li>
 				    </ul>
 
@@ -321,7 +322,12 @@ soundManager.onerror = function() {
 
 				    <div id="d-flashtojs-online">
 					 <h4>Online viewing: Cross-domain security restrictions</h4>
-				     <p>HTML page on domain A loading .SWF from domain B: Flash security prevents JS + Flash when cross-domain XML file is not available, and/or flash movie was not compiled with allowDomain('domainA') or allowDomain('*') - note that the SWF distributed with SM2 does not use this, you must recompile your own.)</p>
+				     	 <p>HTML page on domain A loading .SWF from domain B: Flash security prevents JS + Flash when a cross-domain XML permission file is not available on domain B, and/or flash movie was not compiled with allowDomain('domainA') or allowDomain('*') - note that the SWF distributed with SM2 does not use this by default; try using the cross-domain version of the SWF, or compile your own which whitelists your own domain(s).</p>
+
+					 <h4>Flash Blockers</h4>
+					 <p>Browser extensions/add-ons like "FlashBlock" and "click to flash" can prevent the .SWF from loading, and this will mean SM2 will time-out and fail waiting for a response from Flash. For development, it's best to whitelist the domain(s) or the .SWF for SM2 to allow it to work.</p>
+					 <p>Have a flash blocker installed? Want to test it? Try the <a href="../../demo/flashblock">SoundManager 2 Flashblock demo</a>.</p>
+
 				    </div>
 
 				   </div>
@@ -344,7 +350,7 @@ soundManager.onerror = function() {
 
 				 </ul>
 				</div>
-				
+			
 				<p>Flash detection code from <a href="http://www.featureblend.com/javascript-flash-detection-library.html" title="Javascript flash detection library">Flash Detect</a> (featureblend.com)</p>
 				
 				<h3>Standalone version of troubleshooting tool</h3>

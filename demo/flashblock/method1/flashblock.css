@@ -1,0 +1,43 @@
+#sm2-container.swf-default,
+#sm2-container.swf-timedout,
+#sm2-container.swf-loaded {
+ /*
+
+  Default style for SM2 container, effectively "hidden" out of view (on-screen via position:fixed for efficiency)
+  Apply this class name when SM2 has started, so the movie can be repositioned to its normal "hidden" place
+
+ */
+  position:fixed;
+  bottom:0px;
+  left:0px;
+  width:8px;
+  height:8px;
+  margin:2px;
+
+  /* IE 6 hax, since no position:fixed */
+  _position:absolute;
+  _left:-9999px;
+  _top:-9999px;
+}
+
+#sm2-container.swf-default,
+#sm2-container.swf-timedout {
+ /* 
+
+  The box where the SWF is appended and hasn't loaded in time, OR hasn't started loading yet.
+  Once the SWF has loaded and SM2 starts, this will change to .swf-loaded
+  Shown here at 48x48px so a flash icon has room to be shown, etc.
+
+ */
+ width:48px;
+ height:48px;
+ padding:1px;
+ _position:absolute; /* IE 6 hax */
+ _left:0px;
+ _top:0px;
+}
+
+#sm2-container.swf-timedout {
+ margin:1px;
+ border:1px solid #ff3333;
+}

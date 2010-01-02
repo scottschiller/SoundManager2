@@ -1,4 +1,4 @@
-/* General warning: Experimental. Code could be a bit cleaner. */
+/* General warning: Beta-ish. Code could be a bit cleaner. */
 
 .ui360,
 .ui360 * {
@@ -224,4 +224,26 @@ x.ui360 .sm2-360btn-playing,
 
 .sm2-inline-list .ui360 a {
  display:none;
+}
+
+/* annotations */
+
+ul.ui360playlist {
+ list-style-type:none;
+}
+
+ul.ui360playlist,
+ul.ui360playlist li {
+ margin:0px;
+ padding:0px;
+}
+
+div.ui360 div.metadata {
+ display:none;
+}
+
+div.ui360 a span.metadata,
+div.ui360 a span.metadata * {
+ /* name of track, note etc. */
+ vertical-align:baseline;
 }

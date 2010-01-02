@@ -5,7 +5,7 @@
 
   http://schillmania.com/projects/soundmanager2/
 
-  *** WARNING: EXPERIMENTAL, SUBJECT TO CHANGE ***
+  * Beta-ish warning: Subject to flux. *
 
   An inline player with a circular UI.
   Based on the original SM2 inline player.
@@ -38,11 +38,20 @@ function ThreeSixtyPlayer() {
   this.oUIImageMap = null;
 
   this.config = {
+
     playNext: false,   // stop after one sound, or play through list until end
     autoPlay: false,   // start playing the first sound right away
     loadRingColor: '#ccc', // how much has loaded
     playRingColor: '#000', // how much has played
     backgroundRingColor: '#eee', // color shown underneath load + play ("not yet loaded" color)
+
+    // optional segment/annotation (metadata) stuff..
+    segmentRingColor: 'rgba(255,255,255,0.33)', // metadata/annotation (segment) colors
+    segmentRingColorAlt: 'rgba(0,0,0,0.1)',
+    loadRingColorMetadata: '#ddd', // "annotations" load color
+    playRingColorMetadata: 'rgba(96,160,224,0.99)', // how much has played when metadata is present
+    playRingColorMetadata: 'rgba(128,192,256,0.9)', // how much has played when metadata is present
+
     circleDiameter: null, // set dynamically according to values from CSS
     circleRadius: null,
     imageRoot: '', // image path to prepend for transparent .GIF - eg. /images/
@@ -51,19 +60,22 @@ function ThreeSixtyPlayer() {
     showHMSTime: false, // hours:minutes:seconds vs. seconds-only
     scaleFont: false,  // also set the font size (if possible) while animating the circle
 
-    useWaveformData: false, // optional: spectrum or EQ graph in canvas
+    // optional: spectrum or EQ graph in canvas (not supported in IE, too slow via ExCanvas)
+    useWaveformData: false,
     waveformDataColor: '#0099ff',
     waveformDataDownsample: 3, // use only one in X (of a set of 256 values) - 1 means all 256
     waveformDataOutside: false,
     waveformDataConstrain: false, // if true, +ve values only - keep within inside circle
     waveformDataLineRatio: 0.64,
 
+    // "spectrum frequency" option
     useEQData: false,
     eqDataColor: '#339933',
     eqDataDownsample: 4, // use only one in X (of 256 values)
     eqDataOutside: true,
     eqDataLineRatio: 0.54,
 
+    // enable "amplifier" (canvas pulses like a speaker) effect
     usePeakData: true,
     peakDataColor: '#ff33ff',
     peakDataOutside: true,
@@ -283,6 +295,7 @@ function ThreeSixtyPlayer() {
 	
 	whileplaying: function() {
       self.updatePlaying.apply(this);
+      this._360data.fps++;
 	},
 
      bufferchange: function() {
@@ -313,6 +326,10 @@ function ThreeSixtyPlayer() {
 
   this.handleClick = function(e) {
     // a sound link was clicked
+    if (e.button > 1) {
+	  // only catch left-clicks
+	  return true;
+    }
     var o = self.getTheDamnLink(e);
     if (o.nodeName.toLowerCase() != 'a') {
       o = self.isChildOfNode(o,'a');
@@ -365,6 +382,7 @@ function ThreeSixtyPlayer() {
       // tack on some custom data
 
       thisSound._360data = {
+	    oUI360: self.getParentByClassName(o,'ui360'), // the (whole) entire container
         oLink: o, // DOM node for reference within SM2 object event handlers
         className: self.css.sPlaying,
         oUIBox: self.getElementsByClassName('sm2-360ui','div',oContainer)[0],
@@ -406,8 +424,14 @@ function ThreeSixtyPlayer() {
 		  if (thisSound.paused || thisSound.playState == 0 || thisSound._360data.lastValues.bytesLoaded == 0 || thisSound._360data.lastValues.position == 0) {
             self.updatePlaying.apply(thisSound);
           }
-		}
+		},
+		fps: 0
       };
+
+      // "Metadata" (annotations)
+      if (typeof self.Metadata != 'undefined' && self.getElementsByClassName('metadata','div',thisSound._360data.oUI360).length) {
+        thisSound._360data.metadata = new self.Metadata(thisSound,self);
+      }
 
 	  // set the cover width/height to match the canvas
 	  thisSound._360data.oCover.style.width = self.config.circleDiameter+'px';
@@ -662,11 +686,19 @@ this.updatePlaying = function() {
   if (this.durationEstimate) {
     this._360data.lastValues.durationEstimate = this.durationEstimate;
   }	
-  self.drawSolidArc(this._360data.oCanvas,self.config.backgroundRingColor,this._360data.width,this._360data.radius,self.deg2rad(fullCircle),0);
-  self.drawSolidArc(this._360data.oCanvas,self.config.loadRingColor,this._360data.width,this._360data.radius,self.deg2rad(fullCircle*(this._360data.lastValues.bytesLoaded/this._360data.lastValues.bytesTotal)),0,true);
+
+  self.drawSolidArc(this._360data.oCanvas,self.config.backgroundRingColor,this._360data.width,this._360data.radius,self.deg2rad(fullCircle),false);
+
+  self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.loadRingColorMetadata:self.config.loadRingColor),this._360data.width,this._360data.radius,self.deg2rad(fullCircle*(this._360data.lastValues.bytesLoaded/this._360data.lastValues.bytesTotal)),0,true);
+
   if (this._360data.lastValues.position != 0) {
     // don't draw if 0 (full black circle in Opera)
-    self.drawSolidArc(this._360data.oCanvas,self.config.playRingColor,this._360data.width,this._360data.radius,self.deg2rad((this._360data.didFinish==1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
+    self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.playRingColorMetadata:self.config.playRingColor),this._360data.width,this._360data.radius,self.deg2rad((this._360data.didFinish==1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
+  }
+
+  // metadata goes here
+  if (this._360data.metadata) {
+    this._360data.metadata.events.whileplaying();
   }
 
   var timeNow = (self.config.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000));
@@ -677,7 +709,7 @@ this.updatePlaying = function() {
   }
 
   // draw spectrum, if applicable
-  if (!isIE) { // IE can render maybe 3 or 4 FPS when including the wave/EQ.
+  if (!isIE) { // IE can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
     self.updateWaveform(this);
     // self.updateWaveformOld(this);
   }
@@ -759,49 +791,9 @@ this.updatePlaying = function() {
       }
     }
 
-/*
-    if (self.config.usePeakData) {
-	  // draw waveform peaks, with history, based on position
-	  var peakAvg = (oSound.peakData.left||oSound.peakData.right); // ehh, let's just keep it simple for now.
-      if (!self.peakDataHistory['p'+oSound.position]) {
-	    // new data
-		self.callbackCount++;
- 	    self.peakDataHistory['p'+oSound.position] = {
-	      'peak': peakAvg, // cache it
-	      'position': oSound.position,
-	      'angle': 0
-	    }
-      }
-      // var estimatedPoints = parseInt((self.callbackCount/oSound._360data.lastValues.position)*oSound._360data.lastValues.durationEstimate); // how many points we expect to draw
-	  // console.log('estimatedPoints: '+estimatedPoints);
-	  // may need to wait until fully-loaded before getting the number and starting to draw.
-	  
-	  var i = null;
-	  var innerRadius = (self.config.peakDataOutside?1:0.565);
-	  var direction = (self.config.peakDataOutside?-1:1);
-	  var scale = (self.config.peakDataOutside?0.5:0.75);
-	  var startAngle = 0;
-	  var endAngle = 0;
-	  var lastAngle = 0;
-	  // GUESS at how many callbacks, use to calculate angle. I dunno.
-	  var perItemAngle = self.deg2rad(1); // self.deg2rad((360/(oSound._360data.lastValues.durationEstimate/8))*self.config.peakDataLineRatio); // self.deg2rad(360/(sampleCount+1));
-	  var playedAngle = self.deg2rad((oSound._360data.didFinish==1?360:360*(oSound._360data.lastValues.position/oSound._360data.lastValues.durationEstimate)));
-	  for (i in self.peakDataHistory) {
-		// draw things.
-		if (self.peakDataHistory[i].position <= oSound.position) {
-	        startAngle = self.deg2rad(360*(self.peakDataHistory[i].position/oSound.durationEstimate));
-	        endAngle = startAngle+perItemAngle;
-	        self.peakDataHistory[i].angle = endAngle; // ?
-	        self.drawSolidArc(oSound._360data.oCanvas,self.config.peakDataColor,oSound._360data.width*innerRadius,oSound._360data.radius*scale*(self.peakDataHistory[i].peak*direction),endAngle,startAngle,true);
-	    }
-      }
-    }
-*/
-
-    // experimental
     if (self.config.usePeakData) {
       if (!oSound._360data.animating) {
-        var nPeak = (oSound.peakData.left||oSound.peakData.right); // (0.8+((oSound.peakData.left||oSound.peakData.right)*0.2));
+        var nPeak = (oSound.peakData.left||oSound.peakData.right);
 		// GIANT HACK: use EQ spectrum data for bass frequencies
 		var eqSamples = 3;
 		for (var i=0; i<eqSamples; i++) {
@@ -972,13 +964,110 @@ this.updatePlaying = function() {
 
 }
 
+// completely optional: Metadata/annotations/segments code
+
+ThreeSixtyPlayer.prototype.Metadata = function(oSound, oParent) {
+  soundManager._wD('Metadata()');
+  var me = this;
+  var oBox = oSound._360data.oUI360;
+  var o = oBox.getElementsByTagName('ul')[0];
+  var oItems = o.getElementsByTagName('li');
+  this.lastWPExec = 0;
+  this.refreshInterval = 250;
+
+  var isAlt = false;
+
+  this.events = {
+    whileplaying: function() {
+	  var width = oSound._360data.width;
+	  var radius = oSound._360data.radius;
+	  var fullDuration = (oSound.durationEstimate||(me.totalTime*1000));
+	  var isAlt = null;
+	  for (var i=0,j=me.data.length; i<j; i++) {
+	    isAlt = (i%2==0);
+	    oParent.drawSolidArc(oSound._360data.oCanvas,(isAlt?oParent.config.segmentRingColorAlt:oParent.config.segmentRingColor),isAlt?width:width, isAlt?radius/2:radius/2, oParent.deg2rad(360*(me.data[i].endTimeMS/fullDuration)), oParent.deg2rad(360*((me.data[i].startTimeMS||1)/fullDuration)), true);
+	  }
+      var d = new Date();
+      if (d-me.lastWPExec>me.refreshInterval) {
+        me.refresh();
+        me.lastWPExec = d;
+      }
+    }	
+  }
+
+  this.refresh = function() {
+    // Display info as appropriate
+    var index = null;
+    var now = oSound.position;
+    var metadata = oSound._360data.metadata.data;
+    for (var i=0, j=metadata.length; i<j; i++) {
+      if (now >= metadata[i].startTimeMS && now <= metadata[i].endTimeMS) {
+        index = i;
+        break;
+      }
+    }
+    if (index != metadata.currentItem && index < metadata.length) {
+      // update
+      oSound._360data.oLink.innerHTML = metadata.mainTitle+' <span class="metadata"><span class="sm2_divider"> | </span><span class="sm2_metadata">'+metadata[index].title+'</span></span>';
+      // self.setPageTitle(metadata[index].title+' | '+metadata.mainTitle);
+      metadata.currentItem = index;
+    }
+  }
+
+  this.totalTime = 0;
+
+  this.strToTime = function(sTime) {
+    var segments = sTime.split(':');
+    var seconds = 0;
+    for (var i=segments.length; i--;) {
+      seconds += parseInt(segments[i])*Math.pow(60,segments.length-1-i,10); // hours, minutes
+    }
+    return seconds;
+  }
+
+  this.data = [];
+  this.data.givenDuration = null;
+  this.data.currentItem = null;
+  this.data.mainTitle = oSound._360data.oLink.innerHTML;
+  for (var i=0; i<oItems.length; i++) {
+    this.data[i] = {
+      o: null,
+      title: oItems[i].getElementsByTagName('p')[0].innerHTML,
+      startTime: oItems[i].getElementsByTagName('span')[0].innerHTML,
+      startSeconds: me.strToTime(oItems[i].getElementsByTagName('span')[0].innerHTML.replace(/[()]/g,'')),
+      duration: 0,
+      durationMS: null,
+      startTimeMS: null,
+      endTimeMS: null,
+      oNote: null
+    }
+  }
+  var oDuration = oParent.getElementsByClassName('duration','div',oBox);
+  this.data.givenDuration = (oDuration.length?me.strToTime(oDuration[0].innerHTML)*1000:0);
+  for (i=0; i<this.data.length; i++) {
+    this.data[i].duration = parseInt(this.data[i+1]?this.data[i+1].startSeconds:(me.data.givenDuration?me.data.givenDuration:oSound.durationEstimate)/1000)-this.data[i].startSeconds;
+    this.data[i].startTimeMS = this.data[i].startSeconds*1000;
+    this.data[i].durationMS = this.data[i].duration*1000;
+    this.data[i].endTimeMS = this.data[i].startTimeMS+this.data[i].durationMS;
+    this.totalTime += this.data[i].duration;
+  }
+}
+
 var threeSixtyPlayer = null;
 
 soundManager.debugMode = (window.location.href.match(/debug=1/i)); // disable or enable debug output
 soundManager.consoleOnly = true;
-soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
 soundManager.flashVersion = 9;
 soundManager.useHighPerformance = true;
+
+if (soundManager.debugMode) {
+  var t = window.setInterval(function(){
+	if (threeSixtyPlayer && threeSixtyPlayer.lastSound && threeSixtyPlayer.lastSound._360data.fps) {
+	  soundManager._writeDebug('fps: ~'+threeSixtyPlayer.lastSound._360data.fps);
+	  threeSixtyPlayer.lastSound._360data.fps = 0;
+	}
+  },1000);
+}
 
 threeSixtyPlayer = new ThreeSixtyPlayer();
 
@@ -992,8 +1081,9 @@ if (threeSixtyPlayer.config.usePeakData) {
   soundManager.flash9Options.usePeakData = true;
 }
 
-soundManager.onload = function() {
-  // soundManager.createSound() etc. may now be called
-  threeSixtyPlayer.init();
-}
-
+soundManager.onready(function(){
+  if (soundManager.supported()) {
+    // soundManager.createSound() etc. may now be called
+    threeSixtyPlayer.init();
+  }
+});
