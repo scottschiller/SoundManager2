@@ -131,6 +131,7 @@ class SoundManager2 {
 
   var registerOnComplete = function(sID) {
     soundObjects[sID].onSoundComplete = function() {
+    checkProgress();
       this.didJustBeforeFinish = false; // reset
       ExternalInterface.call(baseJSObject+"['"+sID+"']._onfinish");
     }
@@ -156,11 +157,11 @@ class SoundManager2 {
     s.didJustBeforeFinish = false;
     if (bAutoPlay != true) {
       s.stop(); // prevent default auto-play behaviour
-      // writeDebug('auto-play stopped');
     } else {
       // writeDebug('auto-play allowed');
     }
     registerOnComplete(sID);
+
   }
 
   var _unload = function(sID,sURL) {

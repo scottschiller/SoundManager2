@@ -6,6 +6,11 @@ body {
  -khtml-text-shadow:0 0 0 #fff; /* dumbass safari high contrast font rendering tweak */
 }
 
+#top,
+#top * {
+ -khtml-text-shadow:0 0 0 #000; /* dumbass safari high contrast font rendering tweak */
+}
+
 h1 {
  letter-spacing:-1px;
 }
@@ -403,6 +408,17 @@ ul {
 
 #nav ul li ul li a:hover {
  background:#336699;
+}
+
+#version {
+ position:relative;
+ float:right;
+ display:inline;
+ margin-left:1em;
+ font-size:x-small;
+ margin-bottom:0px;
+ margin-top:0.25em;
+ color:#999;
 }
 
 div.clear {

@@ -506,7 +506,7 @@ function smashInit() {
   document.getElementById('loading').style.display = 'none';
 }
 
-soundManager.url = '../../';
+soundManager.url = '../../swf/';
 soundManager.flashVersion = 9;
 soundManager.debugMode = false;
 

@@ -15,7 +15,7 @@
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
 	soundManager.debugMode = false;
-	soundManager.url = '../../';
+	soundManager.url = '../../swf/';
 	soundManager.onload = function() {
 	}
 </script>
@@ -129,8 +129,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.91a.20081205</p>
-				<p><a href="../../download/soundmanagerv291a-20081205.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.91a.20081205</a></p>
+				<p>Current version: 2.92a.20081224</p>
+				<p>Note: SWF assets have been moved to swf/ subdirectory starting with this version.</p>
+				<p><a href="../../download/soundmanagerv292a-20081224.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.92a.20081224</a></p>
 			</div>
 			
 		</div>
@@ -150,10 +151,39 @@
 			  <h3 id="revision-history">Revision History</h3>
 
 			  <ul id="revision-list" class="standard">
+
+			   <li class="in">
+			    <h4><b>V2.92a.20081224 (current)</b></h4>
+			    <p>The latest and greatest.</p>
+
+			    <ul class="double">
+
+			     <li class="in">
+			      <p class="compact">General Updates</p>
+			      <ul class="nested compact flat">
+				   <li>Note: Flash (SWF) assets moved to swf/ subdirectory, starting with this version.</li>
+				   <li>Updated design on API demo page, new <a href="../../demo/api/#looping">looping example</a></li>
+			      </ul>
+			     </li>
+				
+			     <li>
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li class="in">Improved regular-expression-based URL detection for <code>canPlayURL()</code>, flash 8/9 and MovieStar (video) formats</li>
+				   <li class="in">Improved <code>soundManager.url</code>-related <code>normalizeURL()</code> handling. If GET parameters are in the URL including the SWF, it will be left alone.</li>
+				   <li class="in">Fixed out-of-bounds issue with <code>setPosition()</code>.</li>
+				   <li class="in">Fixed a <code>setPosition(0)</code> and <i>before</i> <code>onfinish()</code>-related issue, so it is possible to nicely loop sounds from within <code>onfinish()</code> - see <a href="../../demo/api/#looping">looping a sound</a> (API demo)</li>
+				   <li class="in">Fixed an error condition where destroying a loading sound would not terminate the HTTP request, relating to error cases involving <code>netStream.close()</code>.</li>
+				  </ul>
+			     </li>
+
+			      </ul>
+			
+			   </li>
+
 				
 			   <li class="in">
-			    <h4><b>V2.91a.20081205 (current)</b></h4>
-			    <p>The latest and greatest.</p>
+			    <h4><b>V2.91a.20081205</b> (<a href="../../download/soundmanagerv291a-20081205.zip">Download archived version</a>)</h4>
 
 			    <ul class="double">
 
@@ -342,7 +372,7 @@
 			       <li class="in">Fixed some <code>mute()</code> / <code>unmute()</code>-related bugs, global muting should now work properly. Added some related demo page examples.</li>
 			       <li class="in">Removed comment on flash9Options merging code, was previously new and didn't actually work as it was commented out. Oops. :D</li>
 			       <li class="in">Added <i>experimental</i> Flashblock exception handling (mozilla/firefox extension), "notification bar"-style UI which can message and assist users in unblocking SM2 .swf. Configured via <code>soundManager.flashBlockHelper</code> object, currently disabled by default.</li>
-			       <li class="in">Modified <code>soundManager.destroySound()</code> and <code>sound.destruct()</code>, fixed a bug with these methods and flash's unloading of sounds which was breaking things. Hopefully fixes destroying sounds within whileplaying() and related event handlers, too.</code>
+			       <li class="in">Modified <code>soundManager.destroySound()</code> and <code>sound.destruct()</code>, fixed a bug with these methods and flash's unloading of sounds which was breaking things. Hopefully fixes destroying sounds within whileplaying() and related event handlers, too.</li>
 			       <li class="in">Modified flash 9 "peak data" code to only set the data if the feature is actually enabled.</li>
 			       <li class="in">Modified <code>soundManager._debug()</code> to list all sound object details, instead of just ID/URL.</li>
 			      </ul>
@@ -361,7 +391,7 @@
 			      <p class="compact">API: Bug fixes</p>
 			      <ul class="nested compact flat">
 			       <li class="in">Fixed some memory "leaks" / garbage collection issues. RAM allocated to load sounds previously wasn't freed until page unload; now memory should be garbage collected some time after <code>sound.unload()</code> and/or <code>soundManager.destroySound()</code>/<code>sound.destruct()</code> methods are called. In certain cases, Flash sound objects may be destroyed and re-created (transparent to the JS-side) to release memory. Note that garbage collection is not instantaneous, and is affected by CPU/system load and other variables.</li>
-			       <li class="in">Fixed an issue with <code>play()</code> not working on sounds created with <code>autoPlay</code>.</p>
+			       <li class="in">Fixed an issue with <code>play()</code> not working on sounds created with <code>autoPlay</code>.</li>
 			       <li class="in">Fixed SM2 to work under proper XHTML (served as <code>application/xhtml+xml</code> MIME type). Rewrote object/embed code <em>again</em>, now version-agnostic for IE (no CLSID parameters.)</li>
 			       <li class="in">Corrected reported <code>loadFromXML()</code> bug, multiple loadFromXML() calls should work.</li>
 			      </ul>

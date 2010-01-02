@@ -219,7 +219,7 @@ function setActiveStyleSheet(title) {
 
 <script type="text/javascript">
 var bg = {
-  images: ['vernon-night1','vernon-night2','bg1','bg2','bg3'],
+  images: ['bg1','bg2','bg3'],
   i: 0,
   getRandom: function(n) {
     this.i = (typeof n != 'undefined'?n:(++this.i>=this.images.length?0:this.i));
@@ -232,7 +232,7 @@ bg.getRandom(parseInt(Math.random()*bg.images.length));
 
 <script type="text/javascript">
 if (window.location.toString().match(/flash9/)) soundManager.flashVersion = 9;
-soundManager.url = '../../';
+soundManager.url = '../../swf/';
 </script>
 
 </body>

@@ -124,7 +124,7 @@ function InlinePlayer() {
     // a sound link was clicked
     var o = self.getTheDamnLink(e);
     var sURL = o.getAttribute('href');
-    if (!o.href || !o.href.match(/\.mp3/i) || self.classContains(o,self.excludeClass)) {
+    if (!o.href || !o.href.match(/\.mp3(\\?.*)$/i) || self.classContains(o,self.excludeClass)) {
       if (isIE && o.onclick) {
         return false; // IE will run this handler before .onclick(), everyone else is cool?
       }
@@ -212,7 +212,7 @@ var inlinePlayer = null;
 
 soundManager.debugMode = true; // disable or enable debug output
 
-soundManager.url = '../../'; // path to directory containing SM2 SWF
+soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
 
 soundManager.onload = function() {
   // soundManager.createSound() etc. may now be called

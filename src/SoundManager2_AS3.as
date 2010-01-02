@@ -304,6 +304,7 @@ try {
       soundObjects[sID].soundChannel.addEventListener(Event.SOUND_COMPLETE, function():void {
         this.didJustBeforeFinish = false; // reset
         if (soundObjects[sID]) {
+          checkProgress();
           try {
             soundObjects[sID].start(0,1); // go back to 0
             soundObjects[sID].soundChannel.stop();
@@ -355,7 +356,7 @@ try {
     }
 
     if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
-	  this.onLoadError(oSound);
+      this.onLoadError(oSound);
     }
   }
 
@@ -435,7 +436,6 @@ try {
 
     checkProgress();
 
-
     if (!s.didLoad) {
       try {
         s.addEventListener(Event.ID3, onID3);
@@ -457,9 +457,9 @@ try {
 
     if (s.useNetstream) {
       try {
-	// s.ns.close();
-	this.addNetstreamEvents(s);
-	s.ns.play(sURL);
+	    // s.ns.close();
+	    this.addNetstreamEvents(s);
+	    s.ns.play(sURL);
       } catch(e:Error) {
         writeDebug('_load(): error: '+e.toString());
       }
@@ -499,7 +499,9 @@ try {
       s.soundChannel.stop();
     }
     try {
-      if (s.didLoad != true && !s.useNetstream) s.close(); // close stream only if still loading?
+      if (s.didLoad && !s.useNetstream) {
+	    s.close(); // close stream only if still loading?
+	  }
     } catch(e:Error) {
       // stream may already have closed if sound loaded, etc.
       writeDebug('sound._unload(): '+sID+' already unloaded?');
@@ -510,17 +512,17 @@ try {
     if (s.useNetstream) {
 	  // writeDebug('_unload(): closing netStream stuff');
       try {
-	this.removeNetstreamEvents(s);
+	    this.removeNetstreamEvents(s);
         s.ns.close();
         s.nc.close();
-	// s.nc = null;
-	//s.ns = null;
+	    // s.nc = null;
+	    // s.ns = null;
       } catch(e:Error) {
-	// oh well
-        writeDebug('_unload(): error during netConnection/netStream close');
+	    // oh well
+        writeDebug('_unload(): caught exception during netConnection/netStream close');
       }
       if (s.useVideo) {
-	writeDebug('_unload(): clearing video');
+	    writeDebug('_unload(): clearing video');
         s.oVideo.clear();
         // s.oVideo = null;
       }
@@ -583,12 +585,11 @@ try {
 	    } catch(e:Error) {
 		  writeDebug('_destroySound(): Events already removed from netStream/netConnection?');
 	    }
-
         if (s.useVideo) {
           try {
             this.removeChild(s.oVideo);
           } catch(e:Error) {
-	    writeDebug('_destoySound(): could not remove video?');
+	      writeDebug('_destoySound(): could not remove video?');
         }
       }
       if (s.didLoad) {
@@ -600,7 +601,14 @@ try {
           writeDebug('_destroySound(): error during netConnection/netStream close and null');
 	  	}
       }
-    }
+    } else if (s.didLoad) {
+	  // non-netstream case
+      try {
+	    s.close(); // close stream only if still loading?
+      } catch(e:Error) {
+	    // oh well
+	  }
+	}
     s = null;
     soundObjects[sID] = null;
     delete soundObjects[sID];

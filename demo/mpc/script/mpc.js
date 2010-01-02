@@ -78,7 +78,7 @@ var MPC = function() {
 var mpc = new MPC();
 
 soundManager.flashVersion = (window.location.toString().match(/#flash8/i)?8:9);
-soundManager.url = '../../'; // path to load SWF from (overriding default)
+soundManager.url = '../../swf/'; // path to load SWF from (overriding default)
 soundManager.debugMode = false;
 soundManager.consoleOnly = false;
 

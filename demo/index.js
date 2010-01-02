@@ -127,7 +127,7 @@ var utils = new Utils();
 
 var lastSelected = null;
 
-var smLoadFailWarning = '<p class="error"><strong>Warning: SoundManager failed to load/initialize.</strong> May be due to missing .SWF, lack of Flash/support, or Flash security restrictions when viewing offline (not served over HTTP.) Refer to <a href="doc/getstarted/index.html#troubleshooting">troubleshooting</a> for more information.</p>';
+var smLoadFailWarning = '<p class="error"><strong>Warning: SoundManager failed to load/initialize.</strong> If viewing offline, Flash security is probably the culprit and you will need to <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">add this location (folder) to Flash\'s "trusted" locations</a> (or, view this page over HTTP.)<br><br>Other possibilities are a missing .SWF or lack of Flash/support. Refer to <a href="doc/getstarted/index.html#troubleshooting">troubleshooting</a> for more information.</p>';
 
 function resetFilter(o) {
   // reset everything
@@ -328,7 +328,16 @@ function ie6Sucks() {
   }
 }
 
+function doVersion() {
+  var o = $('version');
+  if (!o) {
+    return false;
+  }
+  o.innerHTML = soundManager.versionNumber;
+}
+
 function startStuff() {
+  doVersion();
   ie6Sucks();
   fixLinks();
   getLiveData();

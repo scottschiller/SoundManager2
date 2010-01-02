@@ -178,7 +178,7 @@ getWindowCoords = (navigator.userAgent.toLowerCase().indexOf('opera')>0||navigat
 window.onresize = getWindowCoords;
 
 soundManager.flashVersion = 9;
-soundManager.url = '../../';
+soundManager.url = '../../swf/';
 soundManager.debugMode = false; // disable debug mode
 soundManager.defaultOptions.multiShot = true;
 

@@ -23,7 +23,7 @@ function PagePlayer(oConfigOverride) {
   var isOpera = navigator.userAgent.match(/opera/i);
   var isFirefox = navigator.userAgent.match(/firefox/i);
 
-  sm.url = '../../'; // path to directory containing SM2 SWF
+  sm.url = '../../swf/'; // path to directory containing SM2 SWF
 
   this.config = {
     flashVersion: 8,        // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.

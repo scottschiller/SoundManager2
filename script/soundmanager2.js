@@ -7,7 +7,7 @@
    Code licensed under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.91a.20081205
+   V2.92a.20081224
 */
 
 var soundManager = null;
@@ -23,7 +23,7 @@ function SoundManager(smURL,smID) {
   this.allowPolling = true;        // allow flash to poll for status update (required for "while playing", peak, sound spectrum functions to work.)
   this.useMovieStar = false;	   // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio + video formats (AAC, M4V, FLV, MOV etc.)
   this.useHighPerformance = true;  // flash positioning trick, improves JS/flash callback speed, minimizes delay
-  this.bgColor = '#ffffff';	  	   // movie (.swf) background color, useful if showing on-screen for video etc.
+  this.bgColor = '#ffffff';	   // movie (.swf) background color, useful if showing on-screen for video etc.
 
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
@@ -50,15 +50,15 @@ function SoundManager(smURL,smID) {
   };
 
   this.flash9Options = {           // flash 9-only options, merged into defaultOptions if flash 9 is being used
-    'isMovieStar': null,	   	   // "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
+    'isMovieStar': null,	   // "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
     'usePeakData': false,          // enable left/right channel peak (level) data
     'useWaveformData': false,      // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
     'useEQData': false             // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
   };
 
   this.movieStarOptions = {        // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9 + movieStar mode is enabled
-    'onmetadata': null,		   	   // callback for when video width/height etc. are received
-    'useVideo': false		   	   // if loading movieStar content, whether to show video
+    'onmetadata': null,		   // callback for when video width/height etc. are received
+    'useVideo': false		   // if loading movieStar content, whether to show video
   };
 
   // jslint global declarations
@@ -68,7 +68,7 @@ function SoundManager(smURL,smID) {
 
   var _s = this;
   this.version = null;
-  this.versionNumber = 'V2.91a.20081205';
+  this.versionNumber = 'V2.92a.20081224';
   this.movieURL = null;
   this.url = null;
   this.altURL = null;
@@ -95,12 +95,13 @@ function SoundManager(smURL,smID) {
   this._defaultFlashVersion = 8;
 
   this.filePatterns = {
-    flash8: /.mp3/i,
-    flash9: /.mp3/i
+	flash8: /\.mp3(\?.*)?$/i,
+	flash9: /\.mp3(\?.*)?$/i
   };
 
   this.netStreamTypes = ['aac','flv','mov','mp4','m4v','f4v','m4a','mp4v','3gp','3g2']; // Flash v9.0r115+ "moviestar" formats
-  this.netStreamPattern = new RegExp('.('+this.netStreamTypes.join('|')+')','i');
+  this.netStreamPattern = new RegExp('\\.('+this.netStreamTypes.join('|')+')(\\?.*)?$','i');
+
   this.filePattern = null;
   this.features = {
     peakData: false,
@@ -132,10 +133,11 @@ function SoundManager(smURL,smID) {
 	  _s.defaultOptions = _s._mergeObjects(_s.defaultOptions,_s.flash9Options);
 	}
     if (_s.flashVersion > 8 && _s.useMovieStar) {
+      // flash 9+ support for movieStar formats as well as MP3
       _s.defaultOptions = _s._mergeObjects(_s.defaultOptions,_s.movieStarOptions);
-      _s.filePatterns.flash9 = new RegExp('.(mp3|'+_s.netStreamTypes.join('|')+')','i');
+      _s.filePatterns.flash9 = new RegExp('\\.(mp3|'+_s.netStreamTypes.join('|')+')(\\?.*)?$','i');
     } else {
-	  _s.useMovieStar = false;
+      _s.useMovieStar = false;
     }
     _s.filePattern = _s.filePatterns[(_s.flashVersion!=8?'flash9':'flash8')];
     _s.movieURL = (_s.flashVersion==8?'soundmanager2.swf':'soundmanager2_flash9.swf');
@@ -210,11 +212,10 @@ function SoundManager(smURL,smID) {
       _s.o._createSound(_tO.id,_tO.url,_tO.onjustbeforefinishtime,_tO.usePeakData,_tO.useWaveformData,_tO.useEQData,_tO.isMovieStar,(_tO.isMovieStar?_tO.useVideo:false));
     }
     if (_tO.autoLoad || _tO.autoPlay) {
-      window.setTimeout(function() {
+      // TODO: does removing timeout here cause problems?
         if (_s.sounds[_tO.id]) {
           _s.sounds[_tO.id].load(_tO);
         }
-      },20);
     }
     if (_tO.autoPlay) {
 	  if (_s.flashVersion == 8) {
@@ -493,11 +494,14 @@ function SoundManager(smURL,smID) {
   };
   
   this._normalizeMovieURL = function(smURL) {
+    var urlParams = null;
     if (smURL) {
-      if (smURL.match(/.swf/)) {
-        smURL = smURL.substr(0,smURL.lastIndexOf('.swf'));
-      }
-      if (smURL.lastIndexOf('/') != smURL.length-1) {
+      if (smURL.match(/\.swf(\?.*)?$/i)) {
+        urlParams = smURL.substr(smURL.toLowerCase().lastIndexOf('.swf?')+4);
+        if (urlParams) {
+          return smURL; // assume user knows what they're doing
+        }
+      } else if (smURL.lastIndexOf('/') != smURL.length-1) {
         smURL = smURL+'/';
       }
     }
@@ -810,8 +814,8 @@ function SoundManager(smURL,smID) {
 
   this.createMovie = function(sURL) {
     if (sURL) {
-	  _s.url = sURL;
-	}
+      _s.url = sURL;
+    }
     _s._initMovie();
   };
 
@@ -1016,7 +1020,7 @@ function SoundManager(smURL,smID) {
   
   // SMSound (sound object)
   
-  SMSound = function (oOptions) {
+  SMSound = function(oOptions) {
   var _t = this;
   this.sID = oOptions.id;
   this.url = oOptions.url;
@@ -1095,9 +1099,10 @@ function SoundManager(smURL,smID) {
       _t.instanceOptions = _t._iO;
     } 
     if (typeof _t._iO.url == 'undefined') {
-	  _t._iO.url = _t.url;
-	}
+      _t._iO.url = _t.url;
+    }
     _s._wD('soundManager.load(): '+_t._iO.url,1);
+
     if (_t._iO.url == _t.url && _t.readyState !== 0 && _t.readyState != 2) {
       _s._wD('soundManager.load(): current URL already assigned.',1);
       return false;
@@ -1120,6 +1125,7 @@ function SoundManager(smURL,smID) {
       _s.onerror();
       _s.disable();
     }
+
   };
 
   this.unload = function() {
@@ -1128,7 +1134,7 @@ function SoundManager(smURL,smID) {
     if (_t.readyState !== 0) {
       _s._wD('SMSound.unload(): "'+_t.sID+'"');
       if (_t.readyState != 2) { // reset if not error
-        _t.setPosition(0); // reset current sound positioning
+        _t.setPosition(0,true); // reset current sound positioning
       }
       _s.o._unload(_t.sID,_s.nullURL);
       // reset load/status flags
@@ -1146,7 +1152,7 @@ function SoundManager(smURL,smID) {
   this.play = function(oOptions) {
     if (!oOptions) {
 	  oOptions = {};
-	}
+    }
     _t._iO = _s._mergeObjects(oOptions,_t._iO);
     _t._iO = _s._mergeObjects(_t._iO,_t.options);
     _t.instanceOptions = _t._iO;
@@ -1211,13 +1217,15 @@ function SoundManager(smURL,smID) {
     }
   };
 
-  this.setPosition = function(nMsecOffset) {
+  this.setPosition = function(nMsecOffset,bNoDebug) {
     if (typeof nMsecOffset == 'undefined') {
       nMsecOffset = 0;
     }
-    // var offset = Math.min((nMsecOffset||0),_t.duration); // don't allow seek past loaded duration
-    _t._iO.position = nMsecOffset;
-    _s._wD('SMSound.setPosition('+nMsecOffset+')');
+    var offset = Math.min(_t.duration,Math.max(nMsecOffset,0)); // position >= 0 and <= current available (loaded) duration
+    _t._iO.position = offset;
+    if (!bNoDebug) {
+      _s._wD('SMSound.setPosition('+nMsecOffset+')'+(nMsecOffset != offset?', corrected value: '+offset:''));
+    }
     _s.o._setPosition(_t.sID,(_s.flashVersion==9?_t._iO.position:_t._iO.position/1000),(_t.paused||!_t.playState)); // if paused or not playing, will not resume (by playing)
   };
 
@@ -1396,15 +1404,13 @@ function SoundManager(smURL,smID) {
 
   this._onfinish = function() {
     // sound has finished playing
-    _t.playState = 0;
-    _t.paused = false;
-    if (_t._iO.onfinish) {
-      _s._wD('SMSound._onfinish(): "'+_t.sID+'"');
-      _t._iO.onfinish.apply(_t);
-    }
+
+    // TODO: calling user-defined onfinish() should happen after setPosition(0)
+    // OR: onfinish() and then setPosition(0) is bad.
+
     if (_t._iO.onbeforefinishcomplete) {
-	  _t._iO.onbeforefinishcomplete.apply(_t);
-	}
+      _t._iO.onbeforefinishcomplete.apply(_t);
+    }
     // reset some state items
     _t.didBeforeFinish = false;
     _t.didJustBeforeFinish = false;
@@ -1412,12 +1418,18 @@ function SoundManager(smURL,smID) {
       _t.instanceCount--;
       if (!_t.instanceCount) {
         // reset instance options
-        _t.setPosition(0);
+        // _t.setPosition(0);
+        _t.playState = 0;
+        _t.paused = false;
         _t.instanceCount = 0;
         _t.instanceOptions = {};
+        if (_t._iO.onfinish) {
+          _s._wD('SMSound._onfinish(): "'+_t.sID+'"');
+          _t._iO.onfinish.apply(_t);
+        }
       }
     } else {
-      _t.setPosition(0);
+      // _t.setPosition(0);
     }
   };
 
@@ -1438,7 +1450,7 @@ function SoundManager(smURL,smID) {
       _s._wD('SMSound._onmetadata(): "'+_t.sID+'"');
       _t._iO.onmetadata.apply(_t);
     }
-    _s.wD('SMSound.onmetadata() complete');
+    _s._wD('SMSound.onmetadata() complete');
   };
 
   }; // SMSound()
@@ -1449,8 +1461,8 @@ function SoundManager(smURL,smID) {
     window.addEventListener('load',_s.beginDelayedInit,false);
     window.addEventListener('unload',_s.destruct,false);
     if (_s._tryInitOnFocus) {
-	  window.addEventListener('mousemove',_s.handleFocus,false); // massive Safari focus hack
-	}
+      window.addEventListener('mousemove',_s.handleFocus,false); // massive Safari focus hack
+    }
   } else if (window.attachEvent) {
     window.attachEvent('onfocus',_s.handleFocus);
     window.attachEvent('onload',_s.beginDelayedInit);

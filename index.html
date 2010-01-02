@@ -27,7 +27,7 @@ var PP_CONFIG = {
 	var isHome = true;
 	soundManager.bgColor = '#f9f9f9';
 	soundManager.debugMode = false;
-	soundManager.url = './';
+	soundManager.url = 'swf/';
 
 	soundManager.onload = function() {
 	  pagePlayer.initDOM();
@@ -69,6 +69,7 @@ var PP_CONFIG = {
   <h2>A Javascript Sound API supporting MP3, MPEG4 Audio and Video.</h2>
 
 	<div id="nav">
+         <div id="version"></div>
 	 <ul>
 
 	  <li>
@@ -79,7 +80,7 @@ var PP_CONFIG = {
 	   <a href="#">Demos</a>
 	   <ul>
 		<li><a href="demo/api/">API Examples</a></li>
-	    <li><a href="demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
+	    <li><a href="demo/play-mp3-links/">Playable MP3 links</a></li>
 		<li><a href="demo/page-player/">Muxtape-style UI</a></li>
 		<li><a href="demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
@@ -173,7 +174,7 @@ var PP_CONFIG = {
 			<div class="demo-block">
 				<ul class="playlist" style="margin-top:0.5em">
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="inline-exclude">Armstrong Beat</a></li>
-				 <li><a href="http://freshly-ground.com/data/audio/binaural/Backyard%20Bees%2C%20Construction%2C%20Traffic.mp3" class="inline-exclude">Bees, Noise, Traffic</a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/binaural/Backyard%20Bees%2C%20Construction%2C%20Traffic.mp3?foo=bar&baz=biff&flv=true" class="inline-exclude">Bees, Noise, Traffic</a></li>
 				</ul>
 			</div>
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">MPEG-4 Video<span class="l"></span><span class="r"></span></h3>
@@ -181,7 +182,7 @@ var PP_CONFIG = {
 				<div id="sm2-container"><!-- SM2 SWF, video, goes here --></div>
 				<ul class="playlist" style="margin-top:0.3em">
 				 <li><a href="http://freshly-ground.com/data/video/xmaslights-iphone.m4v" title="iPhone-compatible H.264 video" class="inline-exclude">JS + Canvas Lights</a></li>
-				 <li><a href="http://freshly-ground.com/data/video/Jack%20Dempsey%20Cichlids.flv" title="Personal .FLV from YouTube" class="inline-exclude">Aquarium</a></li>
+				 <li><a href="http://freshly-ground.com/data/video/Jack%20Dempsey%20Cichlids.flv?foo=bar&baz=biff&.mp3=true" title="Personal .FLV from YouTube" class="inline-exclude">Aquarium</a></li>
           		        </ul>
 				<p class="note" style="margin-top:3px;margin-bottom:0px;margin-left:0.8em">More: <a href="demo/video/">Video</a> | <a href="demo/page-player/">Muxtape UI</a> | <a href="demo/play-mp3-links/" class="exclude">Play MP3 links</a></p>
 			</div>

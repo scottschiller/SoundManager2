@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../demo/index.js"></script>
 <script type="text/javascript">
 	soundManager.debugMode = false;
-	soundManager.url = '../';
+	soundManager.url = '../swf/';
 	soundManager.onload = function() {
 	}
 </script>
@@ -306,7 +306,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dd title="soundID:string">Starts playing the sound specified by ID. (Will start loading if applicable, and will play ASAP.)</dd>
 	   <dd>Optionally, returns a boolean value indicating "sound created", ie. if the related sound object didn't exist prior to this call and was created to do so.</dd>
 	   <dd>Example: <code>soundManager.play('<span>mySound</span>');</code></dd>
-	   <dd>Note that the second parameter, <code>options object</code>, is not required and can take almost any argument from the object literal format (eg. volume.)</dd>
+	   <dd>Note that the second parameter, <code>options object</code>, is not required and can take almost any argument from the object literal format (eg. volume.) It is convenient when you wish to override the sound defaults for a single instance.</dd>
 	   <dd>Example: <code>soundManager.play('<span>mySound</span>',{<span>volume:50,onfinish:playNextSound</span>});</code></dd>
 	   </dl>
 
@@ -1174,7 +1174,8 @@ soundManager.movieStarOptions = {<span>
      <li>loadFromXML()</li>
      <li>mute()</li>
      <li>pause()</li>
-	 <li title="Recently-added feature" class="new">pauseAll()</li>
+     <li title="Recently-added feature" class="new">pauseAll()</li>
+     <li>play()</li>
      <li>resume()</li>
 
   	 <li title="Recently-added feature" class="new">resumeAll()</li>
