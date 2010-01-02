@@ -2,13 +2,6 @@ SoundManager 2 makes it easier to play sounds using Javascript.
 
 By wrapping and extending the Flash sound API, SoundManager 2 brings solid audio functionality to Javascript.
 
-A few nifty sites that have implemented SoundManager 2 for driving audio:
-
-    * Muxtape
-    * SoundCloud
-    * The Cloud Player
-    * 8tracks
-
 Basic API Features (Flash 8)
 
     * Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript
@@ -29,4 +22,11 @@ General Tech Stuff
     * console.log()-style debug output and troubleshooting tools
     * Community-based discussion/support
 
+A few nifty sites that have implemented SoundManager 2 for driving audio:
+
+    * Muxtape
+    * SoundCloud / The Cloud Player
+    * 8tracks
+
+Project home, documentation, live demos etc.:
 http://www.schillmania.com/projects/soundmanager2/
