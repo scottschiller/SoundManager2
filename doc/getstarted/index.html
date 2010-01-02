@@ -15,6 +15,7 @@
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
 	soundManager.debugMode = true;
+        soundManager.debugFlash = true; // enable flash debug output for this page
 	soundManager.url = '../../swf/';
 	soundManager.onload = function() {
 	}
@@ -123,7 +124,7 @@
 			
 				 <h3>SoundManager 2 Tutorial: What, Why, How</h3>
 			
-				 <p><strong>Problem:</strong> Browsers lack good, consistent native audio/video support. (HTML 5's &lt;audio&gt; and &lt;video&gt; are on the way, but not universal yet.)</p>
+				 <p><strong>Problem:</strong> Browsers lack good, consistent native audio/video support. (HTML 5's &lt;audio&gt; and &lt;video&gt; are on the way, but don't have majority support yet.)</p>
 				 <p><strong>Solution:</strong> Javascript API via Flash + ExternalInterface, works almost everywhere</p>
 				 <p>SoundManager 2 wraps and extends the Flash Sound API, and exposes it to Javascript. (The flash portion is hidden, transparent to both developers and end users.)</p>
 
@@ -172,11 +173,11 @@
 
 			  <h4>Startup / Initialization</h4>
 
-			  <p class="in">A single Javascript include will link in all of the required code for the library, which will automatically begin loading either at <code>document.onDOMContentLoaded()</code> if supported, or alternately, after <code>window.onload()</code> (eg., IE 6 and others.) The default behaviour is to start "as soon as possible", but the library can be configured to wait for <code>window.onload()</code> in all cases as well. Loading and initialisation are separate events.</p>
+			  <p class="in">A single Javascript include will link in all of the required code for the library, which will automatically begin loading either at <code>onDOMContentLoaded()</code> if supported, or alternately, after <code>window.onload()</code> (eg., IE 6 and others.) The default behaviour is to start "as soon as possible", but the library can be configured to wait for <code>window.onload()</code> in all cases as well. Loading and initialisation are separate events.</p>
 
 			  <p class="in">Once initialised, SM2 will call either <code>soundManager.onload()</code> or <code>soundManager.onerror()</code>, event handlers which you can define just as with <code>window.onload()</code>.</p>
 			
-			  <h4>SoundManager onload/onerror Event Handlers</h4>
+			  <h4>SoundManager onload/onerror/onready Event Handlers</h4>
 			
 <pre class="block"><code>soundManager.onload = function() {
   <span><span>// SM2 is ready to go!</span></span>
@@ -193,7 +194,23 @@ soundManager.onerror = function() {
   disableSoundInMyApp(); <span><span>// for example</span></span>
 }</code></pre>
 
-<p>If you want to get fancier, a more flexible <a href="../#soundmanager-onready">soundManager.onready()</a> method can be used in place of the above.</p>
+<p>Alternately, <code>onready()</code> is more flexible and can be used to queue numerous listeners, etc.:</p>
+
+<pre class="block"><code>soundManager.onready(function() {
+  if (soundManager.supported()) {
+    <span><span>// SM2 is ready to go!</span></span>
+    var mySound = soundManager.createSound({
+      id: '<span>aSound</span>',
+      url: '<span>/path/to/an.mp3</span>',
+      volume: <span>50</span>
+    });
+    mySound.play();
+  } else {
+    // unsupported/error case	
+  }
+});</code></pre>
+
+<p>For more examples, see <a href="../#soundmanager-onready">soundManager.onready()</a>.</p>
 
 			  </div>
 
@@ -261,15 +278,17 @@ soundManager.onerror = function() {
 		
 		<div id="troubleshooting" class="columnar">
 
-			<div class="c1">
-				<h2>Troubleshooting</h2>
+			<div id="troubleshooting-flash8" class="c1">
+				<h2 id="troubleshooting-flash9">Troubleshooting</h2>
 				<p>Console-style messaging, useful for troubleshooting start-up and runtime issues.</p>
 			</div>
 			
-			<div class="c2">
+			<div id="troubleshooting-flash9-highperformance" class="c2">
 
 				<h3>SoundManager 2 Start-up and Debug Tools</h3>
 				<p>This troubleshooting tool can come in handy for debugging SM2 start-up problems.</p>
+
+				<p class="note">Flash options: <a href="#troubleshooting-flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#troubleshooting-flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#troubleshooting-flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes.</p>
 
 				<div id="sm2-test">
 				 <ul class="items">
@@ -302,12 +321,10 @@ soundManager.onerror = function() {
 				   <div class="details">
 				    <p>Once the flash component of SM2 has loaded, it tries to make a call to Javascript-land. This is a common point of failure, for security reasons:</p>
 				    <ul>
-				     <li>Offline viewing (file:// or c:\path\) counts as "cross-domain" access. Flash security "whitelisting" is required to allow Flash + JS to work.</li>
-				     <li style="margin-top:0.5em">Flash blockers (FlashBlock, "click to flash" etc.) preventing flash load and start-up - need whitelisting/"allow this domain" to work smoothly. If you suspect blocking is the issue, try the <a href="../../demo/flashblock/">SoundManager 2 Flashblock demo</a>.</li>
-				     <li style="margin-top:0.5em">Online viewing (HTTP/S): Same-domain security rules apply to HTML + Flash content by default (crossdomain.xml/allowDomain() in .AS source required to override.)</li>
-				    </ul>
-
-				    <div id="d-flashtojs-offline">
+				     <li>
+					First time opening SM2 after downloading it? Is your browser URL at file:// or c:/path/ or otherwise not using HTTP? Flash security "whitelisting" is required to allow Flash + JS to work when offline, placing it in the "LocalTrusted" Flash security sandbox rather than "localWithFile".
+					
+				    <div id="d-flashtojs-offline" style="padding-bottom:1em">
 				     <h4>Offline viewing: Adding a "trusted location" to the Flash Security Settings Panel</h4>
 				     <p>The Flash Player Global Security Settings Panel is a web-based control panel which allows you to configure Flash security. You will need to add the path of the SoundManager 2 project in order for it to work "offline" (ie., when viewing via file:// or c:/)</p>
 				     <p id="ss"><a href="#screenshots" onclick="document.getElementById('ss-box').style.display = 'block';document.getElementById('ss').style.display='none';return false">Show me how</a>: Adding a "trusted location"</p>
@@ -319,6 +336,12 @@ soundManager.onerror = function() {
 				     </div>
 				     <p><a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html" target="_blank" class="feature">Launch the Flash Security Settings Panel</a></p>
 				    </div>
+					
+					 </li>
+				     <li style="margin-top:0.5em">Flash blockers (FlashBlock, "click to flash" etc.) preventing flash load and start-up - need whitelisting/"allow this domain" to work smoothly. If you suspect blocking is the issue, try the <a href="../../demo/flashblock/">SoundManager 2 Flashblock demo</a>.</li>
+				     <li style="margin-top:0.5em">Online viewing (HTTP/S): Same-domain security rules apply to HTML + Flash content by default (crossdomain.xml/allowDomain() in .AS source required to override.)</li>
+				    </ul>
+				    <p>See <a href="#flashdebug" title="SoundManager 2 flash debug output">Flash debug output</a> for more security error details.</p>
 
 				    <div id="d-flashtojs-online">
 					 <h4>Online viewing: Cross-domain security restrictions</h4>
@@ -352,10 +375,6 @@ soundManager.onerror = function() {
 				</div>
 			
 				<p>Flash detection code from <a href="http://www.featureblend.com/javascript-flash-detection-library.html" title="Javascript flash detection library">Flash Detect</a> (featureblend.com)</p>
-				
-				<h3>Standalone version of troubleshooting tool</h3>
-				<p class="in">For debugging your development/production environment with this widget, see the <a href="../../troubleshoot/" title="SoundManager 2: Standalone debug widget">troubleshooting</a> subdirectory of the SoundManager 2 package.</p>
-
 
 				<h3>Live Debug Output</h3>
 				<p>SoundManager 2 relies on Javascript and Flash communicating via ExternalInterface, and this is subject to a number of timing, loading and browser security conditions. Because of this complexity, debug information is essential for troubleshooting start-up, loading, initialization and error conditions between Flash and Javascript.</p>
@@ -368,6 +387,18 @@ soundManager.onerror = function() {
 				 </div>
 				</div>
 				<p>For more examples of live debug output, see the <a href="../../demo/template/" title="Basic SoundManager 2 template">Basic Template</a>, <a href="../../demo/api/" title="API demo">API demo</a> and other demos in the top navigation.</p>
+
+				<h3 id="flashdebug">Flash Movie Debug Output</h3>
+				<p>When <code>soundManager.debugFlash = true</code>, Flash will write debug info as text to the flash movie. This can be helpful for troubleshooting Flash/JS issues when timeouts or security errors are involved which prevent Flash from talking to Javascript, potentially hiding useful debug information. A CSS class of <code>flash-debug</code> will also be appended to the Flash <code>#sm2-container</code> DIV element when enabled, if you wish to style it differently.</p>
+				<p>You can also specify ?debug=1 in the URL to the SWF, and it will write debug output. Try <a href="../../swf/soundmanager2.swf?debug=1" title="Test debug output" class="norewrite">soundmanager2.swf?debug=1</a>, or <a href="../../swf/soundmanager2_flash9.swf?debug=1" title="Test debug output, Flash 9" class="norewrite">soundmanager2_flash9.swf?debug=1</a>.
+
+				<div id="sm2-container">
+					<!-- flash movie with debug output goes here -->
+				</div>
+
+				<h3>Standalone version of troubleshooting tool</h3>
+				<p class="in">For debugging your development/production environment with this widget, see the <a href="../../troubleshoot/" title="SoundManager 2: Standalone debug widget">troubleshooting</a> subdirectory of the SoundManager 2 package.</p>
+
 			</div>
 			
 		</div>

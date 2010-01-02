@@ -7,6 +7,18 @@ return version;}},{"name":"ShockwaveFlash.ShockwaveFlash","version":function(obj
 return version;};var getActiveXObject=function(name){var obj=-1;try{obj=new ActiveXObject(name);}catch(err){}
 return obj;};var parseActiveXVersion=function(str){var versionArray=str.split(",");return{"raw":str,"major":parseInt(versionArray[0].split(" ")[1],10),"minor":parseInt(versionArray[1],10),"revision":parseInt(versionArray[2],10),"revisionStr":versionArray[2]};};var parseStandardVersion=function(str){var descParts=str.split(/ +/);var majorMinor=descParts[2].split(/\./);var revisionStr=descParts[3];return{"raw":str,"major":parseInt(majorMinor[0],10),"minor":parseInt(majorMinor[1],10),"revisionStr":revisionStr,"revision":parseRevisionStrToInt(revisionStr)};};var parseRevisionStrToInt=function(str){return parseInt(str.replace(/[a-zA-Z]/g,""),10)||self.revision;};self.majorAtLeast=function(version){return self.major>=version;};self.FlashDetect=function(){if(navigator.plugins&&navigator.plugins.length>0){var type='application/x-shockwave-flash';var mimeTypes=navigator.mimeTypes;if(mimeTypes&&mimeTypes[type]&&mimeTypes[type].enabledPlugin&&mimeTypes[type].enabledPlugin.description){var version=mimeTypes[type].enabledPlugin.description;var versionObj=parseStandardVersion(version);self.raw=versionObj.raw;self.major=versionObj.major;self.minor=versionObj.minor;self.revisionStr=versionObj.revisionStr;self.revision=versionObj.revision;self.installed=true;}}else if(navigator.appVersion.indexOf("Mac")==-1&&window.execScript){var version=-1;for(var i=0;i<activeXDetectRules.length&&version==-1;i++){var obj=getActiveXObject(activeXDetectRules[i].name);if(typeof obj=="object"){self.installed=true;version=activeXDetectRules[i].version(obj);if(version!=-1){var versionObj=parseActiveXVersion(version);self.raw=versionObj.raw;self.major=versionObj.major;self.minor=versionObj.minor;self.revision=versionObj.revision;self.revisionStr=versionObj.revisionStr;}}}}}();};FlashDetect.release="1.0.3";
 
+// flash version URL switch (for this demo page)
+var winLoc = window.location.toString();
+if (winLoc.match(/flash9/i)) {
+  soundManager.flashVersion = 9;
+  if (winLoc.match(/highperformance/i)) {
+	soundManager.useHighPerformance = true;
+	soundManager.useFastPolling = true;
+  }
+} else if (winLoc.match(/flash8/i)) {
+  soundManager.flashVersion = 8;
+}
+
 var sm2Debugger = null;
 
 function SM2Debugger() {
@@ -40,15 +52,14 @@ function SM2Debugger() {
 
   this.testURL = function(sURL,fOnComplete) {
     var xhr = self.getXHR();
-	var msg = '<a href="'+soundManager.url+'" title="This should be a valid .SWF URL, not a 404 etc.">'+soundManager.url+'</a>';
-    try {
+    var msg = '<a href="'+soundManager.url+'" title="This should be a valid .SWF URL, not a 404 etc.">'+soundManager.url+'</a>';
+    if (soundManager.getMoviePercent() == 100) {
+	// SWF may have already loaded
+	fOnComplete(true,msg);
+    } else {
+      try {
 	  xhr.open("HEAD",sURL,true);
-	} catch(e) {
-	  // fail (cross-domain, or no XHR) unless offline
-	  fOnComplete('unknown',msg);
-	  return false;
-	}
-    xhr.onreadystatechange = function() {
+    	xhr.onreadystatechange = function() {
 	  if (xhr.readyState == 4) {
 		if (xhr.status == '200') {
 		  fOnComplete(true,msg);
@@ -61,6 +72,13 @@ function SM2Debugger() {
 	  }
 	}
 	xhr.send(null);
+
+      } catch(e) {
+	  // fail (cross-domain, or no XHR) unless offline
+	  fOnComplete('unknown',msg);
+	  return false;
+      }
+    }
   }
 
   this.handleEvent = function(sEventType,bSuccess,sMessage) {
@@ -143,6 +161,8 @@ function SM2Debugger() {
     document.getElementById('d-flashversion').innerHTML = 'soundManager.flashVersion = '+soundManager.flashVersion+';';
     self.handleEvent('hasflash',isSupported,hasFlash?flashInfo:null);
   }
+
+  soundManager.debugFlash = true; // try to get flash debug output, as well
 
   this.init();
 

@@ -7,7 +7,6 @@
 <meta name="language" content="en-us" />
 <meta name="keywords" content="javascript sound library api" />
 <meta name="description" content="API demo and code examples for SoundManager 2, Javascript Sound method calls and functions etc." />
-
 <link rel="stylesheet" href="../index.css" media="screen" />
 <style type="text/css">
 
@@ -34,7 +33,7 @@ dt,
 }
 
 p {
- line-height:2em;
+ line-height:1.5em;
  margin-bottom:1em;
 }
 
@@ -179,9 +178,20 @@ soundManager.onerror = function() {
 </span>}
 </code></pre>
 
- <h2>Alternate method: Attaching multiple "onready" listeners</h2>
+ <h2>Fancier: Attaching multiple "onready" listeners</h2>
 
- <p>If you wish to add multiple event handlers from different scripts, you can use <i>onready</i>/<i>addListener</i>-style syntax:</p>
+ <p>If you wish to add multiple event handlers from different scripts, you can use <i>onready()</i> / <i>addListener()</i>-style syntax:</p>
+
+<pre class="block"><code>soundManager.onready(function() {
+  if (soundManager.supported()) {
+    <span>// createSound() / play() etc. can now be called</span>
+  } else {
+    <span>// uh-oh, SM2 failed to start - error, unsupported etc.</span>
+  }
+</span>});
+</code></pre>
+
+ <p>An optional status object is actually passed to onready, which you can also use:</p>
 
 <pre class="block"><code>soundManager.onready(function(oStatus) {
   <span><span>// oStatus: object containing "success" parameter</span>
@@ -203,7 +213,7 @@ soundManager.onerror = function() {
 
  <h2>Debug Output, disabling and minified versions</h2>
  <p class="compact">SoundManager 2 has debug mode enabled by default and will write to agents supporting <em>console.log</em>-style debugging, and/or a custom &lt;div&gt; element in the absence of a console.</p>
- <p>To disable debug output, set soundManager.debugMode as follows:</p>
+ <p>To disable debug output, set <code>soundManager.debugMode = false;</code></p>
  <p>Alternately, you may use the no-debug, minified version of the SM2 javascript library (which has internal debug code removed, and will silently return false.)</p>
 
  <h2>Demo 1a: Create + play (simple method)</h2>
@@ -250,7 +260,7 @@ demo2Sound.play({volume:50});
  <button onclick="soundManager._writeDebug('Demo 3',1);soundManager.play('aDrumSound')">Do this</button>
  <p>This plays an existing sound which was created by soundManager.onload() (for reference, view source of this page.)</p>
 
- <h2>Demo 4a: Play a sequence of sounds via "onfinish", with multiShot</h2>
+ <h2>Demo 4a: Play a sequence of sounds via "onfinish", with multiShot*</h2>
 <pre>soundManager.play('<span>aDrumSound</span>',{multiShotEvents:true,onfinish:function(){soundManager.play('<span>aCymbalSound</span>');}})</pre>
 <p>Differently formatted:</p>
 <pre class="block"><code>soundManager.play('<span>aDrumSound</span>',{
@@ -263,6 +273,7 @@ demo2Sound.play({volume:50});
  <p>This will play an existing sound (created in-page), and uses the "onfinish" handler to make a call to play a second, pre-existing sound.</p>
  <p>Also note that the button can be clicked multiple times, and the sound will be "layered" as multiShot is enabled for both of these sounds when using Flash 9. An onfinish event will also fire as each sound finishes.</p>
  <p><strong>Bug/behaviour note:</strong> Whenever "play" is called on a SMSound object, any parameters passed in will apply to all currently-playing instances of the sound if multiShot is allowed. For example, the onfinish handler from demo 4a will apply to demo 3 if 4a is started while 3 is still playing.</p>
+ <p class="note">* Multishot is Flash 9+ only.</p>
 
  <h2>Demo 4b: Create and play a sequence of new sounds via "onfinish"</h2>
 <pre class="block"><code>soundManager.createSound({
@@ -325,7 +336,7 @@ soundManager.createSound({
    <span><span>// play (muted) cymbal sound..</span></span>
    this.play({
      volume:75, <span><span>// volume for when un-muted</span></span>
-     pan:-75,   <span><span>// mostly on left channel</span></span>
+     pan:-75,   <span><span>// mostly on left channel</span></span>&nbsp;
      <span><span>// .. and clean-up afterwards</span></span>
      onfinish:function() {
        this.destruct();
@@ -600,6 +611,10 @@ setTimeout(sound16.stop,1500);
 
 
 <span id="flash-ram-use" title="Flash plugin RAM use (across this browser)" style="position:fixed;_position:absolute;top:0.5em;right:0.5em;background:#666;color:#fff;font-weight:bold;padding:0.3em 0.4em;cursor:pointer;cursor:hand;display:none" onclick="this.style.display='none';window.clearTimeout(t)">N/A</span>
+
+ <div id="sm2-container" class="swf-default">
+   <!-- flash is appended here -->
+ </div>
 
 </div>
 

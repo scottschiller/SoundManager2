@@ -14,6 +14,7 @@
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
 	soundManager.debugMode = true;
+	soundManager.debugFlash = true;
 	soundManager.url = '../../swf/';
 	soundManager.onload = function() {
 	}
@@ -140,33 +141,22 @@
 
 			  <h4>Supported Browsers/Platforms</h4>
 
-			  <p>Javascript-to-flash communication is possible through Flash 8's ExternalInterface feature, which (as I understand) uses a standard browser plugin architecture implemented by each browser manufacturer (see <a href="http://www.mozilla.org/projects/plugins/npruntime.html" title="Mozilla plugin scripting reference">NPAPI</a>.) As a result, the following browsers should be supported:</p>
+			  <p>Javascript-to-flash communication is possible through Flash 8's ExternalInterface feature, which uses a standard browser plugin architecture implemented by each browser manufacturer (see <a href="http://www.mozilla.org/projects/plugins/npruntime.html" title="Mozilla plugin scripting reference">NPAPI</a>.) As a result, the following browsers should be supported:</p>
 
 			  <ul>
-			   <li>IE 5.0+, Win32</li>
+			   <li>IE 5.0+, Windows</li>
 			   <li>Netscape 8.0+, Windows/Mac</li>
 			   <li>Mozilla 1.7.5+, Windows/Mac</li>
 			   <li>Firefox 1.0+, Windows/Mac</li>
 			   <li>Firefox 1.5+, Linux (Flash 9 beta)</li>
-			   <li>Safari 1.3+, Mac</li>
-			   <li>Opera 9.10+ (slightly buggy, 9.5+ ideal), Windows/Mac</li>
+			   <li>Safari 1.3+, Mac / All Windows versions</li>
+			   <li>Google Chrome (All versions/OSes)</li>
+			   <li>Opera 9.10 (slightly buggy, 9.5+ ideal), Windows/Mac</li>
 			  </ul>
 
-			  <p>For reference, see Adobe's <a href="http://livedocs.macromedia.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&amp;file=00002200.html" title="Adobe ExternalInterface notes">ExternalInterface support page</a> which documents supported browsers.</p>
+			  <p>For reference, see Adobe's <a href="http://livedocs.macromedia.com/flash/8/" title="Adobe Flash 8 documentation">Flash 8 documentation</a>, under the "ExternalInterface support" page which details supported browsers.</p>
 
 			  <p>At this time, not all combinations of browser/OS have been tested. Some unlisted configurations may be supported, but have not been explicitly verified to work.</p>
-
-			  </div>
-
-			  <div class="f-block c-requirements">
-
-			  <h4>Unsupported Configurations</h4>
-
-			  <p>The following browser/OS combinations have been reported as buggy, or may be unsupported:</p>
-
-			  <ul>
-			   <li>Konqueror (version unknown)</li>
-			  </ul>
 
 			  </div>
 
@@ -178,8 +168,8 @@
 
 			  <div class="f-block c-limitations">
 
-			  <h4>Supported sound format (MP3-only, with caveats)</h4>
-			  <p>SM2 uses Flash's native Sound object for loading and managing sound, so it is subject to the same limitations that Flash 8 is. Perhaps a design decision, the Flash 8 sound object only supports MP3 files through the <code class="in">loadSound()</code> ActionScript method. SM2 is not able to load other sound formats, including audio-only SWF files, due to this limitation. Refer to the <a href="http://livedocs.macromedia.com/flash/8/main/00002668.html" title="Info on Flash 8's sound object">Flash 8 sound object documentation</a> for details.</p>
+			  <h4>Supported sound formats (MP3 via Flash 8 and MP4/M4A/AAC via Flash 9 "MovieStar", with caveats)</h4>
+			  <p>SM2 uses Flash's native Sound object for loading and managing sound, so it is subject to the same limitations that Flash 8 is. Perhaps a design decision, the Flash 8 sound object only supports MP3 files through the <code class="in">loadSound()</code> ActionScript method. SM2 is not able to load other sound formats, including audio-only SWF files, due to this limitation. Refer to the <a href="http://livedocs.macromedia.com/flash/8/" title="Info on Flash 8's sound object">Flash 8 documentation</a> for details.</p>
 
 			  <h4>MP3 Format Caveats</h4>
 			  <p>Additionally, some very low and very high bitrate MP3s, and Variable Bitrate (VBR) MP3s may play either too quickly or too slowly (see <a href="http://www.boutell.com/newfaq/creating/chipmunk.html" title="Flash mp3 chipmunk problem description">"the chipmunk problem"</a>); if you are encountering this issue, try re-encoding at a different bitrate (between 64 kbps and 192 kbps, for example.) Using Constant Bitrate (CBR) encoding may also alleviate this problem.</p>
@@ -206,8 +196,9 @@
 
 			  <h4>Timing/Latency (JS + Flash, ExternalInterface-related)</h4>
 			  <p>Javascript-to-Flash communication is not instantaneous on slower systems, but can be much better on more modern systems. Latency (timing lag/delays) can be noted in some cases from function call to sound execution. It is possible some performance analysis can help to speed up this area for timing-critical applications involving animation etc., but this area has not been thoroughly investigated yet. Brad Neuberg has some notes on <a href="http://codinginparadise.org/weblog/2006/02/how-to-speed-up-flash-8s.html" title="Brad Neuberg - How To Speed Up ExternalInterface">speeding up ExternalInterface</a> which may be relevant.</p>
+			  <p>Flash-to-OS/hardware latency (where flash reports progress, but no sound is heard for a number of milliseconds) may also be an unfortunate reality of Flash-based audio, varying between platform and OS version etc.</p>
 			  <p>Additionally, MP3 files may contain audible gaps at the beginning or end by default when encoded, even if the source (eg. WAVE) file did not. Using optional "nogap" encoding options with programs such as LAME may help to remedy this.</p>
-			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X.</p>
+			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X. As well, <code class="in">useFastPolling</code> will use a lower timer interval within Flash, making polling calls run as quickly as reasonably possible and increasing the frequency of calls to <code class="in">whileplaying()</code>, <code class="in">whileloading()</code> and other time-related events.</p>
 
 			  </div>
 
@@ -225,14 +216,21 @@
 				<h3>Live Debug Output</h3>
 				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to javascript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
 				<p class="in"><code>soundManager.consoleOnly</code> can be set to true to disable HTML output (using <code>console.log()</code>-only methods) as well.</p>
+				<p>Additionally, debugging within the Flash portion of SM2 is also available and set using <code>soundManager.debugFlash = true</code>. Debug messages are written to the flash movie itself.</p>
 				<p>For info on SoundManager 2 loading/initialization failures and how to fix them, see <a href="../getstarted/#troubleshooting">troubleshooting</a>.</p>
 				
-				<p>Below is a live example of debug output.</p>
+				<p>Below is a live example of debug output from SM2:</p>
 
 				<div id="live-debug" class="block">
 				 <div id="soundmanager-debug" class="code">
 				  <!-- live debug goes here -->
 				 </div>
+				</div>
+				
+				<p>And, Flash debug output:</p>
+
+				<div id="sm2-container">
+				 <!-- flash movie goes here -->
 				</div>
 
 			</div>

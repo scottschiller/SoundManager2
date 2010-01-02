@@ -41,3 +41,8 @@
  margin:1px;
  border:1px solid #ff3333;
 }
+
+#sm2-container.swf-loaded {
+ border:none;
+ background-color:transparent;
+}

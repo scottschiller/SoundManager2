@@ -103,3 +103,18 @@
  float:right;
  display:inline;
 }
+
+#sm2-container.flash-debug {
+ /* flash movie, when soundManager.debugFlash = true */
+ position:relative;
+ width:auto;
+ height:300px;
+ width:100%;
+ background:#f6f6f6;
+ border:1px solid #ccc;
+}
+
+#sm2-container.flash-debug object,
+#sm2-container.flash-debug embed {
+ border:1px solid #fff;
+}

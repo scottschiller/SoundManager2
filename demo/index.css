@@ -23,6 +23,10 @@ h1, h2, h3, h4 {
  vertical-align:middle;
 }
 
+h4.new {
+ min-height:24px;
+}
+
 h1 {
  font-size:2em;
 }
@@ -78,7 +82,7 @@ dt,
  line-height:1.5em;
  color:#099;
  background:#f6fcff;
- font-smooth:never; /* We don't need no steenkeng font smoothing! - http://www.w3.org/TR/css3-fonts/#font-smooth-prop */
+ /* font-smooth:never; */ /* We don't need no steenkeng font smoothing! - http://www.w3.org/TR/css3-fonts/#font-smooth-prop */
 }
 
 pre {
@@ -796,7 +800,15 @@ li.flash9 {
  _background-image:none;
 }
 
-.new.active {
+.recent {
+ background-image:url(../demo/_image/new-bw.png);
+ background-repeat:no-repeat;
+ background-position:bottom right;
+ _background-image:none;
+}
+
+.new.active,
+.recent.active {
  background-image:url(../demo/_image/new-dark.png);
  _background-image:none;
 }
@@ -1376,4 +1388,19 @@ body.fast .xlsf-light {
 
 .figure .code span.mid {
  color:#666;
+}
+
+#sm2-container.flash-debug {
+ /* flash movie, when soundManager.debugFlash = true */
+ position:relative;
+ width:auto;
+ height:300px;
+ width:100%;
+ background:#f6f6f6;
+ border:1px solid #ccc;
+}
+
+#sm2-container.flash-debug object,
+#sm2-container.flash-debug embed {
+ border:1px solid #fff;
 }

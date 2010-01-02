@@ -224,7 +224,7 @@ function getLiveData() {
 
 function getDynamicData() {
   // Attempt to fetch data from schillmania.com: "Get Satisfaction" topics, version updates etc.
-  loadScript('http://schillmania.com/services/soundmanager2/info/?version='+soundManager.versionNumber+'&rnd='+parseInt(Math.random()*1048576));
+  loadScript('http://www.schillmania.com/services/soundmanager2/info/?version='+soundManager.versionNumber+'&rnd='+parseInt(Math.random()*1048576));
 }
 
 function loadScript(sURL,onLoad) {

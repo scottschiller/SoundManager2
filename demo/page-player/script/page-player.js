@@ -35,7 +35,7 @@ function PagePlayer(oConfigOverride) {
     playNext: true,         // stop after one sound, or play through list until end
     updatePageTitle: true,  // change the page title while playing sounds
     emptyTime: '-:--',      // null/undefined timer values (before data is available)
-    useFavIcon: false       // try to show peakData in address bar (Firefox + Opera)
+    useFavIcon: true       // try to show peakData in address bar (Firefox + Opera)
   }
 
   sm.debugMode = (window.location.href.toString().match(/debug=1/i)?true:false); // enable with #debug=1 for example
@@ -92,7 +92,7 @@ function PagePlayer(oConfigOverride) {
   this.dragTimer = null;
   this.pageTitle = document.title;
   this.lastWPExec = new Date();
-  this.xbmImages = [];
+  this.vuMeterData = [];
   this.oControls = null;
 
   this.addEventHandler = function(o,evtName,evtHandler) {
@@ -333,23 +333,31 @@ function PagePlayer(oConfigOverride) {
 	
   } // events{}
 
+  var _head = document.getElementsByTagName('head')[0];
+
   this.setPageIcon = function(sDataURL) {
-	if (!self.config.useFavIcon || !self.config.usePeakData || !sDataURL) return false;
-    var link = document.getElementById('favicon');
+	if (!self.config.useFavIcon || !self.config.usePeakData || !sDataURL) {
+		return false;
+	}
+    var link = document.getElementById('sm2-favicon');
+    if (link) {
+	  _head.removeChild(link);
+	  link = null;
+    }
     if (!link) {
 	  link = document.createElement('link');
-	  link.id = 'favicon';
+	  link.id = 'sm2-favicon';
 	  link.rel = 'shortcut icon';
-	  link.type = 'image/x-bitmap';
+	  link.type = 'image/png';
 	  link.href = sDataURL;
-	} else {
-      link.href = sDataURL;
+      document.getElementsByTagName('head')[0].appendChild(link);
     }
-    document.getElementsByTagName('head')[0].appendChild(link);
   }
 
   this.resetPageIcon = function() {
-	if (!self.config.useFavIcon) return false;
+	if (!self.config.useFavIcon) {
+		return false;
+	}
     var link = document.getElementById('favicon');
     if (link) {
 	  link.href = '/favicon.ico';
@@ -363,11 +371,7 @@ function PagePlayer(oConfigOverride) {
     oSpan[1].style.marginTop = (13-(Math.floor(15*this.peakData.right))+'px');
 	// highly experimental
     if (self.config.flashVersion > 8 && self.config.useFavIcon && self.config.usePeakData) {
-	  if (!isOpera) {
-	    self.setPageIcon(self.xbmImages[parseInt(15*this.peakData.left)][parseInt(15*this.peakData.right)]);
-	  } else {
-	self.setPageIcon(self.xbmImages[1+parseInt(14*this.peakData.left)][1+parseInt(14*this.peakData.right)]);
-	  }
+      self.setPageIcon(self.vuMeterData[parseInt(16*this.peakData.left)][parseInt(16*this.peakData.right)]);
 	}
   }
   
@@ -635,210 +639,85 @@ function PagePlayer(oConfigOverride) {
     }
   }
 
-  // XBM support
-
-	// xbmDraw.js XBM drawing library
-	// (c)2002 David L. Blackledge
-	// http://David.Blackledge.com
-	// Written April, 2002
-	// You may use this if you keep this copyright notice intact
-	//
-	// See http://David.Blackledge.com/XBMDrawLibrary.html
-	// Some unused functions removed, see site for complete library
-
-	function array_copy(o_array) {
-	 var ret_array = new Array();
-	 if(typeof(ret_array.concat) == "function")
-	  return ret_array.concat(o_array);
-	 for(var j = 0 ; j < o_array.length ; ++j) {
-	  ret_array[ret_array.length] = o_array[j];
-	 }
-	 return ret_array;
-	}
-
-	function XBMImage_body() {
-	 var bod = "";
-	 for(var i = 0 ; i < this.height ; ++i) {
-	  for(var j = 0 ; j < this.width/8 ; ++j) {
-	   if(typeof(this.data[i]) != "undefined" && typeof(this.data[i][j]) != "undefined") {
-	    // must be reversed to work right, apparently.
-	    var bool = 0;
-	    bool = this.data[i][j];
-	    var hex = (new Number(bool)).toString(16);
-	    if(hex.length == 1)
-	     hex = "0"+hex;
-	    bod += "0x"+hex+",";
-	   } else {
-	    bod += "0x00,";
-	   }
-	  }
-	 }
-	 if(bod.length > 0) // remove trailing comma
-	  bod = bod.substring(0,bod.length-1);
-	 return bod;
-	}
-
-	function XBMImage_draw(x,y) {
-	 if(!(x > -1 && x < this.width && y > -1 && y < this.height))
-	  return;
-	 if(typeof(this.data[y]) == "undefined")
-	   this.data[y] = new Array();
-	 var bit = x%8;
-	 var byt = (x-bit)/8;
-	 if(typeof(this.data[y][byt]) == "undefined")
-	   this.data[y][byt] = 0;
-	 this.data[y][byt] |= (0x01<<bit);
-	}
-
-	// attempt to do a fast horizontal line algorithm.
-	function XBMImage_drawHLine(x1,y1,x2) {
-	 if(!(y1 > -1 && y1 < this.height))
-	  return;
-	 if(x1 > x2){
-	  var xs = x1;x1=Math.max(0,x2);x2=Math.min(this.width,xs);
-	 }
-	 var filled = 0xFF;
-	 var startbits = x1%8;
-	 var startbyt = (x1-x1%8)/8;
-	 var endbits = 8-x2%8;
-	 var endbyt = (x2-x2%8)/8;
-	 if(startbyt == endbyt) {
-	  this.data[y1][startbyt]|=(filled <<startbits)&(filled>>endbits);
-	  return;
-	 }
-	 for(var i = startbyt+1 ; i < endbyt ; ++i) {
-	  this.data[y1][i] = filled;
-	 }
-	 for(var j=x1; j < (x1+(8-x1%8)) ; ++j)
-	  this.draw(j,y1);
-	 this.data[y1][endbyt] |= (filled >>endbits);
-	}
-	
-	function XBMImage_drawVLine(x1,y1,y2) {
-	 if(!(x1 > -1 && x1 < this.width))
-	  return;
-	 if(y1 > y2){
-	  var ys = y1;y1=Math.max(0,y2);y2=Math.min(this.height,ys);
-	 }
-	 var bit = x1%8;
-	 var byt = (x1-bit)/8;
-	 var bitmask = (0x01<<bit);
-	 for(var y = y1 ; y <= y2 ; ++y)
-	  this.data[y][byt] |= bitmask;
-	}
-	
-	function XBMImage_drawLine(x1,y1,x2,y2) {
-	 if(x1 > x2) {
-	  var xx = x1; x1 = x2; x2 = xx;
-	  var yy = y1; y1 = y2; y2 = yy;
-	 }
-	 var y = y1;
-	 if(y1 == y2)
-	   if(x1 == x2)
-		 return this.draw(x1,y1);
-	   else
-		 return this.drawHLine(x1,y1,x2);
-	 if(x1 == x2) return this.drawVLine(x1,y1,y2);
-	 var slope=(y1-y2)/(x1-x2);
-	 var yint = y1-Math.floor(slope*x1); // y-intercept
-	 for(var x = x1; x < x2; ++x) {
-	  if(slope > 0) { //y1<y2 (top to bottom)
-	   for(y = Math.floor(slope*x)+yint ; y < (Math.floor(slope*(x+1))+yint) ; ++y) {
-	    this.draw(x,y);
-	   }
-	   if(Math.floor(slope*x) == Math.floor(slope*(x+1)))
-	    this.draw(x,y);
-	   if(x==x2-1) {
-	    for(y ; y <= y2 ; ++y) {
-	     this.draw(x,y);
-	    }  
-	   }
-	  } else { //y1>y2 (bottom to top)
-	   for(y = Math.floor(slope*x)+yint ; y > (Math.floor(slope*(x+1))+yint) ; --y) {
-	    this.draw(x,y);
-	   }
-	   if(Math.floor(slope*x) == Math.floor(slope*(x+1)))
-	    this.draw(x,y);
-	   if(x==x2-1) {
-	    for(y ; y >= y2 ; --y) {
-	     this.draw(x,y);
-	    }  
-	   }
-	  }
-	 }
-	 return null;
-	}
-
-	function XBMImage_drawBoxFilled(x1,y1,x2,y2) {
-	 for(var y = y1; y <= y2; ++y)
-	  this.drawHLine(x1,y,x2);
-	}
-
-	function XBMImage_getXBM() {
-	 return this.header + this.body() + this.footer;
-	}
-
-	function XBMImage_setXBM(str){
-	 var xbmdata = str.substring(str.indexOf("{")+1,str.lastIndexOf("}"));
-	 var a_data = xbmdata.split(",");
-	 for(var j = 0 ; j < this.height ; ++j) {
-	  this.data[j] = new Array();
-	  for(var i = 0 ; i < Math.floor(this.width/8) ; ++i) {
-	   var a_idx = i+j*(Math.floor(this.width/8));
-	   if(a_idx < a_data.length)
-	    this.data[j][i] = (new Number(parseInt(a_data[a_idx],16))).valueOf();//parseInt(a_data[a_idx]);
-	  }
-	 }
-	}
-
-	function XBMImage(width,height,name) {
-	 this.name = name;
-	 this.width = width+((width%8)>0?(8-(width%8)):0); //expand to a multiple of 8
-	 this.height = height;
-	 this.header = "#define "+name+"_width "+this.width+"\n"+
-	   "#define "+name+"_height "+this.height+"\n"+
-	   "static char "+name+"_bits[] = {\n";
-	 this.footer = "};";
-	 this.data = new Array(this.height);
-	 for(var i = 0 ; i < this.data.length ; ++i) {
-	  this.data[i] = new Array(this.width);
-	  for(var j = 0 ; j < this.data[i].length ; ++j) {
-	   this.data[i][j] = 0;
-	  }
-	 }
-	 this.frames = new Array(); // store copies of this.data;
-	 this.body = XBMImage_body;
-	 this.draw = XBMImage_draw;
-	 this.drawLine = XBMImage_drawLine;
-	 this.drawHLine = XBMImage_drawHLine;
-	 this.drawVLine = XBMImage_drawVLine;
-	 this.drawBoxFilled = XBMImage_drawBoxFilled;
-	 this.getXBM = XBMImage_getXBM;
-	 this.setXBM = XBMImage_setXBM;
-	 this.xbm = this.getXBM();
-  }
-
-  this.createXBMData = function() {
-    var ico = null;
+  this.createVUData = function() {
     var i=0;
     var j=0;
+	var canvas = vuDataCanvas.getContext('2d');
+	var vuGrad = canvas.createLinearGradient(0, 16, 0, 0);
+	vuGrad.addColorStop(0,'rgb(0,192,0)');
+	vuGrad.addColorStop(0.30,'rgb(0,255,0)');
+	vuGrad.addColorStop(0.625,'rgb(255,255,0)');
+	vuGrad.addColorStop(0.85,'rgb(255,0,0)');
+	var bgGrad = canvas.createLinearGradient(0, 16, 0, 0);
+	var outline = 'rgba(0,0,0,0.2)';
+	bgGrad.addColorStop(0,outline);
+	bgGrad.addColorStop(1,'rgba(0,0,0,0.5)');
     for (i=0; i<16; i++) {
-      self.xbmImages[i] = [];
+      self.vuMeterData[i] = [];
     }
     for (var i=0; i<16; i++) {
       for (j=0; j<16; j++) {
-        ico = new XBMImage(16,16,'img'+i+'x'+j);
-        ico.drawBoxFilled(0,16-i,7,16-(i-16));
-        ico.drawBoxFilled(9,16-j,16,16-(j-16));
-        // self.xbmImages[i][j] = 'data:image/x-bitmap;base64,'+Base64.encode(ico.getXBM()); // using Base64 library
-        self.xbmImages[i][j] = 'data:image/x-bitmap,'+encodeURI(ico.getXBM()); // hat tip: @p01
+	    // reset/erase canvas
+		vuDataCanvas.setAttribute('width',16);
+		vuDataCanvas.setAttribute('height',16);
+		// draw new stuffs
+	    canvas.fillStyle = bgGrad;
+ 		canvas.fillRect(0,0,7,15);
+ 		canvas.fillRect(8,0,7,15);
+		/*
+		// shadow
+		canvas.fillStyle = 'rgba(0,0,0,0.1)';
+	    canvas.fillRect(1,15-i,7,17-(17-i));
+	    canvas.fillRect(9,15-j,7,17-(17-j));
+		*/
+        canvas.fillStyle = vuGrad;
+        canvas.fillRect(0,15-i,7,16-(16-i));
+        canvas.fillRect(8,15-j,7,16-(16-j));
+		// and now, clear out some bits.
+		canvas.clearRect(0,3,16,1);
+		canvas.clearRect(0,7,16,1);
+		canvas.clearRect(0,11,16,1);
+        self.vuMeterData[i][j] = vuDataCanvas.toDataURL('image/png');
+		// for debugging VU images
+		/*
+		var o = document.createElement('img');
+		o.style.marginRight = '5px'; 
+		o.src = self.vuMeterData[i][j];
+		document.documentElement.appendChild(o);
+		*/
       }
     }
+  };
+
+  var vuDataCanvas = null;
+
+  this.testCanvas = function() {
+	// canvas + toDataURL();
+    var c = document.createElement('canvas');
+	var ctx = null;
+    if (!c || typeof c.getContext == 'undefined') {
+	  return null;
+    }
+    ctx = c.getContext('2d');
+	if (!ctx || typeof c.toDataURL != 'function') {
+		return null;
+	}
+	// just in case..
+	try {
+		var ok = c.toDataURL('image/png');
+	} catch(e) {
+	  // no canvas or no toDataURL()
+	  return null;	
+	}
+	// assume we're all good.
+	return c;
   }
 
   if (this.config.useFavIcon) {
-	if (isFirefox || isOpera) {
-	  this.createXBMData();
+	vuDataCanvas = self.testCanvas();
+	if (vuDataCanvas && (isFirefox || isOpera)) {
+      // these browsers support dynamically-updating the favicon
+	  self.createVUData();
 	} else {
 	  // browser doesn't support doing this
 	  this.config.useFavIcon = false;

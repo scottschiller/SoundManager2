@@ -36,6 +36,7 @@ function ThreeSixtyPlayer() {
   this.soundCount = 0;
   this.oUITemplate = null;
   this.oUIImageMap = null;
+  this.vuMeter = null;
 
   this.config = {
 
@@ -83,7 +84,9 @@ function ThreeSixtyPlayer() {
 
     useAmplifier: true, // "pulse" like a speaker
 
-    fontSizeMax: null // set according to CSS
+    fontSizeMax: null, // set according to CSS
+
+	useFavIcon: false // Experimental (also requires usePeakData: true).. Try to draw a "VU Meter" in the favicon area, if browser supports it (Firefox + Opera as of 2009)
 
   }
 
@@ -714,6 +717,10 @@ this.updatePlaying = function() {
     // self.updateWaveformOld(this);
   }
 
+  if (self.config.useFavIcon && self.vuMeter) {
+    self.vuMeter.updateVU(this);
+  }
+
 }
 
   this.updateWaveform = function(oSound) {
@@ -764,7 +771,7 @@ this.updatePlaying = function() {
 	    if (waveData<0 && self.config.waveformDataConstrain) {
 		  waveData = Math.abs(waveData);
 	    }
-		self.drawSolidArc(oSound._360data.oCanvas,self.config.waveformDataColor,oSound._360data.width*innerRadius,oSound._360data.radius*scale*waveData,endAngle,startAngle,true);
+	    self.drawSolidArc(oSound._360data.oCanvas,self.config.waveformDataColor,oSound._360data.width*innerRadius,oSound._360data.radius*scale*1.25*waveData,endAngle,startAngle,true);
 	  }
 	}
 	
@@ -787,7 +794,8 @@ this.updatePlaying = function() {
       for (var i=0; i<eqSamples; i+=downSample) {
 	    startAngle = self.deg2rad(360*(i/eqSamples));
 	    endAngle = startAngle+perItemAngle;
- 		self.drawSolidArc(oSound._360data.oCanvas,(endAngle>playedAngle?self.config.eqDataColor:self.config.playRingColor),oSound._360data.width*innerRadius,oSound._360data.radius*scale*(oSound.eqData[i]*direction),endAngle,startAngle,true);
+   	    self.drawSolidArc(oSound._360data.oCanvas,(endAngle>playedAngle?self.config.eqDataColor:self.config.playRingColor),oSound._360data.width*innerRadius,oSound._360data.radius*scale*(oSound.eqData.left[i]*direction),endAngle,startAngle,true);
+
       }
     }
 
@@ -909,7 +917,7 @@ this.updatePlaying = function() {
 	  // getStyle() etc. didn't work.
 	  self.config.fontSizeMax = null;
 	}
-	soundManager._writeDebug('diameter, font size: '+self.config.circleDiameter+','+self.config.fontSizeMax);
+	// soundManager._writeDebug('diameter, font size: '+self.config.circleDiameter+','+self.config.fontSizeMax);
 
 	oFakeUI.parentNode.removeChild(oFakeUI);
 	delete oFakeUI;
@@ -960,7 +968,148 @@ this.updatePlaying = function() {
 	  }
     }
     sm._writeDebug('threeSixtyPlayer.init(): Found '+foundItems+' relevant items.');
+
+	if (self.config.useFavIcon && typeof this.VUMeter != 'undefined') {
+		this.vuMeter = new this.VUMeter(this);
+	}
+
   }
+
+}
+
+// Optional: VU Meter component
+
+ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
+
+  var self = oParent;
+  var me = this;
+  this.vuMeterData = [];
+  this.vuDataCanvas = null;
+  var _head = document.getElementsByTagName('head')[0];
+
+  this.setPageIcon = function(sDataURL) {
+
+	if (!self.config.useFavIcon || !self.config.usePeakData || !sDataURL) {
+		return false;
+	}
+
+    var link = document.getElementById('sm2-favicon');
+    if (link) {
+	  _head.removeChild(link);
+	  link = null;
+    }
+    if (!link) {
+	  link = document.createElement('link');
+	  link.id = 'sm2-favicon';
+	  link.rel = 'shortcut icon';
+	  link.type = 'image/png';
+	  link.href = sDataURL;
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+  }
+
+  this.resetPageIcon = function() {
+	if (!self.config.useFavIcon) {
+		return false;
+	}
+    var link = document.getElementById('favicon');
+    if (link) {
+	  link.href = '/favicon.ico';
+    }
+  }
+
+  this.updateVU = function(oSound) {
+    if (soundManager.flashVersion >= 9 && self.config.useFavIcon && self.config.usePeakData) {
+      me.setPageIcon(me.vuMeterData[parseInt(16*oSound.peakData.left)][parseInt(16*oSound.peakData.right)]);
+	}
+  }
+
+  this.createVUData = function() {
+    var i=0;
+    var j=0;
+	var canvas = me.vuDataCanvas.getContext('2d');
+	var vuGrad = canvas.createLinearGradient(0, 16, 0, 0);
+	vuGrad.addColorStop(0,'rgb(0,192,0)');
+	vuGrad.addColorStop(0.30,'rgb(0,255,0)');
+	vuGrad.addColorStop(0.625,'rgb(255,255,0)');
+	vuGrad.addColorStop(0.85,'rgb(255,0,0)');
+	var bgGrad = canvas.createLinearGradient(0, 16, 0, 0);
+	var outline = 'rgba(0,0,0,0.2)';
+	bgGrad.addColorStop(0,outline);
+	bgGrad.addColorStop(1,'rgba(0,0,0,0.5)');
+    for (i=0; i<16; i++) {
+      me.vuMeterData[i] = [];
+    }
+    for (var i=0; i<16; i++) {
+      for (j=0; j<16; j++) {
+	    // reset/erase canvas
+		me.vuDataCanvas.setAttribute('width',16);
+		me.vuDataCanvas.setAttribute('height',16);
+		// draw new stuffs
+	    canvas.fillStyle = bgGrad;
+ 		canvas.fillRect(0,0,7,15);
+ 		canvas.fillRect(8,0,7,15);
+		/*
+		// shadow
+		canvas.fillStyle = 'rgba(0,0,0,0.1)';
+	    canvas.fillRect(1,15-i,7,17-(17-i));
+	    canvas.fillRect(9,15-j,7,17-(17-j));
+		*/
+        canvas.fillStyle = vuGrad;
+        canvas.fillRect(0,15-i,7,16-(16-i));
+        canvas.fillRect(8,15-j,7,16-(16-j));
+		// and now, clear out some bits.
+		canvas.clearRect(0,3,16,1);
+		canvas.clearRect(0,7,16,1);
+		canvas.clearRect(0,11,16,1);
+        me.vuMeterData[i][j] = me.vuDataCanvas.toDataURL('image/png');
+		// for debugging VU images
+		/*
+		var o = document.createElement('img');
+		o.style.marginRight = '5px'; 
+		o.src = vuMeterData[i][j];
+		document.documentElement.appendChild(o);
+		*/
+      }
+    }
+  };
+
+  this.testCanvas = function() {
+    // canvas + toDataURL();
+    var c = document.createElement('canvas');
+	var ctx = null;
+    if (!c || typeof c.getContext == 'undefined') {
+	  return null;
+    }
+    ctx = c.getContext('2d');
+	if (!ctx || typeof c.toDataURL != 'function') {
+		return null;
+	}
+	// just in case..
+	try {
+		var ok = c.toDataURL('image/png');
+	} catch(e) {
+	  // no canvas or no toDataURL()
+	  return null;	
+	}
+	// assume we're all good.
+	return c;
+  }
+
+  this.init = function() {
+	  if (self.config.useFavIcon) {
+		me.vuDataCanvas = me.testCanvas();
+		if (me.vuDataCanvas && (navigator.userAgent.match(/(firefox|opera)/i))) {
+	      // these browsers support dynamically-updating the favicon
+		  me.createVUData();
+		} else {
+		  // browser doesn't support doing this
+		  self.config.useFavIcon = false;
+		}
+	  }
+  }
+
+  this.init();
 
 }
 
@@ -1059,6 +1208,8 @@ soundManager.debugMode = (window.location.href.match(/debug=1/i)); // disable or
 soundManager.consoleOnly = true;
 soundManager.flashVersion = 9;
 soundManager.useHighPerformance = true;
+
+// soundManager.useFastPolling = true; // for more aggressive, faster UI updates (higher CPU use)
 
 if (soundManager.debugMode) {
   var t = window.setInterval(function(){

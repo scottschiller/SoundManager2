@@ -128,9 +128,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.95a.20090717</p>
-				<p><b>New shiny!</b> <code>onready()</code> subscriber method for multiple onload/onerror handlers, <code>useFastPolling</code> for increased whileplaying()/related event callback frequency (higher framerates when drawing EQ/spectrum, etc.), <code>multiShotEvents</code> so onfinish() fires for each shot, new Flashblock demo and more. See <a href="#history">revision history</a> for details.</p>
-				<p><a href="../../download/soundmanagerv295a-20090717.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95a.20090717</a></p>
+				<p>Current version: 2.95b.20100101</p>
+				<p><b>New shiny!</b> <code>debugFlash</code> option for troubleshooting SWF start-up/security issues, both (L/R) channels now included for <code>eqData</code>, improved debug/troubleshooting messaging, code clean-up and more. See <a href="#history">revision history</a> for details.</p>
+				<p><a href="../../download/soundmanagerv295b-20100101.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95b.20100101</a></p>
 			</div>
 			
 		</div>
@@ -153,8 +153,39 @@
 
 			  <ul id="revision-list" class="standard">
 				
+				
 			   <li class="in">
-			    <h3><b>V2.95a.20090717</b></h3>
+			    <h3><b>V2.95b.20100101</b></h3>
+			    <p>New features: Flash movie debugging in SWF via <code>debugFlash</code> (default:false), <code>SMSound.eqData = { left:[], right:[] }</code>, code tidying and debug output clean-up</p>
+
+			    <ul class="double">
+
+			     <li class="in">
+			      <p class="compact">API Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New <code>soundManager.debugFlash</code> property, enables debug messages from within flash (output to flash movie). Useful for troubleshooting start-up, security issues etc. <a href="../getstarted/#flashdebug">Flash debug output example</a></li>
+				   <li><code>SMSound.eqData</code> now has left and right channels - e.g. <code>eqData = { left: [], right: [] }</code> - was previously a single array: <code>eqData = [];</code> Backwards-compatibility is maintained for now as <code>eqData[i]</code> still works with the new structure.</li>
+				  </ul>
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li><code>stream = true</code> is no longer automatically set when <code>SMSound.play()</code> is called and <code>readyState == 0</code>, as it was breaking the <code>stream:false</code> case where playback should not start until the sound has fully-loaded.</li>
+				   <li><code>soundManager.reboot()</code> forces recreation of object/embed rather than old method of node remove/re-append (in case other options changed, eg. debugFlash was false, but assigned to true after an error during start-up.)</li>
+			      </ul>
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   	<li>Review of all SM2 debug output, more concise and informative messaging - especially around start-up troubleshooting/error debugging, security sandbox errors, SWF 404 case etc.</li>
+					<li>Code formatting clean-up (via jsbeautifier.org)
+					soundmanager2.js tested and passes JSLint, Edition 2009-11-22 + options: /*jslint undef: true, bitwise: true, newcap: true, immed: true */</li>
+					<li>Better organization/use of strings for debug output</li>
+					<li>New canvas-based favicon VU meter demo for home page, 360 player and muxtape-style player demos where supported (Firefox and Opera, currently.) Firefox 3.6 is disappearing support for XBM images, which were previously used.</li>
+			      </ul>
+			     </li>
+
+				</ul>
+			   </li>
+				
+			   <li class="in">
+			    <h3><b>V2.95a.20090717</b> (<a href="../../download/soundmanagerv295a-20090717.zip">Download archived version</a>)</h3>
 			    <p>New features: onready(), fast polling, flash blocking demos etc.</p>
 
 			    <ul class="double">
@@ -612,7 +643,7 @@
 			   <li class="old">
 			    <h3>V2.5b.20080505</h3>
 			    <ul class="nested">
-			     <li class="in">To improve startup time, <code>soundManager.go()</code> (<code>createMovie()</code> alias) now fires at <code>document.onDOMContentLoaded()</code> by default if supported. (Otherwise, falls back to <code>window.onload()</code>.)</li>
+			     <li class="in">To improve startup time, <code>soundManager.go()</code> (<code>createMovie()</code> alias) now fires at <code>onDOMContentLoaded()</code> by default if supported. (Otherwise, falls back to <code>window.onload()</code>.)</li>
 			     <li class="in">Improved initialisation routine - <code>soundManager.onerror()</code> is called when the Flash init "times out." Specifically, <code>onerror()</code> is called when Flash fails to make an ExternalInterface (Flash-&gt; JS) call to SM2 within 1 second of <code>window.onload()</code> firing.</li>
 			     <li>Added logic to handle special Safari delayed init case (Flash not loading when in a new, unfocused tab until focused) as a exception to the above.</li>
 			     <li>Added better exception handling + debug messaging for initialisation failure cases (Flash security restrictions due to loading from local file system, no flash support, no ExternalInterface support etc.)</li>

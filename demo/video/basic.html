@@ -31,11 +31,13 @@ if (window.location.toString().match('nodebug')) {
   soundManager.debugMode = false;
 }
 
-soundManager.onload = function() {
-  // soundManager.createSound() etc. may now be called
-  soundManager.createVideo({id:'photos3Demo',url:'http://freshly-ground.com/data/video/Yahoo!%20Photos%203%20UI.MP4'});
-  soundManager.play('photos3Demo');
-}
+soundManager.onready(function() {
+  if (soundManager.supported()) {
+    // soundManager.createSound() etc. may now be called
+    soundManager.createVideo({id:'photos3Demo',url:'http://freshly-ground.com/data/video/Yahoo!%20Photos%203%20UI.MP4'});
+    soundManager.play('photos3Demo');
+  }
+});
 
 </script>
 
