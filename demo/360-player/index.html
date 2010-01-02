@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>360&deg; MP3 player UI demo (SoundManager 2)</title>
+
+<!-- required -->
+<link rel="stylesheet" type="text/css" href="360player.css" />
+
+<!-- special IE-only canvas fix -->
+<!--[if IE]><script type="text/javascript" src="script/excanvas.js"></script><![endif]-->
+
+<!-- Apache-licensed animation library -->
+<script type="text/javascript" src="script/berniecode-animator.js"></script>
+
+<!-- the core stuff -->
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript" src="script/360player.js"></script>
+
+<!-- stuff you don't need -->
+<!-- makes the fonts nicer etc. -->
+<link rel="stylesheet" type="text/css" href="../index.css" />
+<link rel="stylesheet" type="text/css" href="demo.css" />
+<style type="text/css">
+
+/* Demo page, general layout */
+
+#left {
+ position:relative;
+ width:870px;
+ max-width:100%;
+}
+
+#left h2 {
+ padding-top:0px;
+ margin-bottom:0.25em;
+ color:#666;
+}
+
+#sm2-container embed,
+#sm2-container object {
+ /* fixed video dimensions */
+ width:320px;
+ height:240px;
+}
+
+pre.block {
+ margin-top:0.5em;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="left">
+
+ <h1><a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; player demo</a></h1>
+
+ <h2>Inline "donut player" example (experimental)</h2>
+ <p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI. Load progress, seek, play/pause etc. <b>Warning: Prototype code, subject to change</b>.</p>
+ <p class="note" style="color:#666;margin-bottom:0.5em">Also see <a href="canvas-visualization.html" title="Javascript canvas visualization with waveform/eq data">360&deg; UI visualization</a> prototype.</p>
+
+<div style="margin-top:0.75em">
+
+	<div style="float:left;display:inline"> <!-- float is just for this demo layout, you don't need it. -->
+ 
+	 <div class="ui360" style="margin-top:-0.4em"><a href="../jsAMP-preview/audio/rain.mp3">Rain</a></div>
+
+	 <div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3">20090119 - Untitled Groove</a></div>
+
+	 <div class="ui360"><a href="../jsAMP-preview/audio/walking.mp3">Walking</a></div>
+	
+     <div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20090207%20-%20Loverman.mp3">20090207 - Loverman</a></div>
+	
+	 <!-- files from the web (note that ID3 information will *not* load from remote domains without permission, Flash restriction) -->
+	 <div class="ui360"><a href="http://www.freshly-ground.com/misc/music/carl-3-barlp.mp3">Barrlping with Carl (featureblend.com)</a></div>
+
+	</div>
+
+
+	<div style="float:left;display:inline;margin-left:40px;border-left:1px solid #ccc;padding-left:30px;padding-right:30px;border-right:1px solid #ccc;width:140px">
+
+	 <p style="margin-top:1em;margin-bottom:0px">Alternate style: inline</p>
+
+	 <div class="sm2-inline-list" style="margin-bottom:10px"> <!-- note the CSS class, changes the layout -->
+
+	  <div class="ui360"><a href="http://www.freshly-ground.com/data/audio/binaural/Mak.mp3">Angry cow sound?</a></div>
+	  <div class="ui360"><a href="http://www.freshly-ground.com/data/audio/binaural/Things that open, close and roll.mp3">Things that open, close and roll</a></div>
+	  <div class="ui360"><a href="http://www.freshly-ground.com/misc/music/20060826%20-%20Armstrong.mp3">20060826 - Armstrong</a></div>
+
+	 </div>
+
+	 <p style="margin-bottom:0px">Video playback control</p>
+
+	 <div class="sm2-inline-block"> <!-- note the CSS class, changes the layout -->
+
+	  <div class="ui360"><a href="http://freshly-ground.com/data/video/coffee.mp4">Drip Coffee</a></div>
+	  <div class="ui360"><a href="http://freshly-ground.com/data/video/magnets.mp4">Magnets</a></div>
+
+	 </div>
+	
+	<div style="position:absolute;left:540px;top:8px;margin-top:50px;width:320px;height:240px">
+	 <!-- SM2 video box -->
+	 <div id="sm2-container">
+	 </div>
+    </div>
+
+</div>
+
+<div style="clear:both"></div>
+
+ <h3>How This Works</h3>
+
+ <p>The script looks for a container element matching <code>div.<span>ui360</span></code>, and then the first link inside of it.</p>
+
+ <div>
+	
+<pre class="block"><code>&lt;div class="<span>ui360</span>"&gt;
+ &lt;a href="/path/to/an.mp3"&gt;
+&lt;/div&gt;</code></pre>
+  
+ </div>
+
+ <p>When the link is clicked, the script adds a <code>UI</code> template to the block, prepending it in front of the MP3 link:</p>
+
+<pre class="block"><code>&lt;div class="<span>ui360</span>"&gt;
+ <span><span>&lt;-- dynamically-inserted block --&gt;</span></span>
+ &lt;div class="<span>ui</span>"&gt;
+  &lt;canvas class="<span>sm2-canvas</span>"&gt;&lt;/canvas&gt;
+  &lt;img class="<span>sm2-360btn</span>" /&gt; 
+  &lt;div class="<span>sm2-timing</span>"&gt;&lt;/div&gt;
+  &lt;div class="<span>sm2-cover</span>"&gt;&lt;/div&gt;
+ &lt;/div&gt;
+ <span><span>&lt;-- /UI --&gt;</span></span>
+ &lt;a href="<span>/path/to/an.mp3</span>"&gt;
+&lt;/div&gt;</code></pre>
+
+<h3>Customizing the UI</h3>
+
+<p>The player's default 50x50-pixel canvas is defined both within JavaScript and CSS. For an example with different values, see this <a href="bigger.html" title="360&deg; UI: 150x150-pixel version">150x150-pixel version</a>.</p>
+
+<pre class="block"><code>threeSixtyPlayer.config = {
+  playNext: <span>false</span>, <span><span>// stop after one sound, or play through list until end</span></span>
+  autoPlay: <span>false</span>, <span><span>// start playing the first sound right away</span></span>
+  loadRingColor: <span>'#ccc',</span> <span><span>// amount of sound which has loaded</span></span>
+  playRingColor: <span>'#000'</span>, <span><span>// amount of sound which has played</span></span>
+  backgroundRingColor: <span>'#eee', </span><span><span>// "default" color shown underneath everything else</span></span>
+  imageRoot: <span>''</span>,</span> <span><span>// path to prepend for empty.gif used for play/pause button
+  animDuration: <span>500</span>,
+  animTransition: <span>Animator.tx.bouncy</span> <span><span>// http://www.berniecode.com/writing/animator.html</span></span>
+}</code></pre>
+
+<p>The CSS for the canvas UI block is a bit ugly, but JavaScript reads the width of the <code>.sm2-360ui</code> element in the DOM as set by CSS and uses that to later draw and update the canvas element while playing.</p>
+
+<pre class="block"><code>.ui360,
+.sm2-360ui {
+  <span><span>/* size of the container for the circle, etc. */</span></span>
+  width:<span>50px</span>;</span>
+  height:<span>50px</span>;</span>
+}
+</code></pre>
+
+<h3>Using the 360&deg; UI for video</h3>
+
+<p>With SoundManager "MovieStar" and video modes enabled, you may also control video using the same callbacks as sound.</p>
+
+<pre class="block"><code>soundManager.useMovieStar = true;
+soundManager.movieStarOptions.useVideo = true;
+</code></pre>
+
+
+<script type="text/javascript">
+
+// for video demo, example only
+
+soundManager.useMovieStar = true;
+soundManager.movieStarOptions.useVideo = true;
+
+</script>
+
+<h3>Third-party Components</h3>
+
+<p>This demo includes use of <a href="http://www.berniecode.com/writing/animator.html">Bernie's Better Animation Class</a> (Apache licensed) for some animation effects.</p>
+<p>Also, some loader/spinner icons from <a href="http://ajaxload.info">ajaxload.info</a> are used for showing loading/buffering states.</p>
+
+<hr />
+
+ <p>
+  <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
+ </p>
+
+
+</div>
+
+</body>
+</html>

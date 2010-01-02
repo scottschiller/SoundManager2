@@ -1,0 +1,84 @@
+/* larger canvas, spectrum + EQ vis and other items */
+
+.ui360,
+.sm2-360ui {
+ /* size of the container for the circle, etc. */
+ width:256px;
+ height:256px;
+}
+
+.ui360 {
+ position:relative;
+ /* a little extra spacing */
+ padding-top:1px;
+ padding-bottom:1px;
+ margin-bottom:-18px; /* approximate "line height" we want */
+ margin-left:248px; /* full width, minus a few */
+}
+
+.ui360 a {
+ font:14px "helvetica neue",helvetica,monaco,lucida,terminal,monospace;
+ white-space:nowrap;
+ line-height:256px;
+}
+
+.sm2-360ui {
+ margin-left:-256px;
+}
+
+.ui360 .sm2-timing {
+ line-height:256px;
+}
+
+.ui360 .sm2-timing {
+ font:bold 24px "helvetica neue",helvetica,monaco,lucida,terminal,monospace;
+ color:#333;
+ text-align:center;
+ line-height:256px;
+ text-indent:0px;
+}
+
+.sm2-inline-list .ui360,
+.sm2-inline-list .sm2-360ui {
+ margin-left:0px;
+}
+
+.sm2-inline-list .ui360 {
+ margin:8px 13px 7px 0px;
+}
+
+.sm2-inline-list .sm2-360ui {
+ border:1px solid #eee;
+}
+
+.sm2-inline-list .ui360 a {
+ position:absolute;
+ left:0px;
+ bottom:0px;
+ margin-left:1px;
+ width:100%; /* 2px padding in box */
+ height:auto;
+ font-size:x-small;
+ padding:2px 0px;
+ color:#999;
+ line-height:15px;
+ text-align:center;
+ display:inline;
+ -moz-border-radius:0px;
+ -khtml-border-radius:0px;
+ border-radius:0px;
+}
+
+.sm2-inline-list .ui360 a:focus,
+.sm2-inline-list .ui360 a:active {
+ background-color:transparent;
+}
+
+/* Use a bigger loading image for this layout */
+
+.ui360 .sm2-360ui.sm2_buffering .sm2-360btn,
+.ui360 .sm2-360ui.sm2_buffering .sm2-360btn:hover {
+  background:transparent url(icon_loading_spinner_bigger.gif) no-repeat 50% 50%;
+  opacity:0.5;
+  visibility:visible;
+}

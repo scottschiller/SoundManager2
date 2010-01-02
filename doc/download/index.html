@@ -42,6 +42,7 @@
 		<li><a href="../../demo/api/">API Examples</a></li>
 	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 		<li><a href="../../demo/page-player/">Muxtape-style UI</a></li>
+		<li><a href="../../demo/360-player/">360&deg; Player UI</a></li>
 		<li><a href="../../demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="../../demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
@@ -129,9 +130,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.94a.20090206</p>
-				<p>New sound object stuff: <code class="in">isBuffering</code> and <code class="in">onbufferchange()</code> (Flash 9), new <code>soundManager.reboot()</code> method, <code class="in">soundManager.useHighPerformance</code> is now false (off) by default. See <a href="#history">revision history</a> for details.</p>
-				<p><a href="../../download/soundmanagerv294a-20090206.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.94a.20090206</a></p>
+				<p>Current version: 2.95a.20090501</p>
+				<p><b>Lots of new goodies!</b> Nifty new "360&deg; UI" canvas + visualization demos, first shot at full-screen video (double-click movie for full-screen), <code>bufferTime</code> for MovieStar content buffering, <code>waveformData</code> now stereo, <code>ondataerror</code> for handling waveform/eq data exceptions, <code class="in">isBuffering</code> and <code>onbufferchange</code> for MovieStar content, Windows timeout issue fix and more. See <a href="#history">revision history</a> for details.</p>
+				<p><a href="../../download/soundmanagerv295a-20090501.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95a.20090501</a></p>
 			</div>
 			
 		</div>
@@ -153,9 +154,9 @@
 			  <p>A changelog of sorts.</p>
 
 			  <ul id="revision-list" class="standard">
-
+				
 			   <li class="in">
-			    <h3><b>V2.94a.20090206 (current)</b></h3>
+			    <h3><b>V2.95a.20090501 (current)</b></h3>
 			    <p>The latest and greatest.</p>
 
 			    <ul class="double">
@@ -163,7 +164,46 @@
 			     <li class="in">
 			      <p class="compact">API Updates</p>
 			      <ul class="nested compact flat">
-				   <li>New <code class="in">isBuffering property</code>, related <code class="in">onbufferchange()</code> event handler (sound object)</li>
+				   <li>Added <code class="in">soundManager.allowFullVideo</code> for full-screen video playback, triggered by double-clicking. Also, related <code>soundManager.onfullscreenchange</code> event handler.</li>
+				   <li>Updated <code>waveformData</code> to include stereo channels. Now an object literal instead of a single array. New format: <code>SMSound.waveformData = { left: [], right: [] }</code></li>
+				   <li>New <code>SMSound.ondataerror()</code> (flash 9+) handler for cases where waveform/eq data is inaccessible due to other flash movies in the current browser which have loaded sound. (Flash must have security permissions to "read" all data currently being output, long story short. Having a YouTube tab open can cause this, for example.)</li>
+				   <li>New <code class="in">isBuffering</code> property for MovieStar (MP4 audio/video) content, related <code class="in">onbufferchange()</code> event handler (sound object)</li>
+				   <li>New <code>bufferTime</code> property for MovieStream content. Defines seconds of data to buffer before playback begins (null = flash default of 0.1 seconds; if AAC playback is gappy, try up to 3 seconds.)</li>
+			      </ul>
+			     </li>
+			
+			     <li>
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li>Off-screen flash with <code class="in">wmode</code> set to non-default value (transparent/opaque) will break SM2 for non-IE on Windows, time-out error style. SM2 will now revert wmode to default for this case (losing transparency/layering of movie) - <i>or</i> set <code>soundManager.flashLoadTimeout</code> to 0 and SM2 will retain wmode, but must now wait potentially infinitely for flash to load (until user scrolls it into view.) <code>soundManager.specialWmodeCase</code> reflects if this fix has been applied after init time. </li>
+				   <li>Calling <code>soundObject.load()</code> after directly assigning a value to <code>soundObject.url</code> should now work as expected.</li>
+				  </ul>
+			     </li>
+
+			     <li>
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>Shiny new "360&deg; UI" canvas + visualization demos (Warning: experimental prototype code, subject to change etc.)</li>
+				   <li>Experimental SM2 exception/error handling + stack trace reporting added, an attempt to make custom errors thrown from SM2 more meaningful (ideally showing the user's call to SM2 where things went wrong in the stack.)</li>
+				   <li>Calling <code>soundObject.load()</code> after directly assigning a value to <code>soundObject.url</code> should now work as expected.</li>
+				   <li><code class="in">soundManager.useHighPerformance</code> update: Now false/disabled by default. Strange bug with JS/flash communication breaking with wmode=opaque on flash, specific (?) to Firefox on windows. SM2 does not normally set wmode. When <code class="in">useHighPerformance = true</code>, wmode=transparent will be used on the flash movie by default.</li>
+				   <li>Tweaks related to position, whileplaying(), playState, buffering and state resetting when sound has finished playing (fixes for a few edge cases if replaying or reusing the same sound or video.)</li>
+				   <li>Better code/feature separation and clean-up on inline player, Muxtape-style demos</li>
+				  </ul>
+			     </li>
+			
+			   </ul>
+			  </li>
+
+			   <li class="in">
+			    <h3><b>V2.94a.20090206</b> (<a href="../../download/soundmanagerv294a-20090206.zip">Download archived version</a>)</h3>
+
+			    <ul class="double">
+
+			     <li class="in">
+			      <p class="compact">API Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New <code class="in">isBuffering</code> property, related <code class="in">onbufferchange()</code> event handler (sound object)</li>
 				   <li>New <code class="in">soundManager.reboot()</code> method (<i>experimental</i>): Shut down and re-initialise SoundManager, remove and recreate flash movie (possibly handy for cases where you want to restart after flashblock-type whitelisting, etc.)</li>
 				   <li>New <code class="in">soundManager.flashLoadTimeout</code> property, milliseconds SM2 will wait for flash movie callback before failing and calling soundManager.onerror() during start-up/init. If set to 0, SM2 will wait indefinitely for flash (good for reboot/flashblock-type scenarios.)</li>
 			      </ul>

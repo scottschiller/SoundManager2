@@ -5,9 +5,11 @@ body {
  font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
 }
 
+/*
 html.isSafari * {
  text-shadow: 0 0 0 #000; /* dumbass safari high contrast font rendering tweak */
 }
+*/
 
 h1,
 h2.special {
@@ -133,13 +135,14 @@ dd code {
 }
 
 pre code {
-font-family:monaco,"VT-100",terminal,"lucida console",courier,system,sans-serif;
+ font-family:monaco,"VT-100",terminal,"lucida console",courier,system,sans-serif;
  font-size:11px;
 }
 
 pre {
  white-space:-moz-pre-wrap;
  white-space:pre-wrap;
+ word-wrap:break-word; /* IE */
 }
 
 pre span,
@@ -987,6 +990,22 @@ a.cta:hover,
  text-decoration:none;
 }
 
+a.cta-more {
+ color:#ddeeff;
+ font-size:0.8em;
+ position:absolute;
+ right:0px;
+ margin:0px;
+ padding:1px;
+ bottom:0.9em;
+ line-height:1em;
+}
+
+a.cta-more:hover {
+ background:#fff;
+ color:#3399cc;
+}
+
 #favtape:hover {
  background:#ff0066;
  border-color:#ff0066;
@@ -998,7 +1017,8 @@ a.cta:hover,
 }
 
 .newer a,
-a.feature {
+a.feature,
+.c2 .feature-hot {
  display:block;
  background:#9999aa;
  padding:0.25em 0.5em;
@@ -1019,14 +1039,16 @@ a.feature {
  margin-left:0px;
 }
 
-.newer a {
+.newer a,
+.c2 .feature-hot {
  background:#ff0000;
  border-color:#ff6666;
  color:#fff;
  line-height:1em;
 }
 
-.newer a:hover {
+.newer a:hover,
+.c2 .feature-hot:hover {
  background:#990000;
  border-color:#cc0000;
 }
@@ -1160,7 +1182,7 @@ ul.graphic li a.sm2_link {
 #sm2-container {
  background:#f9f9f9;
  width:6px;
- height:1px;
+ height:6px;
 }
 
 #sm2-support {
@@ -1184,6 +1206,9 @@ ul.graphic li a.sm2_link {
  _top:-9999em;
 }
 
+#demo-box a.feature-hot {
+ display:inline;
+}
 
 hr {
  visibility:hidden;
@@ -1213,6 +1238,11 @@ hr {
 #demos h3 {
  padding-bottom:0px;
  text-indent:0.5em;
+ font-weight:normal;
+}
+
+#demos h3 a {
+ font-weight:normal;
 }
 
 #revision-list > li {
@@ -1273,4 +1303,25 @@ body.fast .xlsf-light {
  opacity:1;
  z-index:999;
  display:none;
+}
+
+.figure {
+ display:inline;
+ display:inline-block;
+ border:1px solid #ddeeff;
+ padding:0.5em;
+ margin:0.5em 0px 0.5em 0px;
+}
+
+.figure .code {
+}
+
+.figure .code span {
+ padding:0.25em;
+ border:1px solid #f0f9ff;
+ background:#fff;
+}
+
+.figure .code span.mid {
+ color:#666;
 }

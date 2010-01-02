@@ -7,7 +7,7 @@
    Code licensed under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.94a.20090206
+   V2.95a.20090501
 */
 
 var soundManager = null;
@@ -22,9 +22,11 @@ function SoundManager(smURL,smID) {
   this.nullURL = 'null.mp3';       // path to "null" (empty) MP3 file, used to unload sounds (Flash 8 only)
   this.allowPolling = true;        // allow flash to poll for status update (required for "while playing", peak, sound spectrum functions to work.)
   this.useMovieStar = false;	   // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio + video formats (AAC, M4V, FLV, MOV etc.)
-  this.bgColor = '#ffffff';	   // movie (.swf) background color, useful if showing on-screen for video etc.
+  this.bgColor = '#ffffff';	       // movie (.swf) background color, '#000000' useful if showing on-screen/full-screen video etc.
   this.useHighPerformance = false; // position:fixed flash movie gives increased js/flash speed
   this.flashLoadTimeout = 750;     // ms to wait for flash movie to load before failing (0 = infinity)
+  this.wmode = null;	   		   // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
+  this.allowFullScreen = true;     // enter full-screen (via double-click on movie) for flash 9+ video
 
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
@@ -51,26 +53,28 @@ function SoundManager(smURL,smID) {
   };
 
   this.flash9Options = {           // flash 9-only options, merged into defaultOptions if flash 9 is being used
-    'onbufferchange': null,	   // callback for "isBuffering" property change
-    'isMovieStar': null,	   // "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
+    'isMovieStar': null,	  	   // "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
     'usePeakData': false,          // enable left/right channel peak (level) data
     'useWaveformData': false,      // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
-    'useEQData': false             // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
+    'useEQData': false,            // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
+    'onbufferchange': null,	   	   // callback for "isBuffering" property change
+    'ondataerror': null			   // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
   };
 
   this.movieStarOptions = {        // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9 + movieStar mode is enabled
-    'onmetadata': null,		   // callback for when video width/height etc. are received
-    'useVideo': false		   // if loading movieStar content, whether to show video
+    'onmetadata': null,		   	   // callback for when video width/height etc. are received
+    'useVideo': false,		   	   // if loading movieStar content, whether to show video
+    'bufferTime': null		   	   // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try up to 3 seconds)
   };
 
   // jslint global declarations
-  /*global sm2Debugger, alert, console, document, navigator, setTimeout, window */
+  /*global SM2_DEFER, sm2Debugger, alert, console, document, navigator, setTimeout, window */
 
   var SMSound = null; // defined later
 
   var _s = this;
   this.version = null;
-  this.versionNumber = 'V2.94a.20090206';
+  this.versionNumber = 'V2.95a.20090501';
   this.movieURL = null;
   this.url = null;
   this.altURL = null;
@@ -82,11 +86,12 @@ function SoundManager(smURL,smID) {
   this.sounds = {};
   this.soundIDs = [];
   this.muted = false;
-  this.wmode = null;
+  this.isFullScreen = false; // set later by flash 9+
   this.isIE = (navigator.userAgent.match(/MSIE/i));
   this.isSafari = (navigator.userAgent.match(/safari/i));
   this.isGecko = (navigator.userAgent.match(/gecko/i));
   this.debugID = 'soundmanager-debug';
+  this.specialWmodeCase = false;
   this._debugOpen = true;
   this._didAppend = false;
   this._appendSuccess = false;
@@ -155,7 +160,7 @@ function SoundManager(smURL,smID) {
     }
     _s.filePattern = _s.filePatterns[(_s.flashVersion!=8?'flash9':'flash8')];
     _s.movieURL = (_s.flashVersion==8?'soundmanager2.swf':'soundmanager2_flash9.swf');
-    _s.features.peakData = _s.features.waveformData = _s.features.eqData = (_s.flashVersion==9);
+    _s.features.peakData = _s.features.waveformData = _s.features.eqData = (_s.flashVersion>8);
   };
 
   this._overHTTP = (document.location?document.location.protocol.match(/http/i):null);
@@ -168,6 +173,11 @@ function SoundManager(smURL,smID) {
   this.useAltURL = !this._overHTTP; // use altURL if not "online"
 
   var flashCPLink = 'http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html';
+
+  this.strings = {
+    notReady: 'Not loaded yet - wait for soundManager.onload() before calling sound-related methods',
+    appXHTML: 'soundManager._createMovie(): appendChild/innerHTML set failed. May be app/xhtml+xml DOM-related.'
+  };
 
   // --- public methods ---
   
@@ -190,7 +200,7 @@ function SoundManager(smURL,smID) {
 
   this.createSound = function(oOptions) {
     if (!_s._didInit) {
-	  throw new Error('soundManager.createSound(): Not loaded yet - wait for soundManager.onload() before calling sound-related methods');
+	  throw _s._complain('soundManager.createSound(): '+_s.strings.notReady,arguments.callee.caller);
 	}
     if (arguments.length == 2) {
       // function overloading in JS! :) ..assume simple createSound(id,url) use case
@@ -223,7 +233,7 @@ function SoundManager(smURL,smID) {
     if (_s.flashVersion == 8) {
       _s.o._createSound(_tO.id,_tO.onjustbeforefinishtime);
     } else {
-      _s.o._createSound(_tO.id,_tO.url,_tO.onjustbeforefinishtime,_tO.usePeakData,_tO.useWaveformData,_tO.useEQData,_tO.isMovieStar,(_tO.isMovieStar?_tO.useVideo:false));
+      _s.o._createSound(_tO.id,_tO.url,_tO.onjustbeforefinishtime,_tO.usePeakData,_tO.useWaveformData,_tO.useEQData,_tO.isMovieStar,(_tO.isMovieStar?_tO.useVideo:false),(_tO.isMovieStar?_tO.bufferTime:false));
     }
     if (_tO.autoLoad || _tO.autoPlay) {
       // TODO: does removing timeout here cause problems?
@@ -294,6 +304,9 @@ function SoundManager(smURL,smID) {
   };
 
   this.play = function(sID,oOptions) {
+    if (!_s._didInit) {
+	  throw _s._complain('soundManager.play(): '+_s.strings.notReady,arguments.callee.caller);
+	}
     if (!_s._idCheck(sID)) {
       if (typeof oOptions != 'Object') {
 		oOptions = {url:oOptions}; // overloading use case: play('mySound','/path/to/some.mp3');
@@ -482,7 +495,7 @@ function SoundManager(smURL,smID) {
   this.onload = function() {
     // window.onload() equivalent for SM2, ready to create sounds etc.
     // this is a stub - you can override this in your own external script, eg. soundManager.onload = function() {}
-    soundManager._wD('<em>Warning</em>: soundManager.onload() is undefined.',2);
+    soundManager._wD('Warning: soundManager.onload() is undefined.',2);
   };
 
   this.onerror = function() {
@@ -493,9 +506,37 @@ function SoundManager(smURL,smID) {
 
   this._idCheck = this.getSoundById;
 
+  this._complain = function(sMsg,oCaller) {
+    // Try to create meaningful custom errors, w/stack trace to the "offending" line
+    var sPre = 'Error: ';
+    if (!oCaller) {
+      return new Error(sPre+sMsg);
+    }
+    var e = new Error(''); // make a mistake.
+    var stackMsg = null;
+    if (e.stack) {
+      // potentially dangerous: Try to return a meaningful stacktrace where provided (Mozilla)
+  	  try {
+	    var splitChar = '@';
+	    var stackTmp = e.stack.split(splitChar);
+	    stackMsg = stackTmp[4]; // try to return only the relevant bit, skipping internal SM2 shiz
+	  } catch(ee) {
+	    // oops.
+	    stackMsg = e.stack;
+	  }
+	}
+	if (typeof console != 'undefined' && typeof console.trace != 'undefined') {
+	  console.trace();
+	}
+	var errorDesc = sPre+sMsg+'. \nCaller: '+oCaller.toString()+(e.stack?' \nTop of stacktrace: '+stackMsg:(e.message?' \nMessage: '+e.message:''));
+	// See JS error/debug/console output for real error source, stack trace / message detail where possible.
+	return new Error(errorDesc);
+  };
+
   var _doNothing = function() {
     return false;
   };
+
   _doNothing._protected = true;
 
   this._disableObject = function(o) {
@@ -557,12 +598,24 @@ function SoundManager(smURL,smID) {
 
     var specialCase = null;
 
-    if (_s.useHighPerformance && _s.useMovieStar) {
-      specialCase = 'Note: disabling highPerformance, not applicable with movieStar mode on';
+    if (_s.useHighPerformance && _s.useMovieStar && _s.defaultOptions.useVideo === true) {
+      specialCase = 'soundManager note: disabling highPerformance, not applicable with movieStar mode + useVideo';
       _s.useHighPerformance = false;
     }
 
-    _s.wmode = (_s.useHighPerformance && !_s.useMovieStar?'transparent':''); // wmode=opaque seems to break firefox/windows.
+    _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
+
+    if (_s.wmode !== null && _s.flashLoadTimeout !== 0 && !_s.useHighPerformance && !_s.isIE && navigator.platform.match(/win32/i)) {
+	  _s.specialWmodeCase = true;
+      // extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
+      // does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
+      _s._wD('soundManager note: Removing wmode, preventing off-screen SWF loading issue');
+      _s.wmode = null;
+    }
+
+    if (_s.flashVersion == 8) {
+      _s.allowFullScreen = false;
+    }
 
     var oEmbed = {
       name: smID,
@@ -575,8 +628,13 @@ function SoundManager(smURL,smID) {
       bgcolor: _s.bgColor,
       pluginspage: 'http://www.macromedia.com/go/getflashplayer',
       type: 'application/x-shockwave-flash',
-      wmode: _s.wmode
+      wmode: _s.wmode,
+      allowfullscreen: (_s.allowFullScreen?'true':'false')
     };
+
+    if (!_s.wmode) {
+	  delete oEmbed.wmode; // don't write empty attribute
+    }
 
     var oObject = {
       id: smID,
@@ -587,27 +645,19 @@ function SoundManager(smURL,smID) {
       wmode: _s.wmode
     };
 
-    var oObjectParams = {
-      movie: smURL,
-      AllowScriptAccess: 'always',
-      quality: 'high',
-      bgcolor: _s.bgColor,
-      wmode: _s.wmode
-    };
-
     var oMovie = null;
     var tmp = null;
 
     if (_s.isIE) {
       // IE is "special".
       oMovie = document.createElement('div');
-      var movieHTML = '<object id="'+smID+'" data="'+smURL+'" type="application/x-shockwave-flash" width="100%" height="100%"><param name="movie" value="'+smURL+'" /><param name="AllowScriptAccess" value="always" /><param name="quality" value="high" />'+(_s.useHighPerformance && !_s.useMovieStar?'<param name="wmode" value="'+_s.wmode+'" /> ':'')+'<param name="bgcolor" value="'+_s.bgColor+'" /><!-- --></object>';
+      var movieHTML = '<object id="'+smID+'" data="'+smURL+'" type="application/x-shockwave-flash" width="100%" height="100%"><param name="movie" value="'+smURL+'" /><param name="AllowScriptAccess" value="always" /><param name="quality" value="high" />'+(_s.wmode?'<param name="wmode" value="'+_s.wmode+'" /> ':'')+'<param name="bgcolor" value="'+_s.bgColor+'" /><param name="allowFullScreen" value="'+(_s.allowFullScreen?'true':'false')+'" /><!-- --></object>';
     } else {
       oMovie = document.createElement('embed');
       for (tmp in oEmbed) {
-	if (oEmbed.hasOwnProperty(tmp)) {
+	    if (oEmbed.hasOwnProperty(tmp)) {
           oMovie.setAttribute(tmp,oEmbed[tmp]);
-	}
+	    }
       }
     }
 
@@ -643,8 +693,6 @@ function SoundManager(smURL,smID) {
           oD.style[tmp] = oToggle[tmp];
 	}
     }
-
-    var appXHTML = 'soundManager._createMovie(): appendChild/innerHTML set failed. May be app/xhtml+xml DOM-related.';
 
     var oTarget = _s._getDocument();
 
@@ -694,7 +742,7 @@ function SoundManager(smURL,smID) {
           }
           _s._appendSuccess = true;
         } catch(e) {
-          throw new Error(appXHTML);
+          throw new Error(_s.strings.appXHTML);
         }
       } else {
         // it's already in the document.
@@ -715,7 +763,7 @@ function SoundManager(smURL,smID) {
           try {
             oTarget.appendChild(oD);
           } catch(e2) {
-            throw new Error(appXHTML);
+            throw new Error(_s.strings.appXHTML);
           }
           oTarget.appendChild(oDebug);
         }
@@ -727,8 +775,8 @@ function SoundManager(smURL,smID) {
       _s._wD(specialCase);
     }
 
-    _s._wD('-- SoundManager 2 '+_s.version+(_s.useMovieStar?', MovieStar mode':'')+(_s.useHighPerformance?', high performance mode':'')+' --',1);
-    _s._wD('soundManager._createMovie(): Trying to load '+smURL+(!_s._overHTTP && _s.altURL?'(alternate URL)':''),1);
+    _s._wD('-- SoundManager 2 '+_s.version+(_s.useMovieStar?', MovieStar mode':'')+(_s.useHighPerformance?', high performance mode':'')+(_s.wmode?', wmode: '+_s.wmode:'')+' --',1);
+    _s._wD('soundManager._createMovie(): Trying to load '+smURL+(!_s._overHTTP && _s.altURL?' (alternate URL)':''),1);
   };
 
   // aliased to this._wD()
@@ -903,7 +951,7 @@ function SoundManager(smURL,smID) {
       }
       setTimeout(function() {
         if (!_s._didInit) {
-          _s._wD('soundManager: No Flash response within reasonable time after document load.\nPossible causes: Flash version under 8, no support, or Flash security denying JS-Flash communication.',2);
+          _s._wD('soundManager: No Flash response within reasonable time after document load.\nPossible causes: Loading '+_s.movieURL+' failed, Flash version under '+_s.flashVersion+', no support, flash blocked or JS-Flash security error.',2);
           if (!_s._overHTTP) {
           _s._wD('soundManager: Loading this page from local/network file system (not over HTTP?) Flash security likely restricting JS-Flash access. Consider adding current URL to "trusted locations" in the Flash player security settings manager at '+flashCPLink+', or simply serve this content over HTTP.',2);
         }
@@ -1049,12 +1097,14 @@ function SoundManager(smURL,smID) {
     _s._debugTS('flashtojs',true);
     _s.swfLoaded = true;
     _s._tryInitOnFocus = false;
+
     if (_s.isIE) {
       // IE needs a timeout OR delay until window.onload - may need TODO: investigating
       setTimeout(_s.init,100);
     } else {
       _s.init();
     }
+
   };
 
   this._setSandboxType = function(sandboxType) {
@@ -1134,6 +1184,8 @@ function SoundManager(smURL,smID) {
   this.pan = this.options.pan;
   this.volume = this.options.volume;
 
+  this._lastURL = null;
+
   this._debug = function() {
     if (_s.debugMode) {
     var stuff = null;
@@ -1188,7 +1240,10 @@ function SoundManager(smURL,smID) {
       left: 0,
       right: 0
     };
-    _t.waveformData = [];
+    _t.waveformData = {
+	  left: [],
+	  right: []
+    };
     _t.eqData = [];
   };
 
@@ -1204,15 +1259,27 @@ function SoundManager(smURL,smID) {
       oOptions = _t.options;
       _t._iO = oOptions;
       _t.instanceOptions = _t._iO;
+
+      // console.log('typeof oOptions: '+(typeof oOptions)+', lastURL: '+_t._lastURL+', _t.url: '+_t.url);
+
+      if (_t._lastURL && _t._lastURL != _t.url) {
+        _s._wD('SMSound.load(): Using manually-assigned URL');
+        _t._iO.url = _t.url;
+        _t.url = null;
+      }
     } 
+
     if (typeof _t._iO.url == 'undefined') {
       _t._iO.url = _t.url;
     }
+
     _s._wD('soundManager.load(): '+_t._iO.url,1);
     if (_t._iO.url == _t.url && _t.readyState !== 0 && _t.readyState != 2) {
       _s._wD('soundManager.load(): current URL already assigned.',1);
       return false;
     }
+    _t.url = _t._iO.url;
+    _t._lastURL = _t._iO.url;
     _t.loaded = false;
     _t.readyState = 1;
     _t.playState = 0; // (oOptions.autoPlay?1:0); // if autoPlay, assume "playing" is true (no way to detect when it actually starts in Flash unless onPlay is watched?)
@@ -1294,7 +1361,7 @@ function SoundManager(smURL,smID) {
       _t.resume();
     } else {
       _t.playState = 1;
-      if (!_t.instanceCount || _s.flashVersion == 9) {
+      if (!_t.instanceCount || _s.flashVersion > 8) {
 		_t.instanceCount++;
 	  }
       _t.position = (typeof _t._iO.position != 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
@@ -1331,7 +1398,7 @@ function SoundManager(smURL,smID) {
     var offset = Math.min(_t.duration,Math.max(nMsecOffset,0)); // position >= 0 and <= current available (loaded) duration
     _t._iO.position = offset;
     if (!bNoDebug) {
-      _s._wD('SMSound.setPosition('+nMsecOffset+')'+(nMsecOffset != offset?', corrected value: '+offset:''));
+      // _s._wD('SMSound.setPosition('+nMsecOffset+')'+(nMsecOffset != offset?', corrected value: '+offset:''));
     }
     _s.o._setPosition(_t.sID,(_s.flashVersion==9?_t._iO.position:_t._iO.position/1000),(_t.paused||!_t.playState)); // if paused or not playing, will not resume (by playing)
   };
@@ -1362,7 +1429,7 @@ function SoundManager(smURL,smID) {
 
   this.togglePause = function() {
     _s._wD('SMSound.togglePause()');
-    if (!_t.playState) {
+    if (_t.playState === 0) {
       _t.play({position:(_s.flashVersion==9?_t.position:_t.position/1000)});
       return false;
     }
@@ -1419,7 +1486,7 @@ function SoundManager(smURL,smID) {
       _t.bytesLoaded = nBytesLoaded;
       _t.bytesTotal = nBytesTotal;
       _t.duration = Math.floor(nDuration);
-      _t.durationEstimate = parseInt((_t.bytesTotal/_t.bytesLoaded)*_t.duration,10); // estimate total time (will only be accurate with CBR MP3s.)
+      _t.durationEstimate = parseInt((_t.bytesTotal/_t.bytesLoaded)*_t.duration,10);
       if (_t.readyState != 3 && _t._iO.whileloading) {
 	_t._iO.whileloading.apply(_t);
       }
@@ -1449,9 +1516,16 @@ function SoundManager(smURL,smID) {
     }
   };
 
-  this._whileplaying = function(nPosition,oPeakData,oWaveformData,oEQData) {
+  this._whileplaying = function(nPosition,oPeakData,oWaveformDataLeft,oWaveformDataRight,oEQData) {
+
     if (isNaN(nPosition) || nPosition === null) {
       return false; // Flash may return NaN at times
+    }
+    if (_t.playState === 0 && nPosition > 0) {
+      // can happen at the end of a video where nPosition == 33 for some reason, after finishing.???
+      // can also happen with a normal stop operation. This resets the position to 0.
+      // _s._writeDebug('Note: Not playing, but position = '+nPosition);
+      nPosition = 0;	
     }
     _t.position = nPosition;
 	if (_t._iO.usePeakData && typeof oPeakData != 'undefined' && oPeakData) {
@@ -1460,21 +1534,22 @@ function SoundManager(smURL,smID) {
 	   right: oPeakData.rightPeak
 	  };
 	}
-	if (_t._iO.useWaveformData && typeof oWaveformData != 'undefined' && oWaveformData) {
-	  _t.waveformData = oWaveformData;
-	  /*
-	  _t.spectrumData = {
-	   left: oSpectrumData.left.split(','),
-	   right: oSpectrumData.right.split(',')
-	  }
-	  */
+	if (_t._iO.useWaveformData && typeof oWaveformDataLeft != 'undefined' && oWaveformDataLeft) {
+	  _t.waveformData = {
+	   left: oWaveformDataLeft.split(','),
+	   right: oWaveformDataRight.split(',')
+	  };
 	}
 	if (_t._iO.useEQData && typeof oEQData != 'undefined' && oEQData) {
 	  _t.eqData = oEQData;
 	}
     if (_t.playState == 1) {
+	  // special case/hack: ensure buffering is false (instant load from cache, thus buffering stuck at 1?)
+	  if (_t.isBuffering) {
+		_t._onbufferchange(0);
+	  }
       if (_t._iO.whileplaying) {
-	_t._iO.whileplaying.apply(_t); // flash may call after actual finish
+	    _t._iO.whileplaying.apply(_t); // flash may call after actual finish
       }
       if (_t.loaded && _t._iO.onbeforefinish && _t._iO.onbeforefinishtime && !_t.didBeforeFinish && _t.duration-_t.position <= _t._iO.onbeforefinishtime) {
         _s._wD('duration-position &lt;= onbeforefinishtime: '+_t.duration+' - '+_t.position+' &lt= '+_t._iO.onbeforefinishtime+' ('+(_t.duration-_t.position)+')');
@@ -1527,7 +1602,6 @@ function SoundManager(smURL,smID) {
 
     // TODO: calling user-defined onfinish() should happen after setPosition(0)
     // OR: onfinish() and then setPosition(0) is bad.
-
     if (_t._iO.onbeforefinishcomplete) {
       _t._iO.onbeforefinishcomplete.apply(_t);
     }
@@ -1549,8 +1623,14 @@ function SoundManager(smURL,smID) {
         }
       }
     } else {
+	  if (_t.useVideo) {
+	    // video has finished
+	    // may need to reset position for next play call, "rewind"
+	    // _t.setPosition(0);
+	  }
       // _t.setPosition(0);
     }
+
   };
 
   this._onmetadata = function(oMetaData) {
@@ -1574,8 +1654,13 @@ function SoundManager(smURL,smID) {
   };
 
   this._onbufferchange = function(bIsBuffering) {
+    if (_t.playState === 0) {
+      // ignore if not playing
+      return false;
+    }
     if (bIsBuffering == _t.isBuffering) {
       // ignore initial "false" default, if matching
+	  _s._wD('_onbufferchange: ignoring false default / loaded sound');
       return false;
     }
     _t.isBuffering = (bIsBuffering==1?true:false);
@@ -1585,7 +1670,33 @@ function SoundManager(smURL,smID) {
     }
   };
 
+  this._ondataerror = function(sError) {
+	// flash 9 wave/eq data handler
+	if (_t.playState > 0) { // hack: called at start, and end from flash at/after onfinish().
+	  _s._wD('SMSound._ondataerror(): '+sError);
+	  if (_t._iO.ondataerror) {
+	    _t._iO.ondataerror.apply(_t);	
+	  }
+	} else {
+	  // _s._wD('SMSound._ondataerror(): ignoring');
+	}
+  };
+
   }; // SMSound()
+
+  this._onfullscreenchange = function(bFullScreen) {
+    _s._wD('onfullscreenchange(): '+bFullScreen);
+    _s.isFullScreen = (bFullScreen==1?true:false);
+    if (!_s.isFullScreen) {
+	  // attempt to restore window focus after leaving full-screen
+	  try {
+		window.focus();
+		_s._wD('window.focus()');
+	  } catch(e) {
+	    // oh well
+	  }
+    }
+  };
 
   // register a few event handlers
   if (window.addEventListener) {
@@ -1612,4 +1723,7 @@ function SoundManager(smURL,smID) {
 
 } // SoundManager()
 
-soundManager = new SoundManager();
+// set var SM2_DEFER = true; in your own script to prevent auto start-up
+if (typeof SM2_DEFER == 'undefined' || !SM2_DEFER) {
+  soundManager = new SoundManager();
+}

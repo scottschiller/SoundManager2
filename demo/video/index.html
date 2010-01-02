@@ -38,6 +38,8 @@ var PP_CONFIG = {
   useVideo: true         // show video when applicable
 }
 
+soundManager.bgColor = '#000000'; // for full-screen
+
 </script>
 <script type="text/javascript" src="../page-player/script/page-player.js"></script>
 <script type="text/javascript">
@@ -117,6 +119,7 @@ var t = window.setInterval(checkRAM,500);
 
  <h2 style="margin-top:0px;border:none">MPEG4 / H.264 + HE-AAC (Flash "MovieStar" 9.0r115+) video support - <em>experimental</em></h2>
  <h3 style="border-bottom:none;margin-bottom:0.5em">A subset of MPEG4 <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">is supported</a> including FLV, MP4, M4A, MOV, MP4V, 3GP and 3G2 files.</h3>
+ <p>Double-click the video to go full-screen.</p>
 
  <div id="movie-box" style="position:relative;clear:both;margin-right:1em;background:#fff">
 	
@@ -125,7 +128,9 @@ var t = window.setInterval(checkRAM,500);
 	 <div id="movie-playlist" style="position:relative;width:320px;font-size:xx-small">
 
 		<ul class="playlist">
+		
 		  <li><a href="http://freshly-ground.com/data/video/Jellyfish.mov">Jellyfish <span class="comment">(848x480, H.264)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/SM2%20360%20Degree%20Player%20UI.mov">SM2 360&deg; Player UI<span class="comment">(888x514, H.264)</span></a></li>
 		  <li><a href="http://freshly-ground.com/data/video/Jack Dempsey Cichlids.flv">Jack Dempsey Cichlids <span class="comment">(320x240 .FLV of my fish, from YouTube)</span></a></li>
 		  <li><a href="http://freshly-ground.com/data/video/schillmania-xmaslightsmashfest07.mov">Smash Christmas Lights! <span class="comment">(640x480 H.264)</span></a></li>
 		  <li><a href="http://freshly-ground.com/data/video/Clouds Over Kal Lake-2048kbps-h264.mov">Clouds Over Kal Lake <span class="comment">(800x600, 2048 kbps H.264 .MOV)</span></a></li>
@@ -135,8 +140,7 @@ var t = window.setInterval(checkRAM,500);
 		  <li><a href="http://freshly-ground.com/data/video/Basil Vs. Caterpillar-816x458-2048kbps.mov">Basil Vs. Caterpillar <span class="comment">(816x458, 2048 kbps H.264)</span></a></li>
 		  <li><a href="http://freshly-ground.com/data/video/Clock-1632x916.mp4">Clock <span class="comment">(1632x916, "HD" .MP4 - CPU fires <strong>probable</strong>.)</span></li>
 		  <li><a href="http://freshly-ground.com/data/video/20080716 - Cilantro Time Lapse.mp4">Cilantro Time Lapse <span class="comment">(1600x1200 .MP4, CPU fires <strong>almost certain</strong>.)</span></a></li>
-		  <li><a href="http://freshly-ground.com/data/video/Granville Island Water Park (Hi-Fi).mp4">Granville Island Water Park <span class="comment">(MP4+MiniDisc Audio)</span></a></li>
-		  <li><a href="http://freshly-ground.com/data/video/Tesla Coils at Maker Faire 2007.mp4">Tesla Coils at Maker Faire <span class="comment">(MP4)</span></a></li>
+		  <li><a href="http://freshly-ground.com/data/video/schillmania-reconstruction-h264-3000kbps.mov">Schillmania Reconstruction<span class="comment">(1280x1024, H.264)</span></a></li>
 		 </ul>
 
 	 </div>

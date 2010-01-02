@@ -1,3 +1,5 @@
+/* SoundManager 2 - project home utility JS */
+
 function $(sID) {
   return document.getElementById(sID);
 }
@@ -127,7 +129,7 @@ var utils = new Utils();
 
 var lastSelected = null;
 
-var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.75em"><h3>Oh snap!</h3><p>SoundManager 2 was unable to start.<p>Don\'t worry though, there are a few common causes and guided help is provided via the troubleshooting tool.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature">Troubleshooting</a></p></div>';
+var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.75em"><h3>Oh snap!</h3><p>SoundManager 2 was unable to start.<p>'+(!soundManager._overHTTP?'Viewing offline? You may need to change a Flash security setting.':'Possible causes: Adblock, Flashblock, missing .SWF, or no Flash?')+' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot">Troubleshooting</a></p></div>';
 
 function resetFilter(o) {
   // reset everything
@@ -289,7 +291,7 @@ function fixLinks() {
       if (tmp == -1) {
         tmp = s.length;
       }
-      if (!s.match(/index/i)) {
+      if (!s.match(/\.html/i)) {
         l[i].setAttribute('href',s.substr(0,tmp)+'index.html'+s.substr(tmp));
       }
     }

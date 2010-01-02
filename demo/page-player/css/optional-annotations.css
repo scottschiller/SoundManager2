@@ -1,0 +1,168 @@
+/*
+ ------------------------------------------
+ -- annotations (sub-tracks, notes etc.) --
+ ------------------------------------------
+*/
+
+ul.playlist li a.sm2_link .metadata {
+ display:none; /* hide by default */
+}
+
+ul.playlist li.sm2_paused a.sm2_link .metadata,
+ul.playlist li.sm2_playing a.sm2_link .metadata {
+ display:inline;
+}
+
+ul.playlist li ul {
+ list-style-type:none;
+ margin:0px;
+ padding:0px;
+ position:relative;
+ font-size:small;
+ display:none;
+}
+
+ul.playlist li ul li {
+ position:relative;
+ margin:0px;
+ padding:2px 3px;
+ border:1px solid transparent;
+ -moz-border-radius:6px;
+ -khtml-border-radius:6px;
+ border-radius:6px;
+ margin-right:1em;
+ font-family:helvetica,verdana,tahoma,arial,"sans serif";
+ font-size:x-small;
+ font-weight:lighter;
+ letter-spacing:0px;
+ background-color:transparent;
+ opacity:0.66;
+}
+
+ul.playlist li ul li:hover {
+ opacity:1;
+ background-color:#fff;
+ border-color:#ccc;
+ color:#666;
+}
+
+ul.playlist li.sm2_playing ul li,
+ul.playlist li.sm2_paused ul li {
+ color:#fff;
+}
+
+ul.playlist li.sm2_playing ul li:hover {
+ background-color:#fff;
+ color:#5588bb;
+ border-color:#336699;
+ opacity:0.9;
+}
+
+ul.playlist li.sm2_paused ul li:hover {
+ background-color:#888;
+}
+
+/* metadata */
+
+ul.playlist li .metadata .duration {
+ /* optional timing data */
+ display:none;
+}
+
+ul.playlist li .metadata ul li p {
+ margin:0px;
+ padding:0px;
+}
+
+ul.playlist li .metadata ul li span {
+ display:none;
+}
+
+ul.playlist li .controls .statusbar .annotation {
+ position:absolute;
+ background-color:transparent;
+ top:0px;
+ color:#666;
+ text-align:right;
+ margin-left:10px;
+ height:0.5em;
+}
+
+ul.playlist li .controls .statusbar .annotation:hover {
+ z-index:12; /* sit on top of note */
+}
+
+ul.playlist li .controls .statusbar .annotation span.bubble {
+ /* using &middot; */
+ display:inline-block;
+ background-color:#fff;
+ border:1px solid #666;
+ border-radius:6px;
+ -moz-border-radius:6px;
+ -webkit-border-radius:6px;
+}
+
+ul.playlist li .controls .statusbar .annotation span {
+ display:block;
+ background:transparent url(../image/divot.png) no-repeat 50% 0px;
+ width:15px;
+ margin-left:-15px;
+ height:12px;
+ text-align:center;
+}
+
+ul.playlist li .controls .statusbar .annotation.alt {
+ top:auto;
+ bottom:0px;
+}
+
+ul.playlist li .controls .statusbar .annotation span:hover {
+ cursor:none; /* Fx3 rules. */
+ margin-top:0.1em;
+}
+
+ul.playlist li .controls .statusbar .annotation.alt span:hover {
+ margin-top:-0.1em;
+}
+
+ul.playlist li .controls .statusbar .annotation.alt span {
+ background:transparent url(../image/divot-bottom.png) no-repeat 50% bottom;
+}
+
+ul.playlist li .note {
+ position:absolute;
+ display:none;
+ left:0px;
+ top:0px;
+ z-index:10;
+ font-size:x-small;
+ padding:2px 4px 2px 4px;
+ width:auto;
+ color:#666;
+ background-color:#fff;
+ border:1px solid #ccc;
+ border-radius:6px;
+ -moz-border-radius:6px;
+ -webkit-border-radius:6px;
+ font-style:normal;
+ font-weight:bold;
+ font-family:arial,tahoma,verdana,"sans serif";
+ letter-spacing:0px;
+ margin-top:1.1em;
+}
+
+ul.playlist li .note.alt {
+ margin-top:-1.32em;
+}
+
+ul.playlist li .note:hover {
+ display:block !important;
+}
+
+ul.playlist li .sm2_divider {
+ font-size:0.75em;
+}
+
+ul.playlist li .sm2_metadata {
+ font-size:0.65em;
+}

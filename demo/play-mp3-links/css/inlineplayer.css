@@ -112,7 +112,6 @@ ul.graphic li a.sm2_link {
  text-decoration:none;
  font-weight:bold;
  color:#fff;
- text-shadow: 0 0 0 #000; /* stupid Safari "fat" font rendering tweak */
 }
 
 ul.graphic li a.sm2_link {
@@ -121,6 +120,7 @@ ul.graphic li a.sm2_link {
  -webkit-transition: all 0.15s ease-in-out;
 }
 
+ul.graphic li a.sm2_link,
 ul.graphic li a.sm2_paused:hover,
 ul.graphic li a.sm2_link:hover {
  background:#333 url(../image/icon_play.png) no-repeat 0px 50%;
@@ -152,6 +152,7 @@ ul.graphic li a.sm2_playing {
  background-image:none;
 }
 */
+
 /* flat CSS example */
 
 ul.flat a.sm2_link {

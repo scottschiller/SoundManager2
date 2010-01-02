@@ -43,6 +43,7 @@
 		<li><a href="../../demo/api/">API Examples</a></li>
 	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 		<li><a href="../../demo/page-player/">Muxtape-style UI</a></li>
+		<li><a href="../../demo/360-player/">360&deg; Player UI</a></li>
 		<li><a href="../../demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="../../demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
@@ -132,6 +133,7 @@
 
 			  <div class="f-block c-basic-use">
 
+
 			  <h4 id="basic-inclusion">Including SoundManager</h4>
 
 			  <p>Within <code class="in">&lt;head&gt;</code>:</p>
@@ -143,6 +145,28 @@
 			  <h4 id="basic-template">Basic SoundManager Template</h4>
 
 			  <p>For a live example of a page including SoundManager 2, check the <a href="../../demo/template/" title="SoundManager 2 template example" onclick="checkDomain(this)">bare-bones template</a>.</p>
+
+
+<h4 id="tech-architecture">How SoundManager 2 Really Works</h4>
+
+<p>SoundManager 2 is the result of Javascript talking to a hidden Flash movie. The Flash layer is not a concern for you as a developer, but it is the component which makes audio control possible.</p>
+
+<style type="text/css">
+
+
+
+</style>
+
+<div class="figure">
+
+ <div class="code">
+  <span>soundmanager2.js</span> <span class="mid">&lt;-flash externalinterface magic-&gt;</span> <span>soundmanager2.swf</span> <span class="mid">&lt;- HTTP -&gt;</span> <span>.mp3/.mp4</span>
+ </div>
+
+</div>
+
+<p>Flash can expose methods to Javascript via ExternalInterface, allowing bi-directional calls to be made and thus providing additional functionality to Javascript.</p>
+
 
 			  </div>
 			
@@ -285,7 +309,7 @@ soundManager.onerror = function() {
 				    <div id="d-flashtojs-offline">
 				     <h4>Offline viewing: Adding a "trusted location" to the Flash Security Settings Panel</h4>
 				     <p>The Flash Player Global Security Settings Panel is a web-based control panel which allows you to configure Flash security. You will need to add the path of the SoundManager 2 project in order for it to work "offline" (ie., when viewing via file:// or c:/)</p>
-				     <p id="ss"><a href="#screenshots" onclick="document.getElementById('ss-box').style.display = 'block';document.getElementById('ss').style.display='none';return false">Illustrated guide</a>: Adding a "trusted location"</p>
+				     <p id="ss"><a href="#screenshots" onclick="document.getElementById('ss-box').style.display = 'block';document.getElementById('ss').style.display='none';return false">Show me how</a>: Adding a "trusted location"</p>
 				     <div id="ss-box" style="display:none">
 					  <h4>Illustrated guide: Adding a "trusted location" in Flash</h4>
 				      <p>Below: Adding a location, and selecting "Browse for folder" (or directory), to whitelist the SoundManager 2 project directory for offline viewing.</p>

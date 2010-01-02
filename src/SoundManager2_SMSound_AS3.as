@@ -7,17 +7,20 @@
    Code licensed under the BSD License:
    http://www.schillmania.com/projects/soundmanager2/license.txt
 
-   V2.94a.20090206
+   V2.95a.20090501
 
    Flash 9 / ActionScript 3 version
 */
 
 package {
 
-  import flash.display.Sprite;
-  import flash.events.Event;
   import flash.external.*;
   import flash.events.*;
+  import flash.display.Sprite;
+  import flash.display.StageDisplayState;
+  import flash.display.StageScaleMode;
+  import flash.display.StageAlign;
+  import flash.geom.Rectangle;
   import flash.media.Sound;
   import flash.media.SoundChannel;
   import flash.media.SoundLoaderContext;
@@ -26,8 +29,6 @@ package {
   import flash.media.Video;
   import flash.net.URLRequest;
   import flash.utils.ByteArray;
-  import flash.display.Sprite;
-
   import flash.net.NetConnection;
   import flash.net.NetStream;
 
@@ -55,6 +56,8 @@ package {
     public var loaded:Boolean;
     public var paused:Boolean;
     public var duration:Number;
+    public var handledDataError:Boolean = false;
+    public var ignoreDataError:Boolean = false;
     public var lastValues:Object = {
       bytes: 0,
       position: 0,
@@ -76,10 +79,14 @@ package {
 	public var st:SoundTransform;
 	public var useNetstream:Boolean;
     public var useVideo:Boolean = false;
+    public var bufferTime:Number = -1;
+    public var lastNetStatus:String = null;
 
     public var oVideo:Video = null;
+	public var videoWidth:Number = 0;
+	public var videoHeight:Number = 0;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager:SoundManager2_AS3, sIDArg:String=null, sURLArg:String=null, usePeakData:Boolean = false, useWaveformData:Boolean = false, useEQData:Boolean = false, useNetstreamArg:Boolean = false, useVideoArg:Boolean = false) {
+    public function SoundManager2_SMSound_AS3(oSoundManager:SoundManager2_AS3, sIDArg:String=null, sURLArg:String=null, usePeakData:Boolean = false, useWaveformData:Boolean = false, useEQData:Boolean = false, useNetstreamArg:Boolean = false, useVideoArg:Boolean = false, netStreamBufferTime:Number = -1) {
 	  this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -92,35 +99,39 @@ package {
       this.didFinish = false; // non-MP3 formats only
       this.loaded = false;
       this.soundChannel = null;
+      this.lastNetStatus = null;
 	  this.useNetstream = useNetstreamArg;
 	  if (this.useNetstream) {
-try {
-	  	this.cc = new Object();
-		this.nc = new NetConnection();
-		// this.nc.addEventListener(NetStatusEvent.NET_STATUS, doNetStatus);
-		// TODO: security/IO error handling
-        // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
-	    // this.nc.addEventListener(IOErrorEvent.IO_ERROR, doIOError);
-		this.nc.connect(null);
-		this.ns = new NetStream(this.nc);
-        this.ns.checkPolicyFile = true;
-		this.st = new SoundTransform();
-		this.cc.onMetaData = this.metaDataHandler;
-		this.ns.client = this.cc;
-		this.ns.receiveAudio(true);
-		if (useVideoArg) {
-		  this.useVideo = true;
-		  this.oVideo = new Video();
-		  this.ns.receiveVideo(true);
-		  this.sm.stage.addEventListener(Event.RESIZE, this.resizeHandler);
-		  this.oVideo.smoothing = true; // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Video.html#smoothing
-		  this.oVideo.visible = false; // hide until metadata received
-          this.sm.addChild(this.oVideo);
-          this.oVideo.attachNetStream(this.ns);
-          writeDebug('setting video w/h to stage: '+this.sm.stage.stageWidth+'x'+this.sm.stage.stageHeight);
-          this.oVideo.width = this.sm.stage.stageWidth;
-          this.oVideo.height = this.sm.stage.stageHeight;
-        }
+        try {
+		  	this.cc = new Object();
+			this.nc = new NetConnection();
+			// TODO: security/IO error handling
+	        // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
+		    // this.nc.addEventListener(IOErrorEvent.IO_ERROR, doIOError);
+			this.nc.connect(null);
+			this.ns = new NetStream(this.nc);
+	        this.ns.checkPolicyFile = true;
+		    // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
+	        if (netStreamBufferTime != -1) {
+		  	  this.ns.bufferTime = netStreamBufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
+	        }
+			this.st = new SoundTransform();
+			this.cc.onMetaData = this.metaDataHandler;
+			this.ns.client = this.cc;
+			this.ns.receiveAudio(true);
+			if (useVideoArg) {
+			  this.useVideo = true;
+			  this.oVideo = new Video();
+			  this.ns.receiveVideo(true);
+			  this.sm.stage.addEventListener(Event.RESIZE, this.resizeHandler);
+			  this.oVideo.smoothing = true; // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Video.html#smoothing
+			  this.oVideo.visible = false; // hide until metadata received
+	          this.sm.addChild(this.oVideo);
+	          this.oVideo.attachNetStream(this.ns);
+	          writeDebug('setting video w/h to stage: '+this.sm.stage.stageWidth+'x'+this.sm.stage.stageHeight);
+	          this.oVideo.width = this.sm.stage.stageWidth;
+	          this.oVideo.height = this.sm.stage.stageHeight;
+	        }
 		} catch(e:Error) {
 		  writeDebug('netStream error: '+e.toString());
 		}
@@ -130,25 +141,13 @@ try {
     public function resizeHandler(e:Event):void {
 	  // scale video to stage dimensions
 	  // probably less performant than using native flash scaling, but that doesn't quite seem to work. I'm probably missing something simple.
-	  this.oVideo.width = this.sm.stage.stageWidth;
-	  this.oVideo.height = this.sm.stage.stageHeight;
+	    this.oVideo.width = this.sm.stage.stageWidth;
+	    this.oVideo.height = this.sm.stage.stageHeight;
     }
 
     public function writeDebug(s:String,bTimestamp:Boolean=false):Boolean {
 	  return this.sm.writeDebug(s,bTimestamp); // defined in main SM object
     }
-
-	/*
-    public function doSecurityError(e:SecurityErrorEvent):void {
-      writeDebug('securityError: '+e.text);
-      // lack of crossdomain.xml, usually
-    }
-   
-    public function doIOError(e:IOErrorEvent):void {
-      writeDebug('ioError: '+e.text);
-      // 404 or dropped connection
-    }
-	*/
 
     public function doNetStatus(e:NetStatusEvent):void {
       writeDebug('netStatusEvent: '+e.info.code);
@@ -170,6 +169,8 @@ try {
 		  infoObject.height = 0;
 		}
         writeDebug('video dimensions: '+infoObject.width+'x'+infoObject.height+' (w/h)');
+  	    this.videoWidth = infoObject.width;
+		this.videoHeight = infoObject.height;
 	    // implement a subset of metadata to pass over EI bridge
 	    // some formats have extra stuff, eg. "aacaot", "avcprofile"
 	    // http://livedocs.adobe.com/flash/9.0/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00000267.html
@@ -189,7 +190,6 @@ try {
         ExternalInterface.call(baseJSObject+"['"+this.sID+"']._whileloading",this.bytesLoaded,this.bytesTotal,infoObject.duration);
       }
       this.duration = infoObject.duration*1000;
-
       // null this out for the duration of this object's existence.
       // it may be called multiple times.
       this.cc.onMetaData = function(infoObject:Object):void{}
@@ -200,7 +200,7 @@ try {
       // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum()
       SoundMixer.computeSpectrum(this.waveformData, false, 0); // sample wave data at 44.1 KHz
       this.waveformDataArray = [];
-      for (var i:int=0,j:int=this.waveformData.length/8; i<j; i++) {
+      for (var i:int=0,j:int=this.waveformData.length/4; i<j; i++) { // get all 512 values (256 per channel)
         this.waveformDataArray.push(int(this.waveformData.readFloat()*1000)/1000);
       }
     }
@@ -215,9 +215,10 @@ try {
     }
 
     public function start(nMsecOffset:int,nLoops:int):void {
+	  this.sm.currentObject = this; // reference for video, full-screen
       if (this.useNetstream) {
-	    // writeDebug('start: seeking to '+nMsecOffset);
-          this.cc.onMetaData = this.metaDataHandler;
+	    writeDebug('start: seeking to '+nMsecOffset);
+        this.cc.onMetaData = this.metaDataHandler;
         this.ns.seek(nMsecOffset);
         if (!this.didLoad) {
           this.ns.play(this.sURL);
@@ -248,14 +249,14 @@ try {
         // this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
       } else {
-try {
+		try {
         this.didLoad = true;
         this.urlRequest = new URLRequest(sURL);
         this.soundLoaderContext = new SoundLoaderContext(1000, true); // check for policy (crossdomain.xml) file on remote domains - http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundLoaderContext.html
         this.load(this.urlRequest,this.soundLoaderContext);
-} catch(e:Error) {
-  writeDebug('error during loadSound(): '+e.toString());
-}
+		} catch(e:Error) {
+		  writeDebug('error during loadSound(): '+e.toString());
+		}
       }
     }
 

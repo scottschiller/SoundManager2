@@ -50,10 +50,10 @@ soundManager.onload = function() {
 <code>
 <pre>
 
-<span>&lt;-- include SM2 library --&gt;</span>
+<span>&lt;!-- include SM2 library --&gt;</span>
 &lt;script type="text/javascript" src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
 
-<span>&lt;-- configure it for your use --&gt;</span>
+<span>&lt;!-- configure it for your use --&gt;</span>
 &lt;script type="text/javascript"&gt;
 
 soundManager.url = '<em><em>/path/to/sm2-flash-movies/</em></em>'; <span>// directory where SM2 .SWFs live</span>
@@ -76,9 +76,9 @@ soundManager.onload = function() {
 soundManager.onload = function() {
   <em><em>var mySound = soundManager.createSound({
     id: 'aSound',
-    url: '/path/to/an.mp3',
-    <span>// onload: <span>[ event handler function object ]</span></span>,
-    <span>// other options here</span>
+    url: '/path/to/an.mp3'
+    <span>// onload: <span>[ event handler function object ],</span></span>
+    <span>// other options here,</span>
   });
   mySound.play();
 </em></em>}

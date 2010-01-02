@@ -1,0 +1,179 @@
+#cp-container { position:relative;float:left;display:inline; margin-left:1em;padding: 6px; background-color: #f6f6f6; border:1px solid #eee; width: 320px; height:180px;z-index:2; }
+
+.yui-picker-controls li,
+.yui-picker-controls input {
+ font-size:1em;
+ font-family:"helvetica neue",helvetica,arial,verdana;
+}
+
+#controls {
+ position:relative;
+ margin-top:1.5em;
+ font-size:0.85em;
+}
+
+#options {
+ float:left;
+ display:inline;
+ margin-bottom:0.5em;
+ margin-top:-1.2em;
+}
+
+#controls .checkbox {
+ float:left;
+ display:inline;
+ width:21.2em;
+ margin-right:2.5em;
+}
+
+#controls .checkbox div {
+ /* tab */
+ width:auto;
+ padding:0.4em;
+ border:1px solid #ddd;
+ border-bottom:none;
+ background:#eee;
+}
+
+#controls .checkbox div,
+#controls .checkbox input {
+ font-family:arial,tahoma,verdana,"sans serif";
+ font-size:1em;
+ vertical-align:middle;
+}
+
+#controls dl {
+ width:21em;
+}
+
+#controls dl.col {
+ position:relative;
+ float:left;
+ display:inline;
+ margin:0px;
+ margin-right:1em;
+ padding:0.75em;
+/*
+ height:12.4em;
+*/
+ height:auto;
+ border:1px solid #ddd;
+ background:#f6f6f6;
+}
+
+#controls .disabled {
+ color:#ccc;
+}
+
+#controls .disabled dt,
+#controls .disabled dd {
+ color:#999;
+ opacity:0.5;
+}
+
+#controls dl dd p {
+ margin:0px;
+ padding:0px;
+}
+
+#controls dt,
+#controls dd {
+ margin:0px;
+ padding:0px;
+}
+
+#controls dt {
+ border-bottom:none;
+}
+
+#controls dt {
+ float:left;
+ display:inline;
+ background:transparent;
+ padding-right:0.7em;
+ margin-right:0.7em;
+ border-right:1px solid #ccc;
+ font-size:1.1em;
+ color:#333;
+ font-family:"helvetica neue",helvetica,verdana,arial,"sans serif";
+}
+
+#controls dd {
+ margin:0px;
+ padding:0px;
+ font-size:0.9em;
+ vertical-align:middle;
+ color:#666;
+}
+
+#controls .title {
+ float:left;
+ display:inline;
+ margin-right:0.6em;
+ color:#333;
+}
+
+/* those slider bits you might be wondering about */
+
+#controls .control {
+ position:relative;
+ border-left:0px;
+ width:214px;
+ height:20px;
+}
+
+#controls .control .bar {
+ position:absolute;
+ left:0px;
+ top:0px;
+ width:214px;
+ height:20px;
+ background:transparent url(../_image/slider-bar.gif) no-repeat 0px 9px;
+ cursor:pointer;
+ cursor:hand;
+}
+
+#controls .control .slider {
+ position:absolute;
+ left:0px;
+ top:0px;
+ width:20px;
+ height:20px;
+ background:transparent url(../_image/slider.png) no-repeat 0px 0px;
+ *background:none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,sizingMethod=crop,src='../_image/slider.png');
+ cursor:pointer;
+ cursor:hand;
+}
+
+#controls .control .slider:hover {
+ background:transparent url(../_image/slider-1.png) no-repeat 0px 0px;
+ *background:none;
+}
+
+#controls .control .slider.hover {
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,sizingMethod=crop,src='../_image/slider-1.png');
+}
+
+#controls .disabled .control .slider {
+ background:transparent url(../_image/slider-disabled.png) no-repeat 0px 0px;
+ *background:none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,sizingMethod=crop,src='../_image/slider-disabled.png');
+}
+
+#controls .disabled .control .slider:hover {
+ background:transparent url(../_image/slider-disabled-1.png) no-repeat 0px 0px;
+ *background:none;
+}
+
+#controls .disabled .control .slider.hover {
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,sizingMethod=crop,src='../_image/slider-disabled-1.png');
+}
+
+#controls input[type=text] {
+ width:5em;
+}
+
+#options div {
+ margin-bottom:0.25em;
+}

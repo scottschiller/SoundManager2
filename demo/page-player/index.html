@@ -3,8 +3,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>SoundManager 2 Demo: Play MP3 links on a page, "page as playlist" style</title>
+
+<!-- for this page only, make things pretty -->
 <link rel="stylesheet" type="text/css" href="css/demo.css" />
+
+<!-- player core CSS -->
 <link rel="stylesheet" type="text/css" href="css/page-player.css" />
+
+<!-- optional: annotations/sub-tracks/notes, and alternate themes -->
+<link rel="stylesheet" type="text/css" href="css/optional-annotations.css" />
+<link rel="stylesheet" type="text/css" href="css/optional-themes.css" />
+
 <style type="text/css">
 ul.playlist li .comment {font-size:0.65em;opacity:0.5}
 </style>
@@ -31,8 +40,8 @@ var PP_CONFIG = {
 </script>
 <script type="text/javascript" src="script/page-player.js"></script>
 <script type="text/javascript">
-
 // demo only..
+soundManager.useHighPerformance = true;
 var is_shiny = false;
 function setTheme(sTheme) {
   var o = pagePlayer.getElementsByClassName('playlist','ul');
@@ -275,6 +284,72 @@ function setShiny(bShiny) {
   <p>Ultimately, the UI refresh rate will simply be limited if a CPU ceiling is hit, and audio playback should not be affected.</p>
  </li>
 </ul>
+
+<h3>More CSS comments</h3>
+
+<div>
+<pre>
+ SoundManager 2: "page as playlist" example
+ ------------------------------------------
+
+ Clicks on links to MP3s are intercepted via JS, calls are
+ made to SoundManager to load/play sounds. CSS classes are
+ appended to the LI parent, which are used to highlight the
+ current play state and so on.
+
+ Class names are applied in addition to "sm2_link" base.
+
+ Default:
+
+ sm2_link
+
+ Additional states:
+
+ sm2_playing
+ sm2_paused
+
+ eg.
+
+ &lt;!-- default --&gt;
+ &lt;li class="sm2_link"&gt;&lt;a href="some.mp3"&gt;some.mp3&lt;/a&gt;&lt;/li&gt;
+
+ &lt;!-- playing --&gt;
+ &lt;li class="sm2_link sm2_playing"&gt;&lt;a href="some.mp3"&gt;some.mp3&lt;/a&gt;&lt;/li&gt;
+
+ The script also injects an HTML template containing control bar
+ and timing elements, which can also be targeted with CSS.
+
+
+ Note you don't necessarily require ul.playlist for your use
+ if only using one style on a page. You can just use .sm2_link
+ and so on, but isolate the CSS you want.
+
+ Side note: Would do multiple class definitions eg.
+
+ li.sm2_default.sm2_playing{}
+
+ .. except IE 6 has a parsing bug which may break behaviour,
+ applying sm2_playing {} even when the class is set to sm2_default.
+
+
+ If you want to make your own UI from scratch, here is the base:
+
+ Default + hover state, "click to play":
+
+ li.sm2_link {}
+ li.sm2_link:hover {}
+
+ Playing + hover state, "click to pause":
+
+ li.sm2_playing {}
+ li.sm2_playing:hover {}
+
+ Paused + hover state, "click to resume":
+
+ li.sm2_paused {}
+ li.sm2_paused:hover {}
+</pre>
+</div>
 
 <p><a href="http://schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project home</a></p>
 

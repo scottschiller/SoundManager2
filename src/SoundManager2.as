@@ -131,7 +131,7 @@ class SoundManager2 {
 
   var registerOnComplete = function(sID) {
     soundObjects[sID].onSoundComplete = function() {
-    checkProgress();
+      checkProgress();
       this.didJustBeforeFinish = false; // reset
       ExternalInterface.call(baseJSObject+"['"+sID+"']._onfinish");
     }

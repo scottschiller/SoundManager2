@@ -1,0 +1,206 @@
+/* 
+ ---------------------------------
+ -- alternate (optional) themes --
+ ---------------------------------
+*/
+
+ul.playlist.dark li.sm2_playing a {
+ color:#fff;
+}
+
+ul.playlist.dark li.sm2_playing .timing,
+ul.playlist.use-peak.dark li.sm2_playing .peak {
+ color:#999;
+}
+
+ul.playlist.use-spectrum.dark li.sm2_playing .spectrum-container {
+ background-color:#222;
+ border-color:#444;
+}
+
+ul.playlist.use-spectrum.dark li.sm2_playing .spectrum-container .spectrum {
+ background-color:#999;
+}
+
+ul.playlist.dark li.sm2_paused {
+ background-color:#333;
+}
+
+ul.playlist.dark li.sm2_paused a {
+ color:#999;
+}
+
+ul.playlist.dark li.sm2_playing,
+ul.playlist.dark li.sm2_playing:hover {
+ background-color:#333;
+}
+
+ul.playlist.dark li:hover .controls .statusbar {
+ background-color:#666;
+}
+
+ul.playlist.dark li .controls {
+ background-color:#333;
+}
+
+ul.playlist.dark li .controls .statusbar {
+ background-color:#666;
+ border-color:#444;
+}
+
+ul.playlist.dark li .controls .statusbar .position {
+ background-color:#111;
+ border-right:3px solid #111;
+ border-radius:3px;
+ -moz-border-radius:3px;
+ -webkit-border-radius:3px;
+}
+
+ul.playlist.dark li .controls .statusbar .loading {
+ background-color:#444;
+}
+
+ul.playlist.dark li .timing,
+ul.playlist.use-peak.dark li .peak {
+ background-color:#222;
+ border-color:#444;
+}
+
+ul.playlist.dark.use-peak li .peak .l,
+ul.playlist.dark.use-peak li .peak .r {
+ border-color:#444;
+ background-color:#999;
+}
+
+
+/* gold theme */
+
+ul.playlist.gold li.sm2_paused {
+ background-color:#996600;
+}
+
+ul.playlist.gold li.sm2_playing,
+ul.playlist.gold li.sm2_playing:hover {
+ background-color:#cc9900;
+}
+
+ul.playlist.gold li .controls {
+ background-color:transparent;
+}
+
+ul.playlist.gold li .controls .statusbar {
+ background-color:#fff;
+ border-color:#fff;
+}
+
+ul.playlist.gold li .controls .statusbar .position {
+ background-color:#996600;
+ border-right:3px solid #996600;
+ border-radius:3px;
+ -moz-border-radius:3px;
+ -webkit-border-radius:3px;
+}
+
+ul.playlist.gold li .controls .statusbar .loading {
+ background-color:#ffeedd;
+}
+
+ul.playlist.gold li .timing,
+ul.playlist.use-peak.gold li .peak {
+ background-color:#CC9900;
+ border-color:#ffcc33;
+}
+
+ul.playlist.use-spectrum.gold li.sm2_playing .spectrum-container {
+ background-color:#cc9900;
+ border-color:#ffcc33;
+}
+
+ul.playlist.use-spectrum.gold li.sm2_playing .spectrum-container .spectrum {
+ background-color:#fff;
+}
+
+ul.playlist.gold.use-peak li .peak .l,
+ul.playlist.gold.use-peak li .peak .r {
+ border-color:#fff;
+ background-color:#fff;
+}
+
+
+/* ZOMG PONIES!!!ONEONEONE */
+
+ul.playlist.bubblegum li a {
+ font-family:"comic sans ms",verdana,arial,tahoma,"sans serif"; /* heh */
+}
+
+ul.playlist.bubblegum li.sm2_paused,
+ul.playlist.bubblegum li.sm2_paused:hover {
+ background-color:#ffccee;
+}
+
+ul.playlist.bubblegum li.sm2_paused a,
+ul.playlist.bubblegum li.sm2_paused:hover a,
+ul.playlist.bubblegum li.sm2_paused .timing,
+ul.playlist.use-peak.bubblegum li.sm2_paused .peak {
+ color:#ff6699;
+}
+
+ul.playlist.bubblegum li:hover {
+ background-color:#ffddee;
+}
+
+ul.playlist.bubblegum li.sm2_playing,
+ul.playlist.bubblegum li.sm2_playing:hover {
+ background-color:#ff7799;
+}
+
+ul.playlist.bubblegum li .controls {
+ background-color:transparent;
+}
+
+ul.playlist.bubblegum li .controls .statusbar {
+ background-color:#fff;
+ border-color:#fff;
+}
+
+ul.playlist.bubblegum li .controls .statusbar .position {
+ background-color:#ffaacc;
+ border-right:3px solid #ffaacc;
+ border-radius:3px;
+ -moz-border-radius:3px;
+ -webkit-border-radius:3px;
+}
+
+ul.playlist.bubblegum li .controls .statusbar .loading {
+ background-color:#ffeedd;
+}
+
+ul.playlist.bubblegum li .timing,
+ul.playlist.use-peak.bubblegum li .peak {
+ background-color:#ffaacc;
+ border-color:#ffccee;
+}
+
+ul.playlist.use-spectrum.bubblegum li.sm2_playing .spectrum-container {
+ background-color:#ffaacc;
+ border-color:#ffccee;
+}
+
+ul.playlist.use-spectrum.bubblegum li.sm2_playing .spectrum-container .spectrum {
+ background-color:#fff;
+}
+
+ul.playlist.bubblegum.use-peak li .peak .l,
+ul.playlist.bubblegum.use-peak li .peak .r {
+ border-color:#fff;
+ background-color:#fff;
+}
+
+
+ul.playlist.shiny li.sm2_paused,
+ul.playlist.shiny li.sm2_playing {
+ background-image:url(../image/top-highlight.png);
+ background-repeat:repeat-x;
+ background-position:0px -1px;
+ _background-image:none; /* can't be bothered with IE 6. */
+}

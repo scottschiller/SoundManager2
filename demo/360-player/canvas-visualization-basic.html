@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>360&deg; MP3 player UI demo (SoundManager 2): Visualization Prototype, basic example</title>
+
+<!-- required -->
+<link rel="stylesheet" type="text/css" href="360player.css" />
+<link rel="stylesheet" type="text/css" href="360player-visualization.css" />
+
+<!-- special IE-only canvas fix -->
+<!--[if IE]><script type="text/javascript" src="script/excanvas.js"></script><![endif]-->
+
+<!-- Apache-licensed animation library -->
+<script type="text/javascript" src="script/berniecode-animator.js"></script>
+
+<!-- the core stuff -->
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript" src="script/360player.js"></script>
+
+<script type="text/javascript">
+
+threeSixtyPlayer.config.scaleFont = (navigator.userAgent.match(/msie/i)?false:true);
+threeSixtyPlayer.config.showHMSTime = true;
+
+// enable some spectrum stuffs
+
+threeSixtyPlayer.config.useWaveformData = true;
+threeSixtyPlayer.config.useEQData = true;
+
+// enable this in SM2 as well, as needed
+
+if (threeSixtyPlayer.config.useWaveformData) {
+  soundManager.flash9Options.useWaveformData = true;
+}
+if (threeSixtyPlayer.config.useEQData) {
+  soundManager.flash9Options.useEQData = true;
+}
+if (threeSixtyPlayer.config.usePeakData) {
+  soundManager.flash9Options.usePeakData = true;
+}
+
+</script>
+
+<!-- makes the fonts nicer etc. -->
+<link rel="stylesheet" type="text/css" href="../index.css" />
+<link rel="stylesheet" type="text/css" href="demo.css" />
+<style type="text/css">
+
+#left h2 {
+ padding-top:0px;
+ margin-bottom:0.25em;
+ color:#666;
+}
+
+pre.block {
+ margin-top:0.5em;
+}
+
+/* special case */
+
+#left {
+ width:auto;
+ max-width:100%;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="left">
+
+	<h1><a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; Player Demo</a> - Visualization Example, Basic Template</h1>
+
+	<p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI with visualization options. <b>Warning: Incomplete prototype/experimental code, subject to change.</b></p>
+
+	<div style="clear:left"></div>
+
+		<!-- here are the MP3 links, which are decorated with the 360 canvas element/UI etc. -->
+
+	 	<h2 style="margin-top:1em">Inline list</h2>
+
+		<div class="sm2-inline-list"> <!-- remove this class to have one item per line -->
+
+			<div class="ui360"><a href="../../demo/mpc/audio/CRASH_1.mp3">Crash 1</a></div>
+			<div class="ui360"><a href="../../demo/mpc/audio/CRASH_5.mp3">Crash 5</a></div>
+			<div class="ui360"><a href="../../demo/mpc/audio/CRASH_6.mp3">Crash 6</a></div>
+	     		<div class="ui360"><a href="../../demo/mpc/audio/CHINA_1.mp3">China 1</a></div>
+
+	    	</div>
+
+	 	<h2 style="clear:both;padding-top:1em">Block list</h2>
+
+		<div>
+			<div class="ui360"><a href="../../demo/_mp3/sine,%20square,%20sawtooth,%20rando.mp3">Sine, Square, Sawtooth, Wave (Warning: LOUD)</a></div>
+		 	<div class="ui360"><a href="../../demo/_mp3/1hz-10khz-sweep.mp3">1-10 Khz Sweep (Warning: LOUD)</a></div>
+		</div>
+
+	</div>
+
+	<p style="margin-left:1em">
+	 <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 home">SoundManager 2 project page</a> (not an MP3 link)
+	</p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+/* 
+
+ -------------------------------------------------------------
+
+ In-page demo CSS - see external CSS for actual relevant stuff.
+
+ --------------------------------------------------------------
+
+ */
+
+#soundmanager-debug {
+ /* SM2 debug container (optional, makes debug more useable) */
+ position:absolute;position:fixed;*position:absolute;bottom:10px;right:10px;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);
+}
+
+body {
+ font:75% normal verdana,arial,tahoma,"sans serif";
+}
+
+h1, h2, h3 {
+ font:3em arial,tahoma,verdana;
+ font-weight:normal;
+ margin-bottom:0px;
+}
+
+h1 {
+ margin-top:0.25em;
+}
+
+h1, h2 {
+ letter-spacing:-1px; /* zomg web x.0! ;) */ 
+}
+
+h2 {
+ font-size:2em;
+ margin-top:0px;
+ margin-bottom:0.1em;
+}
+
+h3 {
+ font-size:1.5em;
+ margin-bottom:1em;
+}
+
+h1 a,
+h1 a:hover {
+ color:#000;
+ text-decoration:none;
+}
+
+h1 a:hover {
+ text-decoration:underline;
+}
+
+ul.notes {
+ margin-left:0px;
+ padding-left:1.5em;
+}
+
+.note {
+ margin-top:0px;
+ font-style:italic;
+ color:#999;
+ margin-bottom:0px;
+}
+
+pre {
+ font-size:1.2em;
+ _font-size:1em;
+}
+
+#left {
+ max-width:56em;
+ margin-left:1em;
+}

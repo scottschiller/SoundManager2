@@ -25,6 +25,7 @@
 soundManager.url = '../../swf/'; // path to directory containing SoundManager2 .SWF file
 soundManager.flashVersion = 9; // flash 9.0r115+ required for MovieStar mode
 soundManager.useMovieStar = true; // enable AAC/MPEG4 video in SM2
+soundManager.allowFullScreen = true; // enable full-screen mode
 
 if (window.location.toString().match('nodebug')) {
   soundManager.debugMode = false;
@@ -53,6 +54,7 @@ soundManager.onload = function() {
 
  <!-- sm2-container can be resized via JS to fit movie, or via CSS -->
  <div id="sm2-container" style="width:640px;height:480px"><!-- flash movie will go here --></div>
+ <p>Double-click the video to go full-screen.</p>
  <p>Direct video link: <a href="http://freshly-ground.com/data/video/Yahoo! Photos 3 UI.MP4">Source .MP4</a></p>
 
  <h2>Code</h2>
@@ -60,6 +62,7 @@ soundManager.onload = function() {
 <pre>soundManager.url = '../../swf/'; <span>// path to directory containing SoundManager2 .SWF file</span>
 soundManager.flashVersion = 9;
 soundManager.useMovieStar = true;
+soundManager.allowFullScreen = true;
 
 soundManager.onload = function() {
   <span>// soundManager.createSound() etc. may now be called</span>

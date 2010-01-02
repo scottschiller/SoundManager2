@@ -68,7 +68,6 @@ function InlinePlayer() {
     if (!o || !o.parentNode) {
       return false;
     }
-    o = o.parentNode;
     sNodeName = sNodeName.toLowerCase();
     do {
       o = o.parentNode;
@@ -134,6 +133,10 @@ function InlinePlayer() {
 
   this.handleClick = function(e) {
     // a sound link was clicked
+    if (typeof e.button != 'undefined' && e.button>1) {
+	  // ignore right-click
+	  return true;
+    }
     var o = self.getTheDamnLink(e);
     if (o.nodeName.toLowerCase() != 'a') {
       o = self.isChildOfNode(o,'a');

@@ -1,0 +1,227 @@
+/* General warning: Experimental. Code could be a bit cleaner. */
+
+.ui360,
+.ui360 * {
+ position:relative;
+}
+
+.ui360,
+.sm2-360ui {
+ /* size of the container for the circle, etc. */
+ width:50px;
+ height:50px;
+}
+
+.ui360 {
+ position:relative;
+ /* a little extra spacing */
+ padding-top:1px;
+ padding-bottom:1px;
+ margin-bottom:-18px; /* approximate "line height" we want */
+ margin-left:42px; /* 50px, with a few off */
+}
+
+.ui360 a {
+ line-height:50px;
+}
+
+.sm2-360ui {
+ margin-left:-50px;
+}
+
+.ui360 {
+ width:auto;
+}
+
+.ui360,
+.ui360 * {
+ vertical-align:middle;
+}
+
+.sm2-360ui {
+ position:relative;
+ display:inline-block; /* firefox 3 et al */
+ float:left; /* firefox 2 needs this, inline-block would work with fx3 and others */
+ *float:left; /* IE 6+7 */
+ *display:inline;
+ *clear:left;
+}
+
+.sm2-360ui.sm2_playing,
+.sm2-360ui.sm2_paused {
+ /* bump on top when active */
+ z-index:10;
+}
+
+.ui360 a.sm2_link { /* this class added to playable links by SM2 */
+ position:relative;
+}
+
+.ui360 a {
+ color:#000;
+ text-decoration:none;
+}
+
+.ui360 a,
+.ui360 a:hover,
+.ui360 a:focus {
+ padding:2px;
+ margin-left:-2px;
+ margin-top:-2px;
+}
+
+.ui360 a:hover,
+.ui360 a:focus {
+ background:#eee;
+ -moz-border-radius:3px;
+ -webkit-border-radius:3px;
+ -khtml-border-radius:3px;
+ border-radius:3px;
+ outline:none;
+}
+
+.ui360 .sm2-canvas {
+ position:absolute;
+ left:0px;
+ top:0px;
+}
+
+.ui360 .sm2-timing {
+ position:absolute;
+ display:block;
+ left:0px;
+ top:0px;
+ width:100%;
+ height:100%;
+ margin:0px;
+ font:11px "helvetica neue",helvetica,monaco,lucida,terminal,monospace;
+ color:#666;
+ text-align:center;
+ line-height:50px;
+}
+
+.ui360 .sm2-timing.alignTweak {
+ text-indent:1px; /* devious center-alignment tweak for Safari (might break things for others.) */
+}
+
+.ui360 .sm2-cover {
+ position:absolute;
+ left:0px;
+ top:0px;
+ z-index:2;
+ display:none;
+}
+
+.ui360 .sm2-360btn {
+ position:absolute;
+ top:50%;
+ left:50%;
+ width:22px;
+ height:22px;
+ margin-left:-11px;
+ margin-top:-11px;
+ cursor:pointer;
+ z-index:3;
+}
+
+.ui360 .sm2-360btn-default {
+}
+
+.ui360 .sm2-360data {
+ display:inline-block;
+ font-family:helvetica;
+}
+
+.ui360 .sm2-360ui.sm2_playing .sm2-cover,
+.ui360 .sm2-360ui.sm2_paused .sm2-cover {
+ display:block;
+}
+
+/* this could be optimized a fair bit. */
+
+.ui360 .sm2-360btn-default {
+ background:transparent url(360-button-play.png) no-repeat 50% 50%;
+ _background:transparent url(360-button-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
+ cursor:pointer;
+}
+
+.ui360 .sm2-360ui.sm2_paused .sm2-360btn {
+ background:transparent url(360-button-play.png) no-repeat 50% 50%;
+ _background:transparent url(360-button-play.gif) no-repeat 50% 50%;
+ cursor:pointer;
+}
+
+.ui360 .sm2-360btn-default:hover,
+.ui360 .sm2-360ui.sm2_paused .sm2-360btn:hover {
+ background:transparent url(360-button-play-light.png) no-repeat 50% 50%;
+ _background:transparent url(360-button-play.gif) no-repeat 50% 50%;
+ cursor:pointer;
+}
+
+.ui360 .sm2-360ui.sm2_playing .sm2-360btn:hover,
+.ui360 .sm2-360btn-playing:hover {
+ background:transparent url(360-button-pause-light.png) no-repeat 50% 50%;
+ _background:transparent url(360-button-pause-light.gif) no-repeat 50% 50%;
+ cursor:pointer;
+}
+
+
+.ui360 .sm2-360ui.sm2_playing .sm2-timing {
+ visibility:visible;
+}
+
+.ui360 .sm2-360ui.sm2_buffering .sm2-timing {
+ visibility:hidden;
+}
+
+.ui360 .sm2-360ui .sm2-timing,
+.ui360 .sm2-360ui .sm2-360btn:hover + .sm2-timing,
+.ui360 .sm2-360ui.sm2_paused .sm2-timing {
+ visibility:hidden;
+}
+
+.ui360 .sm2-360ui.sm2_dragging .sm2-timing,
+.ui360 .sm2-360ui.sm2_dragging .sm2-360btn:hover + .sm2-timing {
+ /* paused + dragging */
+ visibility:visible;
+}
+
+.ui360 .sm2-360ui.sm2_playing .sm2-360btn,
+x.ui360 .sm2-360btn-playing,
+.ui360 .sm2-360ui.sm2_dragging .sm2-360btn,
+.ui360 .sm2-360ui.sm2_dragging .sm2-360btn:hover,
+.ui360 .sm2-360ui.sm2_dragging .sm2-360btn-playing:hover {
+ /* don't let pause button show on hover when dragging (or paused and dragging) */
+ background:transparent;
+ cursor:auto;
+}
+
+.ui360 .sm2-360ui.sm2_buffering .sm2-360btn,
+.ui360 .sm2-360ui.sm2_buffering .sm2-360btn:hover {
+  background:transparent url(icon_loading_spinner.gif) no-repeat 50% 50%;
+  opacity:0.5;
+  visibility:visible;
+}
+
+/* inline list style */
+
+.sm2-inline-list .ui360,
+.sm2-inline-block .ui360 {
+ position:relative;
+ display:inline-block;
+ float:left;
+ _display:inline;
+ margin-bottom:-15px;
+}
+
+.sm2-inline-list .ui360 {
+ margin-bottom:0px;
+}
+
+.sm2-inline-block .ui360 {
+ margin-right:8px;
+}
+
+.sm2-inline-list .ui360 a {
+ display:none;
+}

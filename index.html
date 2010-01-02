@@ -3,14 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>SoundManager 2: Javascript Sound For The Web</title>
-<meta name="description" content="Play and control MP3 audio and MPEG-4 video formats using Javascript with SoundManager 2, a cross-browser/platform sound API. BSD licensed." />
+<meta name="description" content="Play sound from JavaScript including MP3 audio and MPEG-4 video formats with SoundManager 2, a cross-browser/platform sound API. BSD licensed." />
 <meta name="keywords" content="javascript sound, javascript audio, javascript play mp3, javascript sound control, javascript video, mp3, mp4, mpeg4, flv video, Scott Schiller, Schill, Schillmania" />
 <meta name="robots" content="all" />
 <meta name="author" content="Scott Schiller" />
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
 <meta name="language" content="en-us" />
+<!-- base library + a bunch of demo components (yay, they all work together) -->
 <link rel="stylesheet" type="text/css" href="demo/play-mp3-links/css/inlineplayer.css" />
 <link rel="stylesheet" type="text/css" href="demo/page-player/css/page-player.css" />
+<link rel="stylesheet" type="text/css" href="demo/360-player/360player.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="demo/index.css" />
 <script type="text/javascript" src="script/soundmanager2.js"></script>
 <script type="text/javascript">
@@ -23,26 +25,48 @@ var PP_CONFIG = {
 </script>
 <script type="text/javascript" src="demo/page-player/script/page-player.js"></script>
 <script type="text/javascript" src="demo/play-mp3-links/script/inlineplayer.js"></script>
+<!-- 360 UI demo, canvas magic for IE -->
+<!--[if IE]><script type="text/javascript" src="demo/360-player/script/excanvas.js"></script><![endif]-->
+<!-- 360 UI demo, Apache-licensed animation library -->
+<script type="text/javascript" src="demo/360-player/script/berniecode-animator.js"></script>
+<script type="text/javascript" src="demo/360-player/script/360player.js"></script>
+
 <script type="text/javascript">
 
 	var isHome = true;
-	soundManager.bgColor = '#f9f9f9';
+	soundManager.bgColor = '#000000';
+	soundManager.wmode = 'transparent';
+
+	if (navigator.platform.match(/win32/i) && !navigator.userAgent.match(/msie/i)) {
+	  // special case: Windows and wmode transparent don't get along. Sacrifice background color.
+	  soundManager.bgColor = '#f9f9f9';
+	}
+	
 	soundManager.debugMode = false;
 	soundManager.url = 'swf/';
 
 	soundManager.onload = function() {
+	setTimeout(function(){
+if (!navigator.userAgent.match(/msie 6/i)) {
 	  pagePlayer.initDOM();
 	  inlinePlayer = new InlinePlayer();
+	  threeSixtyPlayer = new ThreeSixtyPlayer();
+	  threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
+	  threeSixtyPlayer.init();
+}
 	  doChristmasLights();
+	},1);
 	}
 
 	soundManager.onerror = function() {
 	  // failed to load
 	  var o = $('sm2-support');
 	  o.innerHTML = smLoadFailWarning;
-          o.style.marginBottom = '1.5em';
+      o.style.marginBottom = '1.5em';
 	  o.style.display = 'block';
-          $('demo-header').innerHTML = '';
+	  o.style.borderColor = $('demo-header').style.borderColor = '#ff3333';
+	  o.style.backgroundColor = $('demo-header').style.backgroundColor = '#fff6f0';
+      $('demo-header').innerHTML = '';
 	  $('demos').style.display = 'none';
 	}
 	
@@ -74,6 +98,19 @@ function doChristmasLights() {
 }
 
 </script>
+<style type="text/css">
+
+/* one small hack. */
+.ui360 a.sm2_link {
+ position:relative;
+}
+
+.ui360 {
+ /* Firefox 3 doesn't show links otherwise? */
+ width:100%;
+}
+
+</style>
 </head>
 
 <body>
@@ -99,6 +136,7 @@ function doChristmasLights() {
 		<li><a href="demo/api/">API Examples</a></li>
 	    <li><a href="demo/play-mp3-links/">Playable MP3 links</a></li>
 		<li><a href="demo/page-player/">Muxtape-style UI</a></li>
+		<li><a href="demo/360-player/">360&deg; Player UI</a></li>
 		<li><a href="demo/video/">MPEG4 Video Player</a></li>
 		<li><a href="demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="demo/mpc/">Drum Machine (MPC)</a></li>
@@ -189,24 +227,33 @@ function doChristmasLights() {
 		</div>
 
 		<div id="demo-box">
-			<p id="demo-header"><strong style="font-size:1.1em;font-weight:bold">Javascript Audio/Video API Demo</strong></p>
-                        <div id="sm2-support" class="demo-block"></div>
+			<p id="demo-header"><strong style="font-size:1.1em;font-weight:bold">Javascript Audio/Video API Examples</strong></p>
+            <div id="sm2-support" class="demo-block"></div>
 			<div id="demos">
-			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Playable MP3 links<span class="l"></span><span class="r"></span></h3>
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Playable MP3 links<span class="l"></span><span class="r"></span><a href="demo/play-mp3-links/" title="Playable MP3 links demo" class="cta-more">More &raquo;</a></h3>
 			<div class="demo-block">
 				<ul class="graphic" style="padding:0.5em 0px 0.25em 0.25em">
 				 <li><a href="demo/jsAMP-preview/audio/rain.mp3" class="exclude norewrite">Rain.mp3</a></li>
 				</ul>
 			</div>
 			
-			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Muxtape-style UI<span class="l"></span><span class="r"></span></h3>
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">360&deg; Player UI <i style="font-size:0.9em;opacity:0.75">(experimental)</i><span class="l"></span><span class="r"></span><a href="demo/360-player/" title="360&deg; Player UI demo" class="cta-more">More &raquo;</a></h3>
+			<div class="demo-block" style="overflow:hidden">
+			 <div style="margin-bottom:16px;margin-left:8px;margin-top:-4px">
+			  <div class="ui360" style="float:left;display:inline;margin-right:16px"><a href="http://www.freshly-ground.com/data/audio/binaural/Mak.mp3" title="Demo MP3" class="exclude inline-exclude">Random</a></div>
+			  <div class="ui360" style="position:absolute;left:50%"><a href="http://www.freshly-ground.com/data/audio/binaural/Rain%20on%20Car%20Roof.mp3" title="Demo MP3" class="exclude inline-exclude">Rain on Car</a></div>
+			  <div class="clear"></div>
+			 </div>
+			</div>
+
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Muxtape-style UI<span class="l"></span><span class="r"></span><a href="demo/page-player/" title="Muxtape-style UI demo" class="cta-more">More &raquo;</a></h3>
 			<div class="demo-block">
 				<ul class="playlist" style="margin-top:0.5em">
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="inline-exclude">Armstrong Beat</a></li>
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="inline-exclude">Untitled Groove</a></li>
 				</ul>
 			</div>
-			<h3 class="wedge" style="border-bottom:none;margin-top:0px">MPEG-4 Video<span class="l"></span><span class="r"></span></h3>
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">MPEG-4 Video<span class="l"></span><span class="r"></span><a href="demo/video/" title="Video player demo" class="cta-more">More &raquo;</a></h3>
 			<div style="margin-bottom:1.5em" class="demo-block">
 				<div id="sm2-container"><!-- SM2 SWF, video, goes here --></div>
 				<ul class="playlist" style="margin-top:0.3em">
@@ -236,8 +283,16 @@ function doChristmasLights() {
 			</ul>
 
 			<h4>Shiny Flash 9 Features</h4>
+
+			<div style="float:right;display:inline;margin:-2em 1.5em 0px 0px;text-align:center;font-size:x-small;white-space:nowrap;padding:0px 0px 0px 1em">
+			 <a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization (experimental)" style="border:none;margin:0px;padding:0px"><img src="demo/_image/360ui-screenshot2.png" alt="" style="margin:0px;padding:0px;border:none" /></a>
+			 <div><a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization (experimental)">360&deg; UI + waveform/spectrum</a></div>
+			 <div><i>Experimental</i>, prototype demo</div>
+			</div>
+
+
 			<ul class="standard">
-			 <li>MPEG-4 video (HE-AAC/H.264) and audio support</li>
+			 <li>Full-screen MPEG-4 video (HE-AAC/H.264) and audio support</li>
 			 <li>"MultiShot" play (layered/chorusing effects)</li>
 			 <li>Waveform/frequency spectrum data</li>
 			 <li>Peak (L/R channel volume) data</li>
@@ -328,7 +383,6 @@ soundManager.onload = function() {
 
   <div id="col3" class="c3">
 
- 
   <div id="get-satisfaction" class="box">
    <div id="gsfn_list_widget">
     <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>

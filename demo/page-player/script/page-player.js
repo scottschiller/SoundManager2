@@ -380,7 +380,7 @@ function PagePlayer(oConfigOverride) {
       // raw waveform
       var scale = 8; // Y axis (+/- this distance from 0)
       for (var i=255; i--;) {
-        sbC[255-i].style.marginTop = (1+scale+Math.ceil(this.waveformData[i]*-scale))+'px';
+        sbC[255-i].style.marginTop = (1+scale+Math.ceil(this.waveformData.left[i]*-scale))+'px';
       }
     } else {
 	  // eq spectrum
