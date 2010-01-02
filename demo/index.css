@@ -2,25 +2,36 @@ body {
  background:#fff;
  margin:0px;
  padding:0px;
- font:normal 75% helvetica,arial,verdana,tahoma,"sans serif";
- -khtml-text-shadow:0 0 0 #fff; /* dumbass safari high contrast font rendering tweak */
+ font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
 }
 
-#top {
- -khtml-text-shadow:0 0 0 #000; /* dumbass safari high contrast font rendering tweak */
+html.isSafari * {
+ text-shadow: 0 0 0 #000; /* dumbass safari high contrast font rendering tweak */
 }
 
-h1 {
+h1,
+h2.special {
  letter-spacing:-1px;
 }
 
 h1, h2, h3, h4 {
+ font-size:1em;
  margin:0px;
  padding:0px;
  vertical-align:middle;
 }
 
+h1 {
+ font-size:2em;
+}
+
+h2 {
+ font-family:helvetica,arial,verdana,tahoma,"sans serif";
+ font-size:1.5em;
+}
+
 h3 {
+ font-size:1.17em;
  border-bottom:1px solid #ccc;
  padding-bottom:0.25em;
  margin-top:1.5em;
@@ -59,17 +70,26 @@ code,
 .code,
 dt,
 #soundmanager-debug {
- font-family:monaco,"VT-100","lucida console",terminal,courier,system,sans-serif;
- font-size:0.97em;
+ font-family:monaco,"VT-100","lucida console",terminal,monospace,courier,system,sans-serif;
+ font-size:11px; /* x-small is 11px on mac, 10px on windows. D'oh. */
  font-weight:normal;
  line-height:1.5em;
  color:#099;
  background:#f6fcff;
+ font-smooth:never; /* We don't need no steenkeng font smoothing! - http://www.w3.org/TR/css3-fonts/#font-smooth-prop */
 }
 
 pre {
- font-size:x-small;
+ font-size:11px; /* x-small */
  line-height:1.75em;
+}
+
+pre span span {
+ font-size:x-small;
+}
+
+pre.small {
+ font-size:90%;
 }
 
 p pre,
@@ -78,10 +98,33 @@ p.in pre {
 }
 
 #soundmanager-debug {
+ background:#fff;
  padding-left:0.75em;
- border-left:2px solid #ddeeff;
- font-size:x-small;
+ border:2px solid #ddeeff;
+ font-size:11px;
  line-height:1.7em;
+}
+
+#soundmanager-debug div {
+ margin:0px;
+ padding:0.25em 0px;
+ font-size:x-small;
+ color:#333;
+}
+
+#soundmanager-debug div.sm2-alt {
+ background-color:#fff;
+ color:#556677;
+}
+
+#live-debug {
+ display:table;
+ *display:block;
+}
+
+#live-debug #soundmanager-debug .sm2-alt {
+ background-color:#f3f9ff;
+ color:#336699;
 }
 
 dd pre,
@@ -91,7 +134,7 @@ dd code {
 
 pre code {
 font-family:monaco,"VT-100",terminal,"lucida console",courier,system,sans-serif;
- font-size:x-small;
+ font-size:11px;
 }
 
 pre {
@@ -111,6 +154,33 @@ dt span span {
  color:#667788;
 }
 
+pre.block,
+pre.block code,
+div.block div.code {
+ position:relative;
+ display:table;
+ *display:block;
+ border:1px solid #ccc;
+ -moz-border-radius:3px;
+ -khtml-border-radius:3px;
+ -webkit-border-radius:3px;
+}
+
+div.block,
+pre.block {
+ background:#e9f3ff;
+ border-color:#eee;
+ padding:3px;
+}
+
+pre.block code,
+div.block div.code {
+ background:#fff;
+ border:1px solid #ccddee;
+ padding:0.5em;
+ font-size:11px;
+}
+
 dl {
  background:#f9fcff;
  padding-bottom:1px;
@@ -127,8 +197,12 @@ dt {
  padding:0px;
  margin:0.5em 0px 1em 0px;
  border-bottom:1px solid #ddeeff;
- padding:0.3em 0.5em;
+ padding:0.3em 0.3em;
+ padding-top:0.5em;
+ text-indent:0.25em;
  background:#eef6ff;
+ font-size:1em;
+ line-height:1.5em;
 }
 
 dt.alt {
@@ -151,6 +225,11 @@ h2 {
  background:#222;
  color:#fff;
  z-index:1;
+}
+
+#top,
+#top div {
+ *zoom:1;
 }
 
 #top h1 {
@@ -202,8 +281,8 @@ h2 {
 .columnar .c1 h2 {
  position:relative;
  font-size:1.2em;
- padding:0.43em 0.5em;
- line-height:1em;
+ padding:0.46em 0.5em;
+ vertical-align:middle;
  background:#333;
  color:#fff;
 }
@@ -247,11 +326,12 @@ h2 {
 }
 
 .columnar .c2 p:first-child {
- margin-top:0.6em;
+ margin-top:0.2em;
 }
 
 .columnar .c2 h3:first-child {
- margin-top:0.35em;
+ margin-top:0.2em;
+ padding-bottom:0.3em;
 }
 
 .columnar .c2 > .f-block:first-child > h4 {
@@ -368,14 +448,7 @@ ul {
  border:none;
  padding:0.4em;
  padding-left:1em;
-/*
- border-top:1px solid #ccc;
-*/
  color:#fff;
-/*
- font-size:x-small;
- font-weight:bold;
-*/
 }
 
 #nav ul li a {
@@ -383,9 +456,6 @@ ul {
  padding:0.3em 0.5em;
  padding-left:0.75em;
  padding-right:0.75em;
-/*
- border-right:1px solid #11223;
-*/
  text-decoration:none;
  font-weight:bold;
  color:#ccc;
@@ -478,15 +548,7 @@ ul.standard ul {
 }
 
 .c3 .box {
-/*
- border:2px solid #eee;
- background:#d0d0d0;
-*/
  margin-top:6px;
-/*
- overflow:hidden;
- *zoom:1;
-*/
 }
 
 .wedge,
@@ -496,7 +558,7 @@ ul.standard ul {
  color:#fff;
  margin:0px;
  padding:0px;
- height:2.1em;
+ height:2.101em;
  line-height:1.65em;
 }
 
@@ -615,13 +677,6 @@ ul.standard ul {
  padding:0px;
 }
 
-.c3 ul li ul {
- /* border-top:1px solid #c0c0c0; */
-/*
- border-bottom:1px solid #eee;
-*/
-}
-
 .c3 ul li ul li {
  font-family:monaco,"VT-100",terminal,"lucida console",courier,system,sans-serif;
  font-size:x-small;
@@ -629,6 +684,7 @@ ul.standard ul {
  text-indent:0.5em;
  padding:0.25em 0.25em 0.25em 0.25em;
  cursor:hand;
+ font-smooth:never;
 }
 
 .c3 ul li ul li.alt {
@@ -694,9 +750,6 @@ ul.standard ul {
 }
 
 .c3 h2 a:hover {
-/*
- color:#ff0066;
-*/
  color:#fff;
  text-decoration:underline;
 }
@@ -889,7 +942,11 @@ div#gsfn_list_widget div#gsfn_content p.gsfn_summary {
  z-index:2;
 }
 
-p.compact {
+.tight {
+ margin-top:0px;
+}
+
+.compact {
  margin-bottom:0.25em;
 }
 
@@ -902,14 +959,7 @@ a.cta {
  -khtml-border-radius:0.25em;
  -moz-border-radius:0.25em;
  border-radius:0.25em;
-/*
- -khtml-border-radius-topleft:0px;
- -khtml-border-radius-bottomleft:0px;
- -moz-border-radius-topleft:0px;
- -moz-border-radius-bottomleft:0px;
- border-radius-topleft:0px;
- border-radius-bottomleft:0px;
-*/
+ zoom:1;
 }
 
 .c2 a {
@@ -937,6 +987,12 @@ a.cta:hover,
  text-decoration:none;
 }
 
+#favtape:hover {
+ background:#ff0066;
+ border-color:#ff0066;
+ color:#fff;
+}
+
 .newer {
  vertical-align:middle;
 }
@@ -952,9 +1008,10 @@ a.feature {
  border:3px solid #ccc;
  -moz-border-radius:8px;
  -khtml-border-radius:8px;
- line-height:1.5em;
+ line-height:1em;
  text-decoration:none;
  font-size:small;
+ vertical-align:middle;
 }
 
 a.feature {
@@ -974,6 +1031,7 @@ a.feature {
  border-color:#cc0000;
 }
 
+a.feature:focus,
 a.feature:hover {
  background:#ff0000;
  border-color:#ff6666;
@@ -983,6 +1041,20 @@ a.feature:hover {
 .newer p {
  margin:0px;
  padding:0px;
+}
+
+.inthewild a,
+.inthewild a img {
+ border:none;
+}
+
+.inthewild a {
+ margin-right:0.5em;
+}
+
+.inthewild a,
+.inthewild a img {
+ vertical-align:middle;
 }
 
 /* homepage-specific demo shiz */
@@ -1007,6 +1079,38 @@ ul.playlist li a:hover {
 ul.playlist li .timing {
  top:0.6em;
  font-size:xx-small;
+}
+
+ul.playlist.use-peak li .peak {
+ /* overrides */
+ height:0.61em;
+ margin-top:-5px;
+ width:0.92em;
+}
+
+html.isSafari ul.playlist.use-peak li .peak {
+ margin-top:-4px; /* dumb tweak */
+}
+
+ul.playlist.use-peak li .timing {
+ right:4em;
+}
+
+ul.playlist.use-peak li .peak-box {
+ height:0.66em;
+}
+
+ul.playlist li .peak .l {
+ margin-right:0px;
+}
+
+ul.playlist li .peak .l,
+ul.playlist li .peak .r {
+ width:6px;
+}
+
+ul.playlist li .peak .r {
+ left:9px;
 }
 
 ul.graphic li {
@@ -1072,8 +1176,19 @@ ul.graphic li a.sm2_link {
  padding-left:16px;
  padding-right:16px;
  margin-right:1em;
- margin-top:0.5em;
+ margin-top:-0.25em;
  width:21em;
+ /* hide from IE 6 */
+ _position:absolute;
+ _left:-9999em;
+ _top:-9999em;
+}
+
+
+hr {
+ visibility:hidden;
+ margin:0px;
+ padding:0px;
 }
 
 .demo-block {
@@ -1084,6 +1199,20 @@ ul.graphic li a.sm2_link {
  padding-top:0.5em;
  margin-top:-0.55em;
  border-top:none;
+}
+
+#demo-header {
+ color:#333;
+ background:#f9f9f9;
+ border:1px solid #e6e6e6;
+ border-bottom:0px;
+ margin-bottom:0px;
+ padding:0.5em;
+}
+
+#demos h3 {
+ padding-bottom:0px;
+ text-indent:0.5em;
 }
 
 #revision-list > li {

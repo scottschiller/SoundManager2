@@ -11,9 +11,8 @@ var Y = {
  BG: YAHOO.util.BgPosAnim
 }
 
-function XLSF(oTarget) {
+function XLSF(oTarget,urlBase,lightClass) {
   var writeDebug = soundManager._wD;
-  var urlBase = 'demo/christmas-lights/';
   writeDebug('XLSF()');
   var IS_MOON_COMPUTER = false;
   var isIE = navigator.userAgent.match(/msie/i);
@@ -34,6 +33,7 @@ function XLSF(oTarget) {
     medium: 72,
     large: 96	
   }
+  this.urlBase = (typeof urlBase == 'undefined' || !urlBase?'demo/christmas-lights/':urlBase);
 
   if (window.innerWidth || window.innerHeight) {
     var screenX = window.innerWidth; // -(!isIE?24:2);
@@ -44,6 +44,11 @@ function XLSF(oTarget) {
   }
 
   this.lightClass = (screenX>1280?'small':'pico'); // kind of light to show (32px to 96px square)
+
+  if (typeof lightClass != 'undefined') {
+	// hack: override
+    this.lightClass = lightClass;	
+  }
 
   if (window.location.href.match(/size=/i)) {
     this.lightClass = window.location.href.substr(window.location.href.indexOf('size=')+5);
@@ -79,7 +84,7 @@ function XLSF(oTarget) {
 	for (var i=0; i<6; i++) {
 	  soundManager.createSound({
 	    id: 'smash'+i,
-	    url: urlBase+'sound/glass'+i+'.mp3',
+	    url: xlsf.urlBase+'sound/glass'+i+'.mp3',
 	    autoLoad: true,
 	    multiShot: true,
 		volume:50
@@ -260,7 +265,7 @@ function XLSF(oTarget) {
     this.h = xlsf.lightClasses[sSizeClass];
     this.x = x;
     this.y = y;
-    this.bg = urlBase+'image/bulbs-'+this.w+'x'+this.h+'-'+this.sClass+'.png';
+    this.bg = xlsf.urlBase+'image/bulbs-'+this.w+'x'+this.h+'-'+this.sClass+'.png';
     this.o.style.width = this.w+'px';
     this.o.style.height = this.h+'px';
     this.o.style.background = 'url('+this.bg+') no-repeat 0px 0px';
@@ -406,16 +411,44 @@ function XLSF(oTarget) {
   this.uberSmash = function() {
     // make everything explode - including your CPU.
     self.stopSequence();
-    var ebCN = Y.D.getElementsByClassName;
 /*
-    window.setTimeout(function(){self.smashGroup(self.lightGroups.left)},500);
-    window.setTimeout(function(){self.smashGroup(self.lightGroups.right)},2000);
-    window.setTimeout(function(){self.smashGroup(self.lightGroups.bottom)},4000);
-    window.setTimeout(function(){self.smashGroup(self.lightGroups.top)},6000);   
-*/ 
-//    window.setTimeout(function(){self.smashGroup(self.lightGroups.bottom)},500);
-//    window.setTimeout(function(){self.smashGroup(self.lightGroups.top)},3500);
+    for (var i=0; i<self.lights.length; i++) {
+	  if (!self.lights[i].broken) {
+		setTimeout(self.lights[i].smash,parseInt(Math.random()*1000));
+	  }
+    }
+*/
 
+    function getRandomLight() {
+	  return parseInt(Math.random()*self.lights.length);
+    }
+
+    function smashItUp() {
+	  var smashed = 0;
+	  var rnd = getRandomLight();
+	  if (self.lights[rnd].broken) {
+	    for (var i=self.lights.length; i--;) {
+		  if (self.lights[i].broken) {
+		    smashed++;
+		  }
+		}
+		if (smashed < self.lights.length-1) {
+		  // missed - do it again
+		  smashItUp();
+		} else {
+		  // all are done
+		  window.clearInterval(t);
+		}
+ 	  } else {
+	    // we've got a live one
+		self.lights[rnd].smash();
+		// do some more, too
+		for (var j=parseInt(Math.random()*8); j--;) {
+		  self.lights[getRandomLight()].smash();
+		}
+	  }
+    }
+    var t = window.setInterval(smashItUp,20);
   }
 
   this.smashGroup = function(oGroup) {
@@ -447,23 +480,19 @@ function XLSF(oTarget) {
   var jMax = Math.floor((screenX-offset-16)/self.lightXY);
   var iMax = Math.floor((screenY-offset-16)/self.lightXY);
 
-    for (j=0; j<jMax; j++) {
-	  this.createLight('top',j%3,offset+j*self.lightXY,0);
-    }
-
-/*
-  var bsCounter = 0;
-  for (i=0; i<8; i++) {
-    // plant a few random seeds.. er, sounds.
-    self.lights[parseInt(Math.random()*self.lights.length)].bonusSound = bsCounter++;
-    if (bsCounter>2) bsCounter = 0; // hack - loop through sounds
+  for (j=0; j<jMax; j++) {
+   this.createLight('top',j%3,offset+j*self.lightXY,0);
+   // this.createLight('bottom',j%3,offset+j*self.lightXY,screenY-offset-offset+1);
   }
-*/
+
+  if (typeof isFun != 'undefined') {
+    for (i=0; i<iMax; i++) {
+      this.createLight('left',i%3,0,offset+i*self.lightXY);
+      // this.createLight('right',i%3,screenX-offset-offset,offset+i*self.lightXY);
+    }
+  }
 
   this.appendLights();
-
-  // post-load/init case in the event this object is created late
-  // if (soundManager && soundManager._didInit && !soundManager._disabled) this.initSounds();
 
   this.startSequence(self.randomLights);
 
@@ -474,8 +503,8 @@ function XLSF(oTarget) {
 
 var xlsf = null;
 
-function smashInit() {
-  xlsf = new XLSF(document.getElementById('lights'));
+function smashInit(urlBase,lightClass) {
+  xlsf = new XLSF(document.getElementById('lights'),urlBase,lightClass);
   xlsf.initSounds();
   // document.getElementById('loading').style.display = 'none';
 }

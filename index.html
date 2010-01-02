@@ -17,7 +17,8 @@
 var PP_CONFIG = {
   flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
   useMovieStar: true,    // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
-  useVideo: true         // show video when applicable
+  useVideo: true,        // show video when applicable
+  usePeakData: true      // L/R peak data
 }
 </script>
 <script type="text/javascript" src="demo/page-player/script/page-player.js"></script>
@@ -39,6 +40,7 @@ var PP_CONFIG = {
 	  // failed to load
 	  var o = $('sm2-support');
 	  o.innerHTML = smLoadFailWarning;
+          o.style.marginBottom = '1.5em';
 	  o.style.display = 'block';
           $('demo-header').innerHTML = '';
 	  $('demos').style.display = 'none';
@@ -57,6 +59,21 @@ var PP_CONFIG = {
 	
 </script>
 <script type="text/javascript" src="demo/index.js"></script>
+<script type="text/javascript">
+
+function doChristmasLights() {
+  if ((document.domain.match(/schillmania.com/i) && new Date().getMonth() == 11) || window.location.toString().match(/christmas/i)) {
+    loadScript('http://yui.yahooapis.com/combo?2.6.0/build/yahoo-dom-event/yahoo-dom-event.js&2.6.0/build/animation/animation-min.js',function(){
+  	  loadScript('../demo/christmas-lights/christmaslights-home.js',function(){
+	    if (typeof smashInit != 'undefined') {
+	      setTimeout(smashInit,20);
+	    }
+	  });
+    });
+  }
+}
+
+</script>
 </head>
 
 <body>
@@ -66,8 +83,7 @@ var PP_CONFIG = {
  <div id="top">
   <div id="lights"></div>
 
-  <h1>SoundManager 2</h1>
-  <h2>A Javascript Sound API supporting MP3, MPEG4 Audio and Video.</h2>
+  <h1>A Javascript Sound API supporting MP3, MPEG4 Audio and Video.</h1>
 
 	<div id="nav">
          <div id="version"></div>
@@ -159,13 +175,21 @@ var PP_CONFIG = {
 	 <div class="c2">
 		
 		<h3>About SoundManager 2, Features and Live Demos</h3>
-		
+
+		<div style="position:relative;padding-top:0.5em;padding-bottom:0.75em">
+
 		<img src="demo/_image/speaker.png" alt="speaker icon" style="float:left;display:inline;width:68px;height:68px;margin:1em 1em 0px 0px" />
 
-		<h2 style="margin-top:0.33em">SoundManager 2 makes it easier to play sounds using Javascript.</h2>
+		<h2 class="special" style="margin-top:0.33em">SoundManager 2 makes it easier to play sounds using Javascript.</h2>
 		
+		<p style="margin-top:0.5em">By wrapping and extending Flash 8's sound API, SoundManager 2 brings solid audio functionality to Javascript. <a href="doc/getstarted/#intro" class="cta" style="white-space:nowrap">How it works <span>&raquo;</span></a></p>
+
+		<div class="clear">&nbsp;</div>
+	
+		</div>
+
 		<div id="demo-box">
-			<p id="demo-header" style="color:#333;background:#f9f9f9;border:1px solid #e6e6e6;border-bottom:0px;margin-bottom:0px;padding:0.5em"><strong style="font-size:1.1em;font-weight:bold">Javascript Audio/Video API Demo</strong></p>
+			<p id="demo-header"><strong style="font-size:1.1em;font-weight:bold">Javascript Audio/Video API Demo</strong></p>
                         <div id="sm2-support" class="demo-block"></div>
 			<div id="demos">
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Playable MP3 links<span class="l"></span><span class="r"></span></h3>
@@ -174,44 +198,61 @@ var PP_CONFIG = {
 				 <li><a href="demo/jsAMP-preview/audio/rain.mp3" class="exclude norewrite">Rain.mp3</a></li>
 				</ul>
 			</div>
-
+			
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Muxtape-style UI<span class="l"></span><span class="r"></span></h3>
 			<div class="demo-block">
 				<ul class="playlist" style="margin-top:0.5em">
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="inline-exclude">Armstrong Beat</a></li>
-				 <li><a href="http://freshly-ground.com/data/audio/binaural/Backyard%20Bees%2C%20Construction%2C%20Traffic.mp3?foo=bar&baz=biff&flv=true" class="inline-exclude">Bees, Noise, Traffic</a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="inline-exclude">Untitled Groove</a></li>
 				</ul>
 			</div>
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">MPEG-4 Video<span class="l"></span><span class="r"></span></h3>
-			<div style="margin-bottom:1em" class="demo-block">
+			<div style="margin-bottom:1.5em" class="demo-block">
 				<div id="sm2-container"><!-- SM2 SWF, video, goes here --></div>
 				<ul class="playlist" style="margin-top:0.3em">
 				 <li><a href="http://freshly-ground.com/data/video/xmaslights-iphone.m4v" title="iPhone-compatible H.264 video" class="inline-exclude">JS + Canvas Lights</a></li>
-				 <li><a href="http://freshly-ground.com/data/video/Jack%20Dempsey%20Cichlids.flv?foo=bar&baz=biff&.mp3=true" title="Personal .FLV from YouTube" class="inline-exclude">Aquarium</a></li>
+				 <li><a href="http://freshly-ground.com/data/video/Jack%20Dempsey%20Cichlids.flv" title="Personal .FLV from YouTube" class="inline-exclude">Aquarium</a></li>
           		        </ul>
 				<p class="note" style="margin-top:3px;margin-bottom:0px;margin-left:0.8em">More: <a href="demo/video/">Video</a> | <a href="demo/page-player/">Muxtape UI</a> | <a href="demo/play-mp3-links/" class="exclude">Play MP3 links</a></p>
 			</div>
 			<div class="clear">&nbsp;</div>
 			</div>
+			
+			<h4 class="tight">As Heard On <span style="text-decoration:line-through;color:#999;font-size:xx-small">TV</span> The Internets</h4>
+			<p class="tight compact">A few nifty sites that have implemented SoundManager 2 for driving audio:</p>
+			<p class="inthewild">
+			 <a href="http://muxtape.com/" title="Muxtape"><img src="demo/_image/muxtape-logo.png" alt="Muxtape logo" /></a>
+			 <a href="http://thecloudplayer.com/" title="Soundcloud / The Cloud Player"><img src="demo/_image/soundcloud-thecloudplayer-logo.png" alt="Soundcloud / The Cloud Player logo" /></a>
+			 <a id="favtape" href="http://favtape.com/" title="Favtape.com">Favtape.com</a>
+			</p>
+			
 		</div>
 		
-		<p style="margin-top:0.5em">By wrapping and extending Flash 8's sound API, SoundManager 2 brings solid audio functionality to Javascript. <a href="doc/getstarted/#intro" class="cta">How it works <span>&raquo;</span></a></p>
-			<h4 style="margin-top:1.5em">Features At A Glance</h4>
+			<h4 style="clear:left;margin-top:0.5em">Basic API Features (Flash 8)</h4>
 			<ul class="standard">
-			 <li>Load, stop, play, pause, mute, setPosition/seek, pan and volume control of sounds from Javascript</li>
+			 <li>Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript</li>
 			 <li>Events: onload, whileloading, whileplaying, onfinish and more</li>
 			 <li>ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)</li>
-			 <li>Optional API features with Flash 9+:
-				<ul>
-				 <li>MPEG-4 (HE-AAC/H.264) audio and video support</li>
-				 <li>Sound multiShot (chorusing effect, play a sound many times at once)</li>
-				 <li>Sound waveform/frequency spectrum data (MP3)</li>
-				 <li>Sound peak (L/R channel volume) data (MP3)</li> 
-				</ul>
-			 </li>
+			</ul>
+
+			<h4>Shiny Flash 9 Features</h4>
+			<ul class="standard">
+			 <li>MPEG-4 video (HE-AAC/H.264) and audio support</li>
+			 <li>"MultiShot" play (layered/chorusing effects)</li>
+			 <li>Waveform/frequency spectrum data</li>
+			 <li>Peak (L/R channel volume) data</li>
+			 <li>Audio buffering state/event handling</li>
 			</ul>
 			
-		<p><a href="doc/download/" class="feature">Get SoundManager 2</a></p>
+			<h4>General Tech Stuff</h4>
+			<ul class="standard">
+			 <li>Full <a href="doc/" title="SoundManager 2 documentation">API Documentation</a> with examples and notes</li>
+			 <li>console.log()-style <a href="doc/technotes/#debug-output" title="SoundManager 2 debug output">debug output</a> and <a href="doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool">troubleshooting tools</a></li>
+			 <li>Community-based <a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2" title="discussion/support for SoundManager 2 on Get Satisfaction">discussion/support</a></li>
+			</ul>
+
+		<h4>Download!</h4>
+		<p style="margin-top:1.5em"><a href="doc/download/" class="feature">Get SoundManager 2</a></p>
 
 	</div>
 
@@ -231,11 +272,11 @@ var PP_CONFIG = {
 		 <p>And, setting the volume:</p>
 		 <code>soundManager.setVolume('<span>mySound</span>',<span>50</span>);</code>
 		 <p>More flexible method supporting option parameters as an object literal:</p>
-<pre><code>var mySound = soundManager.createSound({
+<pre class="block"><code>var mySound = soundManager.createSound({
   id: '<span>someSound</span>',
   url: '<span>/path/to/some.mp3</span>',
   volume: <span>50</span>,
-  onload: <span>soundLoaded</span>
+  onload: <span>soundLoadedFunction</span>
 });
 mySound.play();</code></pre>
 		 <p><a href="demo/api/">See API Demos</a></p>
@@ -252,11 +293,11 @@ mySound.play();</code></pre>
 	
 	 <div class="c2">
 		<p>Include the SoundManager 2 core script, tell it where to look for the flash .SWF and provide an onload() handler.</p>
-<pre><code>&lt;script type="text/javascript" src="<span>/path/to/soundmanager2.js</span>"&gt;&lt;/script&gt;
+<pre class="block"><code>&lt;script type="text/javascript" src="<span>/path/to/soundmanager2.js</span>"&gt;&lt;/script&gt;
 &lt;script type="text/javascript"&gt;
 soundManager.url = '<span>/path/to/swfs/</span>';
 soundManager.onload = function() {
-  <span>// SM2 is ready to go!</span>
+  <span>// SM2 is ready to go!</span>&nbsp;
   <span>// soundManager.createSound(...) calls can now be made, etc.</span>
 }
 &lt;/script&gt;</code></pre>

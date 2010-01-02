@@ -337,6 +337,9 @@ function doVersion() {
 }
 
 function startStuff() {
+  if (navigator.userAgent.match(/safari/i)) {
+    document.getElementsByTagName('html')[0].className = 'isSafari';
+  }
   doVersion();
   ie6Sucks();
   fixLinks();

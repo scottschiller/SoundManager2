@@ -7,7 +7,7 @@
    Code licensed under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.93a.20090117
+   V2.94a.20090206
 */
 
 var soundManager = null;
@@ -23,7 +23,8 @@ function SoundManager(smURL,smID) {
   this.allowPolling = true;        // allow flash to poll for status update (required for "while playing", peak, sound spectrum functions to work.)
   this.useMovieStar = false;	   // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio + video formats (AAC, M4V, FLV, MOV etc.)
   this.bgColor = '#ffffff';	   // movie (.swf) background color, useful if showing on-screen for video etc.
-  this.useHighPerformance = true;  // position:fixed flash movie gives increased js/flash speed, but buggy and disabled for firefox/win32 by default (set value to 'always' to override)
+  this.useHighPerformance = false; // position:fixed flash movie gives increased js/flash speed
+  this.flashLoadTimeout = 750;     // ms to wait for flash movie to load before failing (0 = infinity)
 
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
@@ -50,6 +51,7 @@ function SoundManager(smURL,smID) {
   };
 
   this.flash9Options = {           // flash 9-only options, merged into defaultOptions if flash 9 is being used
+    'onbufferchange': null,	   // callback for "isBuffering" property change
     'isMovieStar': null,	   // "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
     'usePeakData': false,          // enable left/right channel peak (level) data
     'useWaveformData': false,      // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
@@ -68,7 +70,7 @@ function SoundManager(smURL,smID) {
 
   var _s = this;
   this.version = null;
-  this.versionNumber = 'V2.93a.20090117';
+  this.versionNumber = 'V2.94a.20090206';
   this.movieURL = null;
   this.url = null;
   this.altURL = null;
@@ -80,6 +82,7 @@ function SoundManager(smURL,smID) {
   this.sounds = {};
   this.soundIDs = [];
   this.muted = false;
+  this.wmode = null;
   this.isIE = (navigator.userAgent.match(/MSIE/i));
   this.isSafari = (navigator.userAgent.match(/safari/i));
   this.isGecko = (navigator.userAgent.match(/gecko/i));
@@ -93,6 +96,12 @@ function SoundManager(smURL,smID) {
   this._hasConsole = (typeof console != 'undefined' && typeof console.log != 'undefined');
   this._debugLevels = ['log','info','warn','error'];
   this._defaultFlashVersion = 8;
+  this._oRemoved = null;
+  this._oRemovedHTML = null;
+
+  var _$ = function(sID) {
+    return document.getElementById(sID);
+  };
 
   this.filePatterns = {
 	flash8: /\.mp3(\?.*)?$/i,
@@ -104,6 +113,7 @@ function SoundManager(smURL,smID) {
 
   this.filePattern = null;
   this.features = {
+	buffering: false,
     peakData: false,
     waveformData: false,
     eqData: false,
@@ -132,6 +142,7 @@ function SoundManager(smURL,smID) {
     // set up default options
 	if (_s.flashVersion > 8) {
 	  _s.defaultOptions = _s._mergeObjects(_s.defaultOptions,_s.flash9Options);
+	  _s.features.buffering = true;
 	}
     if (_s.flashVersion > 8 && _s.useMovieStar) {
       // flash 9+ support for movieStar formats as well as MP3
@@ -165,7 +176,7 @@ function SoundManager(smURL,smID) {
   };
 
   this.getMovie = function(smID) {
-    return _s.isIE?window[smID]:(_s.isSafari?document.getElementById(smID)||document[smID]:document.getElementById(smID));
+    return _s.isIE?window[smID]:(_s.isSafari?_$(smID)||document[smID]:_$(smID));
   };
 
   this.loadFromXML = function(sXmlUrl) {
@@ -432,22 +443,24 @@ function SoundManager(smURL,smID) {
     if (!_s.o || !_s.allowPolling) {
 	  return false;
 	}
-    // _s._wD('soundManager.setPolling('+bPolling+')');
     _s.o._setPolling(bPolling);
   };
 
-  this.disable = function(bUnload) {
+  this.disable = function(bNoDisable) {
     // destroy all functions
+    if (typeof bNoDisable == 'undefined') {
+      bNoDisable = false;
+    }
     if (_s._disabled) {
 	  return false;
-	}
+    }
     _s._disabled = true;
-    _s._wD('soundManager.disable(): Disabling all functions - future calls will return false.',1);
+    _s._wD('soundManager.disable(): Shutting down',1);
     for (var i=_s.soundIDs.length; i--;) {
       _s._disableObject(_s.sounds[_s.soundIDs[i]]);
     }
-    _s.initComplete(); // fire "complete", despite fail
-    _s._disableObject(_s);
+    _s.initComplete(bNoDisable); // fire "complete", despite fail
+    // _s._disableObject(_s); // taken out to allow reboot()
   };
 
   this.canPlayURL = function(sURL) {
@@ -494,11 +507,14 @@ function SoundManager(smURL,smID) {
     oProp = null;
   };
 
-  this._failSafely = function() {
-    // exception handler for "object doesn't support this property or method" or general failure
-    if (!_s._disabled) {
+  this._failSafely = function(bNoDisable) {
+    // general failure exception handler
+    if (typeof bNoDisable == 'undefined') {
+      bNoDisable = false;
+    }
+    if (!_s._disabled || bNoDisable) {
       _s._wD('soundManager: Failed to initialise.',2);
-      _s.disable();
+      _s.disable(bNoDisable);
     }
   };
   
@@ -540,15 +556,13 @@ function SoundManager(smURL,smID) {
     smURL = _s.url;
 
     var specialCase = null;
-    if (_s.useHighPerformance && _s.useHighPerformance != 'always' && navigator.platform.match(/win32/i) && navigator.userAgent.match(/firefox/i)) {
-      specialCase = 'Note: disabling highPerformance, known issues with this browser/OS combo.';
+
+    if (_s.useHighPerformance && _s.useMovieStar) {
+      specialCase = 'Note: disabling highPerformance, not applicable with movieStar mode on';
       _s.useHighPerformance = false;
     }
 
-    if (_s.useHighPerformance && _s.useMovieStar) {
-	  specialCase = 'Note: disabling highPerformance, not applicable with movieStar mode on';
-	  _s.useHighPerformance = false;
-	}
+    _s.wmode = (_s.useHighPerformance && !_s.useMovieStar?'transparent':''); // wmode=opaque seems to break firefox/windows.
 
     var oEmbed = {
       name: smID,
@@ -560,7 +574,8 @@ function SoundManager(smURL,smID) {
       allowScriptAccess: 'always',
       bgcolor: _s.bgColor,
       pluginspage: 'http://www.macromedia.com/go/getflashplayer',
-      type: 'application/x-shockwave-flash'
+      type: 'application/x-shockwave-flash',
+      wmode: _s.wmode
     };
 
     var oObject = {
@@ -568,20 +583,17 @@ function SoundManager(smURL,smID) {
       data: smURL,
       type: 'application/x-shockwave-flash',
       width: '100%',
-      height: '100%'
+      height: '100%',
+      wmode: _s.wmode
     };
 
     var oObjectParams = {
       movie: smURL,
       AllowScriptAccess: 'always',
       quality: 'high',
-      bgcolor: _s.bgColor
+      bgcolor: _s.bgColor,
+      wmode: _s.wmode
     };
-
-    if (_s.useHighPerformance && !_s.useMovieStar) {
-      oEmbed.wmode = 'transparent';
-      oObjectParams.wmode = 'transparent';
-    }
 
     var oMovie = null;
     var tmp = null;
@@ -589,13 +601,13 @@ function SoundManager(smURL,smID) {
     if (_s.isIE) {
       // IE is "special".
       oMovie = document.createElement('div');
-      var movieHTML = '<object id="'+smID+'" data="'+smURL+'" type="application/x-shockwave-flash" width="100%" height="100%"><param name="movie" value="'+smURL+'" /><param name="AllowScriptAccess" value="always" /><param name="quality" value="high" />'+(_s.useHighPerformance && !_s.useMovieStar?'<param name="wmode" value="transparent" /> ':'')+'<param name="bgcolor" value="'+_s.bgColor+'" /><!-- --></object>';
+      var movieHTML = '<object id="'+smID+'" data="'+smURL+'" type="application/x-shockwave-flash" width="100%" height="100%"><param name="movie" value="'+smURL+'" /><param name="AllowScriptAccess" value="always" /><param name="quality" value="high" />'+(_s.useHighPerformance && !_s.useMovieStar?'<param name="wmode" value="'+_s.wmode+'" /> ':'')+'<param name="bgcolor" value="'+_s.bgColor+'" /><!-- --></object>';
     } else {
       oMovie = document.createElement('embed');
       for (tmp in oEmbed) {
-	    if (oEmbed.hasOwnProperty(tmp)) {
+	if (oEmbed.hasOwnProperty(tmp)) {
           oMovie.setAttribute(tmp,oEmbed[tmp]);
-		}
+	}
       }
     }
 
@@ -627,9 +639,9 @@ function SoundManager(smURL,smID) {
     }
 
     for (tmp in oToggle) {
- 	  if (oToggle.hasOwnProperty(tmp)) {
-        oD.style[tmp] = oToggle[tmp];
-	  }
+ 	if (oToggle.hasOwnProperty(tmp)) {
+          oD.style[tmp] = oToggle[tmp];
+	}
     }
 
     var appXHTML = 'soundManager._createMovie(): appendChild/innerHTML set failed. May be app/xhtml+xml DOM-related.';
@@ -638,7 +650,7 @@ function SoundManager(smURL,smID) {
 
     if (oTarget) {
        
-      _s.oMC = document.getElementById('sm2-container')?document.getElementById('sm2-container'):document.createElement('div');
+      _s.oMC = _$('sm2-container')?_$('sm2-container'):document.createElement('div');
 
       if (!_s.oMC.id) {
         _s.oMC.id = 'sm2-container';
@@ -652,16 +664,16 @@ function SoundManager(smURL,smID) {
 		    width: '8px',
             height: '8px', // must be at least 6px for flash to run fast. odd? yes.
             bottom: '0px',
-            left: '0px',
-	    	zIndex:-1 // sit behind everything else
+            left: '0px'
+	    // zIndex:-1 // sit behind everything else - potentially dangerous/buggy?
           };
         } else {
           s = {
             position: 'absolute',
-		    width: '1px',
+	    width: '1px',
             height: '1px',
-            bottom: '0px',
-            left: '0px'
+            top: '-999px',
+            left: '-999px'
           };
         }
         var x = null;
@@ -695,18 +707,18 @@ function SoundManager(smURL,smID) {
         _s._appendSuccess = true;
       }
 
-      if (!document.getElementById(_s.debugID) && ((!_s._hasConsole||!_s.useConsole)||(_s.useConsole && _s._hasConsole && !_s.consoleOnly))) {
+      if (!_$(_s.debugID) && ((!_s._hasConsole||!_s.useConsole)||(_s.useConsole && _s._hasConsole && !_s.consoleOnly))) {
         var oDebug = document.createElement('div');
         oDebug.id = _s.debugID;
         oDebug.style.display = (_s.debugMode?'block':'none');
-        if (_s.debugMode) {
+        if (_s.debugMode && !_$(oD.id)) {
           try {
             oTarget.appendChild(oD);
           } catch(e2) {
             throw new Error(appXHTML);
           }
+          oTarget.appendChild(oDebug);
         }
-        oTarget.appendChild(oDebug);
       }
       oTarget = null;
     }
@@ -730,21 +742,24 @@ function SoundManager(smURL,smID) {
     if (_s._hasConsole && _s.useConsole) {
       var sMethod = _s._debugLevels[sType];
       if (typeof console[sMethod] != 'undefined') {
-        console[sMethod].apply(console,[sText]); // apply() fix for firebug 1.3, so "this" == console
+	    console[sMethod](sText);
       } else {
         console.log(sText);
       }
       if (_s.useConsoleOnly) {
-	    return true;
-	  }
+	return true;
+      }
     }
     var sDID = 'soundmanager-debug';
     try {
-      var o = document.getElementById(sDID);
+      var o = _$(sDID);
       if (!o) {
 		return false;
 	  }
       var oItem = document.createElement('div');
+      if (++_s._wdCount%2===0) {
+	    oItem.className = 'sm2-alt';
+      }
       // sText = sText.replace(/\n/g,'<br />');
       if (typeof sType == 'undefined') {
         sType = 0;
@@ -768,6 +783,8 @@ function SoundManager(smURL,smID) {
     o = null;
   };
   this._writeDebug._protected = true;
+  this._wdCount = 0;
+  this._wdCount._protected = true;
   this._wD = this._writeDebug;
 
   this._wDAlert = function(sText) { alert(sText); };
@@ -777,8 +794,8 @@ function SoundManager(smURL,smID) {
   }
 
   this._toggleDebug = function() {
-    var o = document.getElementById(_s.debugID);
-    var oT = document.getElementById(_s.debugID+'-toggle');
+    var o = _$(_s.debugID);
+    var oT = _$(_s.debugID+'-toggle');
     if (!o) {
 	  return false;
 	}
@@ -844,17 +861,30 @@ function SoundManager(smURL,smID) {
   this._initMovie = function() {
     // attempt to get, or create, movie
     if (_s.o) {
-	  return false; // pre-init may have fired this function before window.onload(), may already exist
-	}
-    _s.o = _s.getMovie(_s.id); // try to get flash movie (inline markup)
+	  return false; // may already exist
+    }
+    _s.o = _s.getMovie(_s.id); // (inline markup)
     if (!_s.o) {
-      // try to create
-      _s._createMovie(_s.id,_s.url);
+      if (!_s.oRemoved) {
+        // try to create
+        _s._createMovie(_s.id,_s.url);
+      } else {
+        // try to re-append removed movie after reboot()
+        if (!_s.isIE) {
+          _s.oMC.appendChild(_s.oRemoved);
+        } else {
+          _s.oMC.innerHTML = _s.oRemovedHTML;
+        }
+        _s.oRemoved = null;
+        _s._didAppend = true;
+      }
       _s.o = _s.getMovie(_s.id);
     }
     if (_s.o) {
       _s._wD('soundManager._initMovie(): Got '+_s.o.nodeName+' element ('+(_s._didAppend?'created via JS':'static HTML')+')',1);
-      _s._wD('soundManager._initMovie(): Waiting for ExternalInterface call from Flash..');
+      if (_s.flashLoadTimeout>0) {
+        _s._wD('soundManager._initMovie(): Waiting for ExternalInterface call from Flash..');
+      }
     }
   };
 
@@ -864,25 +894,29 @@ function SoundManager(smURL,smID) {
 	}
     _s._waitingForEI = true;
     if (_s._tryInitOnFocus && !_s._isFocused) {
-      _s._wD('soundManager: Special case: Flash may not have started due to non-focused tab (Safari is lame), and/or focus cannot be detected. Waiting for focus-related event..');
+      _s._wD('soundManager: Special case: Waiting for focus-related event..');
       return false;
     }
-    if (!_s._didInit) {
-      _s._wD('soundManager: Getting impatient, still waiting for Flash.. ;)');
-    }
-    setTimeout(function() {
+    if (_s.flashLoadTimeout>0) {
       if (!_s._didInit) {
-        _s._wD('soundManager: No Flash response within reasonable time after document load.\nPossible causes: Flash version under 8, no support, or Flash security denying JS-Flash communication.',2);
-        if (!_s._overHTTP) {
+        _s._wD('soundManager: Getting impatient, still waiting for Flash.. ;)');
+      }
+      setTimeout(function() {
+        if (!_s._didInit) {
+          _s._wD('soundManager: No Flash response within reasonable time after document load.\nPossible causes: Flash version under 8, no support, or Flash security denying JS-Flash communication.',2);
+          if (!_s._overHTTP) {
           _s._wD('soundManager: Loading this page from local/network file system (not over HTTP?) Flash security likely restricting JS-Flash access. Consider adding current URL to "trusted locations" in the Flash player security settings manager at '+flashCPLink+', or simply serve this content over HTTP.',2);
         }
         _s._debugTS('flashtojs',false,': Timed out'+(_s._overHTTP)?' (Check flash security)':' (No plugin/missing SWF?)');
       }
       // if still not initialized and no other options, give up
       if (!_s._didInit && _s._okToDisable) {
-		_s._failSafely();
-	  }
-    },750);
+	_s._failSafely(true); // don't disable, for reboot()
+      }
+    },_s.flashLoadTimeout);
+    } else if (!_s.didInit) {
+      _s._wD('soundManager: Waiting indefinitely for Flash...');
+    }
   };
 
   this.handleFocus = function() {
@@ -907,13 +941,13 @@ function SoundManager(smURL,smID) {
     }
   };
 
-  this.initComplete = function() {
+  this.initComplete = function(bNoDisable) {
     if (_s._didInit) {
 	  return false;
 	}
     _s._didInit = true;
     _s._wD('-- SoundManager 2 '+(_s._disabled?'failed to load':'loaded')+' ('+(_s._disabled?'security/load error':'OK')+') --',1);
-    if (_s._disabled) {
+    if (_s._disabled || bNoDisable) {
       _s._wD('soundManager.initComplete(): calling soundManager.onerror()',1);
       _s._debugTS('onload',false);
       _s.onerror.apply(window);
@@ -973,7 +1007,7 @@ function SoundManager(smURL,smID) {
       _s._debugTS('jstoflash',true);
     } catch(e) {
 	  _s._debugTS('jstoflash',false);
-      _s._failSafely();
+      _s._failSafely(true); // don't disable, for reboot()
       _s.initComplete();
       return false;
     }
@@ -981,7 +1015,7 @@ function SoundManager(smURL,smID) {
   };
 
   this.beginDelayedInit = function() {
-    _s._wD('soundManager.beginDelayedInit(): Document loaded');
+    _s._wD('soundManager.beginDelayedInit()');
     _s._windowLoaded = true;
     setTimeout(_s.waitForExternalInterface,500);
     setTimeout(_s.beginInit,20);
@@ -1039,6 +1073,46 @@ function SoundManager(smURL,smID) {
       sb.noRemote = false;
       sb.noLocal = false;
     }
+  };
+
+  this.reboot = function() {
+    // attempt to reset and init SM2
+    _s._wD('soundManager.reboot()');
+    if (_s.soundIDs.length) {
+      _s._wD('Destroying '+_s.soundIDs.length+' SMSound objects...');
+    }
+    for (var i=_s.soundIDs.length; i--;) {
+      _s.sounds[_s.soundIDs[i]].destruct();
+    }
+    // trash ze flash
+    try {
+      if (_s.isIE) {
+        _s.oRemovedHTML = _s.o.innerHTML;
+      }
+      _s.oRemoved = _s.o.parentNode.removeChild(_s.o);
+      _s._wD('Flash movie removed.');
+    } catch(e) {
+      // uh-oh.
+      _s._wD('Warning: Failed to remove flash movie.',2);
+    }
+    _s.enabled = false;
+    _s._didInit = false;
+    _s._waitingForEI = false;
+    _s._initPending = false;
+    _s._didInit = false;
+    _s._didAppend = false;
+    _s._appendSuccess = false;
+    _s._didInit = false;
+    _s._disabled = false;
+    _s._waitingforEI = true;
+    _s.swfLoaded = false;
+    _s.soundIDs = {};
+    _s.sounds = [];
+    _s.o = null;
+    _s._wD('soundManager: Rebooting...');
+    window.setTimeout(function() {
+      soundManager.beginDelayedInit();
+    },20);
   };
 
   this.destruct = function() {
@@ -1107,6 +1181,7 @@ function SoundManager(smURL,smID) {
     _t.muted = false;
     _t.didBeforeFinish = false;
     _t.didJustBeforeFinish = false;
+    _t.isBuffering = false;
     _t.instanceOptions = {};
     _t.instanceCount = 0;
     _t.peakData = {
@@ -1334,7 +1409,7 @@ function SoundManager(smURL,smID) {
   this.unmute = function() {
     _t.muted = false;
     var hasIO = typeof _t._iO.volume != 'undefined';
-    _s.o._setVolume(_t.sID,hasIO?_t._iO.volume:_t.options.volume,hasIO?false:true);
+    _s.o._setVolume(_t.sID,hasIO?_t._iO.volume:_t.options.volume);
   };
 
   // --- "private" methods called by Flash ---
@@ -1410,7 +1485,7 @@ function SoundManager(smURL,smID) {
 
   this._onload = function(bSuccess) {
     bSuccess = (bSuccess==1?true:false);
-    _s._wD('SMSound._onload(): "'+_t.sID+'"'+(bSuccess?' loaded.':' failed to load? - '+_t.url));
+    _s._wD('SMSound._onload(): "'+_t.sID+'"'+(bSuccess?' loaded.':' failed to load? - '+_t.url),(bSuccess?1:2));
     if (!bSuccess) {
       if (_s.sandbox.noRemote === true) {
         _s._wD('SMSound._onload(): Reminder: Flash security is denying network/internet access',1);
@@ -1498,6 +1573,18 @@ function SoundManager(smURL,smID) {
     _s._wD('SMSound.onmetadata() complete');
   };
 
+  this._onbufferchange = function(bIsBuffering) {
+    if (bIsBuffering == _t.isBuffering) {
+      // ignore initial "false" default, if matching
+      return false;
+    }
+    _t.isBuffering = (bIsBuffering==1?true:false);
+    if (_t._iO.onbufferchange) {
+      _s._wD('SMSound._onbufferchange(): '+bIsBuffering);
+      _t._iO.onbufferchange.apply(_t);
+    }
+  };
+
   }; // SMSound()
 
   // register a few event handlers
@@ -1526,4 +1613,3 @@ function SoundManager(smURL,smID) {
 } // SoundManager()
 
 soundManager = new SoundManager();
-

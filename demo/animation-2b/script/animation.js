@@ -1,6 +1,6 @@
 soundManager.flashVersion = 9;
 soundManager.url = '../../swf/';
-soundManager.useHighPerformance = 'always';
+soundManager.useHighPerformance = true;
 soundManager.debugMode = false;
 
 var points = [];

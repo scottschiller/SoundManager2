@@ -199,7 +199,7 @@ function setShiny(bShiny) {
 <p>Behaviours such as auto-start and UI elements like VU meters and spectrum graphs are easy configurable, using an object literal format as shown below.</p>
 <p>The page player config (see related page-player.js file) as below.</p>
 <p>The custom parameters used to make this demo page are highlighted in red.</p>
-<pre><code>  <span>// ( within page-player.js )</span>
+<pre class="block"><code>  <span>// ( within page-player.js )</span>
 
   this.config = {
     flashVersion: <span style="color:red">9</span>,       <span>// version of Flash to tell SoundManager to use - either 8 or 9.</span>
@@ -221,7 +221,7 @@ function setShiny(bShiny) {
 
 <p>Alternately, you may override the defaults on a per-page basis by defining an "alternate configuration" object <b>before</b> the page-player.js file has been included in your source code:</p>
 
-<pre><code>  <span>// ( before page-player.js )</span>
+<pre class="block"><code>  <span>// ( before page-player.js )</span>
 
   var PP_CONFIG = {
     flashVersion: 9,       <span>// version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.</span>

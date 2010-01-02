@@ -64,6 +64,18 @@ function InlinePlayer() {
     return (typeof self.soundsByURL[sURL] != 'undefined'?self.soundsByURL[sURL]:null);
   }
 
+  this.isChildOfNode = function(o,sNodeName) {
+    if (!o || !o.parentNode) {
+      return false;
+    }
+    o = o.parentNode;
+    sNodeName = sNodeName.toLowerCase();
+    do {
+      o = o.parentNode;
+    } while (o && o.parentNode && o.nodeName.toLowerCase() != sNodeName);
+    return (o.nodeName.toLowerCase() == sNodeName?o:null);
+  }
+
   this.events = {
 
     // handlers for sound events as they're started/stopped/played
@@ -123,6 +135,10 @@ function InlinePlayer() {
   this.handleClick = function(e) {
     // a sound link was clicked
     var o = self.getTheDamnLink(e);
+    if (o.nodeName.toLowerCase() != 'a') {
+      o = self.isChildOfNode(o,'a');
+      if (!o) return true;
+    }
     var sURL = o.getAttribute('href');
     if (!o.href || !o.href.match(/\.mp3(\\?.*)$/i) || self.classContains(o,self.excludeClass)) {
       if (isIE && o.onclick) {

@@ -71,8 +71,8 @@ body {
 
 .sm2player .left {
  width:15px;
- background:transparent url(../_image/skin-3-ui.png) 0px 0px no-repeat;
- _background-image:url(../_image/skin-3-ui.gif); /* IE <7 */
+ background:transparent url(../image/skin-3-ui.png) 0px 0px no-repeat;
+ _background-image:url(../image/skin-3-ui.gif); /* IE <7 */
 }
 
 .sm2player .left .trigger,
@@ -83,29 +83,34 @@ body {
 }
 
 .sm2player .left .trigger.pauseplay span {
- background:transparent url(../_image/sec-left-arr1.png) 5px 6px no-repeat;
- _background-image:url(../_image/sec-left-arr1.gif);
+ background:transparent url(../image/sec-left-arr1.png) 5px 6px no-repeat;
+ _background-image:url(../.sm2player .left {
+ width:15px;
+ background:transparent url(../image/skin-0-ui.png) 0px 0px no-repeat;
+ _background-image:url(../image/skin-0-ui.gif); /* IE <7 */
+}
+image/sec-left-arr1.gif);
 }
 
 .sm2player .left .trigger.pauseplay span.playing {
  /* class applied while playing */
- background-image:url(../_image/sec-left-pause-1.gif);
+ background-image:url(../image/sec-left-pause-1.gif);
  background-position:6px 7px;
 }
 
 .sm2player .left .trigger:hover {
- background:transparent url(../_image/ui-highlight-1.png) 2px 0px no-repeat;
- _background-image:url(../_image/ui-highlight-1.gif);
+ background:transparent url(../image/ui-highlight-1.png) 2px 0px no-repeat;
+ _background-image:url(../image/ui-highlight-1.gif);
  _background-position:2px 0px;
 }
 
 .sm2player .left .trigger.pauseplay:hover span {
- background:transparent url(../_image/sec-left-arr0.png) 5px 6px no-repeat;
- _background-image:url(../_image/sec-left-arr2.gif);
+ background:transparent url(../image/sec-left-arr0.png) 5px 6px no-repeat;
+ _background-image:url(../image/sec-left-arr2.gif);
 }
 
 .sm2player .left .trigger.pauseplay:hover span.playing {
- background-image:url(../_image/sec-left-pause.gif);
+ background-image:url(../image/sec-left-pause.gif);
  background-position:6px 7px;
 }
 
@@ -113,8 +118,8 @@ body {
  position:relative;
  width:223px;
  _width:224px;
- background:transparent url(../_image/skin-3-ui.png) -14px 0px no-repeat;
- _background-image:url(../_image/skin-3-ui.gif);
+ background:transparent url(../image/skin-3-ui.png) -14px 0px no-repeat;
+ _background-image:url(../image/skin-3-ui.gif);
 }
 
 .sm2player .mid .info {
@@ -135,8 +140,8 @@ body {
  width:1px;
  height:12px;
  margin:4px 0px 0px 0px;
- background:transparent url(../_image/sec-mid-loaded-light.png) 0px 0px repeat-x;
- _background-image:url(../_image/sec-mid-loaded-light.gif);
+ background:transparent url(../image/sec-mid-loaded-light.png) 0px 0px repeat-x;
+ _background-image:url(../image/sec-mid-loaded-light.gif);
  background-color:#eee;
 }
 
@@ -155,8 +160,8 @@ body {
  left:0px;
  top:0px;
  margin-top:4px;
- background:transparent url(../_image/slider-light.png) 0px 0px no-repeat;
- _background-image:url(../_image/slider-light.gif);
+ background:transparent url(../image/slider-light.png) 0px 0px no-repeat;
+ _background-image:url(../image/slider-light.gif);
  z-index:1; /* swap between 1 and 2 to position on top */
  z-index:2;
  opacity:0.95;
@@ -205,8 +210,8 @@ body {
  width:18px;
  width:45px;
 */
- background:transparent url(../_image/skin-3-ui.png) 100% 0px no-repeat;
- _background-image:url(../_image/skin-3-ui.gif);
+ background:transparent url(../image/skin-3-ui.png) 100% 0px no-repeat;
+ _background-image:url(../image/skin-3-ui.gif);
  margin-left:1px;
  _margin-left:0px; /* IE <7 sucks. */
 }
@@ -218,8 +223,8 @@ body {
  width:1px;
  height:20px;
  overflow:hidden;
- background:transparent url(../_image/skin-3-ui.png) -1006px 0px no-repeat;
- _background-image:url(../_image/skin-3-ui.gif);
+ background:transparent url(../image/skin-3-ui.png) -1006px 0px no-repeat;
+ _background-image:url(../image/skin-3-ui.gif);
  margin-left:-1px;
  _display:none; /* IE <7 sucks. */
 }
@@ -282,25 +287,25 @@ body {
 }
 
 .sm2player .right .trigger span {
- background:transparent url(../_image/sec-right-arr1.png) 3px 7px no-repeat; 
+ background:transparent url(../image/sec-right-arr1.png) 3px 7px no-repeat; 
  /*
- _background-image:url(../_image/sec-right-arr1.gif);
+ _background-image:url(../image/sec-right-arr1.gif);
  _background-position:0px 0px;
  */
 }
 
 .sm2player .right .trigger.prev span {
- background:transparent url(../_image/btn-prev-1.png) 4px 6px no-repeat;
- /* _background-image:url(../_image/btn-prev-1.gif); */
+ background:transparent url(../image/btn-prev-1.png) 4px 6px no-repeat;
+ /* _background-image:url(../image/btn-prev-1.gif); */
 }
 
 .sm2player .right .trigger.next span {
- background:transparent url(../_image/btn-next-1.png) 3px 6px no-repeat;
- /* _background-image:url(../_image/btn-next-1.gif); */
+ background:transparent url(../image/btn-next-1.png) 3px 6px no-repeat;
+ /* _background-image:url(../image/btn-next-1.gif); */
 }
 
 .sm2player .right .trigger.loop span {
- background:transparent url(../_image/loop-light.png) 3px 5px no-repeat;
+ background:transparent url(../image/loop-light.png) 3px 5px no-repeat;
  opacity:0.5;
  filter:alpha(opacity=50);
 }
@@ -311,16 +316,16 @@ body {
 }
 
 .sm2player .right .trigger.shuffle span {
- background:transparent url(../_image/shuffle-1-light.png) 2px 5px no-repeat; 
+ background:transparent url(../image/shuffle-1-light.png) 2px 5px no-repeat; 
  opacity:0.5;
  filter:alpha(opacity=50);
  _background-image:none;
- _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,sizingMethod=crop src='_image/shuffle-1-light.png');
+ _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,sizingMethod=crop src='image/shuffle-1-light.png');
  _margin:5px 0px 0px 2px;
 }
 
 .sm2player .right .trigger.shuffle:hover span {
- background-image:url(../_image/shuffle.png);
+ background-image:url(../image/shuffle.png);
 }
 
 .sm2player .right .trigger.shuffle.active span {
@@ -329,11 +334,11 @@ body {
 }
 
 .sm2player .right .trigger.mute span {
- background:transparent url(../_image/speaker-light.png) 3px 5px no-repeat; 
+ background:transparent url(../image/speaker-light.png) 3px 5px no-repeat; 
 }
 
 .sm2player .right .trigger.mute:hover span {
- background-image:url(../_image/speaker.png);
+ background-image:url(../image/speaker.png);
  opacity:0.75;
 }
 
@@ -342,41 +347,41 @@ body {
 }
 
 .sm2player .right .trigger.volume span {
- background:transparent url(../_image/volume-light.png) 0px 4px no-repeat; 
+ background:transparent url(../image/volume-light.png) 0px 4px no-repeat; 
 }
 
 .sm2player .right .trigger:hover {
- background:transparent url(../_image/ui-highlight-1.png) -2px 0px no-repeat;
- _background-image:url(../_image/ui-highlight-1.gif);
+ background:transparent url(../image/ui-highlight-1.png) -2px 0px no-repeat;
+ _background-image:url(../image/ui-highlight-1.gif);
  /*_background-position:2px 2px;*/
 }
 
 .sm2player .right .trigger.dropdown:hover>span {
- background-image:url(../_image/sec-right-arr0.png);
+ background-image:url(../image/sec-right-arr0.png);
 }
 
 .sm2player .right .trigger.prev:hover>span {
- background-image:url(../_image/btn-prev.png);
+ background-image:url(../image/btn-prev.png);
 }
 
 .sm2player .right .trigger.next:hover>span {
- background-image:url(../_image/btn-next.png); 
+ background-image:url(../image/btn-next.png); 
 }
 
 .sm2player .right .trigger.loop:hover>span {
- background-image:url(../_image/loop.png);
+ background-image:url(../image/loop.png);
 }
 
 .sm2player .right .trigger.shuffle:hover>span {
- background-image:url(../_image/shuffle-1.png);
+ background-image:url(../image/shuffle-1.png);
 }
 
 .sm2player .right .trigger.mute:hover>span {
- background-image:url(../_image/speaker.png);
+ background-image:url(../image/speaker.png);
 }
 
 .sm2player .right .trigger.volume:hover>span {
- background-image:url(../_image/volume.png);
+ background-image:url(../image/volume.png);
 }
 
 .sm2player .right .dropdown:hover {
@@ -407,8 +412,8 @@ body {
 }
 
 .sm2playlist .hd {
- background:transparent url(../_image/skin-3-ui.png) no-repeat 0px 0px;
- _background-image:url(../_image/skin-3.ui.gif);
+ background:transparent url(../image/skin-3-ui.png) no-repeat 0px 0px;
+ _background-image:url(../image/skin-3.ui.gif);
  margin-right:3px;
 }
 
@@ -416,14 +421,14 @@ body {
  position:absolute;
  right:0px;
  top:0px;
- background:transparent url(../_image/skin-3-ui.png) no-repeat 100% 0px;
- _background-image:url(../_image/skin-3-ui.gif);
+ background:transparent url(../image/skin-3-ui.png) no-repeat 100% 0px;
+ _background-image:url(../image/skin-3-ui.gif);
  margin-right:-3px;
  width:3px;
 }
 
 .sm2playlist .bd {
- background:transparent url(../_image/shade-left.png) repeat-y 0px 0px;
+ background:transparent url(../image/shade-left.png) repeat-y 0px 0px;
  _background-image:none;
  margin-right:2px;
 }
@@ -434,7 +439,7 @@ body {
  padding:0px;
  padding-right:4px; /* space for background */
  margin-right:-2px;
- background:transparent url(../_image/shade-right.png) repeat-y 100% 0px;
+ background:transparent url(../image/shade-right.png) repeat-y 100% 0px;
  _background-image:none;
  zoom:1; /* Even IE 7 needs this (!?) */
 }
@@ -489,7 +494,7 @@ body {
 }
 
 .sm2playlist ul li.highlight a span {
- background:#fff url(../_image/notreallyajaxandyouknowit-light.gif) no-repeat right 50%;
+ background:#fff url(../image/notreallyajaxandyouknowit-light.gif) no-repeat right 50%;
  color:#333;
  border-color:#fff;
 }
@@ -504,8 +509,8 @@ body {
 }
 
 .sm2playlist .ft {
- background:transparent url(../_image/skin-3-ui.png) no-repeat 0px 100%;
- _background-image:url(../_image/skin-3-ui.gif);
+ background:transparent url(../image/skin-3-ui.png) no-repeat 0px 100%;
+ _background-image:url(../image/skin-3-ui.gif);
  margin-right:3px;
  height:2px;
 }
@@ -514,8 +519,8 @@ body {
  position:absolute;
  right:0px;
  bottom:0px;
- background:transparent url(../_image/skin-3-ui.png) no-repeat 100% 100%;
- _background-image:url(../_image/skin-3-ui.gif);
+ background:transparent url(../image/skin-3-ui.png) no-repeat 100% 100%;
+ _background-image:url(../image/skin-3-ui.gif);
  xmargin-left:3px; /* leave room for left cap */
  xmargin-right:-3px;
  width:3px;
@@ -531,7 +536,7 @@ body {
  font-size:xx-small;
  height:20em;
  overflow:auto;
- /* background:transparent url(../_image/whiteout.png); */
+ /* background:transparent url(../image/whiteout.png); */
  padding:1em;
  background:#000;
  color:#fff;

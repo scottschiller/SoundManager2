@@ -7,7 +7,7 @@
    Code licensed under the BSD License:
    http://www.schillmania.com/projects/soundmanager2/license.txt
 
-   V2.93a.20090117
+   V2.94a.20090206
 
    Flash 9 / ActionScript 3 version
 */
@@ -136,6 +136,7 @@ try {
     var nP:int = 0;
     var lP:Number = 0;
     var rP:Number = 0;
+    var isBuffering:Object = null;
     var oSound:SoundManager2_SMSound_AS3 = null;
     var oSoundChannel:flash.media.SoundChannel = null;
     var sMethod:String = null;
@@ -168,10 +169,11 @@ try {
           ExternalInterface.call(sMethod,bL,bT,nD);
         }
       } else {
-		oSoundChannel = oSound.soundChannel;
+	oSoundChannel = oSound.soundChannel;
         bL = oSound.bytesLoaded;
         bT = oSound.bytesTotal;
         nD = int(oSound.length||0); // can sometimes be null with short MP3s? Wack.
+	isBuffering = oSound.isBuffering;
         // writeDebug('loaded/total/duration: '+bL+', '+bT+', '+nD);
         if (oSoundChannel) {
           nP = (oSoundChannel.position||0);
@@ -250,6 +252,15 @@ try {
           oSound.didJustBeforeFinish = true;
         }
       }
+
+      // check isBuffering
+      if (oSound.isBuffering != oSound.lastValues.isBuffering) {
+        // property has changed
+	oSound.lastValues.isBuffering = oSound.isBuffering;
+	sMethod = baseJSObject+"['"+sounds[i]+"']._onbufferchange";
+        ExternalInterface.call(sMethod,oSound.isBuffering?1:0);
+      }
+
     }
 
   }
@@ -538,6 +549,7 @@ try {
     ns.useVideo = s.useVideo;
     _destroySound(s.sID);
     _createSound(ns.sID,sURL,ns.justBeforeFinishOffset,ns.usePeakData,ns.useWaveformData,ns.useEQData,ns.useNetstream,ns.useVideo);
+    writeDebug(s.sID+'.unload(): ok');
   }
 
   public function _createSound(sID:String,sURL:String,justBeforeFinishOffset:int,usePeakData:Boolean,useWaveformData:Boolean,useEQData:Boolean,useNetstream:Boolean,useVideo:Boolean):void {
@@ -626,12 +638,12 @@ try {
     } else {
 	  var s:SoundManager2_SMSound_AS3 = soundObjects[sID];
 	  if (!s) return void;
-      if (s.useNetstream) {
+      if (s.useNetstream && s.ns) {
         s.ns.pause();
         if (s.oVideo) {
           s.oVideo.visible = false;
         }
-      } else {
+      } else if (s.soundChannel) {
         s.soundChannel.stop();
       }
       s.paused = false;

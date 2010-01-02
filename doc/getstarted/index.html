@@ -2,9 +2,9 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>SoundManager 2: Getting Started</title>
-<meta name="description" content="An introduction to including and configuring SoundManager 2 for playing MP3 audio via Javascript." />
-<meta name="keywords" content="javascript sound, javascript audio, javascript play mp3, javascript sound control, javascript video, mp3, mp4, mpeg4, flv video" />
+<title>SoundManager 2 Tutorial: Getting Started</title>
+<meta name="description" content="SoundManager 2 tutorial, example code, how to get started guide including and configuring SoundManager 2 for playing MP3 audio via Javascript." />
+<meta name="keywords" content="soundmanager2 tutorial, javascript sound, javascript audio, javascript play mp3, javascript sound control, javascript video, mp3, mp4, mpeg4, flv video" />
 <meta name="robots" content="all" />
 <meta name="author" content="Scott Schiller" />
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
@@ -122,7 +122,7 @@
 				 <p style="margin-top:1px"><strong><strong>SoundManager 2 makes it easier to play MP3 audio cross browser / platform, using Javascript.</strong></strong></p>
 			 -->
 			
-				 <h3>SoundManager 2 makes it easier to play MP3 audio cross-browser using Javascript.</h3>
+				 <h3>SoundManager 2 Tutorial: What, Why, How</h3>
 			
 				 <p><strong>Problem:</strong> Browsers lack good, consistent native audio/video support. (HTML 5's &lt;audio&gt; and &lt;video&gt; are on the way, but not universal yet.)</p>
 				 <p><strong>Solution:</strong> Javascript API via Flash + ExternalInterface, works almost everywhere</p>
@@ -156,7 +156,7 @@
 			
 			  <h4>SoundManager onload/onerror Event Handlers</h4>
 			
-<pre><code>soundManager.onload = function() {
+<pre class="block"><code>soundManager.onload = function() {
   <span><span>// SM2 is ready to go!</span></span>
   var mySound = soundManager.createSound({
     id: '<span>aSound</span>',
@@ -193,7 +193,7 @@ soundManager.onerror = function() {
 
 						  <p>Sounds can be created with instance-specific parameters in an object literal (JSON) format, where omitted parameters inherit default values as defined in soundManager.</p>
 
-<pre><code>soundManager.createSound({
+<pre class="block"><code>soundManager.createSound({
   id: '<span>mySound</span>',
   url: '<span>/path/to/some.mp3</span>',
   autoLoad: <span>true</span>,
@@ -332,7 +332,11 @@ soundManager.onerror = function() {
 				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to javascript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
 				<p>If loading from the local filesystem (offline eg. file://, not over HTTP), Flash security is likely preventing SM2 from talking to Javascript. You will need to add this project's directory to the trusted locations in the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash global security settings panel</a>, or simply view this page over HTTP.</p>
 				<p>Below is a live example of debug output.</p>
-				<div id="soundmanager-debug"></div>
+				<div id="live-debug" class="block">
+				 <div id="soundmanager-debug" class="code">
+				  <!-- live debug goes here -->
+				 </div>
+				</div>
 				<p>For more examples of live debug output, see the <a href="../../demo/template/" title="Basic SoundManager 2 template">Basic Template</a>, <a href="../../demo/api/" title="API demo">API demo</a> and other demos in the top navigation.</p>
 			</div>
 			

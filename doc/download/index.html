@@ -129,9 +129,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.93a.20090117</p>
-				<p>New start-up troubleshooting tool, <code class="in">soundManager.getMemoryUse()</code> and API bugfixes. See <a href="#history">revision history</a> for details.</p>
-				<p><a href="../../download/soundmanagerv293a-20090117.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.93a.20090117</a></p>
+				<p>Current version: 2.94a.20090206</p>
+				<p>New sound object stuff: <code class="in">isBuffering</code> and <code class="in">onbufferchange()</code> (Flash 9), new <code>soundManager.reboot()</code> method, <code class="in">soundManager.useHighPerformance</code> is now false (off) by default. See <a href="#history">revision history</a> for details.</p>
+				<p><a href="../../download/soundmanagerv294a-20090206.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.94a.20090206</a></p>
 			</div>
 			
 		</div>
@@ -155,8 +155,44 @@
 			  <ul id="revision-list" class="standard">
 
 			   <li class="in">
-			    <h3><b>V2.93a.20090117 (current)</b></h3>
+			    <h3><b>V2.94a.20090206 (current)</b></h3>
 			    <p>The latest and greatest.</p>
+
+			    <ul class="double">
+
+			     <li class="in">
+			      <p class="compact">API Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New <code class="in">isBuffering property</code>, related <code class="in">onbufferchange()</code> event handler (sound object)</li>
+				   <li>New <code class="in">soundManager.reboot()</code> method (<i>experimental</i>): Shut down and re-initialise SoundManager, remove and recreate flash movie (possibly handy for cases where you want to restart after flashblock-type whitelisting, etc.)</li>
+				   <li>New <code class="in">soundManager.flashLoadTimeout</code> property, milliseconds SM2 will wait for flash movie callback before failing and calling soundManager.onerror() during start-up/init. If set to 0, SM2 will wait indefinitely for flash (good for reboot/flashblock-type scenarios.)</li>
+			      </ul>
+			     </li>
+				
+			     <li>
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li>Reverted Firebug 1.3 console.log().apply() hack, was breaking console.log() under IE 8 RC1 (as used with debug mode.) Firebug 1.3 seems to have a bug, occasional "console undefined" error.</li>
+				   <li>Fixed a dumb flash 9/AS3 bug with setVolume() passing an extra parameter to flash.</li>
+				   <li><code class="in">soundManager.useHighPerformance</code> update: Now false/disabled by default. Strange bug with JS/flash communication breaking with wmode=opaque on flash, specific (?) to Firefox on windows. SM2 does not normally set wmode. When <code class="in">useHighPerformance = true</code>, wmode=transparent will be used on the flash movie by default.</li>
+				  </ul>
+			     </li>
+
+			     <li>
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>Tweaked project page / documentation UI, nicer code/debug formatting</li>
+				   <li>Misc. API documentation fixes, improvements</li>
+				  </ul>
+			     </li>
+
+			    </ul>
+			
+			   </li>
+
+
+			   <li class="in">
+			    <h3><b>V2.93a.20090117</b> (<a href="../../download/soundmanagerv293a-20090117.zip">Download archived version</a>)</h3>
 
 			    <ul class="double">
 

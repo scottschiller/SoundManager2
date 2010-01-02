@@ -2,11 +2,11 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>SoundManager 2: Basic API Examples</title>
+<title>SoundManager 2: Basic API Demo, Examples</title>
 <meta name="author" content="Scott Schiller" />
 <meta name="language" content="en-us" />
 <meta name="keywords" content="javascript sound library api" />
-<meta name="description" content="Demo page for SoundManager 2, javascript sound API" />
+<meta name="description" content="API demo and code examples for SoundManager 2, javascript sound API" />
 
 <link rel="stylesheet" href="../index.css" media="screen" />
 <style type="text/css">
@@ -28,7 +28,6 @@ code,
 .code,
 dt,
 #soundmanager-debug {
- font-size:0.9em;
  color:#336699;
  line-height:1.5em;
 }
@@ -43,26 +42,32 @@ p {
  _position:absolute; /* IE <7 */
  bottom:1em;
  right:1em;
- width:40em;
+ width:38em;
  height:30em;
  overflow:auto;
- border:1px solid #ccc;
- padding:1em;
+ padding:0px;
  margin:1em;
  font-family:monaco,"VT-100",terminal,"lucida console",courier,system;
- font-size:x-small;
- background:#f6f6f6;
  opacity:0.9;
  color:#333;
+ border:1px solid #ccddee;
+ -moz-border-radius:3px;
+ -khtml-border-radius:3px;
+ -webkit-border-radius:3px;
+ background:#f3f9ff;
 }
 
+/*
 #soundmanager-debug code {
  font-size:1.1em;
  *font-size:1em;
 }
+*/
 
 #soundmanager-debug div {
- margin-top:0.5em;
+ font-size:x-small;
+ padding:0.2em;
+ margin:0px;
 }
 
 </style>
@@ -82,6 +87,13 @@ soundManager.consoleOnly = false;
 
 soundManager.onload = function() {
   // soundManager is initialised, ready to use. Create a sound for this demo page.
+
+  if (soundManager.flashVersion > 8) {
+    t = window.setInterval(checkRAM,500);
+    document.getElementById('flash-ram-use').style.display = 'inline';
+    checkRAM();
+  }
+
   soundManager.createSound({
     id: 'aDrumSound',
     url: '../mpc/audio/AMB_SN13.mp3'
@@ -108,6 +120,26 @@ soundManager.onload = function() {
 
 }
 
+function checkRAM() {
+  if (soundManager.supported()) {
+    document.getElementById('flash-ram-use').innerHTML = (soundManager.getMemoryUse()/1024/1024).toFixed(2)+' MB';
+  }
+}
+
+var t = null;
+
+function doEval(sHTML) {
+  var html = sHTML.replace(/\<(span|code)\>/gi,'');
+  html = html.replace(/\<[\/](span|code)\>/gi,'');
+  html = html.replace(/&gt;/gi,'>');
+  eval(html);
+  return false;
+}
+
+function getRandomMP3URL() {
+  return 'http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3?rnd='+parseInt(Math.random()*1048576);
+}
+
 </script>
 </head>
 
@@ -115,7 +147,7 @@ soundManager.onload = function() {
 
 <div id="flash9" style="padding-left:1em;margin-right:38em">
 
- <h1>SoundManager 2: API Demo and Code Examples</h1>
+ <h1><a href="http://schillmania.com/projects/soundmanager2/" style="color:#000;text-decoration:none">SoundManager 2</a>: API Demo and Code Examples</h1>
 
  <p>You can run the API demos with either <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), or <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a>.</p>
 
@@ -125,17 +157,16 @@ soundManager.onload = function() {
 
  <p>Once you have SM2 included in your page, you merely need to hook into its onload/onerror events:</p>
 
-<pre>soundManager.onload = function() {
-  // soundManager is ready to use.
-  // createSound() / play() etc. can now be called
-}
-
-soundmanager.onerror = function() {
-  // Oh no! No sound support.
+<pre class="block"><code>soundManager.onload = function() {
+  <span><span>// soundManager is ready to use.
+  // createSound() / play() etc. can now be called</span>
+</span>}
+soundManager.onerror = function() {
+  <span><span>// Oh no! No sound support.
   // Maybe configure your app to ignore sound calls.
-  // (SM2 calls will silently return false after this point.)
-}
-</pre>
+  // (SM2 calls will silently return false after this point.)</span>
+</span>}
+</code></pre>
 
  <h2>A note about initialization</h2>
  
@@ -149,263 +180,246 @@ soundmanager.onerror = function() {
  <p>Alternately, you may use the no-debug, minified version of the SM2 javascript library (which has internal debug code removed, and will silently return false.)</p>
 
  <h2>Demo 1a: Create + play (simple method)</h2>
-<pre>soundManager.play('mySound0','../mpc/audio/AMB_SN_5.mp3');</pre>
- <button onclick="soundManager._writeDebug('<b>Demo 1a</b>');soundManager.play('mySound0','../mpc/audio/AMB_SN_5.mp3')">Do this</button>
+<pre>soundManager.play('<span>mySound0</span>','<span>../mpc/audio/AMB_SN_5.mp3</span>');</pre>
+ <button onclick="soundManager._writeDebug('Demo 1a',1);soundManager.play('mySound0','../mpc/audio/AMB_SN_5.mp3')">Do this</button>
  <p>Creates and plays a sound with ID "mySound0", at the specified URL. The sound can then be referenced by that ID later, eg. soundManager.play('mySound0');</p>
  <p>Note that this method is only provided for convenience, and allows only ID and URL as parameters. If you want to specify other options (volume, loop, event handlers), you must use the object literal syntax as given below.</p>
 
  <h2>Demo 1b: Create + play (better method)</h2>
 
-<pre>soundManager.createSound({
- id:'mySound1',
- url:'../mpc/audio/CHINA_1.mp3'
+<pre class="block"><code>soundManager.createSound({
+ id:'<span>mySound1</span>',
+ url:'<span>../mpc/audio/CHINA_1.mp3</span>'
 });
-soundManager.play('mySound1');</pre>
- <button onclick="soundManager._writeDebug('<b>Demo 1b</b>');soundManager.createSound({id:'mySound1',url:'../mpc/audio/CHINA_1.mp3'});soundManager.play('mySound1')">Do this</button>
+soundManager.play('<span>mySound1</span>');</code></pre>
+ <button onclick="soundManager._writeDebug('Demo 1b',1);soundManager.createSound({id:'mySound1',url:'../mpc/audio/CHINA_1.mp3'});soundManager.play('mySound1')">Do this</button>
  <p>Creates, then plays a sound. This object literal method allows for other parameters to be used (see demo 2)</p>
 
  <h3>Variant: Use object returned from createSound() (best method)</h3>
 
-<pre>var aSoundObject = soundManager.createSound({
- id:'mySound2',
- url:'../mpc/audio/CHINA_1.mp3'
+<pre class="block"><code>var aSoundObject = soundManager.createSound({
+ id:'<span>mySound2</span>',
+ url:'<span>../mpc/audio/CHINA_1.mp3</span>'
 });
-aSoundObject.play();</pre>
- <button onclick="soundManager._writeDebug('<b>Demo 1b variant</b>');var aSoundObject = soundManager.createSound({id:'mySound2',url:'../mpc/audio/CHINA_1.mp3'});aSoundObject.play()">Do this</button>
+aSoundObject.play();</code></pre>
+ <button onclick="soundManager._writeDebug('Demo 1b variant',1);var aSoundObject = soundManager.createSound({id:'mySound2',url:'../mpc/audio/CHINA_1.mp3'});aSoundObject.play()">Do this</button>
  <p>Creates, then plays a sound. This object literal method allows for other parameters to be used (see demo 2)</p>
 
  <h2>Demo 2: Create with onfinish event handler + play with volume argument</h2>
-<pre id="demo2">var demo2Sound = soundManager.createSound({
- id:'mySound4',
- url:'../mpc/audio/CHINA_1.mp3',
+<pre id="demo2" class="block"><code>var demo2Sound = soundManager.createSound({
+ id:'<span>mySound4</span>',
+ url:'<span>../mpc/audio/CHINA_1.mp3</span>',
  onfinish:function() {
-   alert(this.sID+' finished playing');
+   soundManager._writeDebug(this.sID+'<span> finished playing</span>');
  }
 });
 demo2Sound.play({volume:50});
-</pre>
-<button onclick="eval(document.getElementById('demo2').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo2').innerHTML)">Do this</button>
  <p>(creates, then plays a new sound - a function is called when the sound finishes playing)</p>
 
  <h2>Demo 3: Play a pre-existing sound</h2>
-<pre>soundManager.play('aDrumSound');</pre>
- <button onclick="soundManager._writeDebug('<b>Demo 3</b>');soundManager.play('aDrumSound')">Do this</button>
+<pre>soundManager.play('<span>aDrumSound</span>');</pre>
+ <button onclick="soundManager._writeDebug('Demo 3',1);soundManager.play('aDrumSound')">Do this</button>
  <p>This plays an existing sound which was created by soundManager.onload() (for reference, view source of this page.)</p>
 
  <h2>Demo 4a: Play a sequence of sounds via "onfinish", with multiShot</h2>
-<pre>soundManager.play('aDrumSound',{onfinish:function(){soundManager.play('aCymbalSound');}})</pre>
+<pre>soundManager.play('<span>aDrumSound</span>',{onfinish:function(){soundManager.play('<span>aCymbalSound</span>');}})</pre>
 <p>Differently formatted:</p>
-<pre>soundManager.play('aDrumSound',{
+<pre class="block"><code>soundManager.play('<span>aDrumSound</span>',{
   onfinish:function() {
-    soundManager.play('aCymbalSound');
+    soundManager.play('<span>aCymbalSound</span>');
   }
-});
-</pre>
- <button onclick="soundManager._writeDebug('<b>Demo 4a</b>');soundManager.play('aDrumSound',{onfinish:function(){soundManager.play('aCymbalSound');}})">Do this</button>
+});</code></pre>
+ <button onclick="soundManager._writeDebug('Demo 4a',1);soundManager.play('aDrumSound',{onfinish:function(){soundManager.play('aCymbalSound');}})">Do this</button>
  <p>This will play an existing sound (created in-page), and uses the "onfinish" handler to make a call to play a second, pre-existing sound.</p>
  <p>Also note that the button can be clicked multiple times, and the sound will be "layered" as multiShot is enabled for both of these sounds when using Flash 9. An onfinish event will also fire as each sound finishes.</p>
  <p><strong>Bug/behaviour note:</strong> Whenever "play" is called on a SMSound object, any parameters passed in will apply to all currently-playing instances of the sound if multiShot is allowed. For example, the onfinish handler from demo 4a will apply to demo 3 if 4a is started while 3 is still playing.</p>
 
  <h2>Demo 4b: Create and play a sequence of new sounds via "onfinish"</h2>
-<pre>
-soundManager.createSound({
- id:'aBassDrum',
- url:'../mpc/audio/AMB_BD_1.mp3',
+<pre class="block"><code>soundManager.createSound({
+ id:'<span>aBassDrum</span>',
+ url:'<span>../mpc/audio/AMB_BD_1.mp3</span>',
  multiShot:false,
  onfinish:function() {
-   soundManager.play('aRimSound','AMB_RIM1.mp3');
+   soundManager.play('<span>aRimSound</span>','<span>AMB_RIM1.mp3</span>');
  }
 });
-soundManager.play('aRimSound');
-</pre>
- <button onclick="soundManager._writeDebug('<b>Demo 4b</b>');soundManager.createSound({id:'aBassDrum',url:'../mpc/audio/AMB_BD_1.mp3',multiShot:false,onfinish:function(){soundManager.play('aRimSound','../mpc/audio/AMB_RIM1.mp3');}});soundManager.play('aBassDrum')">Do this</button>
+soundManager.play('<span>aRimSound</span>');</code></pre>
+ <button onclick="soundManager._writeDebug('Demo 4b',1);soundManager.createSound({id:'aBassDrum',url:'../mpc/audio/AMB_BD_1.mp3',multiShot:false,onfinish:function(){soundManager.play('aRimSound','../mpc/audio/AMB_RIM1.mp3');}});soundManager.play('aBassDrum')">Do this</button>
  <p>This will crate and play a new sound, using the "onfinish" handler to create and play a second, new sound.</p>
  <p>It is recommended to create sound objects first, to simplify troubleshooting.</p>
 
 <h2 id="looping">Demo 4c: Looping a sound</h2>
-<pre id="demo4c">
-var s = soundManager.createSound({
-  id:'hhCymbal',
-  url:'../mpc/audio/AMB_HHOP.mp3'
+<pre id="demo4c" class="block"><code>var s = soundManager.createSound({
+  id:'<span>hhCymbal</span>',
+  url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
 });
 
 s.play({
   onfinish: function() {
     this.play();
-    // or, soundManager.play('hhCymbal');
+    <span><span>// or, soundManager.play('<span>hhCymbal</span>');</span></span>
   }
 });
-</pre>
-<button onclick="eval(document.getElementById('demo4c').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo4c').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
  
 <h2>Demo 5a: Set sound parameters, then play</h2>
-<pre>
-var sound = soundManager.getSoundById('chinaCymbal'); // predefined/preloaded sound
-sound.setPosition(500); // 500 msec into sound
-sound.setPan(-75);      // 75% left pan
+<pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>'); <span><span>// predefined/preloaded sound</span></span>
+sound.setPosition(<span>500</span>); <span><span>// 500 msec into sound</span></span>
+sound.setPan(<span>-75</span>);      <span><span>// 75% left pan</span></span>
 sound.play();
-</pre>
-<button onclick="soundManager._writeDebug('<b>Demo 5</b>');var sound=soundManager.getSoundById('chinaCymbal');sound.setPosition(500);sound.setPan(-75);sound.play()">Do this</button> | <button onclick="soundManager._writeDebug('<b>Demo 5: sound from position:0</b>');var sound=soundManager.getSoundById('chinaCymbal');sound.setPosition(0);sound.setPan(-75);sound.play()">Play from position:0</button>
+</code></pre>
+<button onclick="soundManager._writeDebug('Demo 5',1);var sound=soundManager.getSoundById('chinaCymbal');sound.setPosition(500);sound.setPan(-75);sound.play()">Do this</button> | <button onclick="soundManager._writeDebug('Demo 5: sound from position:0',1);var sound=soundManager.getSoundById('chinaCymbal');sound.setPosition(0);sound.setPan(-75);sound.play()">Play from position:0</button>
 <p>This will set the position of an existing, pre-loaded sound, then play it.</p>
 
 <h3>Variant: play()</h3>
-<pre>
-var sound = soundManager.getSoundById('chinaCymbal');
-sound.play({position:500,pan:-75});
-</pre>
-<button onclick="soundManager._writeDebug('<b>Demo 5 variant</b>');var sound=soundManager.getSoundById('chinaCymbal');sound.play({position:500,pan:-75})">Do this</button> | <button onclick="soundManager._writeDebug('<b>Demo 5: variant: sound from position:0</b>');var sound = soundManager.getSoundById('chinaCymbal');sound.play({position:0,pan:-75})">Play from position:0</button>
+<pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>');
+sound.play({position:<span>500</span>,pan:<span>-75</span>});
+</code></pre>
+<button onclick="soundManager._writeDebug('Demo 5 variant',1);var sound=soundManager.getSoundById('chinaCymbal');sound.play({position:500,pan:-75})">Do this</button> | <button onclick="soundManager._writeDebug('Demo 5: variant: sound from position:0',1);var sound = soundManager.getSoundById('chinaCymbal');sound.play({position:0,pan:-75})">Play from position:0</button>
 <p>Note that if planning to layer sounds with multiShot (Flash 9 only), this variant method will give best results as each new "channel" is started with parameters.</p>
 
 <h2>Demo 5b: Global sound muting</h2>
 <p>If not passed a sound ID, soundManager.mute() will mute all existing and newly-created sounds. soundManager.unmute() can also be passed a sound ID, and performs the inverse either on a single sound or all sounds.</p>
 <p>In this demo, all sounds are globally muted and unmuted a few times. Different parameters are used to help audibly separate the sounds.</p>
-<pre id="demo5b-1">
-
-soundManager.mute(); // mute all sounds
+<pre id="demo5b-1" class="block"><code>soundManager.mute(); <span><span>// mute all sounds</span></span>
 
 soundManager.createSound({
- id: '880hz',
- url: '../_mp3/880hz.mp3',
+ id: '<span>880hz</span>',
+ url: '<span>../_mp3/880hz.mp3</span>',
  autoLoad:true,
  onload: function() {
-   // soundManager.mute(); // mute all sounds
-   // play (muted) cymbal sound..
+   <span><span>// soundManager.mute(); // mute all sounds</span></span>
+   <span><span>// play (muted) cymbal sound..</span></span>
    this.play({
-     volume:75, // volume for when un-muted
-     pan:-75,   // mostly on left channel
-     // .. and clean-up afterwards
+     volume:75, <span><span>// volume for when un-muted</span></span>
+     pan:-75,   <span><span>// mostly on left channel</span></span>
+     <span><span>// .. and clean-up afterwards</span></span>
      onfinish:function() {
        this.destruct();
      }
    });
 
-   this.setVolume(25); // new volume for when un-muted..
+   this.setVolume(25); <span><span>// new volume for when un-muted..</span></span>
 
-   soundManager.play('440hz',{
-     pan:75,
+   soundManager.play('<span>440hz</span>',{
+     pan:<span>75</span>,
      onfinish:function() {
-       document.getElementById('btn-d5b').disabled = false;
+       document.getElementById('<span>btn-d5b</span>').disabled = false;
      }
    });
 
-   // once playing, toggle all sounds some more
+   <span><span>// once playing, toggle all sounds some more</span></span>
    setTimeout(soundManager.unmute,500);
    setTimeout(soundManager.mute,1000);
    setTimeout(soundManager.unmute,1500);
    setTimeout(soundManager.mute,2000);
    setTimeout(soundManager.unmute,2500);
  }
-});
-</pre>
-<button id="btn-d5b" onclick="this.disabled=true;eval(document.getElementById('demo5b-1').innerHTML);return false">Do this</button>
+});</code></pre>
+<button id="btn-d5b" onclick="this.disabled=true;return doEval(document.getElementById('demo5b-1').innerHTML)">Do this</button>
 <script type="text/javascript">document.getElementById('btn-d5b').disabled = false;</script>
 
 <h2>Demo 5c: Per-object sound muting</h2>
-<pre id="demo5c-1">
-soundManager.createSound({
- id: '880hz',
- url: '../_mp3/880hz.mp3',
+<pre id="demo5c-1" class="block"><code>soundManager.createSound({
+ id: '<span>880hz</span>',
+ url: '<span>../_mp3/880hz.mp3</span>',
  autoLoad:true,
  onload: function() {
-   soundManager.mute('880hz'); // mute this - alternately, this.mute() would work here
-   soundManager.play('440hz',{ // play another sound to demo muting
+   soundManager.mute('<span>880hz</span>'); <span><span>// mute this - alternately, this.mute() would work here</span></span>
+   soundManager.play('<span>440hz</span>',{ <span><span>// play another sound to demo muting</span></span>
     onfinish: function() {
-      document.getElementById('btn-d5c').disabled = false;
+      document.getElementById('<span>btn-d5c</span>').disabled = false;
     }
    });
 
-   // play 880hz (muted)..
+   <span><span>// play 880hz (muted)..</span></span>
    this.play({
      volume:75,
-     // .. and clean-up afterwards
+     <span><span>// .. and clean-up afterwards</span></span>
      onfinish:function() {
        this.destruct();
      }
    });
 
-   this.setVolume(50); // still muted, however..
+   this.setVolume(50); <span><span>// still muted, however..</span></span>
 
-   // mute/unmute china cymbal some more
-   // mute sound calls: soundManager.mute('880hz'), or soundManager.getSoundById('880hz').mute();
+   <span><span>// mute/unmute china cymbal some more</span></span>
+   <span><span>// mute sound calls: soundManager.mute('<span>880hz</span>'), or soundManager.getSoundById('<span>880hz</span>').mute();</span></span>
    setTimeout(this.unmute,250);
    setTimeout(this.mute,500);
    setTimeout(this.unmute,750);
    setTimeout(this.mute,1000);
    setTimeout(this.unmute,1250);
  }
-});
-</pre>
-<button id="btn-d5c" onclick="this.disabled=true;eval(document.getElementById('demo5c-1').innerHTML);return false">Do this</button>
+});</code></pre>
+<button id="btn-d5c" onclick="this.disabled=true;return doEval(document.getElementById('demo5c-1').innerHTML)">Do this</button>
 <script type="text/javascript">document.getElementById('btn-d5c').disabled = false;</script>
 
 <h2>Demo 6: Create, play, unload and destroy a sound</h2>
-<pre id="demo6">
-var foo = soundManager.createSound({
- id: 'fooSound',
- url: '../mpc/audio/AMB_BD_1.mp3'
+<pre id="demo6" class="block"><code>var foo = soundManager.createSound({
+ id: '<span>fooSound</span>',
+ url: '<span>../mpc/audio/AMB_BD_1.mp3</span>'
 });
 
-// soundManager.play('fooSound');
+<span><span>// soundManager.play('<span>fooSound</span>');
 
 // (Some time later on...)
-// soundManager.unload('fooSound'); - release the loaded MP3
-// soundManager.destroySound('fooSound'); - destroy the sound, freeing up memory etc. Also calls unload().
+// soundManager.unload('<span>fooSound</span>'); - release the loaded MP3
+// soundManager.destroySound('<span>fooSound</span>'); - destroy the sound, freeing up memory etc. Also calls unload().
 
-// Alternate (demo) approach, call methods directly on sound object itself:
+// Alternate (demo) approach, call methods directly on sound object itself:</span></span>
 foo.play({
  onfinish:function() {
-   // once sound has loaded and played, unload and destroy it.
-   this.destruct(); // will also try to unload before destroying.
+   <span><span>// once sound has loaded and played, unload and destroy it.</span></span>
+   this.destruct(); <span><span>// will also try to unload before destroying.</span></span>
  }
-});
-</pre>
-<button onclick="eval(document.getElementById('demo6').innerHTML);return false">Do this</button>
+});</code></pre>
+<button onclick="return doEval(document.getElementById('demo6').innerHTML)">Do this</button>
 
 
 <h2>Demo 7: Create, manually pre-load and finally play a sound</h2>
-<pre id="demo7">
-var preload = soundManager.createSound({
- id: 'preloadSound',
- url: '../mpc/audio/AMB_HHOP.mp3'
+<pre id="demo7" class="block"><code>var preload = soundManager.createSound({
+ id: '<span>preloadSound</span>',
+ url: '<span>../mpc/audio/AMB_HHOP.mp3</span>'
 });
 
-preload.load(); // load the sound ahead of time
-setTimeout(preload.play,1500); // and start playing it 1.5 seconds from now
-</pre>
-<button onclick="eval(document.getElementById('demo7').innerHTML);return false">Do this</button>
+preload.load(); <span><span>// load the sound ahead of time</span></span>
+setTimeout(preload.play,1500); <span><span>// and start playing it 1.5 seconds from now</span></span>
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo7').innerHTML)">Do this</button>
 
 <h2>Demo 8: Create and play an invalid sound (404)</h2>
-<pre id="demo8">
-var bad = soundManager.createSound({
-  id:'badSound',
-  url:'badurl.mp3',
+<pre id="demo8" class="block"><code>var bad = soundManager.createSound({
+  id:'<span>badSound</span>',
+  url:'<span>badurl.mp3</span>',
   onload: function(bSuccess) {
-    alert('sound '+(bSuccess?'loaded!':'did NOT load.'));
+    soundManager._writeDebug('<span>sound </span>'+(bSuccess?'<span>loaded!</span>':'<span>did NOT load.</span>'));
   }
 });
 bad.play();
-</pre>
-<button onclick="eval(document.getElementById('demo8').innerHTML);return false">Do this</button>
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo8').innerHTML)">Do this</button>
 
 <h2>Demo 9: Create and destroy a sound at once (unusual crash testcase)</h2>
-<pre id="demo9">
-var s = soundManager.createSound({
-  id:'testcase',
-  url:'../mpc/audio/AMB_HHOP.mp3'
+<pre id="demo9" class="block"><code>var s = soundManager.createSound({
+  id:'<span>testcase</span>',
+  url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
 });
 s.play();
 s.destruct();
-</pre>
-<button onclick="eval(document.getElementById('demo9').innerHTML);return false">Do this</button>
-
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo9').innerHTML)">Do this</button>
 
 <h2>Demo 10: Sound timing (position accuracy testcase)</h2>
-<pre id="demo10">
-var count = 0;
+<p>The Flash 9 version seems to resume the sound 1 msec earlier than it should, perhaps related to the timing/delay issue most noticeable on Windows.</p>
+<pre id="demo10" class="block"><code>var count = 0;
 var pos = -1;
 var s = soundManager.createSound({
-  id: 's',
-  url: '../mpc/audio/CHINA_1.mp3',
+  id: '<span>s</span>',
+  url: '<span>../mpc/audio/CHINA_1.mp3</span>',
   whileplaying: function() {
     if (count == 0) {
       if (this.position > 1000) {
@@ -415,9 +429,9 @@ var s = soundManager.createSound({
         this.resume();
       }
     } else if (count == 1) {
-      soundManager._writeDebug('old position: ' + pos);
-      soundManager._writeDebug('new position: ' + this.position);
-      // See that this.position is less than pos!
+      soundManager._writeDebug('<span>old position: </span>' + pos);
+      soundManager._writeDebug('<span>new position: </span>' + this.position);
+      <span><span>// See that this.position is less than pos!</span></span>
       count++;
     }
   },
@@ -425,105 +439,137 @@ var s = soundManager.createSound({
     this.destruct();
   }
 });
-s.play();</pre>
-<button onclick="eval(document.getElementById('demo10').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+s.play();</code></pre>
+<button onclick="return doEval(document.getElementById('demo10').innerHTML)">Do this</button>
 
 <h2>Demo 11: Inline whileplaying() event assignment</h2>
 <p class="in">Note that when using the Flash 9 version of SM2 with Flash 9 and 10 plugins, flash/OS-related delay conditions may result in the <code>position</code> property being less than the <code>duration</code> property, even by the end of the sound.</p>
-<pre id="demo11">
-var foo = soundManager.createSound({
-  id: 'bar',
-  url: '../mpc/audio/CRASH_1.mp3'
+<pre id="demo11" class="block"><code>var foo = soundManager.createSound({
+  id: '<span>bar</span>',
+  url: '<span>../mpc/audio/CRASH_1.mp3</span>'
 });
 foo.options.whileplaying = function() {
-  soundManager._writeDebug('whileplaying(): '+this.position+' / '+this.duration);
+  soundManager._writeDebug('<span>whileplaying(): </span>'+this.position+'<span> / </span>'+this.duration);
 }
 foo.play();
 
-// note: assign .options before calling .play(), as that "bakes" the options into a play instance object.
-// the below "late" event handler assignment will have no effect on the already-playing instance.
-foo.options.onfinish = function() { soundManager._writeDebug(this.sID+' stopped.'); }
-
-</pre>
-<button onclick="eval(document.getElementById('demo11').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+<span><span>// note: assign .options before calling .play(), as that "bakes" the options into a play instance object.
+// the below "late" event handler assignment will have no effect on the already-playing instance.</span></span>
+foo.options.onfinish = function() { soundManager._writeDebug(this.sID+'<span> stopped.</span>'); }
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo11').innerHTML)">Do this</button>
 
 <h2>Demo 12: 48 KHz MP3 sampling rate playback issue workaround</h2>
 <p>To work around a known "chipmunk" <a href="http://bugs.adobe.com/jira/browse/FP-862">sampling rate issue with 48 KHz MP3s</a> in Flash, one can apparently load a sound using Flash 9 with stream = false, and then call play() once the sound has fully-loaded. Exactly why this works is not known.</p>
-<pre id="demo12">
-var fortyeight = soundManager.createSound({
-  id: 's-48khz',
-  url: 'http://freshly-ground.com/data/audio/48khz-test.mp3'
+<pre id="demo12" class="block"><code>var fortyeight = soundManager.createSound({
+  id: '<span>s-48khz</span>',
+  url: '<span>http://freshly-ground.com/data/audio/48khz-test.mp3</span>'
 });
 
 if (!fortyeight.loaded) {
-  // first time loading/playing
+  <span><span>// first time loading/playing</span></span>
   fortyeight.load({
     stream: false,
     onload: function() {
-      // sound has fully-loaded
+      <span><span>// sound has fully-loaded</span></span>
       this.play();
     }
   });
 } else {
-  // sound has already loaded
+  <span><span>// sound has already loaded</span></span>
   fortyeight.play();
 }
-</pre>
-<button onclick="eval(document.getElementById('demo12').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo12').innerHTML)">Do this</button> <button onclick="soundManager.stop('s-48khz')">Make it stop!</button>
 
 <h2>Demo 13: onbeforefinish() testcase</h2>
 <p class="in">This event fires when the sound's position property is equal to or less than <code>onbeforefinishtime</code> msec from the end of the sound, as defined by <code>duration</code>. If unspecified, a default value is used (eg. 5000 msec.)</p>
-<pre id="demo13">
-var d13 = soundManager.createSound({
-  id: 'demo13',
-  url: '../mpc/audio/CRASH_1.mp3',
+<pre id="demo13" class="block"><code>var d13 = soundManager.createSound({
+  id: '<span>demo13</span>',
+  url: '<span>../mpc/audio/CRASH_1.mp3</span>',
   onbeforefinish: function() {
-    alert(this.sID+'.onbeforefinish(): '+this.position+' of '+this.duration);
+    soundManager._writeDebug(this.sID+'<span>.onbeforefinish(): </span>'+this.position+'<span> of </span>'+this.duration);
   },
   onbeforefinishtime: 1000
 });
 d13.play();
-</pre>
-<button onclick="eval(document.getElementById('demo13').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo13').innerHTML)">Do this</button>
 
-<h2>Demo 14</h2>
+<h2>Demo 14: autoLoad:true + play() testcase</h2>
 <p>Bug testcase (Flash 8 version-specific): creating a sound with autoLoad:true and immediately calling play() does not work.</p>
-<pre id="demo14">
- var autoLoadTest = soundManager.createSound({
-   id: 'autoLoadTest',
-   url: 'http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3?rnd=' + parseInt(Math.random()*1048576),
+<pre id="demo14" class="block"><code>var autoLoadTest = soundManager.createSound({
+   id: '<span>autoLoadTest</span>',
+   url: getRandomMP3URL(),
    onload: function() {
-	soundManager._writeDebug(this.sID+' loaded.');
+	soundManager._writeDebug(this.sID+'<span> loaded.</span>');
    },
    onplay: function() {
-     soundManager._writeDebug('Starting sound: '+this.sID);
+     soundManager._writeDebug('<span>Starting sound: </span>'+this.sID);
    },
    autoPlay: false,
    autoLoad: true,
    stream: true
   });
-  // autoLoadTest.play(); // sound will not start
-  setTimeout(autoLoadTest.play,1000); // may work with a delay?
-</pre>
+  <span><span>// autoLoadTest.play(); // sound will not start</span></span>
+  setTimeout(autoLoadTest.play,1000); <span><span>// may work with a delay?</span></span>
+</code></pre>
 <p>Under Flash 8, this case does not work as expected. Even with the delay, the sound does not begin playing as soon as expected - sometimes it fires after the sound loads, in fact. For this reason, avoid using <code class="in">autoLoad:true</code> if you intend to play the sound shortly after creating it when using Flash 8.</p>
-<button onclick="eval(document.getElementById('demo14').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+<button onclick="return doEval(document.getElementById('demo14').innerHTML)">Do this</button> <button onclick="soundManager.stop('autoLoadTest')">Make it stop!</button>
 
-<h2>Demo 15</h2>
+<h2>Demo 15: autoPlay + onfinish() testcase</h2>
 <p>Bug testcase (Flash 8 version-specific): onfinish() does not fire with autoPlay:true</p>
-<pre id="demo15">
-var sound = soundManager.createSound({
- id: 'demo15',
- url: '../mpc/audio/AMB_SN13.mp3',
+<pre id="demo15" class="block"><code>var sound = soundManager.createSound({
+ id: '<span>demo15</span>',
+ url: '<span>../mpc/audio/AMB_SN13.mp3</span>',
  onfinish: function() {
-  alert(this.sID+' finished (now destroying)');
-  // destroy this sound
+  soundManager._writeDebug(this.sID+'<span> finished (now destroying)</span>');
+  <span><span>// destroy this sound</span></span>
   this.destruct();
  },
  autoPlay: true,
  multiShot: false
 });
-</pre>
-<button onclick="eval(document.getElementById('demo15').innerHTML.replace(/&amp;gt;/i,'>'));return false">Do this</button>
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo15').innerHTML)">Do this</button>
+
+<h2>Demo 16: onstop() -&gt; unload() testcase</h2>
+<p>Bug testcase: unload() from onstop() does not work</p>
+<pre id="demo16" class="block"><code>var sound16 = soundManager.createSound({
+ id: '<span>demo16</span>',
+ url: getRandomMP3URL(),
+ onstop: function() {
+  soundManager.unload(this.sID);
+ },
+ onload: function() {
+   soundManager._writeDebug('<span>loaded</span>');
+ }
+});
+sound16.play();
+setTimeout(sound16.stop,1500);
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo16').innerHTML)">Do this</button>
+
+<h2>Demo 17: Buffering event handler/property example (Flash 9 only)</h2>
+<p>Reporting the isBuffering property of a SMSound object</p>
+<pre id="demo17" class="block"><code>if (soundManager.flashVersion != 8) {
+  var sound17 = soundManager.createSound({
+    id: '<span>demo17</span>',
+    url: getRandomMP3URL(),
+    onbufferchange: function() {
+      soundManager._writeDebug('<span>Buffering </span>'+(this.isBuffering?'<span>started</span>':'<span>stopped</span>')+'<span>.</span>');
+    },
+    onload: function() {
+      soundManager._writeDebug(this.sID+'<span> loaded.</span>');
+    }
+  });
+  sound17.play();
+}
+</code></pre>
+<button onclick="return doEval(document.getElementById('demo17').innerHTML)">Do this</button> <button onclick="soundManager.stop('demo17')">Make it stop!</button>
+
+
+<span id="flash-ram-use" title="Flash plugin RAM use (across this browser)" style="position:fixed;_position:absolute;top:0.5em;right:0.5em;background:#666;color:#fff;font-weight:bold;padding:0.3em 0.4em;cursor:pointer;cursor:hand;display:none" onclick="this.style.display='none';window.clearTimeout(t)">N/A</span>
 
 </div>
 
