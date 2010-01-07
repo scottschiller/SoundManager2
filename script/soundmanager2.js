@@ -64,7 +64,8 @@ function SoundManager(smURL, smID) {
     'useWaveformData': false,      // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
     'useEQData': false,            // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
     'onbufferchange': null,	       // callback for "isBuffering" property change
-    'ondataerror': null		       // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
+    'ondataerror': null,		       // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
+    'serverUrl': null,             // FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
   };
 
   this.movieStarOptions = {    // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9+movieStar mode is enabled
@@ -288,23 +289,23 @@ function SoundManager(smURL, smID) {
     // AS2:
     if (_s.flashVersion == 8) {
       _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime);
-    } else {
-      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false));
-    }
-    if (_tO.autoLoad || _tO.autoPlay) {
-      // TODO: does removing timeout here cause problems?
-      if (_s.sounds[_tO.id]) {
-        _s.sounds[_tO.id].load(_tO);
+      if (_tO.autoLoad || _tO.autoPlay) {
+        // TODO: does removing timeout here cause problems?
+        if (_s.sounds[_tO.id]) {
+          _s.sounds[_tO.id].load(_tO);
+        }
       }
-    }
-    if (_tO.autoPlay) {
-      _s.sounds[_tO.id].play();
+      if (_tO.autoPlay) {
+        _s.sounds[_tO.id].play();
+      }      
+    } else {
+      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl);
     }
     return _s.sounds[_tO.id];
   };
-
+  
   this.createVideo = function(oOptions) {
-	var fN = 'soundManager.createVideo(): ';
+	  var fN = 'soundManager.createVideo(): ';
     if (arguments.length == 2) {
       oOptions = {
         'id': arguments[0],
@@ -1412,6 +1413,7 @@ if (_s.debugMode) {
       _t.duration = null;
       _t.durationEstimate = null;
       _t.loaded = false;
+      _t.connected = false;
       _t.playState = 0;
       _t.paused = false;
       _t.readyState = 0; // 0 = uninitialised, 1 = loading, 2 = failed/error, 3 = loaded/success
@@ -1553,6 +1555,7 @@ if (_s.debugMode) {
         if (_t._iO.onplay) {
           _t._iO.onplay.apply(_t);
         }
+        //_s._wD('Skipping setVolume, setPan and start (line 1557)', 1);
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
         _s.o._start(_t.sID, _t._iO.loop || 1, (_s.flashVersion == 9?_t.position:_t.position / 1000));
@@ -1767,8 +1770,26 @@ if (_s.debugMode) {
       }
     };
 
+    this._onconnect = function(bSuccess) {
+	    var fN = 'SMSound._onconnect(): ';
+      bSuccess = (bSuccess == 1?true:false);
+      _s._wD(fN+'"'+_t.sID+'"'+(bSuccess?' connected.':' failed to connect? - '+_t.url), (bSuccess?1:2));
+      _t.connected = bSuccess;
+      if (bSuccess) {
+        if (_t._iO.autoLoad || _t._iO.autoPlay) {
+          _t.load(_t._iO);
+        }
+        if (_t._iO.autoPlay) {
+          _t.play();
+        }
+        if (_t._iO.onconnect) {
+          _t._iO.onconnect.apply(_t);
+        }      
+      }
+    };
+    
     this._onload = function(bSuccess) {
-	  var fN = 'SMSound._onload(): ';
+	    var fN = 'SMSound._onload(): ';
       bSuccess = (bSuccess == 1?true:false);
       _s._wD(fN+'"'+_t.sID+'"'+(bSuccess?' loaded.':' failed to load? - '+_t.url), (bSuccess?1:2));
       if (!bSuccess) {

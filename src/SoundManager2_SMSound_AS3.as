@@ -52,10 +52,12 @@ package {
     public var didJustBeforeFinish: Boolean;
     public var didFinish: Boolean;
     public var loaded: Boolean;
+    public var connected: Boolean;
     public var paused: Boolean;
     public var duration: Number;
     public var handledDataError: Boolean = false;
     public var ignoreDataError: Boolean = false;
+    
     public var lastValues: Object = {
       bytes: 0,
       position: 0,
@@ -79,12 +81,14 @@ package {
     public var useVideo: Boolean = false;
     public var bufferTime: Number = -1;
     public var lastNetStatus: String = null;
-
+    public var serverUrl: String = null;
+    
     public var oVideo: Video = null;
     public var videoWidth: Number = 0;
     public var videoHeight: Number = 0;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideoArg: Boolean = false, netStreamBufferTime: Number = -1) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null) {
+      writeDebug('in SoundManager2_SMSound_AS3');
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -96,46 +100,84 @@ package {
       this.didJustBeforeFinish = false;
       this.didFinish = false; // non-MP3 formats only
       this.loaded = false;
+      this.connected = false;
       this.soundChannel = null;
       this.lastNetStatus = null;
       this.useNetstream = useNetstreamArg;
+      this.serverUrl = serverUrl;
+      this.useVideo = useVideo;
+      this.bufferTime = netStreamBufferTime;
+      
       if (this.useNetstream) {
-        try {
-          this.cc = new Object();
-          this.nc = new NetConnection();
-          // TODO: security/IO error handling
-          // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
-          // this.nc.addEventListener(IOErrorEvent.IO_ERROR, doIOError);
-          this.nc.connect(null);
-          this.ns = new NetStream(this.nc);
-          this.ns.checkPolicyFile = true;
-          // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
-          if (netStreamBufferTime != -1) {
-            this.ns.bufferTime = netStreamBufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
-          }
-          this.st = new SoundTransform();
-          this.cc.onMetaData = this.metaDataHandler;
-          this.ns.client = this.cc;
-          this.ns.receiveAudio(true);
-          if (useVideoArg) {
-            this.useVideo = true;
-            this.oVideo = new Video();
-            this.ns.receiveVideo(true);
-            this.sm.stage.addEventListener(Event.RESIZE, this.resizeHandler);
-            this.oVideo.smoothing = true; // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Video.html#smoothing
-            this.oVideo.visible = false; // hide until metadata received
-            this.sm.addChild(this.oVideo);
-            this.oVideo.attachNetStream(this.ns);
-            writeDebug('setting video w/h to stage: ' + this.sm.stage.stageWidth + 'x' + this.sm.stage.stageHeight);
-            this.oVideo.width = this.sm.stage.stageWidth;
-            this.oVideo.height = this.sm.stage.stageHeight;
-          }
-        } catch(e: Error) {
-          writeDebug('netStream error: ' + e.toString());
+        this.cc = new Object();
+        this.nc = new NetConnection();
+        
+        // Handle FMS bandwidth check callback.
+        // @see onBWDone
+        // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
+        // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html
+        this.nc.client = this; 
+
+        // TODO: security/IO error handling
+        // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
+        // this.nc.addEventListener(IOErrorEvent.IO_ERROR, doIOError);
+        nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+
+        writeDebug('Got server URL: '+ this.serverUrl);
+        if (this.serverUrl != null) {
+          writeDebug('NetConnection: connecting to server ' + this.serverUrl + '...');
         }
+        this.nc.connect(serverUrl);          
       }
     }
 
+    private function netStatusHandler(event:NetStatusEvent):void {
+      switch (event.info.code) {
+        case "NetConnection.Connect.Success":
+        
+          writeDebug('NetConnection: connected');
+          try {
+            this.ns = new NetStream(this.nc);
+            this.ns.checkPolicyFile = true;
+            // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
+            if (this.bufferTime != -1) {
+              this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
+            }
+            this.st = new SoundTransform();
+            this.cc.onMetaData = this.metaDataHandler;
+            this.ns.client = this.cc;
+            this.ns.receiveAudio(true);
+            if (this.useVideo) {
+              this.oVideo = new Video();
+              this.ns.receiveVideo(true);
+              this.sm.stage.addEventListener(Event.RESIZE, this.resizeHandler);
+              this.oVideo.smoothing = true; // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Video.html#smoothing
+              this.oVideo.visible = false; // hide until metadata received
+              this.sm.addChild(this.oVideo);
+              this.oVideo.attachNetStream(this.ns);
+              writeDebug('setting video w/h to stage: ' + this.sm.stage.stageWidth + 'x' + this.sm.stage.stageHeight);
+              this.oVideo.width = this.sm.stage.stageWidth;
+              this.oVideo.height = this.sm.stage.stageHeight;
+            }
+            this.connected = true;
+            ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
+          } catch(e: Error) {
+            writeDebug('netStream error: ' + e.toString());
+          }
+          break;
+          
+        case "NetStream.Play.StreamNotFound":
+          writeDebug("NetConnection: Stream not found!");
+          ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 0);
+          break;
+          
+        default:
+          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'!");
+          ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 0);
+          break;          
+      }
+    } 
+           
     public function resizeHandler(e: Event) : void {
       // scale video to stage dimensions
       // probably less performant than using native flash scaling, but that doesn't quite seem to work. I'm probably missing something simple.
@@ -153,12 +195,12 @@ package {
 
     public function metaDataHandler(infoObject: Object) : void {
       /*
-	  var data:String = new String();
-	  for (var prop:* in infoObject) {
-		data += prop+': '+infoObject[prop]+' ';
-	  }
-	  ExternalInterface.call('soundManager._writeDebug','Metadata: '+data);
-	  */
+    var data:String = new String();
+    for (var prop:* in infoObject) {
+    data += prop+': '+infoObject[prop]+' ';
+    }
+    ExternalInterface.call('soundManager._writeDebug','Metadata: '+data);
+    */
       if (this.oVideo) {
         // set dimensions accordingly
         if (!infoObject.width && !infoObject.height) {
@@ -277,6 +319,12 @@ package {
       }
     }
 
+    // Handle FMS bandwidth check callback.
+    // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
+    // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html    
+    public function onBWDone():void{
+      writeDebug('onBWDone: called and ignored');
+    }
   }
 
 }

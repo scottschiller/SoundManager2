@@ -72,7 +72,7 @@ class SoundManager2 {
       if (!debugEnabled) return false;
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s);
     }
-
+    
     var flashDebug = function (messageText) {
       _messages.push(messageText);
       if (!flashDebugEnabled) {
@@ -82,10 +82,10 @@ class SoundManager2 {
       sans.size = 12;
       sans.font = "Arial";
 
-	  // 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
-	  var w = Stage.width?Stage.width:320;
-	  var h = Stage.height?Stage.height:240;
-
+      // 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
+      var w = Stage.width?Stage.width:320;
+      var h = Stage.height?Stage.height:240;
+      
       if (!_messageObj) {
         _messageObj = _root.createTextField("_messageObj", 0, 0, 0, w, h);
         _messageObj.x = 0;

@@ -133,9 +133,9 @@ package {
         var didCreate: Boolean = false;
         textStyle.font = 'Arial';
         textStyle.size = 12;
-	    // 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
-	    var w:Number = this.stage.width?this.stage.width:320;
-	    var h:Number = this.stage.height?this.stage.height:240;
+      // 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
+      var w:Number = this.stage.width?this.stage.width:320;
+      var h:Number = this.stage.height?this.stage.height:240;
         if (textField == null) {
           didCreate = true;
           textField = new TextField();
@@ -210,7 +210,7 @@ package {
     }
 
     public function writeDebug(s:String, bTimestamp: Boolean = false) : Boolean {
-      if (!debugEnabled) return false;
+      //if (!debugEnabled) return false;
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
       return true;
     }
@@ -286,7 +286,8 @@ package {
       for (var i: int = 0, j: int = sounds.length; i < j; i++) {
         oSound = soundObjects[sounds[i]];
         sMethod = baseJSObject + "['" + sounds[i] + "']._whileloading";
-        if (!oSound) continue; // if sounds are destructed within event handlers while this loop is running, may be null
+        if (!oSound) continue;           // if sounds are destructed within event handlers while this loop is running, may be null
+        if (!oSound.connected) continue; // sound hasn't connected yet
         if (oSound.useNetstream) {
           bL = oSound.ns.bytesLoaded;
           bT = oSound.ns.bytesTotal;
@@ -455,7 +456,7 @@ package {
         ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", 1);
       }
     }
-
+    
     public function onID3(e: Event) : void {
 
       // --- NOTE: BUGGY (Flash 8 only? Haven't really checked 9 + 10.) ---
@@ -636,8 +637,9 @@ package {
         ns.useNetstream = s.useNetstream;
         ns.useVideo = s.useVideo;
         ns.bufferTime = s.bufferTime;
+        ns.serverUrl = s.serverUrl;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime);
+        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -747,13 +749,14 @@ package {
       ns.useNetstream = s.useNetstream;
       ns.useVideo = s.useVideo;
       ns.bufferTime = s.bufferTime;
+      ns.serverUrl = s.serverUrl;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime);
+      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl);
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number) : void {
-      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime);
+    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String) : void {
+      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl);
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
       this.currentObject = s;
