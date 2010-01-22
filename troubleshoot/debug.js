@@ -145,7 +145,7 @@ function SM2Debugger() {
   }
 
   this.init = function() {
-	// map event elements to DOM nodes - eg. elements.flashtojs = $('d-flashtojs');
+	// map event elements to DOM nodes - eg. elements.flashtojs = document.getElementById('d-flashtojs');
     for (var i=elementIDs.length; i--;) {
 	  elements[elementIDs[i]] = document.getElementById('d-'+elementIDs[i]);
     }

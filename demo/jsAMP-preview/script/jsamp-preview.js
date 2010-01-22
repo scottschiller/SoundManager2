@@ -157,7 +157,7 @@ function SMPlayer(oSoundPlayer) {
   this.oParent = oSoundPlayer;
   var u = smUtils; // alias
   var getEBCN = u.getElementsByClassName;
-  this.oMain = u.$('player-template');
+  this.oMain = document.getElementById('player-template');
   this.o = this.oMain.getElementsByTagName('div')[0];
   this.oLeft = getEBCN('left','div',this.o)[0];
   this.oBar = getEBCN('mid','div',this.o)[0];
@@ -1331,7 +1331,7 @@ function SPPlaylist(oSoundPlayer,oPlaylist) {
   }
 
   this.init = function() {
-    self.o = smUtils.$('playlist-template');
+    self.o = document.getElementById('playlist-template');
     // set width to parent
     self.o.style.width = (parseInt(oParent.oSMPlayer.oMain.offsetWidth)-2)+'px';
     // smUtils.getElementsByClassName('sm2playlist-box','div',self.o)[0].style.width = '100px';
@@ -1478,7 +1478,7 @@ function SoundPlayer() {
 
   this.onfinish = function() {
     // sound reached end - reset controls, stop?
-    // $('controls').getElementsByTagName('dd')[0].innerHTML = 'Finished playing.';
+    // document.getElementById('controls').getElementsByTagName('dd')[0].innerHTML = 'Finished playing.';
     soundManager._writeDebug('SoundPlayer.onfinish()');
     self.oSMPlayer.moveToEnd();
     self.setPlayState(false);

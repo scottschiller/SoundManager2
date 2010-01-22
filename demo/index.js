@@ -1,6 +1,6 @@
 /* SoundManager 2 - project home utility JS */
 
-function $(sID) {
+function _id(sID) {
   return document.getElementById(sID);
 }
 
@@ -134,12 +134,12 @@ var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.75em"><h3>Oh sna
 function resetFilter(o) {
   // reset everything
   var oParent = null;
-  $('filter-box').style.display = 'none';
-  utils.removeClass($('main'),'filtered');
-  var blocks = utils.getElementsByClassName('f-block',['div','dl'],$('main'));
+  _id('filter-box').style.display = 'none';
+  utils.removeClass(_id('main'),'filtered');
+  var blocks = utils.getElementsByClassName('f-block',['div','dl'],_id('main'));
   for (var i=blocks.length; i--;) {
     blocks[i].style.display = 'block';
-    oParent = utils.getParentByClassName(blocks[i],'columnar',$('main'));
+    oParent = utils.getParentByClassName(blocks[i],'columnar',_id('main'));
     if (oParent) oParent.style.display = 'block';
   }
   if (lastSelected) utils.removeClass(lastSelected,'active');
@@ -149,11 +149,11 @@ function resetFilter(o) {
 
 function setFilter(e,sFilterPrefix) {
   var o = e?e.target||e.srcElement:event.srcElement;
-  utils.addClass($('main'),'filtered');
+  utils.addClass(_id('main'),'filtered');
   var oName = o.nodeName.toLowerCase();
   var sClass = '';
-  var blocks = utils.getElementsByClassName('f-block',['div','dl'],$('main'));
-  var oParents = utils.getElementsByClassName('columnar','div',$('main'));
+  var blocks = utils.getElementsByClassName('f-block',['div','dl'],_id('main'));
+  var oParents = utils.getElementsByClassName('columnar','div',_id('main'));
   var oParent = null;
   var matchingParents = [];
   if (oName != 'li' || o.className == 'ignore') return true;
@@ -167,7 +167,7 @@ function setFilter(e,sFilterPrefix) {
     var last = sClass.substr(sClass.length-1);
     if (last == '-' || last == ' ') sClass = sClass.substr(0,sClass.length-1); // IE innerHTML trailing whitespace hack (?)
     for (var i=blocks.length; i--;) {
-      oParent = utils.getParentByClassName(blocks[i],'columnar',$('main'));
+      oParent = utils.getParentByClassName(blocks[i],'columnar',_id('main'));
       if (utils.hasClass(blocks[i],sClass)) {
         blocks[i].style.display = 'block';
         if (oParent) {
@@ -183,19 +183,19 @@ function setFilter(e,sFilterPrefix) {
     for (i=matchingParents.length; i--;) {
       matchingParents[i].style.display = 'block';
     }
-    $('search-results').innerHTML = '<h3><span class="option"><a href="#" title="Restore full content" onclick="resetFilter();return false" style="text-decoration:none"> clear filter </a></span>Content filter: '+(sFilterPrefix=='f-'?'soundManager.':(sFilterPrefix=='s-'?'[SMSound object].':''))+'<b style="font-weight:bold">'+o.innerHTML+'</b></h3>';
-    $('search-results').style.display = 'block';
-    $('filter-box').style.display = 'block';
+    _id('search-results').innerHTML = '<h3><span class="option"><a href="#" title="Restore full content" onclick="resetFilter();return false" style="text-decoration:none"> clear filter </a></span>Content filter: '+(sFilterPrefix=='f-'?'soundManager.':(sFilterPrefix=='s-'?'[SMSound object].':''))+'<b style="font-weight:bold">'+o.innerHTML+'</b></h3>';
+    _id('search-results').style.display = 'block';
+    _id('filter-box').style.display = 'block';
     if (isClear) {
-      $('filter-box').style.paddingBottom = '0px';
-      $('filter-box').style.display = 'none';
+      _id('filter-box').style.paddingBottom = '0px';
+      _id('filter-box').style.display = 'none';
     } else {
-      $('filter-box').style.paddingBottom = '0px';
+      _id('filter-box').style.paddingBottom = '0px';
       if (!navigator.userAgent.match(/msie/i)) {
-        $('filter-box').style.paddingBottom = Math.max(0,(document.documentElement.scrollTop || window.scrollY)-utils.getOffY($('filter-box'))-parseInt($('filter-box').offsetHeight)-20)+'px';
+        _id('filter-box').style.paddingBottom = Math.max(0,(document.documentElement.scrollTop || window.scrollY)-utils.getOffY(_id('filter-box'))-parseInt(_id('filter-box').offsetHeight)-20)+'px';
       }
-      $('filter-box').style.display = 'block';
-      // if ((!document.documentElement.scrollTop && !window.scrollY)) $('filter-box').style.display = 'none';
+      _id('filter-box').style.display = 'block';
+      // if ((!document.documentElement.scrollTop && !window.scrollY)) _id('filter-box').style.display = 'none';
     }
     if (lastSelected) {
       if (lastSelected == o) {
@@ -252,7 +252,7 @@ function loadScript(sURL,onLoad) {
 }
 
 function doAltShortcuts() {
-  var o = $('shortcuts-list');
+  var o = _id('shortcuts-list');
   if (!o) {
     return false;	
   }
@@ -315,7 +315,7 @@ function ie6Sucks() {
   if (!navigator.userAgent.match(/msie 6/i)) {
     return false;	
   }
-  var o = $('nav').getElementsByTagName('li')[1];
+  var o = _id('nav').getElementsByTagName('li')[1];
   var oA = o.getElementsByTagName('a')[0];
   var oUL = o.getElementsByTagName('ul')[0];
   oA.onclick = function() {
@@ -331,7 +331,7 @@ function ie6Sucks() {
 }
 
 function doVersion() {
-  var o = $('version');
+  var o = _id('version');
   if (!o) {
     return false;
   }

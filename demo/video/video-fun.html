@@ -573,7 +573,7 @@ soundManager.onload = function() {
   // soundManager.createSound() etc. may now be called
 
   if (!window.location.href.toString().match(/snow/i)) {
-	$('withSnow').style.display = 'block';
+	_id('withSnow').style.display = 'block';
   }
 
   doChristmasLights();
@@ -745,7 +745,7 @@ function doChristmasLights() {
   });
 }
 
-function $(sID) {
+function _id(sID) {
   return document.getElementById(sID);
 }
 

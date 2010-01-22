@@ -202,7 +202,7 @@ function XLSF(oTarget,urlBase,lightClass) {
         xlsf.oFrag.appendChild(self.o);
       } else {
         // slower rendering, can overlay body
-        // $('header').appendChild(self.o); 
+        // _id('header').appendChild(self.o); 
         // (document.documentElement?document.documentElement:document.body).appendChild(o);
         xlsf.oFrag.appendChild(self.o);
       }
@@ -472,7 +472,7 @@ function XLSF(oTarget,urlBase,lightClass) {
   var i=0;
   var j=0;
 
-  $('lights').style.display = 'block';
+  _id('lights').style.display = 'block';
 
   // start lights to the right of <h1>
   var offset = parseInt(document.getElementsByTagName('h1')[0].offsetWidth)+16;

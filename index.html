@@ -54,14 +54,14 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 
 	soundManager.onerror = function() {
 	  // failed to load
-	  var o = $('sm2-support');
+	  var o = _id('sm2-support');
 	  o.innerHTML = smLoadFailWarning;
       o.style.marginBottom = '1.5em';
 	  o.style.display = 'block';
-	  o.style.borderColor = $('demo-header').style.borderColor = '#ff3333';
-	  o.style.backgroundColor = $('demo-header').style.backgroundColor = '#fff6f0';
-      $('demo-header').innerHTML = '';
-	  $('demos').style.display = 'none';
+	  o.style.borderColor = _id('demo-header').style.borderColor = '#ff3333';
+	  o.style.backgroundColor = _id('demo-header').style.backgroundColor = '#fff6f0';
+      _id('demo-header').innerHTML = '';
+	  _id('demos').style.display = 'none';
 	}
 	
 	pagePlayer.events.metadata = function() {

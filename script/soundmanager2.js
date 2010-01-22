@@ -7,7 +7,7 @@
    Code provided under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.95b.20100101
+   V2.95b.20100101+DEV.20100121
 */
 
 /*jslint undef: true, bitwise: true, newcap: true, immed: true */
@@ -80,7 +80,7 @@ function SoundManager(smURL, smID) {
   var _s = this;
   var _sm = 'soundManager';
   this.version = null;
-  this.versionNumber = 'V2.95b.20100101';
+  this.versionNumber = 'V2.95b.20100101+DEV.20100121';
   this.movieURL = null;
   this.url = null;
   this.altURL = null;
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   this._oRemoved = null;
   this._oRemovedHTML = null;
 
-  var _$ = function(sID) {
+  var _id = function(sID) {
     return document.getElementById(sID);
   };
 
@@ -235,7 +235,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.getMovie = function(smID) {
-    return _s.isIE?window[smID]:(_s.isSafari?_$(smID) || document[smID]:_$(smID));
+    return _s.isIE?window[smID]:(_s.isSafari?_id(smID) || document[smID]:_id(smID));
   };
 
   this.loadFromXML = function(sXmlUrl) {
@@ -801,7 +801,7 @@ if (_s.debugMode) {
 
     if (oTarget) {
 
-      _s.oMC = _$('sm2-container')?_$('sm2-container'):document.createElement('div');
+      _s.oMC = _id('sm2-container')?_id('sm2-container'):document.createElement('div');
 
       var extraClass = (_s.debugMode?' sm2-debug':'')+(_s.debugFlash?' flash-debug':'');
 
@@ -867,11 +867,11 @@ if (_s.debugMode) {
         _s._appendSuccess = true;
       }
 
-      if (_s.debugMode && !_$(_s.debugID) && ((!_s._hasConsole || !_s.useConsole) || (_s.useConsole && _s._hasConsole && !_s.consoleOnly))) {
+      if (_s.debugMode && !_id(_s.debugID) && ((!_s._hasConsole || !_s.useConsole) || (_s.useConsole && _s._hasConsole && !_s.consoleOnly))) {
         var oDebug = document.createElement('div');
         oDebug.id = _s.debugID;
         oDebug.style.display = (_s.debugMode?'block':'none');
-        if (_s.debugMode && !_$(oD.id)) {
+        if (_s.debugMode && !_id(oD.id)) {
           try {
             oTarget.appendChild(oD);
           } catch(e2) {
@@ -912,7 +912,7 @@ if (_s.debugMode) {
     var sDID = 'soundmanager-debug';
     var o = null;
     try {
-      o = _$(sDID);
+      o = _id(sDID);
       if (!o) {
         return false;
       }
@@ -965,8 +965,8 @@ if (_s.debugMode) {
   }
 
   this._toggleDebug = function() {
-    var o = _$(_s.debugID);
-    var oT = _$(_s.debugID+'-toggle');
+    var o = _id(_s.debugID);
+    var oT = _id(_s.debugID+'-toggle');
     if (!o) {
       return false;
     }

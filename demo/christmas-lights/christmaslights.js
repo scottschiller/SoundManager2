@@ -194,7 +194,7 @@ function XLSF(oTarget) {
         xlsf.oFrag.appendChild(self.o);
       } else {
         // slower rendering, can overlay body
-        // $('header').appendChild(self.o); 
+        // _id('header').appendChild(self.o); 
         // (document.documentElement?document.documentElement:document.body).appendChild(o);
         xlsf.oFrag.appendChild(self.o);
       }

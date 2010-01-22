@@ -621,37 +621,37 @@ threeSixtyPlayer.config.eqDataDownsample = (self.controls[4].value);
 
 */
 
-function $(sID) {
+function _id(sID) {
   return document.getElementById(sID);
 }
 
 function setWaveformColor(sColor) {
   var value = '#'+(dec2hexArray(sColor).join(''));
   threeSixtyPlayer.config.waveformDataColor = value;
-  $('waveform-color').value = value;
+  _id('waveform-color').value = value;
 }
 
 function setEQColor(sColor) {
   var value = '#'+dec2hexArray(sColor).join('');
-  $('eq-color').value = value;
+  _id('eq-color').value = value;
   threeSixtyPlayer.config.eqDataColor = value;
 }
 
 function setLoadedRingColor(sColor) {
   var value = '#'+dec2hexArray(sColor).join('');
-  $('loaded-ring-color').value = value;
+  _id('loaded-ring-color').value = value;
   threeSixtyPlayer.config.loadRingColor = value;  
 }
 
 function setProgressRingColor(sColor) {
   var value = '#'+dec2hexArray(sColor).join('');
-  $('progress-ring-color').value = value;
+  _id('progress-ring-color').value = value;
   threeSixtyPlayer.config.playRingColor = value;
 }
 
 function setBackgroundRingColor(sColor) {
   var value = '#'+dec2hexArray(sColor).join('');
-  $('bg-ring-color').value = value;
+  _id('bg-ring-color').value = value;
   threeSixtyPlayer.config.backgroundRingColor = value;
 }
 

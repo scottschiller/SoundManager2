@@ -126,7 +126,7 @@ p {
 <script type="text/javascript" src="../../script/soundmanager2-nodebug-jsmin.js"></script>
 <script type="text/javascript">
 
-function $(sID) {return document.getElementById(sID);}
+function _id(sID) {return document.getElementById(sID);}
 
 function Cursor() {
   var self = this;
@@ -139,7 +139,7 @@ function Cursor() {
   this.screenYHalf = null;
   this.lastCursor = null;
   this.cursorRange = 9;
-  this.oDots = $('dots');
+  this.oDots = _id('dots');
 
   this.painting = 0;
 
@@ -182,7 +182,7 @@ function Cursor() {
     if (cursor != self.lastCursor) {
       var curString = 'cursor-'+(Math.min(11,cursor+3))+'.cur';
       document.documentElement.style.cursor = 'url("'+curString+'"),default';
-      $('overlay').style.cursor = 'url("'+curString+'"),default';
+      _id('overlay').style.cursor = 'url("'+curString+'"),default';
       self.lastCursor = cursor;
     }
     var xDiff = (x+xScale);
@@ -220,12 +220,12 @@ function Cursor() {
 
   this.createSounds();
 
-  this.o = $('cursor-shade');
+  this.o = _id('cursor-shade');
   this.refreshCoords();
 
   window.onresize = this.refreshCoords;
-  $('overlay').onmousedown = this.mousedown;
-  $('overlay').onmouseup = this.mouseup;  
+  _id('overlay').onmousedown = this.mousedown;
+  _id('overlay').onmouseup = this.mouseup;  
   document.onmousemove = this.mousemove;
 
 }
