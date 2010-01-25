@@ -1,0 +1,105 @@
+/*
+
+ SoundManager 2: Basic MP3 player CSS
+ ------------------------------------
+
+ Clicks on links to MP3s are intercepted via JS, calls are
+ made to SoundManager to load/play sounds. CSS classes are
+ appended to the link, which are used to highlight the
+ current play state and so on.
+
+ Class names are applied in addition to "sm2_button" base.
+
+ Default:
+
+ sm2_button
+
+ Additional states:
+
+ sm2_playing
+ sm2_paused
+
+ eg.
+
+ <!-- default -->
+ <a href="some.mp3" class="sm2_button">some.mp3</a>
+
+ <!-- playing -->
+ <a href="some.mp3" class="sm2_button sm2_playing">some.mp3</a>
+
+
+ Note you don't require ul.graphic / ul.flat etc. for your use
+ if only using one style on a page. You can just use .sm2_button{}
+ and so on, but isolate the CSS you want.
+
+ Side note: Would do multiple class definitions eg.
+
+ a.sm2_default.sm2_playing{}
+
+ .. except IE 6 has a parsing bug which may break behaviour,
+ applying sm2_playing {} even when the class is set to sm2_default.
+
+
+ If you want to make your own UI from scratch, here is the base:
+
+ Default + hover state, "click to play":
+
+ a.sm2_button {}
+ a.sm2_button:hover {}
+
+ Playing + hover state, "click to pause":
+
+ a.sm2_playing {}
+ a.sm2_playing:hover {}
+
+ Paused + hover state, "click to resume":
+
+ a.sm2_paused {}
+ a.sm2_paused:hover {}
+
+*/
+
+a.sm2_button {
+ position:relative;
+ display:inline-block; /* If you worry old browser bugs, Firefox 2 might not like this and may need -moz-inline-box instead. :D */
+ width:18px;
+ height:16px;
+ text-indent:-9999px; /* don't show link text */
+ overflow:hidden; /* don't draw inner link text */
+ vertical-align:middle;
+ /* and, a bit of round-ness for the cool browsers. */
+ -moz-border-radius:6px;
+ -webkit-border-radius:6px;
+ -opera-border-radius:6px;
+ border-radius:6px;
+ margin-top:-1px; /* vertical align tweak */
+ /* safari 3.1+ fun (/W3 working draft extension, TBD.) */
+ -webkit-transition-property: hover;
+ -webkit-transition: background-color 0.15s ease-in-out;
+}
+
+a.sm2_button:focus {
+ outline:none; /* maybe evil, but don't show the slight border outline on focus. */
+}
+
+a.sm2_button,
+a.sm2_paused:hover {
+ background-color:#3399cc;
+ background-image:url(../image/arrow-right-white.png);
+ /* where possible, use data: and skip the HTTP request. Fancy-pants. Would use short-hand backgroud: for above, but IE 8 doesn't override background-image. */
+ background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAYAAABmBXS+AAAAbklEQVQY02NgQAL//v1jZMAF/v//vwuIs9HEUBUBTbj4HwIeA3EGVsVAxtn/qOAVUGM8uknIiv4hsV8A5ZKxKfoLVvnvHwifAzLtMKwDSQLBVSBti27dJajkcSD2RJODO3wtkOOMz/tMSJJYAxMA5dmsL0IfubQAAAAASUVORK5CYII=);
+ _background-image:url(../image/arrow-right-white.gif); /* IE 6 */
+ background-repeat:no-repeat;
+ background-position:5px 50%;
+}
+
+a.sm2_button:hover,
+a.sm2_playing,
+a.sm2_playing:hover {
+ background-color:#cc3333;
+}
+
+a.sm2_paused,
+a.sm2_paused:hover {
+ background-color:#666;
+}
