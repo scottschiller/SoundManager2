@@ -25,11 +25,11 @@ function SoundManager(smURL, smID) {
   this.nullURL = 'null.mp3';       // path to "null" (empty) MP3 file, used to unload sounds (Flash 8 only)
   this.allowPolling = true;        // allow flash to poll for status update (required for whileplaying() events, peak, sound spectrum functions to work.)
   this.useFastPolling = false;     // uses 1 msec flash timer interval (vs. default of 20) for higher callback frequency, best combined with useHighPerformance
-  this.useMovieStar = false;	   // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio+video formats (AAC, M4V, FLV, MOV etc.)
+  this.useMovieStar = false;     // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio+video formats (AAC, M4V, FLV, MOV etc.)
   this.bgColor = '#ffffff';        // movie (.swf) background color, '#000000' useful if showing on-screen/full-screen video etc.
   this.useHighPerformance = false; // position:fixed flash movie can help increase js/flash speed, minimize lag
   this.flashLoadTimeout = 1000;    // msec to wait for flash movie to load before failing (0 = infinity)
-  this.wmode = null;		       // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
+  this.wmode = null;           // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowFullScreen = true;     // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
 
@@ -63,15 +63,17 @@ function SoundManager(smURL, smID) {
     'usePeakData': false,          // enable left/right channel peak (level) data
     'useWaveformData': false,      // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
     'useEQData': false,            // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
-    'onbufferchange': null,	       // callback for "isBuffering" property change
-    'ondataerror': null,		       // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
+    'onbufferchange': null,        // callback for "isBuffering" property change
+    'ondataerror': null,           // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
     'serverUrl': null,             // FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
+    'duration': null,              // Duration of the song in seconds
+    'totalBytes': null,            // Byte size of the song
   };
 
   this.movieStarOptions = {    // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9+movieStar mode is enabled
-    'onmetadata': null,		   // callback for when video width/height etc. are received
-    'useVideo': false,		   // if loading movieStar content, whether to show video
-    'bufferTime': null		   // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try up to 3 seconds)
+    'onmetadata': null,      // callback for when video width/height etc. are received
+    'useVideo': false,       // if loading movieStar content, whether to show video
+    'bufferTime': null       // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try up to 3 seconds)
   };
 
   // jslint global declarations
@@ -193,40 +195,40 @@ function SoundManager(smURL, smID) {
     waitForever: _sm+': Waiting indefinitely for Flash...',
     needFunction: _sm+'.onready(): Function object expected',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
-	fl9Vid: 'flash 9 required for video. Exiting.',
-	noMS: 'MovieStar mode not enabled. Exiting.',
-	spcWmode: _sm+'._createMovie(): Removing wmode, preventing win32 below-the-fold SWF loading issue',
-	currentObj: '--- '+_sm+'._debug(): Current sound objects ---',
-	waitEI: _sm+'._initMovie(): Waiting for ExternalInterface call from Flash..',
-	waitOnload: _sm+': Waiting for window.onload()',
-	docLoaded: _sm+': Document already loaded',
-	onload: _sm+'.initComplete(): calling soundManager.onload()',
-	onloadOK: _sm+'.onload() complete',
-	init: '-- '+_sm+'.init() --',
-	didInit: _sm+'.init(): Already called?',
-	flashJS: _sm+': Attempting to call Flash from JS..',
-	noPolling: _sm+': Polling (whileloading()/whileplaying() support) is disabled.',
-	secNote: 'Flash security note: Network/internet URLs will not load due to security restrictions. Access can be configured via Flash Player Global Security Settings Page: http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html',
-	badRemove: 'Warning: Failed to remove flash movie.',
-	peakWave: 'Warning: peak/waveform/eqData features unsupported for non-MP3 formats',
-	shutdown: _sm+'.disable(): Shutting down',
-	queue: _sm+'.onready(): Queueing handler',
-	smFail: _sm+': Failed to initialise.',
-	smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
-	manURL: 'SMSound.load(): Using manually-assigned URL',
-	onURL: _sm+'.load(): current URL already assigned.',
-	badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.'
+    fl9Vid: 'flash 9 required for video. Exiting.',
+    noMS: 'MovieStar mode not enabled. Exiting.',
+    spcWmode: _sm+'._createMovie(): Removing wmode, preventing win32 below-the-fold SWF loading issue',
+    currentObj: '--- '+_sm+'._debug(): Current sound objects ---',
+    waitEI: _sm+'._initMovie(): Waiting for ExternalInterface call from Flash..',
+    waitOnload: _sm+': Waiting for window.onload()',
+    docLoaded: _sm+': Document already loaded',
+    onload: _sm+'.initComplete(): calling soundManager.onload()',
+    onloadOK: _sm+'.onload() complete',
+    init: '-- '+_sm+'.init() --',
+    didInit: _sm+'.init(): Already called?',
+    flashJS: _sm+': Attempting to call Flash from JS..',
+    noPolling: _sm+': Polling (whileloading()/whileplaying() support) is disabled.',
+    secNote: 'Flash security note: Network/internet URLs will not load due to security restrictions. Access can be configured via Flash Player Global Security Settings Page: http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html',
+    badRemove: 'Warning: Failed to remove flash movie.',
+    peakWave: 'Warning: peak/waveform/eqData features unsupported for non-MP3 formats',
+    shutdown: _sm+'.disable(): Shutting down',
+    queue: _sm+'.onready(): Queueing handler',
+    smFail: _sm+': Failed to initialise.',
+    smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
+    manURL: 'SMSound.load(): Using manually-assigned URL',
+    onURL: _sm+'.load(): current URL already assigned.',
+    badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.'
   };
 
   this._str = function() { // o [,items to replace]
     var params = Array.prototype.slice.call(arguments); // real array, please
-	var o = params.shift(); // first arg
-	var str = _s.strings && _s.strings[o]?_s.strings[o]:'';
-	if (str && params && params.length) {
+    var o = params.shift(); // first arg
+    var str = _s.strings && _s.strings[o]?_s.strings[o]:'';
+    if (str && params && params.length) {
       for (var i=0, j=params.length; i<j; i++) {
-	    str = str.replace('%s',params[i]);
-	  }
-	}
+        str = str.replace('%s',params[i]);
+      }
+    }
     return str;
   };
 
@@ -299,13 +301,24 @@ function SoundManager(smURL, smID) {
         _s.sounds[_tO.id].play();
       }      
     } else {
-      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl);
+      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes);
+      if (!_tO.serverUrl) {
+        if (_tO.autoLoad || _tO.autoPlay) {
+          // TODO: does removing timeout here cause problems?
+          if (_s.sounds[_tO.id]) {
+            _s.sounds[_tO.id].load(_tO);
+          }
+        }
+        if (_tO.autoPlay) {
+          _s.sounds[_tO.id].play();
+        }
+      }
     }
     return _s.sounds[_tO.id];
   };
   
   this.createVideo = function(oOptions) {
-	  var fN = 'soundManager.createVideo(): ';
+    var fN = 'soundManager.createVideo(): ';
     if (arguments.length == 2) {
       oOptions = {
         'id': arguments[0],
@@ -365,7 +378,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.play = function(sID, oOptions) {
-	var fN = 'soundManager.play(): ';
+    var fN = 'soundManager.play(): ';
     if (!_s._didInit) {
       throw _s._complain(fN+_s._str('notReady'), arguments.callee.caller);
     }
@@ -461,7 +474,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.mute = function(sID) {
-	var fN = 'soundManager.mute(): ';
+    var fN = 'soundManager.mute(): ';
     if (typeof sID != 'string') {
       sID = null;
     }
@@ -485,7 +498,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.unmute = function(sID) {
-	var fN = 'soundManager.unmute(): ';
+    var fN = 'soundManager.unmute(): ';
     if (typeof sID != 'string') {
       sID = null;
     }
@@ -563,9 +576,9 @@ function SoundManager(smURL, smID) {
     // a status object will be passed to your handler
     /*
     soundManager.onready(function(oStatus) {
-	  alert('SM2 init success: '+oStatus.success);
-	});
-	*/
+    alert('SM2 init success: '+oStatus.success);
+  });
+  */
     if (oMethod && oMethod instanceof Function) {
       if (_s._didInit) {
         _s._wDS('queue');
@@ -950,10 +963,10 @@ if (_s.debugMode) {
 
   this._wDS = function(o,errorLevel) {
     if (!o) {
-	  return '';
-	} else {
-	  return _s._wD(_s._str(o),errorLevel);
-	}
+    return '';
+  } else {
+    return _s._wD(_s._str(o),errorLevel);
+  }
   };
   this._wDS._protected = true;
 
@@ -997,7 +1010,7 @@ if (_s.debugMode) {
       try {
         sm2Debugger.handleEvent(sEventType, bSuccess, sMessage);
       } catch(e) {
-        // oh well	
+        // oh well
       }
     }
   };
@@ -1408,7 +1421,7 @@ if (_s.debugMode) {
 
     this.resetProperties = function(bLoaded) {
       _t.bytesLoaded = null;
-      _t.bytesTotal = null;
+      _t.totalBytes = null;
       _t.position = null;
       _t.duration = null;
       _t.durationEstimate = null;
@@ -1461,8 +1474,8 @@ if (_s.debugMode) {
 
       _s._wD('soundManager.load(): '+_t._iO.url, 1);
       if (_t._iO.url == _t.url && _t.readyState !== 0 && _t.readyState != 2) {
-        _s._wDS('onURL', 1);
-        return false;
+        //_s._wDS('onURL', 1);
+        //return false;
       }
       _t.url = _t._iO.url;
       _t._lastURL = _t._iO.url;
@@ -1510,7 +1523,7 @@ if (_s.debugMode) {
     };
 
     this.play = function(oOptions) {
-	  var fN = 'SMSound.play(): ';
+    var fN = 'SMSound.play(): ';
       if (!oOptions) {
         oOptions = {};
       }
@@ -1555,7 +1568,7 @@ if (_s.debugMode) {
         if (_t._iO.onplay) {
           _t._iO.onplay.apply(_t);
         }
-        //_s._wD('Skipping setVolume, setPan and start (line 1557)', 1);
+//        _s._wD('Skipping setVolume, setPan and start (line 1557)', 1);
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
         _s.o._start(_t.sID, _t._iO.loop || 1, (_s.flashVersion == 9?_t.position:_t.position / 1000));
@@ -1730,7 +1743,7 @@ if (_s.debugMode) {
       }
       _t.position = nPosition;
 
-	  if (_s.flashVersion > 8) {
+    if (_s.flashVersion > 8) {
         if (_t._iO.usePeakData && typeof oPeakData != 'undefined' && oPeakData) {
           _t.peakData = {
             left: oPeakData.leftPeak,
@@ -1753,7 +1766,7 @@ if (_s.debugMode) {
             }
           }
         }
-	  }
+    }
 
       if (_t.playState == 1) {
         // special case/hack: ensure buffering is false (instant load from cache, thus buffering stuck at 1?)
@@ -1771,10 +1784,11 @@ if (_s.debugMode) {
     };
 
     this._onconnect = function(bSuccess) {
-	    var fN = 'SMSound._onconnect(): ';
+      var fN = 'SMSound._onconnect(): ';
       bSuccess = (bSuccess == 1?true:false);
       _s._wD(fN+'"'+_t.sID+'"'+(bSuccess?' connected.':' failed to connect? - '+_t.url), (bSuccess?1:2));
       _t.connected = bSuccess;
+
       if (bSuccess) {
         if (_t._iO.autoLoad || _t._iO.autoPlay) {
           _t.load(_t._iO);
@@ -1786,10 +1800,11 @@ if (_s.debugMode) {
           _t._iO.onconnect.apply(_t);
         }      
       }
+
     };
     
     this._onload = function(bSuccess) {
-	    var fN = 'SMSound._onload(): ';
+      var fN = 'SMSound._onload(): ';
       bSuccess = (bSuccess == 1?true:false);
       _s._wD(fN+'"'+_t.sID+'"'+(bSuccess?' loaded.':' failed to load? - '+_t.url), (bSuccess?1:2));
       if (!bSuccess) {
@@ -1888,7 +1903,7 @@ if (_s.debugMode) {
     };
 
     this._onbufferchange = function(bIsBuffering) {
-	  var fN = 'SMSound._onbufferchange()';
+    var fN = 'SMSound._onbufferchange()';
       if (_t.playState === 0) {
         // ignore if not playing
         return false;

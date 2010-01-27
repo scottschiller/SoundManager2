@@ -41,7 +41,7 @@ package {
     // Cross-domain security exception stuffs
     // HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
     // See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
-    // Security.allowDomain("foo.com");
+    Security.allowDomain("*");
 
     // externalInterface references (for Javascript callbacks)
     public var baseJSController:String = "soundManager";
@@ -210,8 +210,9 @@ package {
     }
 
     public function writeDebug(s:String, bTimestamp: Boolean = false) : Boolean {
-      //if (!debugEnabled) return false;
+      if (!debugEnabled) return false;
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
+      if (debugEnabled) trace(s);
       return true;
     }
 
@@ -286,8 +287,11 @@ package {
       for (var i: int = 0, j: int = sounds.length; i < j; i++) {
         oSound = soundObjects[sounds[i]];
         sMethod = baseJSObject + "['" + sounds[i] + "']._whileloading";
-        if (!oSound) continue;           // if sounds are destructed within event handlers while this loop is running, may be null
-        if (!oSound.connected) continue; // sound hasn't connected yet
+        if (!oSound || oSound.failed) continue;           // if sounds are destructed within event handlers while this loop is running, may be null
+        if (!oSound.connected) {
+          writeDebug('checkProgress: sound '+oSound.sID+' hasn\'t loaded...skipping');
+          continue; // sound hasn't connected yet
+        }
         if (oSound.useNetstream) {
           bL = oSound.ns.bytesLoaded;
           bT = oSound.ns.bytesTotal;
@@ -638,8 +642,10 @@ package {
         ns.useVideo = s.useVideo;
         ns.bufferTime = s.bufferTime;
         ns.serverUrl = s.serverUrl;
+        ns.duration = s.duration;
+        ns.totalBytes = s.totalBytes;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl);
+        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -750,12 +756,14 @@ package {
       ns.useVideo = s.useVideo;
       ns.bufferTime = s.bufferTime;
       ns.serverUrl = s.serverUrl;
+      ns.duration = s.duration;
+      ns.totalBytes = s.totalBytes;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl);
+      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes);
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String) : void {
+    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String, duration:Number, totalBytes:Number) : void {
       soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl);
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
@@ -915,7 +923,7 @@ package {
     }
 
     public function _setVolume(sID:String, nVol:Number) : void {
-      // writeDebug('_setVolume: '+nVol);
+      writeDebug('_setVolume: '+nVol);
       soundObjects[sID].setVolume(nVol);
     }
 

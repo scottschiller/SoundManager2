@@ -1,4 +1,4 @@
-/*
+﻿/*
    SoundManager 2: Javascript Sound for the Web
    ----------------------------------------------
    http://schillmania.com/projects/soundmanager2/
@@ -53,11 +53,13 @@ package {
     public var didFinish: Boolean;
     public var loaded: Boolean;
     public var connected: Boolean;
+    public var failed: Boolean;
     public var paused: Boolean;
     public var duration: Number;
+    public var totalBytes: Number;
     public var handledDataError: Boolean = false;
     public var ignoreDataError: Boolean = false;
-    
+
     public var lastValues: Object = {
       bytes: 0,
       position: 0,
@@ -82,13 +84,12 @@ package {
     public var bufferTime: Number = -1;
     public var lastNetStatus: String = null;
     public var serverUrl: String = null;
-    
+
     public var oVideo: Video = null;
     public var videoWidth: Number = 0;
     public var videoHeight: Number = 0;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null) {
-      writeDebug('in SoundManager2_SMSound_AS3');
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -101,22 +102,26 @@ package {
       this.didFinish = false; // non-MP3 formats only
       this.loaded = false;
       this.connected = false;
+      this.failed = false;
       this.soundChannel = null;
       this.lastNetStatus = null;
       this.useNetstream = useNetstreamArg;
       this.serverUrl = serverUrl;
+      this.duration = duration;
+      this.totalBytes = totalBytes;
       this.useVideo = useVideo;
       this.bufferTime = netStreamBufferTime;
-      
+      writeDebug('in SoundManager2_SMSound_AS3, got duration '+duration+' and totalBytes '+totalBytes);
+
       if (this.useNetstream) {
         this.cc = new Object();
         this.nc = new NetConnection();
-        
+
         // Handle FMS bandwidth check callback.
         // @see onBWDone
         // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
         // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html
-        this.nc.client = this; 
+        this.nc.client = this;
 
         // TODO: security/IO error handling
         // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
@@ -127,14 +132,16 @@ package {
         if (this.serverUrl != null) {
           writeDebug('NetConnection: connecting to server ' + this.serverUrl + '...');
         }
-        this.nc.connect(serverUrl);          
+        this.nc.connect(serverUrl);
+      } else {
+        this.connected = true;
       }
     }
 
     private function netStatusHandler(event:NetStatusEvent):void {
       switch (event.info.code) {
         case "NetConnection.Connect.Success":
-        
+
           writeDebug('NetConnection: connected');
           try {
             this.ns = new NetStream(this.nc);
@@ -162,22 +169,25 @@ package {
             this.connected = true;
             ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
           } catch(e: Error) {
+            this.failed = true;
             writeDebug('netStream error: ' + e.toString());
           }
           break;
-          
+
         case "NetStream.Play.StreamNotFound":
+          this.failed = true;
           writeDebug("NetConnection: Stream not found!");
           ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 0);
           break;
-          
+
         default:
+          this.failed = true;
           writeDebug("NetConnection: got unhandled code '" + event.info.code + "'!");
           ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 0);
-          break;          
+          break;
       }
-    } 
-           
+    }
+
     public function resizeHandler(e: Event) : void {
       // scale video to stage dimensions
       // probably less performant than using native flash scaling, but that doesn't quite seem to work. I'm probably missing something simple.
@@ -227,7 +237,7 @@ package {
         this.oVideo.visible = true; // show ze video!
       }
       if (!this.loaded) {
-        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, infoObject.duration);
+        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, (this.bytesTotal || this.totalBytes), (infoObject.duration || this.duration));
       }
       this.duration = infoObject.duration * 1000;
       // null this out for the duration of this object's existence.
@@ -321,7 +331,7 @@ package {
 
     // Handle FMS bandwidth check callback.
     // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
-    // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html    
+    // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html
     public function onBWDone():void{
       writeDebug('onBWDone: called and ignored');
     }
