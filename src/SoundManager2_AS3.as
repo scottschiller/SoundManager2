@@ -673,9 +673,14 @@ package {
         try {
           // s.ns.close();
           this.addNetstreamEvents(s);
+          ExternalInterface.call(baseJSObject + "['" + s.sID + "']._whileloading", s.ns.bytesLoaded, s.ns.bytesTotal || s.totalBytes, int(s.duration || 0));
           s.ns.play(sURL);
           if (!bAutoPlay) {
+            writeDebug("In _load, pausing song because autoplay is false.");
             s.ns.pause();
+            s.paused = true;
+            //_pause(s.sID);
+            //s.soundChannel.stop();
           }
         } catch(e: Error) {
           writeDebug('_load(): error: ' + e.toString());
@@ -764,7 +769,7 @@ package {
     }
 
     public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String, duration:Number, totalBytes:Number) : void {
-      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl);
+      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, totalBytes);
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
       this.currentObject = s;

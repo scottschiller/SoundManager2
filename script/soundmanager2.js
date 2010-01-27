@@ -66,7 +66,7 @@ function SoundManager(smURL, smID) {
     'onbufferchange': null,        // callback for "isBuffering" property change
     'ondataerror': null,           // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
     'serverUrl': null,             // FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
-    'duration': null,              // Duration of the song in seconds
+    'duration': null,              // Duration of the song in milli-seconds
     'totalBytes': null,            // Byte size of the song
   };
 

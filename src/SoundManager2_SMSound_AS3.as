@@ -270,11 +270,12 @@ package {
         writeDebug('start: seeking to ' + nMsecOffset);
         this.cc.onMetaData = this.metaDataHandler;
         this.ns.seek(nMsecOffset);
-        if (!this.didLoad) {
+        if (this.paused) {
+          this.ns.resume(); // get the sound going again
+          if (!this.didLoad) this.didLoad = true;
+        } else if (!this.didLoad) {
           this.ns.play(this.sURL);
           this.didLoad = true;
-        } else {
-          this.ns.resume(); // get the sound going again
         }
         // this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
