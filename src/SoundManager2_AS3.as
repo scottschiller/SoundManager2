@@ -255,7 +255,7 @@ package {
       try {
         var oSound:Object = e.target;
         var bL: int = oSound.bytesLoaded;
-        var bT: int = oSound.bytesTotal;
+        var bT: int = oSound.bytesTotal || oSound.totalBytes;
         var nD: int = oSound.length || oSound.duration || 0;
         var sMethod:String = baseJSObject + "['" + oSound.sID + "']._whileloading";
         ExternalInterface.call(sMethod, bL, bT, nD);
@@ -287,14 +287,14 @@ package {
       for (var i: int = 0, j: int = sounds.length; i < j; i++) {
         oSound = soundObjects[sounds[i]];
         sMethod = baseJSObject + "['" + sounds[i] + "']._whileloading";
-        if (!oSound || oSound.failed) continue;           // if sounds are destructed within event handlers while this loop is running, may be null
+        if (!oSound || oSound.failed) continue; // if sounds are destructed within event handlers while this loop is running, may be null
         if (!oSound.connected) {
           writeDebug('checkProgress: sound '+oSound.sID+' hasn\'t loaded...skipping');
           continue; // sound hasn't connected yet
         }
         if (oSound.useNetstream) {
           bL = oSound.ns.bytesLoaded;
-          bT = oSound.ns.bytesTotal;
+          bT = oSound.ns.bytesTotal || oSound.totalBytes;
           nD = int(oSound.duration || 0); // can sometimes be null with short MP3s? Wack.
           nP = oSound.ns.time * 1000;
           if (oSound.loaded != true && nD > 0 && bL == bT) {
@@ -822,14 +822,12 @@ package {
             writeDebug('_destoySound(): could not remove video?');
           }
         }
-        if (s.didLoad) {
-          try {
-            s.ns.close();
-            s.nc.close();
-          } catch(e: Error) {
-            // oh well
-            writeDebug('_destroySound(): error during netConnection/netStream close and null');
-          }
+        try {
+          s.ns.close();
+          s.nc.close();
+        } catch(e: Error) {
+          // oh well
+          writeDebug('_destroySound(): error during netConnection/netStream close and null');
         }
       } else if (s.didLoad) {
         // non-netstream case

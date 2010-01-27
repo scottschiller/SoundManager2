@@ -177,7 +177,11 @@ package {
         case "NetStream.Play.StreamNotFound":
           this.failed = true;
           writeDebug("NetConnection: Stream not found!");
-          ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 0);
+          break;
+
+        case "NetConnection.Connect.Closed":
+          this.failed = true;
+          writeDebug("NetConnection: Connection closed!");
           break;
 
         default:
@@ -265,6 +269,7 @@ package {
     }
 
     public function start(nMsecOffset: int, nLoops: int) : void {
+      writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops);
       this.sm.currentObject = this; // reference for video, full-screen
       if (this.useNetstream) {
         writeDebug('start: seeking to ' + nMsecOffset);

@@ -303,6 +303,12 @@ function SoundManager(smURL, smID) {
     } else {
       _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes);
       if (!_tO.serverUrl) {
+        // We are connected immediately
+        var sound = _s.sounds[_tO.id];
+        sound.connected = true;
+        if (_tO.onconnect) {
+          _tO.onconnect.apply(sound);
+        }
         if (_tO.autoLoad || _tO.autoPlay) {
           // TODO: does removing timeout here cause problems?
           if (_s.sounds[_tO.id]) {
@@ -1487,10 +1493,6 @@ if (_s.debugMode) {
           _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0));
         } else {
           _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false); // ,(_tO.whileloading?true:false)
-          if (_t._iO.isMovieStar && _t._iO.autoLoad && !_t._iO.autoPlay) {
-            // special case: MPEG4 content must start playing to load, then pause to prevent playing.
-            _t.pause();
-          }
         }
       } catch(e) {
         _s._wDS('smError', 2);
@@ -1523,7 +1525,11 @@ if (_s.debugMode) {
     };
 
     this.play = function(oOptions) {
-    var fN = 'SMSound.play(): ';
+      if (!_t.connected) {
+        console.log("play: song not loaded...ignored");
+        return false;
+      }
+      var fN = 'SMSound.play(): ';
       if (!oOptions) {
         oOptions = {};
       }
@@ -1568,7 +1574,6 @@ if (_s.debugMode) {
         if (_t._iO.onplay) {
           _t._iO.onplay.apply(_t);
         }
-//        _s._wD('Skipping setVolume, setPan and start (line 1557)', 1);
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
         _s.o._start(_t.sID, _t._iO.loop || 1, (_s.flashVersion == 9?_t.position:_t.position / 1000));
