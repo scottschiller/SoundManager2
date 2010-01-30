@@ -6,7 +6,9 @@ By wrapping and extending the Flash sound API, SoundManager 2 brings solid audio
 
 == Changes
 
-This version adds support for streaming using RTMP (and its variants) from a Flash Media Server (or similar).  Our company has a requirement to stream over RTMPE so I have implemented changes to support this goal, while making things generic enough for others to use as well.  This should work for FMS/FMIS/etc, and all RTMP* protocols, but YMMV.
+This version adds support for streaming using RTMP (and its variants) from a Flash Media Server (or similar).  Our company has a requirement to stream over RTMPe so I have implemented changes to support this goal, while making things generic enough for others to use as well.  This should work for FMS/FMIS/etc, and all RTMP* protocols, but YMMV.
+
+Having delved deeply into the code implementing these changes I would recommend FlowPlayer for RTMP.  The code looks excellent and very modular.  SoundManager2 is a great product but the code makes extending its features rather difficult.
 
 To use these features you must:
 
@@ -14,9 +16,15 @@ To use these features you must:
 * Enable the global <tt>useMovieStar</tt> option
 * Pass <tt>isMovieStar = true</tt> in your options to <tt>createSound</tt>
 * Pass a value for <tt>serverUrl</tt> in your options to <tt>createSound</tt>.  This will be the URL for the FMS server.
-* Your FMS (or similar) server must support a <tt>getStreamLength</tt> call to get the length of the music stream.
+* Your FMS (or similar) server must support a <tt>getStreamLength</tt> call to get the length of the music stream. <i>This isn't being used ATM because our FMS server mis-reports stream lengths.</i>
+* Use the <tt>soundmanager2.js</tt> JavaScript file (I haven't created a no-debug version).
 
 There is now an <tt>onconnect</tt> callback which is called when the connection to the server is made which you can use if you wish.  Pass it like the other callbacks in your call to <tt>createSound</tt>.
+
+New options to createSound:
+
+* <tt>totalBytes</tt> total size of the file in bytes
+* <tt>duration</tt> duration of the song in seconds
 
 === Example
 
