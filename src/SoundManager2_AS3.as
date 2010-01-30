@@ -663,8 +663,8 @@ package {
 
       // s.addEventListener(ProgressEvent.PROGRESS, checkLoadProgress); // May be called often, potential CPU drain
       // s.addEventListener(Event.FINISH, onFinish);
-      // s.loaded = true; // TODO: Investigate - Flash 9 non-FLV bug??
-      // s.didLoad = true; // TODO: Investigate - bug?
+      //s.loaded = true; // TODO: Investigate - Flash 9 non-FLV bug??
+      //s.didLoad = true; // TODO: Investigate - bug?
       // if (didRecreate || s.sURL != sURL) {
       // don't try to load if same request already made
       s.sURL = sURL;

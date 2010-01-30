@@ -25,11 +25,11 @@ function SoundManager(smURL, smID) {
   this.nullURL = 'null.mp3';       // path to "null" (empty) MP3 file, used to unload sounds (Flash 8 only)
   this.allowPolling = true;        // allow flash to poll for status update (required for whileplaying() events, peak, sound spectrum functions to work.)
   this.useFastPolling = false;     // uses 1 msec flash timer interval (vs. default of 20) for higher callback frequency, best combined with useHighPerformance
-  this.useMovieStar = false;     // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio+video formats (AAC, M4V, FLV, MOV etc.)
+  this.useMovieStar = false;       // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio+video formats (AAC, M4V, FLV, MOV etc.)
   this.bgColor = '#ffffff';        // movie (.swf) background color, '#000000' useful if showing on-screen/full-screen video etc.
   this.useHighPerformance = false; // position:fixed flash movie can help increase js/flash speed, minimize lag
   this.flashLoadTimeout = 1000;    // msec to wait for flash movie to load before failing (0 = infinity)
-  this.wmode = null;           // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
+  this.wmode = null;               // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowFullScreen = true;     // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
 
@@ -299,7 +299,7 @@ function SoundManager(smURL, smID) {
       }
       if (_tO.autoPlay) {
         _s.sounds[_tO.id].play();
-      }      
+      }
     } else {
       _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes);
       if (!_tO.serverUrl) {
@@ -322,7 +322,7 @@ function SoundManager(smURL, smID) {
     }
     return _s.sounds[_tO.id];
   };
-  
+
   this.createVideo = function(oOptions) {
     var fN = 'soundManager.createVideo(): ';
     if (arguments.length == 2) {
@@ -1416,7 +1416,7 @@ if (_s.debugMode) {
     this._debug();
 
     this.id3 = {
-      /* 
+      /*
     Name/value pairs set via Flash when available - see reference for names (download documentation):
     http://livedocs.macromedia.com/flash/8/
     Previously-live URL:
@@ -1697,6 +1697,7 @@ if (_s.debugMode) {
     // --- "private" methods called by Flash ---
 
     this._whileloading = function(nBytesLoaded, nBytesTotal, nDuration) {
+      console.log('_whileloading: nBytesLoaded '+nBytesLoaded+' nBytesTotal '+nBytesTotal+' nDuration '+nDuration);
       if (!_t._iO.isMovieStar) {
         _t.bytesLoaded = nBytesLoaded;
         _t.bytesTotal = nBytesTotal;
@@ -1736,7 +1737,7 @@ if (_s.debugMode) {
     };
 
     this._whileplaying = function(nPosition, oPeakData, oWaveformDataLeft, oWaveformDataRight, oEQData) {
-
+      //console.log('_whileplaying: nPosition '+nPosition);
       if (isNaN(nPosition) || nPosition === null) {
         return false; // Flash may return NaN at times
       }
@@ -1803,11 +1804,11 @@ if (_s.debugMode) {
         }
         if (_t._iO.onconnect) {
           _t._iO.onconnect.apply(_t);
-        }      
+        }
       }
 
     };
-    
+
     this._onload = function(bSuccess) {
       var fN = 'SMSound._onload(): ';
       bSuccess = (bSuccess == 1?true:false);
