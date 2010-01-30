@@ -1609,7 +1609,7 @@ if (_s.debugMode) {
     };
 
     this.pause = function() {
-      if (_t.paused || _t.playState === 0) {
+      if (_t.paused || (_t.playState === 0 && _t.readyState !== 1)) {
         return false;
       }
       _s._wD('SMSound.pause()');
