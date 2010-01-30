@@ -16,6 +16,7 @@ function InlinePlayer() {
   var self = this;
   var pl = this;
   var sm = soundManager; // soundManager instance
+  this.playableClass = 'inline-playable'; // CSS class for forcing a link to be playable (eg. doesn't have .MP3 in it)
   this.excludeClass = 'inline-exclude'; // CSS class for ignoring MP3 links
   this.links = [];
   this.sounds = [];
@@ -143,7 +144,7 @@ function InlinePlayer() {
       if (!o) return true;
     }
     var sURL = o.getAttribute('href');
-    if (!o.href || !o.href.match(/\.mp3(\\?.*)$/i) || self.classContains(o,self.excludeClass)) {
+    if (!o.href || (!o.href.match(/\.mp3(\\?.*)$/i) && !self.classContains(o,self.playableClass)) || self.classContains(o,self.excludeClass)) {
       if (isIE && o.onclick) {
         return false; // IE will run this handler before .onclick(), everyone else is cool?
       }
@@ -207,7 +208,7 @@ function InlinePlayer() {
     // grab all links, look for .mp3
     var foundItems = 0;
     for (var i=0, j=oLinks.length; i<j; i++) {
-      if (oLinks[i].href.match(/\.mp3/i) && !self.classContains(oLinks[i],self.excludeClass)) {
+      if ((oLinks[i].href.match(/\.mp3/i) || self.classContains(oLinks[i],self.playableClass)) && !self.classContains(oLinks[i],self.excludeClass)) {
         self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
