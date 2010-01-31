@@ -537,16 +537,22 @@ package {
         writeDebug('netStatusEvent: ' + e.info.code);
       }
 
+      // When streaming, Stop is called when buffering stops, not when the stream is actually finished.
+      // @see http://www.actionscript.org/forums/archive/index.php3/t-159194.html
       if (e.info.code == "NetStream.Play.Stop") { // && !oSound.didFinish && oSound.loaded == true && nD == nP
-        // finished playing
-        // oSound.didFinish = true; // will be reset via JS callback
-        oSound.didJustBeforeFinish = false; // reset
-        writeDebug('calling onfinish for a sound');
-        // reset the sound? Move back to position 0?
-        checkProgress();
-        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
-        // and exit full-screen mode, too?
-        stage.displayState = StageDisplayState.NORMAL;
+        //if (!oSound.useNetstream) {
+          // finished playing
+          // oSound.didFinish = true; // will be reset via JS callback
+          oSound.didJustBeforeFinish = false; // reset
+          writeDebug('calling onfinish for a sound');
+          // reset the sound? Move back to position 0?
+          checkProgress();
+          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
+          // and exit full-screen mode, too?
+          stage.displayState = StageDisplayState.NORMAL;
+        //} else {
+        //  writeDebug('NetStream.Play.Stop called for a streaming sound...buffer is full?');
+        //}
       } else if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
         this.onLoadError(oSound);
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
