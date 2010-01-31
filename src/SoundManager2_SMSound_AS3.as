@@ -341,6 +341,15 @@ package {
     public function onBWDone():void{
       writeDebug('onBWDone: called and ignored');
     }
-  }
 
+    // NetStream client callback.  Invoked when the song is complete
+    public function onPlayStatus(info:Object):void {
+      writeDebug('onPlayStatus called with '+info);
+      switch(info.code) {
+        case "NetStream.Play.Complete":
+          writeDebug('Song has finished!');
+          break;
+      }
+    }
+  }
 }
