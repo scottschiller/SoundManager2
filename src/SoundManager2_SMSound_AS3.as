@@ -278,9 +278,11 @@ package {
         if (this.paused) {
           this.ns.resume(); // get the sound going again
           if (!this.didLoad) this.didLoad = true;
+          this.paused = false;
         } else if (!this.didLoad) {
           this.ns.play(this.sURL);
           this.didLoad = true;
+          this.paused = false;
         }
         // this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
