@@ -310,6 +310,10 @@ package {
           } else if (!oSound.loaded && bL && bT && bL != oSound.lastValues.bytes) {
             oSound.lastValues.bytes = bL;
             ExternalInterface.call(sMethod, bL, bT, nD);
+          // KJV For our RTMP streams bytesLoaded is always 0!
+          } else if (!oSound.loaded && bL == 0 && bT && oSound.ns.bufferLength != oSound.lastValues.bufferLength) {
+            oSound.lastValues.bufferLength = oSound.ns.bufferLength;
+            ExternalInterface.call(sMethod, bL, bT, nD, oSound.ns.bufferLength);
           }
         } else {
           oSoundChannel = oSound.soundChannel;
@@ -793,7 +797,8 @@ package {
         position: 0,
         nLoops: 1,
         leftPeak: 0,
-        rightPeak: 0
+        rightPeak: 0,
+        bufferLength: 0
       };
       if (! (sID in sounds)) sounds.push(sID);
       // sounds.push(sID);

@@ -1427,6 +1427,7 @@ if (_s.debugMode) {
 
     this.resetProperties = function(bLoaded) {
       _t.bytesLoaded = null;
+      _t.bufferLength = null;
       _t.totalBytes = null;
       _t.position = null;
       _t.duration = null;
@@ -1696,7 +1697,7 @@ if (_s.debugMode) {
 
     // --- "private" methods called by Flash ---
 
-    this._whileloading = function(nBytesLoaded, nBytesTotal, nDuration) {
+    this._whileloading = function(nBytesLoaded, nBytesTotal, nDuration, nBufferLength) {
       console.log('_whileloading: nBytesLoaded '+nBytesLoaded+' nBytesTotal '+nBytesTotal+' nDuration '+nDuration);
       if (!_t._iO.isMovieStar) {
         _t.bytesLoaded = nBytesLoaded;
@@ -1715,6 +1716,7 @@ if (_s.debugMode) {
         _t.bytesTotal = nBytesTotal;
         _t.duration = Math.floor(nDuration);
         _t.durationEstimate = _t.duration;
+        _t.bufferLength = nBufferLength;
         if (_t.readyState != 3 && _t._iO.whileloading) {
           _t._iO.whileloading.apply(_t);
         }

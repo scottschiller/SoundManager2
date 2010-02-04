@@ -70,7 +70,8 @@ package {
       rightPeak: 0,
       waveformDataArray: null,
       eqDataArray: null,
-      isBuffering: null
+      isBuffering: null,
+      bufferLength: 0
     };
     public var didLoad: Boolean = false;
     public var sound: Sound = new Sound();
