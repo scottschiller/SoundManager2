@@ -460,7 +460,7 @@ package {
         ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", 1);
       }
     }
-    
+
     public function onID3(e: Event) : void {
 
       // --- NOTE: BUGGY (Flash 8 only? Haven't really checked 9 + 10.) ---
@@ -533,14 +533,14 @@ package {
       // this will eventually let us know what is going on.. is the stream loading, empty, full, stopped?
       oSound.lastNetStatus = e.info.code;
 
-      if (e.info.code != "NetStream.Buffer.Full" && e.info.code != "NetStream.Buffer.Empty" && e.info.code != "NetStream.Seek.Notify") {
+      //if (e.info.code != "NetStream.Buffer.Full" && e.info.code != "NetStream.Buffer.Empty" && e.info.code != "NetStream.Seek.Notify") {
         writeDebug('netStatusEvent: ' + e.info.code);
-      }
+      //}
 
       // When streaming, Stop is called when buffering stops, not when the stream is actually finished.
       // @see http://www.actionscript.org/forums/archive/index.php3/t-159194.html
       if (e.info.code == "NetStream.Play.Stop") { // && !oSound.didFinish && oSound.loaded == true && nD == nP
-        //if (!oSound.useNetstream) {
+        if (!oSound.useNetstream) {
           // finished playing
           // oSound.didFinish = true; // will be reset via JS callback
           oSound.didJustBeforeFinish = false; // reset
@@ -550,9 +550,9 @@ package {
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
           // and exit full-screen mode, too?
           stage.displayState = StageDisplayState.NORMAL;
-        //} else {
-        //  writeDebug('NetStream.Play.Stop called for a streaming sound...buffer is full?');
-        //}
+        } else {
+         writeDebug('NetStream.Play.Stop called for a streaming sound...buffer is full?');
+        }
       } else if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
         this.onLoadError(oSound);
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
@@ -562,6 +562,8 @@ package {
           oSound.lastValues.isBuffering = isNetstreamBuffering;
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onbufferchange", oSound.lastValues.isBuffering ? 1 : 0);
         }
+      } else if (e.info.code == 'NetStream.Play.Complete') {
+        writeDebug('NetStream.Play.Complete called for a streaming sound...BOOYA');
       }
 
     }
