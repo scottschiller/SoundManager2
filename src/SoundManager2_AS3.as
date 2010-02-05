@@ -41,7 +41,7 @@ package {
     // Cross-domain security exception stuffs
     // HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
     // See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
-    Security.allowDomain("*");
+    //Security.allowDomain("*");
 
     // externalInterface references (for Javascript callbacks)
     public var baseJSController:String = "soundManager";
