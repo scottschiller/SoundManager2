@@ -301,22 +301,28 @@ function SoundManager(smURL, smID) {
         _s.sounds[_tO.id].play();
       }
     } else {
+      var sound = _s.sounds[_tO.id];
       _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes);
       if (!_tO.serverUrl) {
         // We are connected immediately
-        var sound = _s.sounds[_tO.id];
         sound.connected = true;
         if (_tO.onconnect) {
           _tO.onconnect.apply(sound);
         }
         if (_tO.autoLoad || _tO.autoPlay) {
           // TODO: does removing timeout here cause problems?
-          if (_s.sounds[_tO.id]) {
-            _s.sounds[_tO.id].load(_tO);
+          if (sound) {
+            sound.load(_tO);
           }
         }
         if (_tO.autoPlay) {
-          _s.sounds[_tO.id].play();
+          sound.play();
+        }
+      // The track is paused on load
+      } else if (_tO.autoLoad && !_tO.autoPlay) {
+        sound.paused = true;
+        if (!sound.instanceCount || _s.flashVersion > 8) {
+          sound.instanceCount++;
         }
       }
     }
@@ -1606,6 +1612,9 @@ if (_s.debugMode) {
       if (!bNoDebug) {
         // _s._wD('SMSound.setPosition('+nMsecOffset+')'+(nMsecOffset != offset?', corrected value: '+offset:''));
       }
+      if (_t.paused) {
+        _t.resume();
+      }
       _s.o._setPosition(_t.sID, (_s.flashVersion == 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
     };
 
@@ -1622,12 +1631,13 @@ if (_s.debugMode) {
     };
 
     this.resume = function() {
-      if (!_t.paused || _t.playState === 0) {
+      if (!_t.paused) { //  || _t.playState === 0
         return false;
       }
       _s._wD('SMSound.resume()');
       _t.paused = false;
       _s.o._pause(_t.sID); // flash method is toggle-based (pause/resume)
+      _t.playState = 1;
       if (_t._iO.onresume) {
         _t._iO.onresume.apply(_t);
       }
@@ -1785,7 +1795,7 @@ if (_s.debugMode) {
         if (_t._iO.whileplaying) {
           _t._iO.whileplaying.apply(_t); // flash may call after actual finish
         }
-        if (_t.loaded && _t._iO.onbeforefinish && _t._iO.onbeforefinishtime && !_t.didBeforeFinish && _t.duration - _t.position <= _t._iO.onbeforefinishtime) {
+        if ((_t.loaded || (!_t.loaded && _t._iO.isMovieStar)) && _t._iO.onbeforefinish && _t._iO.onbeforefinishtime && !_t.didBeforeFinish && _t.duration - _t.position <= _t._iO.onbeforefinishtime) {
           _s._wD('duration-position &lt;= onbeforefinishtime: '+_t.duration+' - '+_t.position+' &lt= '+_t._iO.onbeforefinishtime+' ('+(_t.duration - _t.position)+')');
           _t._onbeforefinish();
         }
