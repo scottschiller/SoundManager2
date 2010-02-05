@@ -59,6 +59,7 @@ package {
     public var totalBytes: Number;
     public var handledDataError: Boolean = false;
     public var ignoreDataError: Boolean = false;
+    public var pauseOnBufferFull: Boolean = false;
 
     public var lastValues: Object = {
       bytes: 0,
@@ -270,12 +271,13 @@ package {
     }
 
     public function start(nMsecOffset: int, nLoops: int) : void {
-      writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops);
       this.sm.currentObject = this; // reference for video, full-screen
       if (this.useNetstream) {
-        writeDebug('start: seeking to ' + nMsecOffset);
+        writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + 'current bufferLength '+this.ns.bufferLength+ 'this.lastValues.position '+this.lastValues.position);
         this.cc.onMetaData = this.metaDataHandler;
-        this.ns.seek(nMsecOffset);
+        if (this.lastValues.position != null && this.lastValues.position != nMsecOffset) {
+          this.ns.seek(nMsecOffset); // don't seek if we don't have to because it destroys the buffer
+        }
         if (this.paused) {
           this.ns.resume(); // get the sound going again
           if (!this.didLoad) this.didLoad = true;

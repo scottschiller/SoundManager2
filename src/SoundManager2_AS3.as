@@ -534,12 +534,7 @@ package {
     }
 
     public function doNetStatus(oSound: SoundManager2_SMSound_AS3, e: NetStatusEvent) : void {
-      // this will eventually let us know what is going on.. is the stream loading, empty, full, stopped?
-      oSound.lastNetStatus = e.info.code;
-
-      //if (e.info.code != "NetStream.Buffer.Full" && e.info.code != "NetStream.Buffer.Empty" && e.info.code != "NetStream.Seek.Notify") {
-        writeDebug('netStatusEvent: ' + e.info.code);
-      //}
+      writeDebug('netStatusEvent: ' + e.info.code);
 
       // When streaming, Stop is called when buffering stops, not when the stream is actually finished.
       // @see http://www.actionscript.org/forums/archive/index.php3/t-159194.html
@@ -555,21 +550,39 @@ package {
           // and exit full-screen mode, too?
           stage.displayState = StageDisplayState.NORMAL;
         } else {
-         writeDebug('NetStream.Play.Stop called for a streaming sound...buffer is full?');
+          writeDebug('NetStream.Play.Stop called and ignored. Probably just buffer full.');
         }
       } else if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
         this.onLoadError(oSound);
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
+
+        // We wait for the buffer to fill up before pausing the just-loaded song because only if the
+        // buffer is full will the song continue to buffer until the user hits play.
+        if (e.info.code == "NetStream.Buffer.Full" && oSound.pauseOnBufferFull) {
+          oSound.ns.pause();
+          oSound.paused = true;
+          oSound.pauseOnBufferFull = false;
+          writeDebug('Pausing song because buffer is now full.');
+        }
+
         var isNetstreamBuffering: Boolean = (e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Play.Start");
         // assume buffering when we start playing, eg. initial load.
         if (isNetstreamBuffering != oSound.lastValues.isBuffering) {
           oSound.lastValues.isBuffering = isNetstreamBuffering;
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onbufferchange", oSound.lastValues.isBuffering ? 1 : 0);
         }
-      } else if (e.info.code == 'NetStream.Play.Complete') {
-        writeDebug('NetStream.Play.Complete called for a streaming sound...BOOYA');
+        // We can detect the end of the stream when Play.Stop is called followed by Buffer.Empty.
+        // However, if you pause and let the whole song buffer, Buffer.Flush is called followed by
+        // Buffer.Empty, so handle that case too.
+        if (e.info.code == "NetStream.Buffer.Empty" && (oSound.lastNetStatus == 'NetStream.Play.Stop' || oSound.lastNetStatus == 'NetStream.Play.Flush')) {
+          writeDebug('Buffer empty and last net status was Play.Stop or Buffer.Flush.  This must be the end!');
+          oSound.didJustBeforeFinish = false; // reset
+          writeDebug('calling onfinish for a sound');
+          checkProgress();
+          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
+        }
       }
-
+      oSound.lastNetStatus = e.info.code;
     }
 
     public function addNetstreamEvents(oSound: SoundManager2_SMSound_AS3) : void {
@@ -686,11 +699,18 @@ package {
           // s.ns.close();
           this.addNetstreamEvents(s);
           ExternalInterface.call(baseJSObject + "['" + s.sID + "']._whileloading", s.ns.bytesLoaded, s.ns.bytesTotal || s.totalBytes, int(s.duration || 0));
+          //s.ns.seek(0);
           s.ns.play(sURL);
           if (!bAutoPlay) {
-            writeDebug("In _load, pausing song because autoplay is false.");
-            s.ns.pause();
-            s.paused = true;
+            //writeDebug("In _load, pausing song because autoplay is false.");
+            //s.lastValues.bufferLength = s.ns.bufferLength;
+            s.pauseOnBufferFull = true;
+/*            flash.utils.setTimeout(function(s:SoundManager2_SMSound_AS3):void {
+              s.ns.pause();
+              s.paused = true;
+            }, 2000, s);*/
+            // We wait for the buffer to fill up before pausing the just-loaded song because only if the
+            // buffer is full will the song continue to buffer until the user hits play.
             //_pause(s.sID);
             //s.soundChannel.stop();
           }
@@ -883,10 +903,6 @@ package {
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
       writeDebug('start: ' + nMsecOffset);
-      s.lastValues.paused = false; // reset pause if applicable
-      s.lastValues.nLoops = (nLoops || 1);
-      s.lastValues.position = nMsecOffset;
-      s.handledDataError = false; // reset this flag
       try {
         s.start(nMsecOffset, nLoops);
       } catch(e: Error) {
@@ -897,6 +913,10 @@ package {
       } catch(e: Error) {
         writeDebug('_start(): registerOnComplete failed');
       }
+      s.lastValues.paused = false; // reset pause if applicable
+      s.lastValues.nLoops = (nLoops || 1);
+      s.lastValues.position = nMsecOffset;
+      s.handledDataError = false; // reset this flag
     }
 
     public function _pause(sID:String) : void {
