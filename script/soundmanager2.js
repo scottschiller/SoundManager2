@@ -67,7 +67,7 @@ function SoundManager(smURL, smID) {
     'ondataerror': null,           // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
     'serverUrl': null,             // FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
     'duration': null,              // Duration of the song in milli-seconds
-    'totalBytes': null,            // Byte size of the song
+    'totalBytes': null             // Byte size of the song
   };
 
   this.movieStarOptions = {    // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9+movieStar mode is enabled
