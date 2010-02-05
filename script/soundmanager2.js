@@ -1796,7 +1796,7 @@ if (_s.debugMode) {
           _t._iO.whileplaying.apply(_t); // flash may call after actual finish
         }
         if ((_t.loaded || (!_t.loaded && _t._iO.isMovieStar)) && _t._iO.onbeforefinish && _t._iO.onbeforefinishtime && !_t.didBeforeFinish && _t.duration - _t.position <= _t._iO.onbeforefinishtime) {
-          _s._wD('duration-position &lt;= onbeforefinishtime: '+_t.duration+' - '+_t.position+' &lt= '+_t._iO.onbeforefinishtime+' ('+(_t.duration - _t.position)+')');
+          //_s._wD('duration-position &lt;= onbeforefinishtime: '+_t.duration+' - '+_t.position+' &lt= '+_t._iO.onbeforefinishtime+' ('+(_t.duration - _t.position)+')');
           _t._onbeforefinish();
         }
       }

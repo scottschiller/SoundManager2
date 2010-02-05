@@ -312,6 +312,7 @@ package {
             ExternalInterface.call(sMethod, bL, bT, nD);
           // KJV For our RTMP streams bytesLoaded is always 0!
           } else if (!oSound.loaded && bL == 0 && bT && oSound.ns.bufferLength != oSound.lastValues.bufferLength) {
+            //writeDebug('updating position with bufferLength ' + oSound.ns.bufferLength);
             oSound.lastValues.bufferLength = oSound.ns.bufferLength;
             ExternalInterface.call(sMethod, bL, bT, nD, oSound.ns.bufferLength);
           }
@@ -549,9 +550,9 @@ package {
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
           // and exit full-screen mode, too?
           stage.displayState = StageDisplayState.NORMAL;
-        } else {
-          writeDebug('NetStream.Play.Stop called and ignored. Probably just buffer full.');
-        }
+        }/* else {
+                  writeDebug('NetStream.Play.Stop called and ignored. Probably just buffer full.');
+                }*/
       } else if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
         this.onLoadError(oSound);
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
@@ -574,8 +575,8 @@ package {
         // We can detect the end of the stream when Play.Stop is called followed by Buffer.Empty.
         // However, if you pause and let the whole song buffer, Buffer.Flush is called followed by
         // Buffer.Empty, so handle that case too.
-        if (e.info.code == "NetStream.Buffer.Empty" && (oSound.lastNetStatus == 'NetStream.Play.Stop' || oSound.lastNetStatus == 'NetStream.Play.Flush')) {
-          writeDebug('Buffer empty and last net status was Play.Stop or Buffer.Flush.  This must be the end!');
+        if (e.info.code == "NetStream.Buffer.Empty" && (oSound.lastNetStatus == 'NetStream.Play.Stop' || oSound.lastNetStatus == 'NetStream.Buffer.Flush')) {
+          //writeDebug('Buffer empty and last net status was Play.Stop or Buffer.Flush.  This must be the end!');
           oSound.didJustBeforeFinish = false; // reset
           writeDebug('calling onfinish for a sound');
           checkProgress();
@@ -620,8 +621,9 @@ package {
         s.lastValues.position = nSecOffset; // s.soundChannel.position;
       }
       if (s.useNetstream) {
-        writeDebug('setPosition: ' + nSecOffset / 1000);
-        s.ns.seek(nSecOffset > 0 ? nSecOffset / 1000 : 0);
+        nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
+        writeDebug('setPosition: ' + nSecOffset);
+        s.ns.seek(nSecOffset);
         checkProgress(); // force UI update
       } else {
         if (s.soundChannel) {
@@ -696,23 +698,13 @@ package {
 
       if (s.useNetstream) {
         try {
-          // s.ns.close();
           this.addNetstreamEvents(s);
           ExternalInterface.call(baseJSObject + "['" + s.sID + "']._whileloading", s.ns.bytesLoaded, s.ns.bytesTotal || s.totalBytes, int(s.duration || 0));
-          //s.ns.seek(0);
           s.ns.play(sURL);
           if (!bAutoPlay) {
-            //writeDebug("In _load, pausing song because autoplay is false.");
-            //s.lastValues.bufferLength = s.ns.bufferLength;
-            s.pauseOnBufferFull = true;
-/*            flash.utils.setTimeout(function(s:SoundManager2_SMSound_AS3):void {
-              s.ns.pause();
-              s.paused = true;
-            }, 2000, s);*/
             // We wait for the buffer to fill up before pausing the just-loaded song because only if the
             // buffer is full will the song continue to buffer until the user hits play.
-            //_pause(s.sID);
-            //s.soundChannel.stop();
+            s.pauseOnBufferFull = true;
           }
         } catch(e: Error) {
           writeDebug('_load(): error: ' + e.toString());
