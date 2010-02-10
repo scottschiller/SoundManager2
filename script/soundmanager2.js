@@ -7,7 +7,7 @@
    Code provided under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.95b.20100101+DEV.20100124
+   V2.95b.20100101+DEV.20100209
 */
 
 /*jslint undef: true, bitwise: true, newcap: true, immed: true */
@@ -80,7 +80,7 @@ function SoundManager(smURL, smID) {
   var _s = this;
   var _sm = 'soundManager';
   this.version = null;
-  this.versionNumber = 'V2.95b.20100101+DEV.20100124';
+  this.versionNumber = 'V2.95b.20100101+DEV.20100209';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -120,6 +120,8 @@ function SoundManager(smURL, smID) {
     flash9: /\.mp3(\?.*)?$/i
   };
 
+  this.baseMimeTypes = /^audio\/(?:x-)?(?:mp(?:eg|3))\s*;?/i // mp3
+  this.netStreamMimeTypes = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex)\s*;?/i // mp3, mp4, aac etc.
   this.netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2']; // Flash v9.0r115+ "moviestar" formats
   this.netStreamPattern = new RegExp('\\.('+this.netStreamTypes.join('|')+')(\\?.*)?$', 'i');
 
@@ -369,7 +371,7 @@ function SoundManager(smURL, smID) {
       throw _s._complain(fN+_s._str('notReady'), arguments.callee.caller);
     }
     if (!_s._idCheck(sID)) {
-      if (typeof oOptions != 'Object') {
+      if (!(oOptions instanceof Object)) {
         oOptions = {
           url: oOptions
         }; // overloading use case: play('mySound','/path/to/some.mp3');
@@ -540,6 +542,10 @@ function SoundManager(smURL, smID) {
     _s.initComplete(bNoDisable); // fire "complete", despite fail
     // _s._disableObject(_s); // taken out to allow reboot()
   };
+
+  this.canPlayType = function(sType) {
+	
+  }
 
   this.canPlayURL = function(sURL) {
     return (sURL?(sURL.match(_s.filePattern)?true:false):null);
@@ -1139,7 +1145,9 @@ if (_s.debugMode) {
       // _s._wD('soundManager.initComplete(): calling soundManager.onerror()',1);
       _s._processOnReady();
       _s._debugTS('onload', false);
-      _s.onerror.apply(window);
+	  if (_s.onerror instanceof Function) {
+        _s.onerror.apply(window);
+	  }
       return false;
     } else {
       _s._debugTS('onload', true);
