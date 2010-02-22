@@ -145,7 +145,7 @@ function BasicMP3Player() {
       if (!o) return true;
     }
     var sURL = o.getAttribute('href');
-    if (!o.href || !o.href.match(/\.mp3(\\?.*)$/i) || self.classContains(o,self.excludeClass)) {
+    if (!o.href || !soundManager.canPlayLink(o) || self.classContains(o,self.excludeClass)) {
       if (isIE && o.onclick) {
         return false; // IE will run this handler before .onclick(), everyone else is cool?
       }

@@ -7,7 +7,7 @@
    Code provided under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.95b.20100101+DEV.20100209
+   V2.95b.20100101+DEV.20100221
 */
 
 /*jslint undef: true, bitwise: true, newcap: true, immed: true */
@@ -70,7 +70,7 @@ function SoundManager(smURL, smID) {
   this.movieStarOptions = {    // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9+movieStar mode is enabled
     'onmetadata': null,		   // callback for when video width/height etc. are received
     'useVideo': false,		   // if loading movieStar content, whether to show video
-    'bufferTime': null		   // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try up to 3 seconds)
+    'bufferTime': 2		       // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try up to 3 seconds)
   };
 
   // jslint global declarations
@@ -115,6 +115,7 @@ function SoundManager(smURL, smID) {
     return document.getElementById(sID);
   };
 
+  this.filePattern = null;
   this.filePatterns = {
     flash8: /\.mp3(\?.*)?$/i,
     flash9: /\.mp3(\?.*)?$/i
@@ -124,8 +125,8 @@ function SoundManager(smURL, smID) {
   this.netStreamMimeTypes = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex)\s*;?/i // mp3, mp4, aac etc.
   this.netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2']; // Flash v9.0r115+ "moviestar" formats
   this.netStreamPattern = new RegExp('\\.('+this.netStreamTypes.join('|')+')(\\?.*)?$', 'i');
+  this.mimePattern = _s.baseMimeTypes;
 
-  this.filePattern = null;
   this.features = {
     buffering: false,
     peakData: false,
@@ -162,6 +163,7 @@ function SoundManager(smURL, smID) {
       // flash 9+ support for movieStar formats as well as MP3
       _s.defaultOptions = _s._mergeObjects(_s.defaultOptions, _s.movieStarOptions);
       _s.filePatterns.flash9 = new RegExp('\\.(mp3|'+_s.netStreamTypes.join('|')+')(\\?.*)?$', 'i');
+	  _s.mimePattern = _s.netStreamMimeTypes;
       _s.features.movieStar = true;
     } else {
       _s.useMovieStar = false;
@@ -543,13 +545,22 @@ function SoundManager(smURL, smID) {
     // _s._disableObject(_s); // taken out to allow reboot()
   };
 
-  this.canPlayType = function(sType) {
-	
+  this.canPlayMIME = function(sURL) {
+	return (sURL?(sURL.match(_s.mimePattern)?true:false):null);
   }
 
   this.canPlayURL = function(sURL) {
     return (sURL?(sURL.match(_s.filePattern)?true:false):null);
   };
+
+  this.canPlayLink = function(oLink) {
+	if (typeof oLink.type != 'undefined' && oLink.type) {
+	  if (_s.canPlayMIME(oLink.type)) {
+		return true;
+	  }
+	}
+	return _s.canPlayURL(oLink.href);
+  }
 
   this.getSoundById = function(sID, suppressDebug) {
     if (!sID) {
@@ -766,42 +777,42 @@ function SoundManager(smURL, smID) {
     var oD = null;
     var oToggle = null;
 
-if (_s.debugMode) {
+	if (_s.debugMode) {
 
-    oD = document.createElement('div');
-    oD.id = _s.debugID+'-toggle';
-    oToggle = {
-      position: 'fixed',
-      bottom: '0px',
-      right: '0px',
-      width: '1.2em',
-      height: '1.2em',
-      lineHeight: '1.2em',
-      margin: '2px',
-      textAlign: 'center',
-      border: '1px solid #999',
-      cursor: 'pointer',
-      background: '#fff',
-      color: '#333',
-      zIndex: 10001
-    };
+	    oD = document.createElement('div');
+	    oD.id = _s.debugID+'-toggle';
+	    oToggle = {
+	      position: 'fixed',
+	      bottom: '0px',
+	      right: '0px',
+	      width: '1.2em',
+	      height: '1.2em',
+	      lineHeight: '1.2em',
+	      margin: '2px',
+	      textAlign: 'center',
+	      border: '1px solid #999',
+	      cursor: 'pointer',
+	      background: '#fff',
+	      color: '#333',
+	      zIndex: 10001
+	    };
 
-    oD.appendChild(document.createTextNode('-'));
-    oD.onclick = _s._toggleDebug;
-    oD.title = 'Toggle SM2 debug console';
+	    oD.appendChild(document.createTextNode('-'));
+	    oD.onclick = _s._toggleDebug;
+	    oD.title = 'Toggle SM2 debug console';
 
-    if (navigator.userAgent.match(/msie 6/i)) {
-      oD.style.position = 'absolute';
-      oD.style.cursor = 'hand';
-    }
+	    if (navigator.userAgent.match(/msie 6/i)) {
+	      oD.style.position = 'absolute';
+	      oD.style.cursor = 'hand';
+	    }
 
-    for (tmp in oToggle) {
-      if (oToggle.hasOwnProperty(tmp)) {
-        oD.style[tmp] = oToggle[tmp];
-      }
-    }
+	    for (tmp in oToggle) {
+	      if (oToggle.hasOwnProperty(tmp)) {
+	        oD.style[tmp] = oToggle[tmp];
+	      }
+	    }
 
-}
+	}
 
     var oTarget = _s._getDocument();
 
@@ -1723,7 +1734,7 @@ if (_s.debugMode) {
     };
 
     this._whileplaying = function(nPosition, oPeakData, oWaveformDataLeft, oWaveformDataRight, oEQData) {
-
+	
       if (isNaN(nPosition) || nPosition === null) {
         return false; // Flash may return NaN at times
       }

@@ -84,6 +84,8 @@ function ThreeSixtyPlayer() {
 
     useAmplifier: true, // "pulse" like a speaker
 
+    opaqueTweak: true, // potential firefox 3.5+ performance boost - see https://bugzilla.mozilla.org/show_bug.cgi?id=430906
+
     fontSizeMax: null, // set according to CSS
 
 	useFavIcon: false // Experimental (also requires usePeakData: true).. Try to draw a "VU Meter" in the favicon area, if browser supports it (Firefox + Opera as of 2009)
@@ -1074,13 +1076,21 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
     }
   };
 
-  this.testCanvas = function() {
+  this.testCanvas = function(noOpaque) {
     // canvas + toDataURL();
     var c = document.createElement('canvas');
 	var ctx = null;
     if (!c || typeof c.getContext == 'undefined') {
 	  return null;
     }
+    if (self.config.opaqueTweak && !noOpaque && navigator.userAgent.match(/firefox/i)) {
+	    // possible Firefox 3.5+ performance gain, see https://bugzilla.mozilla.org/show_bug.cgi?id=430906
+		try {
+		  c.mozOpaque = true;
+		} catch(e) {
+		  // oh well
+		}
+	}
     ctx = c.getContext('2d');
 	if (!ctx || typeof c.toDataURL != 'function') {
 		return null;
@@ -1098,7 +1108,7 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
 
   this.init = function() {
 	  if (self.config.useFavIcon) {
-		me.vuDataCanvas = me.testCanvas();
+		me.vuDataCanvas = me.testCanvas(true);
 		if (me.vuDataCanvas && (navigator.userAgent.match(/(firefox|opera)/i))) {
 	      // these browsers support dynamically-updating the favicon
 		  me.createVUData();

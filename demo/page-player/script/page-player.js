@@ -458,87 +458,86 @@ function PagePlayer(oConfigOverride) {
     }
     var sURL = o.getAttribute('href');
     if (!o.href || (!sm.canPlayURL(o.href) && !self.hasClass(o,'playable')) || self.hasClass(o,'exclude')) {
-      if (isIE && o.onclick) {
-        return false; // IE will run this handler before .onclick(), everyone else is cool?
-      }
-      return true; // pass-thru for non-MP3/non-links
-    }
-    var soundURL = o.href;
-    var thisSound = self.getSoundByObject(o);
-    if (thisSound) {
-      // sound already exists
-      self.setPageTitle(thisSound._data.originalTitle);
-      if (thisSound == self.lastSound) {
-        // ..and was playing (or paused) and isn't in an error state
-		if (thisSound.readyState != 2) {
-		  if (thisSound.playState != 1) {
-			// not yet playing
-			thisSound.play();
-		  } else {
-            thisSound.togglePause();
-          }
-		} else {
-		  sm._writeDebug('Warning: sound failed to load (security restrictions, 404 or bad format)',2);
-		}
-      } else {
-        // ..different sound
-        if (self.lastSound) self.stopSound(self.lastSound);
-        thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
-        thisSound.togglePause(); // start playing current
-      }
+      // do nothing, don't return anything.
     } else {
-      // create sound
-      thisSound = sm.createSound({
-        id:'pagePlayerMP3Sound'+(self.soundCount++),
-        url:soundURL,
-        onplay:self.events.play,
-        onstop:self.events.stop,
-        onpause:self.events.pause,
-        onresume:self.events.resume,
-        onfinish:self.events.finish,
-        whileloading:self.events.whileloading,
-        whileplaying:self.events.whileplaying,
-		onmetadata:self.events.metadata,
-        onload:self.events.onload
-      });
-      // append control template
-      var oControls = self.oControls.cloneNode(true);
-      o.parentNode.appendChild(oControls);
-      o.parentNode.appendChild(document.getElementById('spectrum-container'));
-      self.soundsByObject[o.rel] = thisSound;
-      // tack on some custom data
-      thisSound._data = {
-        oLink: o, // DOM reference within SM2 object event handlers
-        oLI: o.parentNode,
-        oControls: self.getElementsByClassName('controls','div',o.parentNode)[0],
-        oStatus: self.getElementsByClassName('statusbar','div',o.parentNode)[0],
-        oLoading: self.getElementsByClassName('loading','div',o.parentNode)[0],
-        oPosition: self.getElementsByClassName('position','div',o.parentNode)[0],
-        oTimingBox: self.getElementsByClassName('timing','div',o.parentNode)[0],
-        oTiming: self.getElementsByClassName('timing','div',o.parentNode)[0].getElementsByTagName('div')[0],
-        oPeak: self.getElementsByClassName('peak','div',o.parentNode)[0],
-        oGraph: self.getElementsByClassName('spectrum-box','div',o.parentNode)[0],
-        nIndex: self.getSoundIndex(o),
-        className: self.css.sPlaying,
-        originalTitle: o.innerHTML,
-        metadata: null
-      };
-      thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
-      // "Metadata"
-      if (thisSound._data.oLI.getElementsByTagName('ul').length) {
-        thisSound._data.metadata = new Metadata(thisSound);
-      }
-      // set initial timer stuff (before loading)
-      var str = self.strings['timing'].replace('%s1',self.config.emptyTime);
-      str = str.replace('%s2',self.config.emptyTime);
-      thisSound._data.oTiming.innerHTML = str;
-      self.sounds.push(thisSound);
-      if (self.lastSound) self.stopSound(self.lastSound);
-      self.resetGraph.apply(thisSound);
-      thisSound.play();
-    }
-    self.lastSound = thisSound; // reference for next call
-    return self.stopEvent(e);
+	  // we have something we're interested in.
+	    var soundURL = o.href;
+	    var thisSound = self.getSoundByObject(o);
+	    if (thisSound) {
+	      // sound already exists
+	      self.setPageTitle(thisSound._data.originalTitle);
+	      if (thisSound == self.lastSound) {
+	        // ..and was playing (or paused) and isn't in an error state
+			if (thisSound.readyState != 2) {
+			  if (thisSound.playState != 1) {
+				// not yet playing
+				thisSound.play();
+			  } else {
+	            thisSound.togglePause();
+	          }
+			} else {
+			  sm._writeDebug('Warning: sound failed to load (security restrictions, 404 or bad format)',2);
+			}
+	      } else {
+	        // ..different sound
+	        if (self.lastSound) self.stopSound(self.lastSound);
+	        thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
+	        thisSound.togglePause(); // start playing current
+	      }
+	    } else {
+	      // create sound
+	      thisSound = sm.createSound({
+	        id:'pagePlayerMP3Sound'+(self.soundCount++),
+	        url:soundURL,
+	        onplay:self.events.play,
+	        onstop:self.events.stop,
+	        onpause:self.events.pause,
+	        onresume:self.events.resume,
+	        onfinish:self.events.finish,
+	        whileloading:self.events.whileloading,
+	        whileplaying:self.events.whileplaying,
+			onmetadata:self.events.metadata,
+	        onload:self.events.onload
+	      });
+	      // append control template
+	      var oControls = self.oControls.cloneNode(true);
+	      o.parentNode.appendChild(oControls);
+	      o.parentNode.appendChild(document.getElementById('spectrum-container'));
+	      self.soundsByObject[o.rel] = thisSound;
+	      // tack on some custom data
+	      thisSound._data = {
+	        oLink: o, // DOM reference within SM2 object event handlers
+	        oLI: o.parentNode,
+	        oControls: self.getElementsByClassName('controls','div',o.parentNode)[0],
+	        oStatus: self.getElementsByClassName('statusbar','div',o.parentNode)[0],
+	        oLoading: self.getElementsByClassName('loading','div',o.parentNode)[0],
+	        oPosition: self.getElementsByClassName('position','div',o.parentNode)[0],
+	        oTimingBox: self.getElementsByClassName('timing','div',o.parentNode)[0],
+	        oTiming: self.getElementsByClassName('timing','div',o.parentNode)[0].getElementsByTagName('div')[0],
+	        oPeak: self.getElementsByClassName('peak','div',o.parentNode)[0],
+	        oGraph: self.getElementsByClassName('spectrum-box','div',o.parentNode)[0],
+	        nIndex: self.getSoundIndex(o),
+	        className: self.css.sPlaying,
+	        originalTitle: o.innerHTML,
+	        metadata: null
+	      };
+	      thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
+	      // "Metadata"
+	      if (thisSound._data.oLI.getElementsByTagName('ul').length) {
+	        thisSound._data.metadata = new Metadata(thisSound);
+	      }
+	      // set initial timer stuff (before loading)
+	      var str = self.strings['timing'].replace('%s1',self.config.emptyTime);
+	      str = str.replace('%s2',self.config.emptyTime);
+	      thisSound._data.oTiming.innerHTML = str;
+	      self.sounds.push(thisSound);
+	      if (self.lastSound) self.stopSound(self.lastSound);
+	      self.resetGraph.apply(thisSound);
+	      thisSound.play();
+	    }
+	    self.lastSound = thisSound; // reference for next call
+	    return self.stopEvent(e);
+	 }
   }
   
   this.handleMouseDown = function(e) {
