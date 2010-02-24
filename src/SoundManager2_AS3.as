@@ -35,7 +35,7 @@ package {
   import flash.external.ExternalInterface; // woo
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "2.95b.20100101";
+    public var version:String = "V2.95b.20100101+DEV.20100223";
     public var version_as:String = "(AS3/Flash 9)";
 
     // Cross-domain security exception stuffs
@@ -332,7 +332,6 @@ package {
             ExternalInterface.call(sMethod, bL, bT, nD);
           }
         }
-
         // peak data
         if (oSoundChannel && oSound.usePeakData) {
           if (lP != oSound.lastValues.leftPeak) {
@@ -346,7 +345,7 @@ package {
         }
 
         // raw waveform + EQ spectrum data
-        if (oSoundChannel) {
+        if (oSoundChannel || oSound.useNetstream) {
           if (oSound.useWaveformData) {
             if (areSoundsInaccessible == false) {
               try {
@@ -359,7 +358,7 @@ package {
               try {
                 oSound.getWaveformData();
               } catch(e: Error) {
-                // writeDebug('getWaveformData() (waveform data) '+e.toString());
+                writeDebug('getWaveformData() (waveform data) '+e.toString());
                 // oSound.useWaveformData = false;
                 sMethod = baseJSObject + "['" + sounds[i] + "']._ondataerror";
                 ExternalInterface.call(sMethod, 'Spectrum data: ' + e.toString());
@@ -401,22 +400,17 @@ package {
         if (typeof nP != 'undefined' && nP != oSound.lastValues.position && isPlaying) { // and IF VIDEO, is still playing?
           oSound.lastValues.position = nP;
           sMethod = baseJSObject + "['" + sounds[i] + "']._whileplaying";
-          if (oSound.useNetstream != true) {
-            var waveDataLeft:String = (newWaveformData ? oSound.waveformDataArray.slice(0, 256).join(',') : null);
-            var waveDataRight:String = (newWaveformData ? oSound.waveformDataArray.slice(256).join(',') : null);
-            var eqDataLeft:String = (newEQData ? oSound.eqDataArray.slice(0, 256).join(',') : null);
-            var eqDataRight:String = (newEQData ? oSound.eqDataArray.slice(256).join(',') : null);
-            ExternalInterface.call(sMethod, nP, (newPeakData ? {
-              leftPeak: lP,
-              rightPeak: rP
-            } : null), waveDataLeft, waveDataRight, (newEQData ? {
-              leftEQ: eqDataLeft,
-              rightEQ: eqDataRight
-            } : null));
-            // ExternalInterface.call(sMethod,nP,(newPeakData?{leftPeak:lP,rightPeak:rP}:null),waveDataLeft,waveDataRight,(newEQData?oSound.eqDataArray:null));
-          } else {
-            ExternalInterface.call(sMethod, nP, null, null, null);
-          }
+          var waveDataLeft:String = (newWaveformData ? oSound.waveformDataArray.slice(0, 256).join(',') : null);
+          var waveDataRight:String = (newWaveformData ? oSound.waveformDataArray.slice(256).join(',') : null);
+          var eqDataLeft:String = (newEQData ? oSound.eqDataArray.slice(0, 256).join(',') : null);
+          var eqDataRight:String = (newEQData ? oSound.eqDataArray.slice(256).join(',') : null);
+          ExternalInterface.call(sMethod, nP, (newPeakData ? {
+            leftPeak: lP,
+            rightPeak: rP
+          } : null), waveDataLeft, waveDataRight, (newEQData ? {
+            leftEQ: eqDataLeft,
+            rightEQ: eqDataRight
+          } : null));
           // if position changed, check for near-end
           if (oSound.didJustBeforeFinish != true && oSound.loaded == true && oSound.justBeforeFinishOffset > 0 && nD - nP <= oSound.justBeforeFinishOffset) {
             // fully-loaded, near end and haven't done this yet..

@@ -7,7 +7,7 @@
    Code provided under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.95b.20100101+DEV.20100221
+   V2.95b.20100101+DEV.20100223
 */
 
 /*jslint undef: true, bitwise: true, newcap: true, immed: true */
@@ -80,7 +80,7 @@ function SoundManager(smURL, smID) {
   var _s = this;
   var _sm = 'soundManager';
   this.version = null;
-  this.versionNumber = 'V2.95b.20100101+DEV.20100209';
+  this.versionNumber = 'V2.95b.20100101+DEV.20100223';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -211,7 +211,8 @@ function SoundManager(smURL, smID) {
 	noPolling: _sm+': Polling (whileloading()/whileplaying() support) is disabled.',
 	secNote: 'Flash security note: Network/internet URLs will not load due to security restrictions. Access can be configured via Flash Player Global Security Settings Page: http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html',
 	badRemove: 'Warning: Failed to remove flash movie.',
-	peakWave: 'Warning: peak/waveform/eqData features unsupported for non-MP3 formats',
+	noPeak: 'Warning: peakData features unsupported for movieStar formats',
+	// peakWave: 'Warning: peak/waveform/eqData features unsupported for non-MP3 formats',
 	shutdown: _sm+'.disable(): Shutting down',
 	queue: _sm+'.onready(): Queueing handler',
 	smFail: _sm+': Failed to initialise.',
@@ -280,11 +281,9 @@ function SoundManager(smURL, smID) {
       if (_tO.isMovieStar) {
         _s._wD(_cs+'using MovieStar handling');
       }
-      if (_tO.isMovieStar && (_tO.usePeakData || _tO.useWaveformData || _tO.useEQData)) {
-        _s._wDS('peakWave');
+      if (_tO.isMovieStar && _tO.usePeakData) {
+        _s._wDS('noPeak');
         _tO.usePeakData = false;
-        _tO.useWaveformData = false;
-        _tO.useEQData = false;
       }
     }
     _s.sounds[_tO.id] = new SMSound(_tO);

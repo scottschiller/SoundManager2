@@ -286,7 +286,7 @@ class SoundManager2 {
     }
 
     var _start = function (sID, nLoops, nMsecOffset) {
-      writeDebug('_start: ' + sID + ', loops: ' + nLoops + ', nMsecOffset: ' + nMsecOffset);
+      // writeDebug('_start: ' + sID + ', loops: ' + nLoops + ', nMsecOffset: ' + nMsecOffset);
       registerOnComplete();
       var s = soundObjects[sID];
       s.lastValues.paused = false; // reset pause if applicable
