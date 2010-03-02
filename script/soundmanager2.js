@@ -120,7 +120,8 @@ function SoundManager(smURL, smID) {
 
   this.filePatterns = {
     flash8: /\.mp3(\?.*)?$/i,
-    flash9: /\.mp3(\?.*)?$/i
+    flash9: /\.mp3(\?.*)?$/i,
+    flash10: /\.mp3(\?.*)?$/i
   };
 
   this.netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2']; // Flash v9.0r115+ "moviestar" formats
@@ -149,11 +150,7 @@ function SoundManager(smURL, smID) {
   };
 
   this._setVersionInfo = function() {
-    if (_s.flashVersion != 8 && _s.flashVersion != 9) {
-      alert(_s._str('badFV',_s.flashVersion,_s._defaultFlashVersion));
-      _s.flashVersion = _s._defaultFlashVersion;
-    }
-    _s.version = _s.versionNumber+(_s.flashVersion == 9?' (AS3/Flash 9)':' (AS2/Flash 8)');
+    _s.version = _s.versionNumber + (_s.flashVersion > 8 ? ' (AS3/Flash '+_s.flashVersion+')' : ' (AS2/Flash 8)');
     // set up default options
     if (_s.flashVersion > 8) {
       _s.defaultOptions = _s._mergeObjects(_s.defaultOptions, _s.flash9Options);
@@ -162,14 +159,14 @@ function SoundManager(smURL, smID) {
     if (_s.flashVersion > 8 && _s.useMovieStar) {
       // flash 9+ support for movieStar formats as well as MP3
       _s.defaultOptions = _s._mergeObjects(_s.defaultOptions, _s.movieStarOptions);
-      _s.filePatterns.flash9 = new RegExp('\\.(mp3|'+_s.netStreamTypes.join('|')+')(\\?.*)?$', 'i');
+      _s.filePatterns.flash9 = _s.filePatterns.flash10 = new RegExp('\\.(mp3|'+_s.netStreamTypes.join('|')+')(\\?.*)?$', 'i');
       _s.features.movieStar = true;
     } else {
       _s.useMovieStar = false;
       _s.features.movieStar = false;
     }
-    _s.filePattern = _s.filePatterns[(_s.flashVersion != 8?'flash9':'flash8')];
-    _s.movieURL = (_s.flashVersion == 8?'soundmanager2.swf':'soundmanager2_flash9.swf');
+    _s.filePattern = _s.filePatterns['flash' + _s.flashVersion];
+    _s.movieURL = _s.flashVersion > 8 ? 'soundmanager2_flash'+_s.flashVersion+'.swf' : 'soundmanager2.swf';
     _s.features.peakData = _s.features.waveformData = _s.features.eqData = (_s.flashVersion > 8);
   };
 
@@ -217,7 +214,7 @@ function SoundManager(smURL, smID) {
     smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
     manURL: 'SMSound.load(): Using manually-assigned URL',
     onURL: _sm+'.load(): current URL already assigned.',
-    badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.'
+    badFV: 'soundManager.flashVersion: the version of flash player to use e.g. 8, 9 or 10'
   };
 
   this._str = function() { // o [,items to replace]
@@ -1583,7 +1580,7 @@ if (_s.debugMode) {
         }
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
-        _s.o._start(_t.sID, _t._iO.loop || 1, (_s.flashVersion == 9?_t.position:_t.position / 1000));
+        _s.o._start(_t.sID, _t._iO.loop || 1, (_s.flashVersion >= 9?_t.position:_t.position / 1000));
       }
     };
 
@@ -1615,7 +1612,7 @@ if (_s.debugMode) {
       if (_t.paused) {
         _t.resume();
       }
-      _s.o._setPosition(_t.sID, (_s.flashVersion == 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
+      _s.o._setPosition(_t.sID, (_s.flashVersion >= 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
     };
 
     this.pause = function() {
@@ -1647,7 +1644,7 @@ if (_s.debugMode) {
       _s._wD('SMSound.togglePause()');
       if (_t.playState === 0) {
         _t.play({
-          position: (_s.flashVersion == 9?_t.position:_t.position / 1000)
+          position: (_s.flashVersion >= 9?_t.position:_t.position / 1000)
         });
         return false;
       }
