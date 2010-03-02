@@ -1,0 +1,1 @@
+sed -e '/^$/d' -e '/DO_NOT_DELETE/b' -e '/_writeDebug(/d' -e '/_wD(/d' -e '/_wDS(/d' -e '/console.log(/d' -e "s/'.swf'/'_nodebug.swf'/" ../script/soundmanager2.js > ../script/soundmanager2-nodebug.js

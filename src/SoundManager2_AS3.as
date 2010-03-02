@@ -76,7 +76,7 @@ package {
         this.flashDebugEnabled = true;
       }
 
-      if (this.flashDebugEnabled) {
+      if (this.flashDebugEnabled) {  //DO_NOT_DELETE
         var canvas: Sprite = new Sprite();
         canvas.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
         addChild(canvas);
@@ -127,7 +127,7 @@ package {
       this.stage.addEventListener(FullScreenEvent.FULL_SCREEN, fullscreenHandler);
 
     } // SoundManager2()
-    public function flashDebug(txt:String) : void {
+    public function flashDebug(txt:String) : void { //DO_NOT_DELETE
       messages.push(txt);
       if (this.flashDebugEnabled) {
         var didCreate: Boolean = false;
@@ -209,7 +209,7 @@ package {
       }
     }
 
-    public function writeDebug(s:String, bTimestamp: Boolean = false) : Boolean {
+    public function writeDebug(s:String, bTimestamp: Boolean = false) : Boolean { //DO_NOT_DELETE
       if (!debugEnabled) return false;
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
       if (debugEnabled) trace(s);
