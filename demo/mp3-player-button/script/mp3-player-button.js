@@ -40,6 +40,9 @@ function BasicMP3Player() {
     sPaused: 'sm2_paused'
   }
 
+  this.includeClass = this.css.sDefault;
+
+
   this.addEventHandler = function(o,evtName,evtHandler) {
     typeof(attachEvent)=='undefined'?o.addEventListener(evtName,evtHandler,false):o.attachEvent('on'+evtName,evtHandler);
   }
@@ -150,6 +153,9 @@ function BasicMP3Player() {
         return false; // IE will run this handler before .onclick(), everyone else is cool?
       }
       return true; // pass-thru for non-MP3/non-links
+    }
+    if (!self.classContains(o,self.includeClass)) {
+      return true;
     }
     sm._writeDebug('handleClick()');
     var soundURL = (o.href);
