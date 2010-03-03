@@ -1,6 +1,6 @@
 /*
 
-  SoundManager 2 Demo: Play MP3 links "in-place"
+  SoundManager 2 Demo: Play MP3 links via button
   ----------------------------------------------
 
   http://schillmania.com/projects/soundmanager2/
@@ -18,7 +18,7 @@ function BasicMP3Player() {
   var self = this;
   var pl = this;
   var sm = soundManager; // soundManager instance
-  this.excludeClass = 'inline-exclude'; // CSS class for ignoring MP3 links
+  this.excludeClass = 'button-exclude'; // CSS class for ignoring MP3 links
   this.links = [];
   this.sounds = [];
   this.soundsByURL = [];

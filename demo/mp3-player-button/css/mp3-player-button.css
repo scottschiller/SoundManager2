@@ -83,23 +83,23 @@ a.sm2_button:focus {
 }
 
 a.sm2_button,
-a.sm2_paused:hover {
+a.sm2_button.sm2_paused:hover {
  background-color:#3399cc;
  background-image:url(../image/arrow-right-white.png);
- /* where possible, use data: and skip the HTTP request. Fancy-pants. Would use short-hand backgroud: for above, but IE 8 doesn't override background-image. */
+ /* where possible, use data: and skip the HTTP request. Fancy-pants. Would use short-hand background: for above, but IE 8 doesn't override background-image. */
  background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAYAAABmBXS+AAAAbklEQVQY02NgQAL//v1jZMAF/v//vwuIs9HEUBUBTbj4HwIeA3EGVsVAxtn/qOAVUGM8uknIiv4hsV8A5ZKxKfoLVvnvHwifAzLtMKwDSQLBVSBti27dJajkcSD2RJODO3wtkOOMz/tMSJJYAxMA5dmsL0IfubQAAAAASUVORK5CYII=);
- _background-image:url(../image/arrow-right-white.gif); /* IE 6 */
+ *background-image:url(../image/arrow-right-white.gif); /* IE 6+7 don't do DATA: URIs */
  background-repeat:no-repeat;
  background-position:5px 50%;
 }
 
 a.sm2_button:hover,
-a.sm2_playing,
-a.sm2_playing:hover {
+a.sm2_button.sm2_playing,
+a.sm2_button.sm2_playing:hover {
  background-color:#cc3333;
 }
 
-a.sm2_paused,
-a.sm2_paused:hover {
+a.sm2_button.sm2_paused,
+a.sm2_button.sm2_paused:hover {
  background-color:#666;
 }

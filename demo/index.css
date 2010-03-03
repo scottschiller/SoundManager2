@@ -725,9 +725,6 @@ ul.standard ul {
  color:#fff;
 }
 
-.c3 ul li ul li.active:hover {
-}
-
 .c3 h3 {
  margin:0px;
  padding:0px;
@@ -871,10 +868,12 @@ span.nevermind,
  color:#3399cc;
 }
 
+/*
 .c2 .option a:hover {
- background:#3399cc;
+ background-color:#3399cc;
  color:#fff;
 }
+*/
 
 #filter-box {
  position:relative;
@@ -1013,10 +1012,15 @@ a.cta span {
 
 a.cta:hover,
 .c2 a:hover {
- background:#3399cc;
+ background-color:#3399cc;
  border-color:#3399cc;
  color:#fff;
  text-decoration:none;
+}
+
+.c2 a.sm2_button:hover {
+	/* arg. not specific enough, redefine here. */
+	background-color:#cc3333;
 }
 
 a.cta-more {
