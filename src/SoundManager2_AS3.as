@@ -560,12 +560,24 @@ package {
         // We wait for the buffer to fill up before pausing the just-loaded song because only if the
         // buffer is full will the song continue to buffer until the user hits play.
         if (e.info.code == "NetStream.Buffer.Full" && oSound.pauseOnBufferFull) {
+
           oSound.ns.pause();
           oSound.paused = true;
           oSound.pauseOnBufferFull = false;
           writeDebug('Pausing song because buffer is now full.');
         }
-
+        
+        // Increase the size of the buffer
+        if (e.info.code == "NetStream.Buffer.Full") {
+          if (oSound.ns.bufferTime == 0.1) { 
+            oSound.ns.bufferTime = 15;
+            writeDebug('increasing buffer to '+oSound.ns.bufferTime+' secs');
+          } else if (oSound.ns.bufferTime == 15) {
+            oSound.ns.bufferTime = 30;
+            writeDebug('increasing buffer to '+oSound.ns.bufferTime+' secs');
+          }
+        }
+        
         var isNetstreamBuffering: Boolean = (e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Play.Start");
         // assume buffering when we start playing, eg. initial load.
         if (isNetstreamBuffering != oSound.lastValues.isBuffering) {
@@ -581,6 +593,9 @@ package {
           writeDebug('calling onfinish for a sound');
           checkProgress();
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
+        } else if (e.info.code == "NetStream.Buffer.Empty" && oSound.ns.bufferTime != 0.1) {
+          oSound.ns.bufferTime = 0.1;
+          writeDebug('decreasing buffer to '+oSound.ns.bufferTime+' secs');
         }
       }
       oSound.lastNetStatus = e.info.code;
@@ -621,9 +636,14 @@ package {
         s.lastValues.position = nSecOffset; // s.soundChannel.position;
       }
       if (s.useNetstream) {
+        // Minimize the buffer so playback starts ASAP
+        s.ns.bufferTime = 0.1;
+        writeDebug('setting buffer to '+s.ns.bufferTime+' secs');
+
         nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
-        writeDebug('setPosition: ' + nSecOffset);
+        writeDebug('setPosition: ' + nSecOffset);        
         s.ns.seek(nSecOffset);
+        
         checkProgress(); // force UI update
       } else {
         if (s.soundChannel) {

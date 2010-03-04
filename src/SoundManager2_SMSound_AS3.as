@@ -275,9 +275,17 @@ package {
       if (this.useNetstream) {
         writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + 'current bufferLength '+this.ns.bufferLength+ 'this.lastValues.position '+this.lastValues.position);
         this.cc.onMetaData = this.metaDataHandler;
+        
+        // Don't seek if we don't have to because it destroys the buffer
         if (this.lastValues.position != null && this.lastValues.position != nMsecOffset) {
-          this.ns.seek(nMsecOffset); // don't seek if we don't have to because it destroys the buffer
+          
+          // Minimize the buffer so playback starts ASAP
+          this.ns.bufferTime = 0.1;
+          writeDebug('setting buffer to '+this.ns.bufferTime+' secs');
+
+          this.ns.seek(nMsecOffset); 
         }
+        
         if (this.paused) {
           this.ns.resume(); // get the sound going again
           if (!this.didLoad) this.didLoad = true;
