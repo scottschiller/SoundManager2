@@ -84,7 +84,7 @@ package {
     public var st: SoundTransform;
     public var useNetstream: Boolean;
     public var useVideo: Boolean = false;
-    public var bufferTime: Number = -1;
+    public var bufferTime: Number = 0.1;
     public var lastNetStatus: String = null;
     public var serverUrl: String = null;
 
@@ -114,7 +114,9 @@ package {
       this.duration = duration;
       this.totalBytes = totalBytes;
       this.useVideo = useVideo;
-      this.bufferTime = netStreamBufferTime;
+      if (netStreamBufferTime != -1) {
+        this.bufferTime = netStreamBufferTime;
+      }
       writeDebug('in SoundManager2_SMSound_AS3, got duration '+duration+' and totalBytes '+totalBytes);
 
       if (this.useNetstream) {
@@ -151,9 +153,7 @@ package {
             this.ns = new NetStream(this.nc);
             this.ns.checkPolicyFile = true;
             // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
-            if (this.bufferTime != -1) {
-              this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
-            }
+            this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
             this.st = new SoundTransform();
             this.cc.onMetaData = this.metaDataHandler;
             this.ns.client = this.cc;
@@ -275,15 +275,15 @@ package {
     public function start(nMsecOffset: int, nLoops: int) : void {
       this.sm.currentObject = this; // reference for video, full-screen
       if (this.useNetstream) {
-        writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + 'current bufferLength '+this.ns.bufferLength+ 'this.lastValues.position '+this.lastValues.position);
+        writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
         this.cc.onMetaData = this.metaDataHandler;
         
         // Don't seek if we don't have to because it destroys the buffer
         if (this.lastValues.position != null && this.lastValues.position != nMsecOffset) {
           
           // Minimize the buffer so playback starts ASAP
-          this.ns.bufferTime = 0.1;
-          writeDebug('setting buffer to '+this.ns.bufferTime+' secs');
+          this.ns.bufferTime = this.bufferTime;
+          writeDebug('setting buffer to '+this.bufferTime+' secs');
 
           this.ns.seek(nMsecOffset); 
         }

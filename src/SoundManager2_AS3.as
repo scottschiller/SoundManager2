@@ -569,12 +569,12 @@ package {
         
         // Increase the size of the buffer
         if (e.info.code == "NetStream.Buffer.Full") {
-          if (oSound.ns.bufferTime == 0.1) { 
+          if (oSound.ns.bufferTime == oSound.bufferTime) { 
             oSound.ns.bufferTime = 15;
-            writeDebug('increasing buffer to '+oSound.ns.bufferTime+' secs');
+            writeDebug('increasing buffer to 15 secs');
           } else if (oSound.ns.bufferTime == 15) {
             oSound.ns.bufferTime = 30;
-            writeDebug('increasing buffer to '+oSound.ns.bufferTime+' secs');
+            writeDebug('increasing buffer to 30 secs');
           }
         }
         
@@ -594,10 +594,14 @@ package {
           writeDebug('calling onfinish for a sound');
           checkProgress();
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
-        } else if (e.info.code == "NetStream.Buffer.Empty" && oSound.ns.bufferTime != 0.1) {
-          oSound.ns.bufferTime = 0.1;
-          writeDebug('decreasing buffer to '+oSound.ns.bufferTime+' secs');
+        } else if (e.info.code == "NetStream.Buffer.Empty" && oSound.ns.bufferTime != oSound.bufferTime) {
+          oSound.ns.bufferTime = oSound.bufferTime;
+          writeDebug('setting buffer to '+oSound.ns.bufferTime+' secs');
         }
+      } else if (e.info.code == "NetConnection.Connect.Closed") {
+        writeDebug('attempting to reconnect...');
+        oSound.nc.connect(oSound.nc.uri);
+        oSound.ns.resume();
       }
       oSound.lastNetStatus = e.info.code;
     }
@@ -638,7 +642,7 @@ package {
       }
       if (s.useNetstream) {
         // Minimize the buffer so playback starts ASAP
-        s.ns.bufferTime = 0.1;
+        s.ns.bufferTime = s.bufferTime;
         writeDebug('setting buffer to '+s.ns.bufferTime+' secs');
 
         nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
