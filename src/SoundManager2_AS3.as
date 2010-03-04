@@ -407,7 +407,7 @@ package {
         }
 
         // special case: Netstream may try to fire whileplaying() after finishing. check that stop hasn't fired.
-        isPlaying = (!oSound.useNetstream || (oSound.useNetstream && oSound.lastNetStatus != "NetStream.Play.Stop")); // don't update if stream has ended
+        isPlaying = oSound.useNetstream ? (oSound.finished != true) : true; // don't update if stream has ended
         if (typeof nP != 'undefined' && nP != oSound.lastValues.position && isPlaying) { // and IF VIDEO, is still playing?
           oSound.lastValues.position = nP;
           sMethod = baseJSObject + "['" + sounds[i] + "']._whileplaying";
@@ -590,6 +590,7 @@ package {
         if (e.info.code == "NetStream.Buffer.Empty" && (oSound.lastNetStatus == 'NetStream.Play.Stop' || oSound.lastNetStatus == 'NetStream.Buffer.Flush')) {
           //writeDebug('Buffer empty and last net status was Play.Stop or Buffer.Flush.  This must be the end!');
           oSound.didJustBeforeFinish = false; // reset
+          oSound.finished = true;
           writeDebug('calling onfinish for a sound');
           checkProgress();
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");

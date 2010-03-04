@@ -55,6 +55,7 @@ package {
     public var connected: Boolean;
     public var failed: Boolean;
     public var paused: Boolean;
+    public var finished: Boolean;
     public var duration: Number;
     public var totalBytes: Number;
     public var handledDataError: Boolean = false;
@@ -105,6 +106,7 @@ package {
       this.loaded = false;
       this.connected = false;
       this.failed = false;
+      this.finished = false;
       this.soundChannel = null;
       this.lastNetStatus = null;
       this.useNetstream = useNetstreamArg;
