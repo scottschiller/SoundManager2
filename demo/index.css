@@ -1408,3 +1408,17 @@ body.fast .xlsf-light {
 #sm2-container.flash-debug embed {
  border:1px solid #fff;
 }
+
+ul.file-structure ul {
+	padding-left:1.5em;
+}
+
+ul.file-structure li {
+	list-style-type:square;
+	margin-top:0.25em;
+	margin-left:0px;
+}
+
+ul.file-structure li span {
+	color:#999;
+}
