@@ -152,7 +152,7 @@ soundManager.flashVersion = 9; <span><span>// optional: shiny features (default 
 			
 			  <h4 id="file-structure">SoundManager File Structure</h4>
 			  <p>Or, "What you get when you download SM2."</p>
-			  <p>If you just want the core audio API bits, you need the <code>script/soundmanager2.js</code> file and the SWF files <code>swf/soundmanager2.swf</code> and <code>swf/soundmanager2_flash9.swf</code>. The flash 9 SWF enables some extra API features, and is only used if you set <code>soundManager.flashVersion = 9</code> (the default is 8.)</p>
+			  <p>The core audio API bits require <code>script/soundmanager2.js</code> and the SWF files <code>swf/soundmanager2.swf</code> and <code>swf/soundmanager2_flash9.swf</code>. The flash 9 SWF enables some extra API features, and is only used if you set <code>soundManager.flashVersion = 9</code> (the default is 8.)</p>
 
 			  <ul class="file-structure">
 			   <li>
@@ -253,7 +253,7 @@ soundManager.onerror = function() {
 
 			  <h4 id="lazy-loading">Lazy-loading SM2 (deferred start-up): SM2_DEFER</h4>
 
-			  <p>Let's say you wanted to load and start SM2 after your page has loaded, using Javascript to insert a script node etc., or otherwise only start SM2 conditionally. You can edit soundmanager2.js and take out the SoundManager() contructor call at the bottom, <i>or</i> set the global variable SM2_DEFER = true which have the same effect.</p>
+			  <p>Let's say you wanted to load and start SM2 after your page has loaded, using Javascript to insert a script node etc., or otherwise only start SM2 conditionally. You can edit soundmanager2.js and take out the SoundManager() constructor call at the bottom, <i>or</i> set the global variable SM2_DEFER = true which will have the same effect.</p>
 			  <p>Example:</p>
 				
 <pre class="block"><code>function lazy_load_sm2() {
