@@ -145,9 +145,6 @@ function InlinePlayer() {
     }
     var sURL = o.getAttribute('href');
     if (!o.href || (!o.href.match(/\.mp3(\\?.*)$/i) && !self.classContains(o,self.playableClass)) || self.classContains(o,self.excludeClass)) {
-      if (isIE && o.onclick) {
-        return false; // IE will run this handler before .onclick(), everyone else is cool?
-      }
       return true; // pass-thru for non-MP3/non-links
     }
     sm._writeDebug('handleClick()');

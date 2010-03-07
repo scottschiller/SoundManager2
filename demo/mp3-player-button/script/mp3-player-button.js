@@ -149,9 +149,6 @@ function BasicMP3Player() {
     }
     var sURL = o.getAttribute('href');
     if (!o.href || !soundManager.canPlayLink(o) || self.classContains(o,self.excludeClass)) {
-      if (isIE && o.onclick) {
-        return false; // IE will run this handler before .onclick(), everyone else is cool?
-      }
       return true; // pass-thru for non-MP3/non-links
     }
     if (!self.classContains(o,self.includeClass)) {
