@@ -149,6 +149,10 @@
 soundManager.url = '<span>/path/to/swf-files/</span>';
 soundManager.flashVersion = 9; <span><span>// optional: shiny features (default = 8)</span></span>
 &lt;/script&gt;</pre>
+
+				<h4 id="basic-template">Basic SoundManager Template</h4>
+
+				<p>For a live example of a page including SoundManager 2, check the <a href="../../demo/template/" title="SoundManager 2 template example" onclick="checkDomain(this)">bare-bones template</a>.</p>
 			
 			  <h4 id="file-structure">SoundManager File Structure</h4>
 			  <p>Or, "What you get when you download SM2."</p>
@@ -180,11 +184,6 @@ soundManager.flashVersion = 9; <span><span>// optional: shiny features (default 
 			   </li>
 			  </ul>
 
-			  <h4 id="basic-template">Basic SoundManager Template</h4>
-
-			  <p>For a live example of a page including SoundManager 2, check the <a href="../../demo/template/" title="SoundManager 2 template example" onclick="checkDomain(this)">bare-bones template</a>.</p>
-
-
 <h4 id="tech-architecture">How SoundManager 2 Really Works</h4>
 
 <p>SoundManager 2 is the result of Javascript talking to a hidden Flash movie. The Flash layer is not a concern for you as a developer, but it is the component which makes audio control possible.</p>
@@ -212,13 +211,13 @@ soundManager.flashVersion = 9; <span><span>// optional: shiny features (default 
 				<li>new SoundManager() constructor call, event listeners attached for dom ready/init</li>
 				<li>document.createElement('embed') (or 'object' for IE), append Flash .SWF to document</li>
 				<li>SWF loads, Flash makes call to JS function: "Hi, JS!"</li>
-				<li>JS -&gt; Flash test (JS calls Flash function): Hello, Flash!</li>
+				<li>JS -&gt; Flash test (JS calls Flash function): "Hello, Flash!"</li>
 				<li>-- startup is complete, soundManager.onready() fires --</li>
 			  </ul>
 			
 			  <p class="in">A single Javascript include will link in all of the required code for the library, which will automatically begin loading either at <code>onDOMContentLoaded()</code> if supported, or alternately, after <code>window.onload()</code> (eg., IE 6 and others.) The default behaviour is to start "as soon as possible", but the library can be configured to wait for <code>window.onload()</code> in all cases as well. Loading and initialisation are separate events.</p>
 
-			  <p class="in">Once initialised, SM2 will call either <code>soundManager.onload()</code> or <code>soundManager.onerror()</code>, event handlers which you can define just as with <code>window.onload()</code>.</p>
+			  <p class="in">Once initialised, SM2 will call event handlers/listeners registered via <code>soundManager.onready()</code>. There are also "old-skool" onload()/onerror() event handlers which you can define just as you would with <code>window.onload()</code>.</p>
 			
 			  <p>If you want to lazy-load or defer SM2, see <a href="#lazy-loading" title="Lazy-loading SM2 and SM2_DEFER object">Lazy-loading and SM2_DEFER</a>.</p>
 			

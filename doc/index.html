@@ -139,9 +139,9 @@ debugFlash = false;      <span>// enable debugging output inside SWF, troublesho
 flashLoadTimeout = 1000; <span>// ms to wait for flash movie to load before failing (0 = infinity)</span>
 flashVersion = 8;        <span>// version of flash to require, either 8 or 9. Some features require 9.</span>
 nullURL = 'null.mp3';    <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span>
-url = '/path/to/swf/';   <span>// path (directory) where SM2 .SWF files will be found.</span>
+url = '/path/to/swfs/';  <span>// path (directory) where SM2 .SWF files will be found.</span>
 useConsole = true;       <span>// use firebug/safari console.log()-type debug console if available</span>
-useMovieStar = false;    <span>// enable <em>(beta)</em> support for <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+ MPEG4 audio + video</a></span>
+useMovieStar = false;    <span>// enable <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+</a> MPEG4 audio + <em>experimental</em> video support</span>
 useFastPolling = false;  <span>// fast timer=higher callback frequency, combine w/useHighPerformance</span>
 useHighPerformance = false;<span>// position:fixed flash movie for faster JS/flash callbacks</span>
 waitForWindowLoad = false; <span>// always delay soundManager.onload() until after window.onload()</span>
@@ -173,7 +173,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		   <div class="f-block f-url">
 		    <h4 id="soundmanager-url">soundManager.url</h4>
 		    <p class="in"><code>soundManager.url</code> specifies the "online", generally HTTP-based path which SM2 will load .SWF movies from. The "local" (current) directory will be used by default. The appropriate .SWF required (depending on the desired Flash version) will be appended to the URL.</p>
-		    <p class="in">Example: <code>soundManager.url = '/path/to/swf/';</code> (Note trailing slash)</p>
+		    <p class="in">Example: <code>soundManager.url = '/path/to/swfs/';</code> (Note trailing slash)</p>
 		    <p class="in">For cases where SM2 is being used "offline" in non-HTTP cases (eg., development environments), see <code>altURL</code>.</p>
 		   </div>
 
