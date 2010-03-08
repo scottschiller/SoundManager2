@@ -669,3 +669,43 @@ if (window.location.toString().match(/#customize/i)) {
 	addEvent(window,'load',mc.init);
 	addEvent(window,'load',demoInit);
 }
+
+if (window.location.toString().match(/hifi/i)) {
+	soundManager.onready(function(){
+		document.getElementById('hifi').style.display = 'none';
+		threeSixtyPlayer.config = {
+		  playNext: false,
+		  autoPlay: false,
+		  loadRingColor: '#ccc',
+		  playRingColor: '#000',
+		  backgroundRingColor: '#eee',
+		  circleDiameter: 256,
+		  circleRadius: 128,
+		  imageRoot: '',
+		  animDuration: 500,
+		  animTransition: Animator.tx.bouncy,
+		  showHMSTime: true,
+
+		  useWaveformData: true,
+		  waveformDataColor: '#0099ff',
+		  waveformDataDownsample: 1,
+		  waveformDataOutside: true,
+		  waveformDataConstrain: false,
+		  waveformDataLineRatio: 0.56,
+
+		  useEQData: true,
+		  eqDataColor: '#339933',
+		  eqDataDownsample: 1,
+		  eqDataOutside: true,
+		  eqDataLineRatio: 0.72,
+
+		  usePeakData: true,
+		  peakDataColor: '#ff33ff',
+		  peakDataOutside: true,
+		  peakDataLineRatio: 0.5,
+
+		  useAmplifier: true
+
+		}
+	});
+}
