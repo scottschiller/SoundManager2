@@ -26,6 +26,7 @@ function ThreeSixtyPlayer() {
   var isOpera = (navigator.userAgent.match(/opera/i));
   var isSafari = (navigator.userAgent.match(/safari/i));
   var isChrome = (navigator.userAgent.match(/chrome/i));
+  var isFirefox = (navigator.userAgent.match(/firefox/i));
   this.excludeClass = '360-exclude'; // CSS class for ignoring MP3 links
 
   this.links = [];
@@ -83,8 +84,6 @@ function ThreeSixtyPlayer() {
     peakDataLineRatio: 0.5,
 
     useAmplifier: true, // "pulse" like a speaker
-
-    opaqueTweak: true, // potential firefox 3.5+ performance boost - see https://bugzilla.mozilla.org/show_bug.cgi?id=430906
 
     fontSizeMax: null, // set according to CSS
 
@@ -985,6 +984,8 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
   this.vuMeterData = [];
   this.vuDataCanvas = null;
   var _head = document.getElementsByTagName('head')[0];
+  var isOpera = (navigator.userAgent.match(/opera/i));
+  var isFirefox = (navigator.userAgent.match(/firefox/i));
 
   this.setPageIcon = function(sDataURL) {
 
@@ -1080,14 +1081,6 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
     if (!c || typeof c.getContext == 'undefined') {
 	  return null;
     }
-    if (self.config.opaqueTweak && !noOpaque && navigator.userAgent.match(/firefox/i)) {
-	    // possible Firefox 3.5+ performance gain, see https://bugzilla.mozilla.org/show_bug.cgi?id=430906
-		try {
-		  c.mozOpaque = true;
-		} catch(e) {
-		  // oh well
-		}
-	}
     ctx = c.getContext('2d');
 	if (!ctx || typeof c.toDataURL != 'function') {
 		return null;
@@ -1106,7 +1099,7 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
   this.init = function() {
 	  if (self.config.useFavIcon) {
 		me.vuDataCanvas = me.testCanvas(true);
-		if (me.vuDataCanvas && (navigator.userAgent.match(/(firefox|opera)/i))) {
+		if (me.vuDataCanvas && (isFirefox || isOpera)) {
 	      // these browsers support dynamically-updating the favicon
 		  me.createVUData();
 		} else {
@@ -1128,6 +1121,7 @@ ThreeSixtyPlayer.prototype.Metadata = function(oSound, oParent) {
   var oBox = oSound._360data.oUI360;
   var o = oBox.getElementsByTagName('ul')[0];
   var oItems = o.getElementsByTagName('li');
+  var isFirefox = (navigator.userAgent.match(/firefox/i));
   this.lastWPExec = 0;
   this.refreshInterval = 250;
 
