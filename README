@@ -10,7 +10,7 @@ Basic API Features (Flash 8)
 
 Shiny Flash 9 Features
 
-    * Full-screen MPEG-4 video (HE-AAC/H.264) and audio support
+    * Full-screen MPEG-4 (HE-AAC/H.264) audio (and experimental video) support
     * "MultiShot" play (layered/chorusing effects)
     * Waveform/frequency spectrum data
     * Peak (L/R channel volume) data

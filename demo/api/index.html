@@ -159,13 +159,13 @@ function getRandomMP3URL() {
 
  <p class="note">You can run the API demos with <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency).</p>
 
- <p>Wondering where to start? The following are some examples showing how to get started with SoundManager 2.</p>
+ <p>Wondering where to start? This page has inline executable code examples using the SoundManager 2 API.</p>
 
- <p>If you're wondering <em>"How to include this script in my page?"</em>, see this <a href="../template/" title="SM2 bare-bones template" onclick="if (!document.domain) this.href=this.href+'index.html'">bare-bones template</a> which should have the minimal, stripped-down code and instructions you need to get started.</p>
+ <p>If you're wondering <em>"How to include SM2 in my page?"</em>, the <a href="../template/" title="SoundManager 2 bare-bones template" onclick="if (!document.domain) this.href=this.href+'index.html'">basic template</a> will get you started.</p>
 
- <h2>The basics: onload()/onerror()</h2>
+ <h2>The basics (old-skool style): onload() + onerror()</h2>
 
- <p>Once you have SM2 included in your page, you merely need to hook into its onload/onerror events:</p>
+ <p>Once you have SM2 included in your page, you merely need to hook into its <code>onload()</code>/<code>onerror()</code> events:</p>
 
 <pre class="block"><code>soundManager.onload = function() {
   <span><span>// soundManager is ready to use.
@@ -178,9 +178,9 @@ soundManager.onerror = function() {
 </span>}
 </code></pre>
 
- <h2>Fancier: Attaching multiple "onready" listeners</h2>
+ <h2>The modern method: Adding "onready" listeners</h2>
 
- <p>If you wish to add multiple event handlers from different scripts, you can use <i>onready()</i> / <i>addListener()</i>-style syntax:</p>
+ <p>You can register listeners by passing a function to <code>onready()</code>, and it will be called when SoundManager has finished starting up:</p>
 
 <pre class="block"><code>soundManager.onready(function() {
   if (soundManager.supported()) {
@@ -191,7 +191,7 @@ soundManager.onerror = function() {
 </span>});
 </code></pre>
 
- <p>An optional status object is actually passed to onready, which you can also use:</p>
+ <p>An optional status object is actually passed to your onready() listener, which you can use instead of checking <code>soundManager.supported()</code>:</p>
 
 <pre class="block"><code>soundManager.onready(function(oStatus) {
   <span><span>// oStatus: object containing "success" parameter</span>

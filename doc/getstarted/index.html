@@ -186,7 +186,7 @@ soundManager.flashVersion = 9; <span><span>// optional: shiny features (default 
 
 <h4 id="tech-architecture">How SoundManager 2 Really Works</h4>
 
-<p>SoundManager 2 is the result of Javascript talking to a hidden Flash movie. The Flash layer is not a concern for you as a developer, but it is the component which makes audio control possible.</p>
+<p>SoundManager 2 is the result of Javascript talking to a hidden Flash movie. The Flash layer is not something you have to work with directly, but it is the component which makes audio control possible behind the scenes.</p>
 
 <div class="figure">
 
@@ -197,6 +197,8 @@ soundManager.flashVersion = 9; <span><span>// optional: shiny features (default 
 </div>
 
 <p>Flash can expose methods to Javascript via ExternalInterface, allowing bi-directional calls to be made and thus providing additional functionality to Javascript.</p>
+
+<p>For the real gory details on the behind-the-scenes action of JS + Flash, see <a href="http://www.schillmania.com/content/entries/2010/how-soundmanager2-works/" title="How SoundManager 2 works (JS + ExternalInterface + Flash)">How SoundManager 2 Works</a> on schillmania.com.</p>
 
 
 			  </div>
