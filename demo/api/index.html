@@ -5,6 +5,7 @@
 <title>SoundManager 2: Basic API Demo, Examples</title>
 <meta name="author" content="Scott Schiller" />
 <meta name="language" content="en-us" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="keywords" content="javascript sound library api" />
 <meta name="description" content="API demo and code examples for SoundManager 2, Javascript Sound method calls and functions etc." />
 <link rel="stylesheet" href="../index.css" media="screen" />
@@ -182,7 +183,7 @@ soundManager.onerror = function() {
 
  <p>You can register listeners by passing a function to <code>onready()</code>, and it will be called when SoundManager has finished starting up:</p>
 
-<pre class="block"><code>soundManager.onready(function() {
+<pre class="block"><code>soundManager.onready(function() {<span>
   if (soundManager.supported()) {
     <span>// createSound() / play() etc. can now be called</span>
   } else {
@@ -619,3 +620,4 @@ setTimeout(sound16.stop,1500);
 </div>
 
 </body>
+</html>

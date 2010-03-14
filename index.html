@@ -9,6 +9,7 @@
 <meta name="author" content="Scott Schiller" />
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
 <meta name="language" content="en-us" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <!-- base library + a bunch of demo components (yay, they all work together) -->
 <link rel="stylesheet" type="text/css" href="demo/play-mp3-links/css/inlineplayer.css" />
 <link rel="stylesheet" type="text/css" href="demo/page-player/css/page-player.css" />
@@ -34,6 +35,7 @@ var PP_CONFIG = {
 <script type="text/javascript" src="demo/360-player/script/360player.js"></script>
 
 <script type="text/javascript">
+// <![CDATA[
 
 	var isHome = true;
 	soundManager.bgColor = '#000000';
@@ -76,11 +78,12 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 	}
 	
 	// side note: If it's not december but you want to smash things, try #christmas=1 in the homepage URL.
-	
+
+// 	]]>
 </script>
 <script type="text/javascript" src="demo/index.js"></script>
 <script type="text/javascript">
-
+// <![CDATA[
 function doChristmasLights() {
   if ((document.domain.match(/schillmania.com/i) && new Date().getMonth() == 11) || window.location.toString().match(/christmas/i)) {
     loadScript('http://yui.yahooapis.com/combo?2.6.0/build/yahoo-dom-event/yahoo-dom-event.js&2.6.0/build/animation/animation-min.js',function(){
@@ -92,7 +95,7 @@ function doChristmasLights() {
     });
   }
 }
-
+// ]]>
 </script>
 <style type="text/css">
 
@@ -223,7 +226,7 @@ function doChristmasLights() {
 
 		<div id="demo-box">
 			<a href="#debug=1" id="with-debug" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a>
-			<script>if (document.location.href.match(/debug=1/i)) document.getElementById('with-debug').style.display = 'none';</script>
+			<script type="text/javascript">if (document.location.href.match(/debug=1/i)) document.getElementById('with-debug').style.display = 'none';</script>
 			<p id="demo-header"><strong style="font-size:1.1em;font-weight:bold">Inline Javascript Sound API Examples</strong></p>
             <div id="sm2-support" class="demo-block"></div>
 			<div id="demos">

@@ -601,7 +601,11 @@ ul.standard ul {
  color:#000;
 }
 
-.c3 ul li a:hover,
+.c3 ul li a:hover {
+ color:#fff;
+ _color:#000;
+}
+
 .c3 ul li a:focus {
  color:#000;
  outline:none;
@@ -609,6 +613,10 @@ ul.standard ul {
 
 .c3 ul li.active a {
  color:#fff;
+}
+
+.c3 ul li.active a:hover {
+ _color:#fff;
 }
 
 .c3 .box {
@@ -936,8 +944,6 @@ span.nevermind,
 
 #gsfn_content ul li {
  border:none;
- padding:0px 0px 3px 5px;
- margin:4px 0px 2px 0px;
 }
 
 div#gsfn_list_widget img {
@@ -985,7 +991,8 @@ div#gsfn_list_widget div#gsfn_content li {
  *zoom:1;
 }
 
-div#gsfn_list_widget div#gsfn_content li:hover {
+div#gsfn_list_widget div#gsfn_content li:hover,
+div#gsfn_list_widget div#gsfn_content li:hover a {
  background:#3399cc;
  color:#fff;
 }
@@ -993,6 +1000,12 @@ div#gsfn_list_widget div#gsfn_content li:hover {
 div#gsfn_list_widget div#gsfn_content a.gsfn_link {
  display:block;
  line-height:1.2em;
+ padding:5px 0px 5px 5px;
+}
+
+div#gsfn_list_widget div#gsfn_content a.gsfn_link:hover {
+ _color:#fff;
+ _background-color:#3399cc;
 }
 
 div#gsfn_list_widget div#gsfn_content span.time {

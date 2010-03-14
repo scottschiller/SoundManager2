@@ -353,12 +353,6 @@ function doVersion() {
 }
 
 function startStuff() {
-/*
-  var canProbablyDoNiceFont = (navigator.platform.match(/macintel/i) || navigator.userAgent.match(/msie 8/i)); // known to have cleartype is teh on all the time
-  if (canProbablyDoNiceFont) {
-    utils.addClass(document.body, 'nicerFonts');
-  }
-*/
   if (navigator.userAgent.match(/safari/i)) {
     document.getElementsByTagName('html')[0].className = 'isSafari';
   }

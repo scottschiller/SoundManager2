@@ -9,6 +9,7 @@
 <meta name="author" content="Scott Schiller" />
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
 <meta name="language" content="en-us" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" media="screen" href="../demo/index.css" />
 <script type="text/javascript" src="../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../demo/index.js"></script>
@@ -147,7 +148,7 @@ useHighPerformance = false;<span>// position:fixed flash movie for faster JS/fla
 waitForWindowLoad = false; <span>// always delay soundManager.onload() until after window.onload()</span>
 wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HTML on top of flash)</span>
 allowFullScreen = true;    <span>// enter full-screen (via double-click on movie) for flash 9+ video</span>
-allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed property), 'always' or 'sameDomain'
+allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed property), 'always' or 'sameDomain'</span>
 </span></code></pre>
 			  <p>To modify global SoundManager default paramaters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
@@ -295,6 +296,7 @@ if (soundManager.canPlayLink(aLink)) {
 					 <li>Defaults: <code>/^audio\/(?:x-)?(?:mp(?:eg|3))\s*;?/i;</code> - eg. <code>audio/mp3</code> or <code>audio/mpeg</code></li>
 					 <li>MovieStar-only formats: <code>/^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex)\s*;?/i; </code> - eg. <code>audio/m4a or audio/aac</code></li>
 					</ul>
+				   </dd>
 				   <dd>Example:
 <pre class="block"><code><span><span>// link example: &lt;a id="song1" href="foo.php?songID=1" type="audio/mp3"&gt;play song 1&lt;/a&gt;</span></span>
 var aLink = document.getElementById('<span>song1</span>');
@@ -441,7 +443,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
   soundManager.flashLoadTimeout = 0; <span>// When restarting, wait indefinitely for flash</span>
   soundManager.onerror = {}; <span>// Prevent an infinite loop, in case it's not flashblock</span>
   soundManager.reboot(); <span>// and, go!</span>
-}</code></pre>
+}</span></code></pre>
 	   </dd>
 	   <dd>This method may be helpful when trying to gracefully recover from FlashBlock-type situations where the user has prevented the SWF from loading, but is able to whitelist it. For more ideas, see <a href="../demo/flashblock/">Flashblock demo</a>.</dd>
 	   <dd>When using this method also consider <a href="#flashloadtimeout" onclick="clearFilter()">flashLoadTimeout</a>, which can have SM2 wait indefinitely for the flash to load if desired.</dd>
@@ -547,7 +549,6 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dd>Returns a boolean indicating whether soundManager has attempted to and succeeded in initialising. This function will return false if called before initialisation has occurred.</dd>
 	   <dd>Example: <code>var isSupported = soundManager.supported();</code></dd>
 	   </dl>
-
 
 			</div>
 		
@@ -983,7 +984,7 @@ for (prop in this.id3) {
 						
 					  <div class="f-block">
 					   <h3>SMSound Object Methods</h3>
-					   <p class="in">SoundManager provides wrappers for most SMSound methods - eg. <code>soundManager.play('<span>mySound</span>')</code> checks for a valid sound object, and then calls <code>soundManager.sounds['<span>mySound</span>'].play()</code> on that particular object; thus, it is the same as <code>var sound = soundManager.getSoundById('mySound'); mySound.play();</p>
+					   <p class="in">SoundManager provides wrappers for most SMSound methods - eg. <code>soundManager.play('<span>mySound</span>')</code> checks for a valid sound object, and then calls <code>soundManager.sounds['<span>mySound</span>'].play()</code> on that particular object; thus, it is the same as <code>var sound = soundManager.getSoundById('mySound'); mySound.play();</code></p>
 					   <p>The following methods can be called directly on a SMSound instance. The method calls are the same as the SoundManager global methods documented above for existing sound objects, minus the sound ID parameter.</p>
 					  </div>
 
@@ -991,7 +992,7 @@ for (prop in this.id3) {
 
 					  <dl class="tight">
 
-					   <dt id="smsound-destruct">destruct() <span class="archive">(also called via <a href="#soundmanager-destroysound">soundManager.destroySound()</a>.)</span></dt>
+					   <dt>destruct() <span class="archive">(also called via <a href="#soundmanager-destroysound">soundManager.destroySound()</a>.)</span></dt>
 					   <dt><a href="#smsound-load">load()</a></dt>
 					   <dt><a href="#smsound-mute">mute()</a></dt>
 					   <dt><a href="#smsound-pause">pause()</a></dt>
@@ -1355,9 +1356,9 @@ soundManager.movieStarOptions = {<span>
     <ul>
 	 <li class="new"><a href="#soundmanager-canplaylink">canPlayLink()</a></li>
 	 <li class="new"><a href="#soundmanager-canplaymime">canPlayMIME()</a></li>
-     <li><a href="#soundmanager-canplayurl"canPlayURL()</a></li>
+     <li><a href="#soundmanager-canplayurl">canPlayURL()</a></li>
      <li><a href="#soundmanager-createsound">createSound()</a></li>
-	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-createvideo">createVideo()</li>
+	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-createvideo">createVideo()</a></li>
      <li><a href="#soundmanager-destroysound">destroySound()</a></li>
 	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-destroyvideo">destroyVideo()</a></li>
 	 <li class="flash9" title="Flash 9.0+ only, recent feature"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
@@ -1427,8 +1428,8 @@ soundManager.movieStarOptions = {<span>
      <li><a href="#smsound-bytesloaded">bytesLoaded</a></li>
      <li><a href="#smsound-bytestotal">bytesTotal</a></li>
 	 <li title="Flash 9+, recently-added feature" class="recent"><a href="#smsound-isbuffering">isBuffering</a></li>
-     <li><a href="#smsound-didbeforefinish">didBeforeFinish</li>
-     <li><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</li>
+     <li><a href="#smsound-didbeforefinish">didBeforeFinish</a></li>
+     <li><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</a></li>
      <li><a href="#smsound-duration">duration</a></li>
      <li><a href="#smsound-durationestimate">durationEstimate</a></li>
      <li><a href="#smsound-loaded">loaded</a></li>
