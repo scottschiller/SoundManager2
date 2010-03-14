@@ -144,28 +144,41 @@ function resetFilter(o) {
   }
   if (lastSelected) utils.removeClass(lastSelected,'active');
   if (o) lastSelected = o;
-  return true;
+  return false;
 }
 
 function setFilter(e,sFilterPrefix) {
   var o = e?e.target||e.srcElement:event.srcElement;
   utils.addClass(_id('main'),'filtered');
   var oName = o.nodeName.toLowerCase();
+  if (oName == 'a') {
+	var parent = utils.findParent(o);
+	if (parent && parent.nodeName.toLowerCase() == 'li') {
+		// normalize to LI instead.
+		o = parent;
+		oName = o.nodeName.toLowerCase();
+	}
+  }
   var sClass = '';
   var blocks = utils.getElementsByClassName('f-block',['div','dl'],_id('main'));
   var oParents = utils.getElementsByClassName('columnar','div',_id('main'));
   var oParent = null;
   var matchingParents = [];
-  if (oName != 'li' || o.className == 'ignore') return true;
+  if (oName != 'li' || o.className == 'ignore') {
+    return true;
+  }
   var isClear = (lastSelected && lastSelected == o && utils.hasClass(lastSelected,'active'));
   if (oName == 'li' && isClear) {
     return resetFilter();
   }
   if (oName == 'li') {
     // from shortcuts/filter menu
-    sClass = sFilterPrefix+o.innerHTML.substr(0,o.innerHTML.indexOf('()')!=-1?o.innerHTML.indexOf('()'):999).toLowerCase().replace(/\s+/i,'-');
+    var innerText = (o.getElementsByTagName('a').length?o.getElementsByTagName('a')[0].innerHTML:o.innerHTML); // get inner text (minus link, if one is there)
+    sClass = sFilterPrefix+innerText.substr(0,innerText.indexOf('()')!=-1?innerText.indexOf('()'):999).toLowerCase().replace(/\s+/i,'-');
     var last = sClass.substr(sClass.length-1);
-    if (last == '-' || last == ' ') sClass = sClass.substr(0,sClass.length-1); // IE innerHTML trailing whitespace hack (?)
+    if (last == '-' || last == ' ') {
+      sClass = sClass.substr(0,sClass.length-1); // IE innerHTML trailing whitespace hack (?)
+    }
     for (var i=blocks.length; i--;) {
       oParent = utils.getParentByClassName(blocks[i],'columnar',_id('main'));
       if (utils.hasClass(blocks[i],sClass)) {
@@ -199,16 +212,17 @@ function setFilter(e,sFilterPrefix) {
     }
     if (lastSelected) {
       if (lastSelected == o) {
-        utils.toggleClass(lastSelected,'active'); // (utils.hasClass(lastSelected,'active'?'':'active');
+        utils.toggleClass(lastSelected,'active');
       } else {
         utils.removeClass(lastSelected,'active');
         utils.addClass(o,'active');
       }
     } else {
-      // o.className = 'active';
       utils.addClass(o,'active');
     }
     lastSelected = o;
+    // cancel bubble, too?
+    return false;
   }
 }
 
@@ -339,6 +353,12 @@ function doVersion() {
 }
 
 function startStuff() {
+/*
+  var canProbablyDoNiceFont = (navigator.platform.match(/macintel/i) || navigator.userAgent.match(/msie 8/i)); // known to have cleartype is teh on all the time
+  if (canProbablyDoNiceFont) {
+    utils.addClass(document.body, 'nicerFonts');
+  }
+*/
   if (navigator.userAgent.match(/safari/i)) {
     document.getElementsByTagName('html')[0].className = 'isSafari';
   }

@@ -5,15 +5,9 @@ body {
  font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
 }
 
-/*
-html.isSafari * {
- text-shadow: 0 0 0 #000; /* dumbass safari high contrast font rendering tweak */
-}
-*/
-
 h1,
 h2.special {
- letter-spacing:-1px;
+ letter-spacing:-0.035em;
 }
 
 h1, h2, h3, h4 {
@@ -23,7 +17,9 @@ h1, h2, h3, h4 {
  vertical-align:middle;
 }
 
-h4.new {
+h4.new,
+h4.recent,
+h4.flash9 {
  min-height:24px;
 }
 
@@ -73,16 +69,23 @@ dl.alt pre {
 
 pre,
 code,
+pre code,
 .code,
 dt,
 #soundmanager-debug {
- font-family:monaco,"VT-100","lucida console",monospace,courier,system,sans-serif;
- font-size:11px; /* x-small is 11px on mac, 10px on windows. D'oh. */
+ font-family:monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
+}
+
+pre,
+code,
+.code,
+dt,
+#soundmanager-debug {
+ font-size:11px;
  font-weight:normal;
  line-height:1.5em;
- color:#099;
+ color:#006699;
  background:#f6fcff;
- /* font-smooth:never; */ /* We don't need no steenkeng font smoothing! - http://www.w3.org/TR/css3-fonts/#font-smooth-prop */
 }
 
 pre {
@@ -91,7 +94,7 @@ pre {
 }
 
 pre.specialcommentblock span span {
- font-size:x-small;
+ *line-height:1.75em;
 }
 
 pre span span {
@@ -115,10 +118,36 @@ p.in pre {
  line-height:1.7em;
 }
 
+body.home #soundmanager-debug {
+ position:fixed;
+ _position:absolute; /* IE <7 */
+ bottom:1em;
+ right:1em;
+ height:12em;
+ width:auto;
+ overflow:auto;
+ padding:0px;
+ margin:1em 6px 6px 1em;
+ opacity:0.95;
+ color:#333;
+ border:1px solid #ccddee;
+ -moz-border-radius:3px;
+ -khtml-border-radius:3px;
+ -webkit-border-radius:3px;
+ background:#f3f9ff;
+ z-index:10;
+ font-size:small;
+ line-height:1.2em;
+}
+
+body.home #soundmanager-debug div {
+ padding-left:0.5em;
+}
+
 #soundmanager-debug div {
  margin:0px;
  padding:0.25em 0px;
- font-size:x-small;
+ font-size:11px;
  color:#333;
 }
 
@@ -140,11 +169,14 @@ p.in pre {
 dd pre,
 dd code {
  background:transparent;
+/*
+ font-size:1.15em;
+ *font-size:1em;
+*/
 }
 
 pre code {
- font-family:monaco,"VT-100","lucida console",courier,system,sans-serif;
- font-size:11px;
+ font-size:1em;
 }
 
 pre {
@@ -190,6 +222,7 @@ div.block div.code {
  border:1px solid #ccddee;
  padding:0.5em;
  font-size:11px;
+ line-height:1.75em;
 }
 
 dl {
@@ -208,12 +241,11 @@ dt {
  padding:0px;
  margin:0.5em 0px 1em 0px;
  border-bottom:1px solid #ddeeff;
- padding:0.3em 0.3em;
+ padding:0.3em 0.3em 0.4em 0.3em;
  padding-top:0.5em;
  text-indent:0.25em;
  background:#eef6ff;
- font-size:1em;
- line-height:1.5em;
+ font-size:1.15em;
 }
 
 dt.alt {
@@ -329,6 +361,7 @@ h2 {
 #doc .triple .columnar .c2 {
  margin-left:21.5em;
  margin-right:23em;
+ _margin-right:0px; /* not you, IE 6. */
 }
 
 #doc .triple .columnar .c1 {
@@ -564,9 +597,18 @@ ul.standard ul {
 }
 
 .c3 ul li a {
- display:block;
- margin:0px;
- padding:0.25em 0.5em;
+ text-decoration:none;
+ color:#000;
+}
+
+.c3 ul li a:hover,
+.c3 ul li a:focus {
+ color:#000;
+ outline:none;
+}
+
+.c3 ul li.active a {
+ color:#fff;
 }
 
 .c3 .box {
@@ -700,14 +742,15 @@ ul.standard ul {
 }
 
 .c3 ul li ul li {
- font-family:monaco,"VT-100","lucida console",courier,system,sans-serif;
- font-size:x-small;
+ font-family:monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
  font-size:11px;
  line-height:1.5em;
  text-indent:0.5em;
  padding:0.25em 0.25em 0.25em 0.25em;
  cursor:hand;
+/*
  font-smooth:never;
+*/
 }
 
 .c3 ul li ul li.alt {
@@ -849,7 +892,6 @@ span.nevermind,
  font-weight:lighter;
  font-size:2.5em;
  letter-spacing:-1px;
- margin:0px;
 }
 
 .c2 .option {
@@ -894,7 +936,8 @@ span.nevermind,
 
 #gsfn_content ul li {
  border:none;
- padding:0px;
+ padding:0px 0px 3px 5px;
+ margin:4px 0px 2px 0px;
 }
 
 div#gsfn_list_widget img {
@@ -948,8 +991,8 @@ div#gsfn_list_widget div#gsfn_content li:hover {
 }
 
 div#gsfn_list_widget div#gsfn_content a.gsfn_link {
- line-height: 120%;
  display:block;
+ line-height:1.2em;
 }
 
 div#gsfn_list_widget div#gsfn_content span.time {
@@ -1266,12 +1309,27 @@ ul.graphic li a.sm2_link {
  padding-left:16px;
  padding-right:16px;
  margin-right:1em;
- margin-top:-0.25em;
+ margin-top:-1em;
  width:21.25em;
  /* hide from IE 6 */
  _position:absolute;
  _left:-9999em;
  _top:-9999em;
+}
+
+#demo-box #with-debug {
+ position:absolute;
+ right:0px;
+ top:0px;
+ margin-right:1.5em;
+ margin-top:-0.75em;
+ font-weight:normal;
+ font-size:x-small;
+ color:#666;
+}
+
+#demo-box #with-debug:hover {
+ color:#fff;
 }
 
 #demo-box a.feature-hot {

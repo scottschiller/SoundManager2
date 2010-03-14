@@ -109,7 +109,7 @@ function doChristmasLights() {
 </style>
 </head>
 
-<body>
+<body class="home">
 	
 <div id="content">
 
@@ -222,6 +222,8 @@ function doChristmasLights() {
 		</div>
 
 		<div id="demo-box">
+			<a href="#debug=1" id="with-debug" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a>
+			<script>if (document.location.href.match(/debug=1/i)) document.getElementById('with-debug').style.display = 'none';</script>
 			<p id="demo-header"><strong style="font-size:1.1em;font-weight:bold">Inline Javascript Sound API Examples</strong></p>
             <div id="sm2-support" class="demo-block"></div>
 			<div id="demos">
@@ -292,7 +294,7 @@ function doChristmasLights() {
 			 <a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization demo" style="border:none;margin:0px;padding:0px"><img id="demo-360" src="demo/_image/360ui-screenshot3.png" alt="" style="margin:0px;padding:0px;border:none" /></a>
 			 <div><a href="demo/360-player/canvas-visualization.html" title="Javascript + Canvas MP3 visualization demo">360&deg; UI + waveform/spectrum</a></div>
 			 <div class="note" style="margin-top:0px">Beta-ish, somewhat experimental demo</div>
-			 <script type="text/javascript">document.getElementById('demo-360').src='demo/_image/360ui-screenshot'+(1+parseInt(Math.random()*3))+'.png';</script>
+			 <script type="text/javascript">document.getElementById('demo-360').src='demo/_image/360ui-screenshot'+(1+parseInt(Math.random()*4))+'.png';</script>
 			</div>
 
 

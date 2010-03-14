@@ -245,7 +245,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		  </div>
 		
 		   <div class="f-block f-allowfullscreen f-isfullscreen">
-		    <h4 id="soundmanager-debugmode">soundManager.allowFullScreen</h4>
+		    <h4 id="soundmanager-allowfullscreen">soundManager.allowFullScreen</h4>
 		    <p class="in">With <code>allowFullScreen</code> enabled, Flash 9+ (MovieStar) video can be displayed at full-screen size. Currently the movie must be double-clicked to trigger full-screen mode. When full-screen is entered and left, <code>soundManager.isFullScreen</code> is updated to reflect the state.</p>
 		   </div>
 
@@ -272,17 +272,50 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 				  </div>
 
-	   <dl class="f-block f-canplayurl" style="margin-top:1px">
-	   <dt><span>canplay:boolean</span> canPlayURL(<span>mediaURL:string</span>)</dt>
-	   <dd>Returns a boolean indicating whether soundManager can play the given URL. Playability is determined by a matching URL pattern set at runtime, based on Flash version and MPEG4 (MovieStar mode) support.</dd>
-	   <dd>Example:
+				   <dl id="soundmanager-canplaylink" class="f-block f-canplaylink" style="margin-top:2em">
+				   <dt><span>canPlay:boolean</span> canPlayLink(<span>&lt;a&gt;:DOM element</span>)</dt>
+				   <dd>Normalized method which checks <code>canPlayMIME()</code> and <code>canPlayURL()</code> as needed to estimate the playability of an HTML link.</dd>
+				   <dd>Example:
+<pre class="block"><code><span><span>/* example links:
+  &lt;a id="song1" href="/music/player.php?songID=1" type="audio/m4a"&gt;play song 1&lt;/a&gt; <span>// type match</span>
+  &lt;a id="song2" href="song2.mp3"&gt;play song 2&lt;/a&gt; <span>// URL match</span>
+*/</span></span>
+var aLink = document.getElementById('<span>mySong</span>');
+if (soundManager.canPlayLink(aLink)) {
+ soundManager.play('<span>mySongSound</span>',aLink.href);
+}</code></pre></dd>
+				   </dl>
+
+				   <dl id="soundmanager-canplaymime" class="f-block f-canplaymime">
+				   <dt><span>canPlay:boolean</span> canPlayMIME(<span>MIMEtype:string</span>)</dt>
+				   <dd>Returns a boolean indicating whether soundManager can play the given MIME type - eg., <code>audio/mp3</code>. The types supported vary based on Flash version and MPEG4 (MovieStar mode) options.</dd>
+				   <dd>
+					MIME type patterns are as follows:
+					<ul>
+					 <li>Defaults: <code>/^audio\/(?:x-)?(?:mp(?:eg|3))\s*;?/i;</code> - eg. <code>audio/mp3</code> or <code>audio/mpeg</code></li>
+					 <li>MovieStar-only formats: <code>/^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex)\s*;?/i; </code> - eg. <code>audio/m4a or audio/aac</code></li>
+					</ul>
+				   <dd>Example:
+<pre class="block"><code><span><span>// link example: &lt;a id="song1" href="foo.php?songID=1" type="audio/mp3"&gt;play song 1&lt;/a&gt;</span></span>
+var aLink = document.getElementById('<span>song1</span>');
+if (soundManager.canPlayLink(aLink)) {
+ soundManager.play('<span>song1Sound</span>',aLink.href);
+}</code></pre></dd>
+				   <dd>If no <code>type</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
+				   </dl>
+
+				   <dl id="soundmanager-canplayurl" class="f-block f-canplayurl">
+				    <dt><span>canplay:boolean</span> canPlayURL(<span>mediaURL:string</span>)</dt>
+				    <dd>Returns a boolean indicating whether soundManager can play the given URL. Playability is determined by a matching URL pattern set at runtime, based on Flash version and MPEG4 (MovieStar mode) support.</dd>
+				    <dd>Example:
 <pre class="block"><code>var sURL = '<span>/path/to/some.mp3</span>';
 if (soundManager.canPlayURL(sURL)) {
  soundManager.createSound('<span>fooSound</span>',sURL);
 }</code></pre></dd>
-	   </dl>
+				    <dd>If no <code>href</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
+				   </dl>
 
-				  <dl class="f-block f-createsound s-autoplay">
+				  <dl id="soundmanager-createsound" class="f-block f-createsound s-autoplay">
 
 				   <dt style="margin-top:2em"><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
 				   <dd title="object:options">Creates a sound with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance.</dd>
@@ -309,13 +342,13 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 				  </dl>
 
-				   <dl class="f-block f-createsound">
-				    <dt>createSound(<span>id:string,url:string</span>)</dt>
-				    <dd title="id:string,url:string">Creates a sound with the specified ID and URL (simple method.)</dd>
+				   <dl id="soundmanager-createsound-overloaded" class="f-block f-createsound">
+				    <dt>createSound(<span>id:string,url:string</span>) - overloaded method</dt>
+				    <dd title="id:string,url:string">Creates a sound with the specified ID and URL (simple two-parameter method.)</dd>
 				    <dd>Example: <code>soundManager.createSound('<span>mySound</span>','<span>/audio/mysoundfile.mp3</span>');</code></dd>
 				   </dl>
 
-				  <dl class="f-block f-createvideo">
+				  <dl id="soundmanager-createvideo" class="f-block f-createvideo">
 				   <dt class="flash9" title="Requires Flash 9.0r115+"><span>object:SMSound </span>createVideo(<span>object:options</span>)</dt>
 				   <dd title="object:options">Creates a video with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance which supports video.</dd>
 				   <dd>Functionally identical to <code class="in">createSound()</code>, only with video parameters enabled. Flash 9.0r115+ required, SM2 "movieStar" mode and useVideo parameters must be enabled.</dd>
@@ -333,19 +366,20 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 	  </dl>
 
-	   <dl class="f-block f-destroysound">
+	   <dl id="soundmanager-destroysound" class="f-block f-destroysound">
 	   <dt>destroySound(<span>id:string</span>)</dt>
 	   <dd title="id:string">Stops, unloads and destroys a sound specified by ID.</dd>
 	   <dd>Example: <code>soundManager.destroySound('<span>mySound</span>');</code></dd>
+	   <dd>SMSound equivalent example: <code>mySound.destruct();</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-destroyvideo">
+	   <dl id="soundmanager-destroyvideo" class="f-block f-destroyvideo">
 	   <dt class="flash9" title="Requires Flash 9.0r115+">destroyVideo(<span>id:string</span>)</dt>
 	   <dd title="id:string">Stops, unloads and destroys a video specified by ID.</dd>
 	   <dd>Example: <code>soundManager.destroyVideo('<span>myVideo</span>');</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-mute">
+	   <dl id="soundmanager-mute" class="f-block f-mute">
 	   <dt>mute(<span>[id:string]</span>)</dt>
 	   <dd title="id:string">Mutes the sound specified by ID. If no ID specified, all sounds will be muted. Affects <span>muted</span> property (boolean.)</dd>
 	   <dd>Example: <code>soundManager.mute('<span>mySound</span>');</code></dd>
@@ -377,7 +411,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts up.</dd>
 	   </dl>
 
-	   <dl class="f-block f-play">
+	   <dl id="soundmanager-play" class="f-block f-play">
 	   <dt><span>didCreate:boolean</span> play(<span>id:string,[options object]</span>)</dt>
 	   <dd title="soundID:string">Starts playing the sound specified by ID. (Will start loading if applicable, and will play ASAP.)</dd>
 	   <dd>Optionally, returns a boolean value indicating "sound created", ie. if the related sound object didn't exist prior to this call and was created to do so.</dd>
@@ -386,19 +420,19 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dd>Example: <code>soundManager.play('<span>mySound</span>',{<span>volume:50,onfinish:playNextSound</span>});</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-pause">
+	   <dl id="soundmanager-pause" class="f-block f-pause">
 	   <dt>pause(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Pauses the sound specified by ID. Does not toggle. Affects <span>paused</span> property (boolean.)</dd>
 	   <dd>Example: <code>soundManager.pause('<span>mySound</span>');</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-pauseall">
+	   <dl id="soundmanager-pauseall" class="f-block f-pauseall">
 	   <dt>pauseAll()</dt>
 	   <dd>Pauses all sounds whose playState is &gt;0. Affects <span>paused</span> property (boolean.)</dd>
-	   <dd>Example: <code>soundManager.pause();</code></dd>
+	   <dd>Example: <code>soundManager.pauseAll();</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-reboot">
+	   <dl id="soundmanager-reboot" class="f-block f-reboot">
 	   <dt>reboot()</dt>
 	   <dd title="soundID:string">Destroys any created SMSound objects, unloads the flash movie (removing it from the DOM) and restarts the SM2 init process, retaining all currently-set properties.</dd>
 	   <dd>Example: 
@@ -413,98 +447,94 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dd>When using this method also consider <a href="#flashloadtimeout" onclick="clearFilter()">flashLoadTimeout</a>, which can have SM2 wait indefinitely for the flash to load if desired.</dd>
 	   </dl>
 
-	   <dl class="f-block f-resume">
+	   <dl id="soundmanager-resume" class="f-block f-resume">
 	   <dt>resume(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Resumes the currently-paused sound specified by ID.</dd>
 	   <dd>Example: <code>soundManager.resume('<span>mySound</span>');</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-resumeall">
+	   <dl id="soundmanager-resumeall" class="f-block f-resumeall">
 	   <dt>resumeAll()</dt>
 	   <dd title="soundID:string">Resumes all currently-paused sounds.</dd>
 	   <dd>Example: <code>soundManager.resumeAll();</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-setpan">
+	   <dl id="soundmanager-setpan" class="f-block f-setpan">
 	   <dt>setPan(<span>id:string,volume:integer</span>)</dt>
 	   <dd title="id:string,volume:integer">Sets the stereo pan (left/right bias) of the sound specified by ID. Accepted values: -100 to 100 (L/R, 0 = center.) Affects <span>pan</span> property.</dd>
 	   <dd>Example: <code>soundManager.setPan('<span>mySound</span>',<span>-80</span>);</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-setposition">
+	   <dl id="soundmanager-setposition" class="f-block f-setposition">
 	   <dt>setPosition(<span>id:string,msecOffset:integer</span>)</dt>
 	   <dd title="id:string,msecOffset:integer">Seeeks to a given position within a sound, specified by miliseconds (1000 msec = 1 second.) Affects <span>position</span> property.</dd>
 	   <dd>Example: <code>soundManager.setPosition('<span>mySound</span>',<span>2500</span>);</code></dd>
 	   <dd>Can only seek within loaded sound data, as defined by the <span>duration</span> property.</dd>
 	   </dl>
 
-	   <dl class="f-block f-setvolume">
+	   <dl id="soundmanager-setvolume" class="f-block f-setvolume">
 	   <dt>setVolume(<span>id:string,volume:integer</span>)</dt>
 	   <dd title="id:string,volume:integer">Sets the volume of the sound specified by ID. Accepted values: 0-100. Affects <span>volume</span> property.</dd>
 	   <dd>Example: <code>soundManager.setVolume('<span>mySound</span>',<span>50</span>);</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-stop">
+	   <dl id="soundmanager-stop" class="f-block f-stop">
 	   <dt>stop(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Stops playing the sound specified by ID.</dd>
 	   <dd>Example: <code>soundManager.stop('<span>mySound</span>');</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-stopall">
+	   <dl id="soundmanager-stopall" class="f-block f-stopall">
 	   <dt>stopAll()</dt>
 	   <dd>Stops any currently-playing sounds.</dd>
 	   <dd>Example: <code>soundManager.stopAll();</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-togglemute">
+	   <dl id="soundmanager-togglemute" class="f-block f-togglemute">
 	   <dt>toggleMute(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Mutes/unmutes the sound specified by ID.</dd>
 	   <dd>Example: <code>soundManager.toggleMute('<span>mySound</span>');</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-togglepause">
+	   <dl id="soundmanager-togglepause" class="f-block f-togglepause">
 	   <dt>togglePause(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Pauses/resumes play on the sound specified by ID.</dd>
 	   <dd>Example: <code>soundManager.togglePause('<span>mySound</span>');</code></dd>
 	   </dl>
 
-	   <dl class="f-block f-unload">
+	   <dl id="soundmanager-unload" class="f-block f-unload">
 	   <dt>unload(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Stops loading the sound specified by ID, canceling any current HTTP request.</dd>
 	   <dd>Example: <code>soundManager.unload('<span>mySound</span>');</code></dd>
 	   <dd>Note that for Flash 8, SoundManager does this by loading a new, tiny "stub" MP3 file, <code class="in">./null.mp3</code>, which replaces the current one from loading. This is defined in the SM2 global object as <code class="in">nullURL</code>, and can be edited.</dd>
 	   </dl>
 
-	   <dl class="f-block f-unmute">
+	   <dl id="soundmanager-unmute" class="f-block f-unmute">
 	   <dt>unmute(<span>[id:string]</span>)</dt>
 	   <dd title="id:string">Unmutes the sound specified by ID. If no ID specified, all sounds will be unmuted. Affects <span>muted</span> property (boolean.)</dd>
 	   <dd>Example: <code>soundManager.unmute('<span>mySound</span>');</code></dd>
 	   </dl>
 
-
-	<!-- may be buggy, not necessarily needed externally.
-	   <dl class="f-block f-load">
-
+	   <dl id="soundmanager-load" class="f-block f-load">
 	   <dt>load(<span>id:string,[options object]</span>)</dt>
 	   <dd title="soundID:string">Starts loading the sound specified by ID, with options if specified.</dd>
 	   <dd>Example: <code>soundManager.load('<span>mySound</span>');</code></dd>
 	   <dd>Example 2: <code>soundManager.load('<span>mySound</span>',{<span>volume:50,onfinish:playNextSound</span>});</code></dd>
 	   </dl>
-	-->
 
-	   <dl class="f-block f-getsoundbyid">
+	   <dl id="soundmanager-getsoundbyid" class="f-block f-getsoundbyid">
 	   <dt><span>object:SMSound </span>getSoundById(<span>id:string</span>)</dt>
 	   <dd title="id:string">Returns an <code>SMSound</code> object specified by ID, or null if there is a problem.</dd>
 	   <dd>Example: <code>var mySMSound = soundManager.getSoundById('<span>mySound</span>');</code></dd>
 	   </dl>
 	
-	   <dl class="f-block f-getmemoryuse" title="Flash 9+ required, recently added">
+	   <dl id="soundmanager-getmemoryuse" class="f-block f-getmemoryuse" title="Flash 9+ required, recently added">
 		<dt class="flash9" title="Requires Flash 9.0+"><span>number:bytesUsed </span>getMemoryUse()</dt>
 		<dd>Returns the total number of bytes allocated to the Adobe Flash player or Adobe AIR, or 0 if unsupported (Flash 9+ only.) This number may include memory use across all tabs, browsers etc. See <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/System.html#totalMemory" title="System.totalMemory property documentation">system.totalMemory</a> (livedocs.adobe.com)</dd>
 		<dd>Example: <code>var mbUsed = (soundManager.getMemoryUse()/1024/1024).toFixed(2); <span><span>// eg. 12.05 MB</span></span></code></dd>
 	   </dl>
 
-	   <dl class="f-block f-loadfromxml">
+	   <dl id="soundmanager-loadfromxml" class="f-block f-loadfromxml">
 	   <dt>loadFromXML(<span>xmlURL:string</span>)</dt>
 	   <dd>Loads and creates sounds as defined in a <a href="http://www.schillmania.com/projects/soundmanager/" title="SoundManager v1 project page">SoundManager v1</a> XML file (legacy)</dd>
 	   <dd>Note that per-sound options are not supported with this method, and sound objects will be created immediately upon loading and parsing of the XML. The sounds will inherit the <code>defaultOptions</code> settings, with the exception of the <code>stream</code> attribute as set in the XML (true if defined, defaultOption applied if omitted.)</dd>
@@ -541,95 +571,93 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				
 				   <p class="in">Each sound under SoundManager 2 is given a <code>SMSound</code> object instance which includes the following events, methods and properties.</p>
 
-				   <dl class="f-block s-destroy">
-				   <dt>destroy()</dt>
-				   <dd>Stops, unloads and destroys a sound.</dd>
-				   <dd>Example: <code>mySound.destroy();</code></dd>
+				   <dl id="smsound-destruct" class="f-block s-destruct">
+				   <dt>destruct()</dt>
+				   <dd>Stops, unloads and destroys a sound, freeing resources etc.</dd>
+				   <dd>Example: <code>mySound.destruct();</code></dd>
 				   </dl>
 
-				   <dl class="f-block s-play">
+				   <dl id="smsound-load" class="f-block s-load">
+				   <dt>load(<span>[options object]</span>)</dt>
+				   <dd title="soundID:string">Starts loading the given sound, with options if specified.</dd>
+				   <dd>Example: <code>mySound.load();</code></dd>
+				   <dd>Example 2: <code>mySound.load({<span>volume:50,onfinish:playNextSound</span>});</code></dd>
+				   </dl>
+
+				   <dl id="smsound-mute" class="f-block s-mute">
+				   <dt>mute()</dt>
+				   <dd>Mutes the given sound. Affects <span>muted</span> property.</dd>
+				   <dd>Example: <code>mySound.mute();</code></dd>
+				   </dl>
+
+				   <dl id="smsound-pause" class="f-block s-pause s-paused">
+				   <dt>pause()</dt>
+				   <dd>Pauses the given sound. (Does not toggle.) Affects <span>paused</span> property (boolean.)</dd>
+				   <dd>Example: <code>mySound.pause();</code></dd>
+				   </dl>
+
+				   <dl id="smsound-play" class="f-block s-play">
 				   <dt>play(<span>[options object]</span>)</dt>
 				   <dd>Starts playing the given sound, with an optional options object. (Will start loading if applicable, and will play ASAP.)</dd>
 				   <dd>Note that the <code>options object</code> parameter is not required and can take almost any argument from the object literal format (eg. volume.)</dd>
 				   <dd>Example: <code>mySound.play('<span>mySound</span>',{<span>volume:50,onfinish:playNextSound</span>});</code></dd>
 				   </dl>
 
-				   <dl class="f-block s-setposition">
+				   <dl id="smsound-setposition" class="f-block s-setposition">
 				   <dt>setPosition(<span>msecOffset:integer</span>)</dt>
 				   <dd title="msecOffset:integer">Seeeks to a given position within a sound, specified by miliseconds (1000 msec = 1 second.) Affects <span>position</span> property.</dd>
 				   <dd>Example: <code>mySound.setPosition(<span>2500</span>);</code></dd>
 				   <dd>Can only seek within loaded sound data, as defined by the <span>duration</span> property.</dd>
 				   </dl>
 
-				   <dl class="f-block s-pause s-paused">
-				   <dt>pause()</dt>
-				   <dd>Pauses the given sound. (Does not toggle.) Affects <span>paused</span> property (boolean.)</dd>
-				   <dd>Example: <code>mySound.pause();</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-resume">
+				   <dl id="smsound-resume" class="f-block s-resume">
 				   <dt>resume()</dt>
 				   <dd>Resumes the currently-paused sound. Does not affect currently-playing sounds.</dd>
 				   <dd>Example: <code>mySound.resume();</code></dd>
 				   </dl>
 
-				   <dl class="f-block s-togglemute">
-				   <dt>toggleMute()</dt>
-				   <dd>Mutes/unmutes the given sound. Affected <span>muted</span> property (boolean.)</dd>
-				   <dd>Example: <code>mySound.toggleMute();</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-togglepause">
-				   <dt>togglePause()</dt>
-				   <dd>Pauses/resumes play of the given sound. Will also start a sound if it is has not yet been played.</dd>
-				   <dd>Example: <code>mySound.togglePause();</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-setvolume">
-				   <dt>setVolume(<span>volume:integer</span>)</dt>
-				   <dd title="volume:integer">Sets the volume of the given sound. Accepted values: 0-100. Affects <span>volume</span> property.</dd>
-				   <dd>Example: <code>mySound.setVolume(<span>50</span>);</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-mute">
-				   <dt>mute()</dt>
-				   <dd>Mutes the given sound. Affects <span>muted</span> property.</dd>
-				   <dd>Example: <code>mySound.mute();</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-unmute">
-				   <dt>unmute()</dt>
-				   <dd>Unmutes the given sound. Affects <span>muted</span> property.</dd>
-				   <dd>Example: <code>mySound.unmute();</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-setpan">
+				   <dl id="smsound-setpan" class="f-block s-setpan">
 				   <dt>setPan(<span>volume:integer</span>)</dt>
 				   <dd title="volume:integer">Sets the stereo pan (left/right bias) of the given sound. Accepted values: -100 to 100 (L/R, 0 = center.) Affects <span>pan</span> property.</dd>
 				   <dd>Example: <code>mySound.setPan(<span>-80</span>);</code></dd>
 				   </dl>
 
-				   <dl class="f-block s-stop">
+				   <dl id="smsound-setvolume" class="f-block s-setvolume">
+				   <dt>setVolume(<span>volume:integer</span>)</dt>
+				   <dd title="volume:integer">Sets the volume of the given sound. Accepted values: 0-100. Affects <span>volume</span> property.</dd>
+				   <dd>Example: <code>mySound.setVolume(<span>50</span>);</code></dd>
+				   </dl>
+				
+				   <dl id="smsound-togglemute" class="f-block s-togglemute">
+				   <dt>toggleMute()</dt>
+				   <dd>Mutes/unmutes the given sound. Affected <span>muted</span> property (boolean.)</dd>
+				   <dd>Example: <code>mySound.toggleMute();</code></dd>
+				   </dl>
+
+				   <dl id="smsound-togglepause" class="f-block s-togglepause">
+				   <dt>togglePause()</dt>
+				   <dd>Pauses/resumes play of the given sound. Will also start a sound if it is has not yet been played.</dd>
+				   <dd>Example: <code>mySound.togglePause();</code></dd>
+				   </dl>
+
+				   <dl id="smsound-stop" class="f-block s-stop">
 				   <dt>stop()</dt>
 				   <dd>Stops playing the given sound.</dd>
 				   <dd>Example: <code>mySound.stop();</code></dd>
 				   </dl>
 
-				   <dl class="f-block s-unload">
+				   <dl id="smsound-unload" class="f-block s-unload">
 				   <dt>unload()</dt>
 				   <dd>Stops loading the given sound, canceling any current HTTP request.</dd>
 				   <dd>Example: <code>mySound.unload();</code></dd>
 				   <dd>Note that for Flash 8, SoundManager does this by loading a new, tiny "stub" MP3 file, <code class="in">./null.mp3</code>, which replaces the current one from loading. This is defined in the SM2 global object as <code class="in">nullURL</code>, and can be edited.</dd>
 				   </dl>
 
-				<!-- may be buggy, not necessarily needed externally.
-				   <dl class="f-block s-load">
-				   <dt>load(<span>id:string,[options object]</span>)</dt>
-				   <dd title="soundID:string">Starts loading the sound specified by ID, with options if specified.</dd>
-				   <dd>Example: <code>soundManager.load('<span>mySound</span>');</code></dd>
-				   <dd>Example 2: <code>soundManager.load('<span>mySound</span>',{<span>volume:50,onfinish:playNextSound</span>});</code></dd>
+				   <dl id="smsound-unmute" class="f-block s-unmute">
+				   <dt>unmute()</dt>
+				   <dd>Unmutes the given sound. Affects <span>muted</span> property.</dd>
+				   <dd>Example: <code>mySound.unmute();</code></dd>
 				   </dl>
-				-->
 
 				  </div>
 
@@ -655,85 +683,37 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 				  </div>
 
-				  <div>
-
-				   <dl class="f-block s-onload">
-				   <dt>onload(<span>boolean:success</span>)</dt>
-				   <dd>Fires on sound load. Boolean reflects successful load (true), or fail/load from cache (false).</dd>
-				   <dd>False value should seemingly only be for failure, but appears to be returned for load from cache as well. This strange behaviour comes from Flash. More detail may be available from the Flash 8 sound object documentation.</dd>
-				   <dd>Failure can occur if the Flash sandbox (security) model is preventing access, for example loading SoundManager 2 on the local file system and trying to access an MP3 on a network (or internet) URL. (Security can be configured in the Flash security panel, [<a href="#fpgss" title="Configure your Flash player security settings" onclick="resetFilter()">see here</a>].)</dd>
-				   <!-- <dd>Example: <code>soundManager.createSound('<span>mySound</span>','<span>/audio/mysoundfile.mp3</span>');</code></dd> -->
-				   </dl>
-
-				   <dl class="f-block s-whileloading s-bytesloaded s-bytestotal">
-				   <dt id="whileloading">whileloading()</dt>
-				   <dd>Fires at a regular interval when a sound is loading and new data has been received. The relevant, updated property is <code>bytesLoaded</code>.</dd>
-				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.sID+' loading, '+this.bytesLoaded+' of '+this.bytesTotal</span>);</code></dd>
-				   <dd>Note that the <code>duration</code> property starts from 0 and is updated during <code>whileloading()</code> to reflect the duration of currently-loaded sound data (ie. when a 4:00 MP3 has loaded 50%, the duration will be reported as 2:00 in milliseconds.) However, an estimate of final duration can be calculated using <code>bytesLoaded</code>, <code>bytesTotal</code> and <code>duration</code> while loading. Once fully-loaded, <code>duration</code> will reflect the true and accurate value.</dd>
-				   </dl>
+				  <div style="margin-top:2em">
 				
-				   <dl id="onbufferchange" class="f-block s-onbufferchange">
+				   <dl id="smsound-onbufferchange" class="f-block s-onbufferchange">
 				   <dt class="flash9">onbufferchange()</dt>
 				   <dd>Fires when a sound's reported buffering state has changed while playing and/or loading. The current state is reflected in the boolean <code>isBuffering</code> property.</dd>
 				   <dd>Flash 9+ only. Related information on Adobe, <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Sound.html#isBuffering">Sound.isBuffering</a>.</dd>
 				   </dl>
 				
-				   <dl class="f-block s-ondataerror s-waveformdata s-eqdata">
+				   <dl id="smsound-ondataerror" class="f-block s-ondataerror s-waveformdata s-eqdata">
 				   <dt title="Flash 9+ only" class="flash9">ondataerror()</dt>
 				   <dd>Fires at least once per sound play instance when Flash encounters a security error when trying to call computeSpectrum() internally. This typically happens when sounds are 'inaccessible' due to another Flash movie (eg. YouTube) in another tab which has loaded, and may (or may not be) playing sound. Flash attempts to read the "combined" output to the sound card, and must have security permissions for all sounds as a result. See <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#areSoundsInaccessible()">areSoundsInaccessible()</a> on Adobe for more info.</dd>
 				   <dd>If the offending resource causing the security error is closed or becomes inactive(?), the data will become available again. Intermittent availability will result in intermittent calls to <code>ondataerror()</code>.</dd>
 				   </dl>
 
-				   <dl class="f-block s-onplay">
-				   <dt>onplay()</dt>
-				   <dd>Fires when <code>sound.play()</code> is called.</dd>
-				   </dl>
-
-				   <dl class="f-block s-whileplaying">
-				   <dt>whileplaying()</dt>
-				   <dd>Fires at a regular interval when a sound is playing, and a position (time) change is detected. The relevant, updated property is <code>position</code>.</dd>
-				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.sID+' playing, '+this.position+' of '+this.duration</span>);</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-onpause">
-				   <dt>onpause()</dt>
-				   <dd>Fires when a sound pauses, eg. via <code>sound.pause()</code>.</dd>
-				   <dd>Example: <code>soundManager.pause('<span>mySound</span>');</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-onresume">
-				   <dt>onresume()</dt>
-				   <dd>Fires when a sound resumes playing, eg. via <code>sound.resume()</code>.</dd>
-				   <dd>Example: <code>soundManager.resume('<span>mySound</span>');</code></dd>
-				   </dl>
-
-				   <dl class="f-block s-onstop">
-				   <dt>onstop()</dt>
-				   <dd>Fires when <code>sound.stop()</code> is explicitly called. For natural "sound finished" <code>onfinish()</code> case, see below.</dd>
-				   </dl>
-
-				   <dl class="f-block s-onfinish">
-				   <dt>onfinish()</dt>
-				   <dd>Fires when a playing sound has reached its end. By this point, relevant properties like <code>playState</code> will have been reset to non-playing status.</dd>
-				   </dl>
-
-				   <dl class="f-block s-onbeforefinishcomplete">
+				   <dl id="smsound-onbeforefinishcomplete" class="f-block s-onbeforefinishcomplete">
 				   <dt>onbeforefinishcomplete()</dt>
 				   <dd>Fires when a sound has finished, <code>onfinish()</code> has been called, but before the sound play state and other meta data (position, etc.) are reset.</dd>
 				   </dl>
 
-				   <dl class="f-block s-onbeforefinish">
+				   <dl id="smsound-onbeforefinish" class="f-block s-onbeforefinish">
 				   <dt>onbeforefinish()</dt>
 				   <dd>Fires when a playing, fully-loaded sound has reached <code>onbeforefinishtime</code> (eg. 5000 msec) from its end.</dd>
 				   </dl>
-
-				   <dl class="f-block s-onjustbeforefinish">
-				   <dt>onjustbeforefinish()</dt>
-				   <dd>Fires approximately <code>justbeforefinishtime</code> before the end of a fully-loaded, playing sound.</dd>
-				   <dd>This is based on a polling approach given SM2 must track the sound's position, and is approximated (eg. a 200 msec value may fire at 187 msec before the end of the sound.)</dd>
+				
+				   <dl id="smsound-onfinish" class="f-block s-onfinish">
+				   <dt>onfinish()</dt>
+				   <dd>Fires when a playing sound has reached its end. By this point, relevant properties like <code>playState</code> will have been reset to non-playing status.</dd>
 				   </dl>
+				
 
-				   <dl class="f-block s-onid3">
+				   <dl id="smsound-onid3" class="f-block s-onid3">
 				   <dt id="onid3">onid3()</dt>
 				   <dd>Fires when ID3 data has been received. Relevant property is <code>id3</code>, which is an object literal (JSON)-style object. Only fields with data will be populated.</dd>
 				   <dd>Note that ID3V2 data is located at the beginning (header) of an MP3 file and will load almost immediately, whereas ID3V1 data is at the end and will not be received until the MP3 has fully loaded.</dd>
@@ -753,6 +733,57 @@ for (prop in this.id3) {
 				   <dd>Note that Flash's cross-domain security restrictions may prevent access to ID3 information, even though the MP3 itself can be loaded. (crossdomain.xml files on the remote host can grant Flash permission to access this.)</dd>
 				   <dd>Also note some <a href="#id3-parsing" onclick="resetFilter()">issues with parsing ID3 from iTunes</a>.</dd>
 				  </dl>
+
+
+				   <dl id="smsound-onjustbeforefinish" class="f-block s-onjustbeforefinish">
+				   <dt>onjustbeforefinish()</dt>
+				   <dd>Fires approximately <code>justbeforefinishtime</code> before the end of a fully-loaded, playing sound.</dd>
+				   <dd>This is based on a polling approach given SM2 must track the sound's position, and is approximated (eg. a 200 msec value may fire at 187 msec before the end of the sound.)</dd>
+				   </dl>
+
+				   <dl id="smsound-onload" class="f-block s-onload">
+				   <dt>onload(<span>boolean:success</span>)</dt>
+				   <dd>Fires on sound load. Boolean reflects successful load (true), or fail/load from cache (false).</dd>
+				   <dd>False value should seemingly only be for failure, but appears to be returned for load from cache as well. This strange behaviour comes from Flash. More detail may be available from the Flash 8 sound object documentation.</dd>
+				   <dd>Failure can occur if the Flash sandbox (security) model is preventing access, for example loading SoundManager 2 on the local file system and trying to access an MP3 on a network (or internet) URL. (Security can be configured in the Flash security panel, [<a href="#fpgss" title="Configure your Flash player security settings" onclick="resetFilter()">see here</a>].)</dd>
+				   <!-- <dd>Example: <code>soundManager.createSound('<span>mySound</span>','<span>/audio/mysoundfile.mp3</span>');</code></dd> -->
+				   </dl>
+
+				   <dl id="smsound-onpause" class="f-block s-onpause">
+				   <dt>onpause()</dt>
+				   <dd>Fires when a sound pauses, eg. via <code>sound.pause()</code>.</dd>
+				   <dd>Example: <code>soundManager.pause('<span>mySound</span>');</code></dd>
+				   </dl>
+
+				   <dl id="smsound-onplay" class="f-block s-onplay">
+				   <dt>onplay()</dt>
+				   <dd>Fires when <code>sound.play()</code> is called.</dd>
+				   </dl>
+
+				   <dl id="smsound-onresume" class="f-block s-onresume">
+				   <dt>onresume()</dt>
+				   <dd>Fires when a sound resumes playing, eg. via <code>sound.resume()</code>.</dd>
+				   <dd>Example: <code>soundManager.resume('<span>mySound</span>');</code></dd>
+				   </dl>
+
+				   <dl id="smsound-onstop" class="f-block s-onstop">
+				   <dt>onstop()</dt>
+				   <dd>Fires when <code>sound.stop()</code> is explicitly called. For natural "sound finished" <code>onfinish()</code> case, see below.</dd>
+				   </dl>
+
+				   <dl id="smsound-whileloading" class="f-block s-whileloading s-bytesloaded s-bytestotal">
+				   <dt>whileloading()</dt>
+				   <dd>Fires at a regular interval when a sound is loading and new data has been received. The relevant, updated property is <code>bytesLoaded</code>.</dd>
+				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.sID+' loading, '+this.bytesLoaded+' of '+this.bytesTotal</span>);</code></dd>
+				   <dd>Note that the <code>duration</code> property starts from 0 and is updated during <code>whileloading()</code> to reflect the duration of currently-loaded sound data (ie. when a 4:00 MP3 has loaded 50%, the duration will be reported as 2:00 in milliseconds.) However, an estimate of final duration can be calculated using <code>bytesLoaded</code>, <code>bytesTotal</code> and <code>duration</code> while loading. Once fully-loaded, <code>duration</code> will reflect the true and accurate value.</dd>
+				   </dl>
+
+				   <dl id="smsound-whileplaying" class="f-block s-whileplaying">
+				   <dt>whileplaying()</dt>
+				   <dd>Fires at a regular interval when a sound is playing, and a position (time) change is detected. The relevant, updated property is <code>position</code>.</dd>
+				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.sID+' playing, '+this.position+' of '+this.duration</span>);</code></dd>
+				   </dl>
+
 
 				  </div>
 				
@@ -787,47 +818,46 @@ for (prop in this.id3) {
 
 						  </div>
 
-						  <div>
+						  <div style="margin-top:2em">
 
-						   <dl class="f-block s-sid">
+						   <dl id="smsound-sid" class="f-block s-sid">
 						   <dt>sID</dt>
 						   <dd>Sound ID string as provided from the <code>id</code> parameter via <code>createSound()</code> or <code>play()</code>. Can be referenced as <code>this.sID</code> from within sound object event handlers such as <code>onload()</code>, <code>whileloading()</code> or <code>whileplaying()</code>, etc.</dd>
 						   <dd>If an ID is known, the related SMSound object can be retrieved via <code>getSoundById</code> or directly referencing <code>sounds[sID]</code> on the SoundManager global object.</dd>
 						   </dl>
 
-						   <dl class="f-block s-url">
+						   <dl id="smsound-url" class="f-block s-url">
 						   <dt>url</dt>
 						   <dd>The specified URL from which the sound is loaded. Can be referenced as <code>this.url</code> from within sound object event handlers such as <code>onload()</code> or <code>whileplaying()</code>, etc.</dd>
 						   </dl>
 
-						   <dl class="f-block s-id3">
-						   <dt>id3</dt>
-						   <dd>An object literal populated, if applicable, when ID3 data is received (related handler: <code>onid3()</code>)</dd>
-						   <dd>For property details, see <a href="#onid3" title="onid3() documentation" onclick="resetFilter()">onid3()</a>.</dd>
-						   </dl>
-
-						   <dl class="f-block s-bytesloaded">
+						   <dl id="smsound-bytesloaded" class="f-block s-bytesloaded">
 						   <dt>bytesLoaded</dt>
 						   <dd>The number of bytes currently received while loading a sound.</dd>
 						   </dl>
 
-						   <dl class="f-block s-bytestotal">
+						   <dl id="smsound-bytestotal" class="f-block s-bytestotal">
 						   <dt>bytesTotal</dt>
 						   <dd>The total number of bytes to be downloaded, while loading a sound.</dd>
 						   </dl>
-
-						   <dl class="f-block s-position">
-						   <dt>position</dt>
-						   <dd>The current location of the "play head" within the sound, specified in milliseconds (1 sec = 1000 msec).</dd>
+						
+						   <dl id="smsound-didbeforefinish" class="f-block s-didbeforefinish">
+						   <dt>didBeforeFinish</dt>
+						   <dd>Boolean indicating whether <code>beforeFinish()</code> condition was reached.</dd>
 						   </dl>
 
-						   <dl class="f-block s-duration">
+						   <dl id="smsound-didjustbeforefinish" class="f-block s-didjustbeforefinish">
+						   <dt>didJustBeforeFinish</dt>
+						   <dd>Boolean indicating whether <code>justBeforeFinish()</code> condition was reached.</dd>
+						   </dl>
+						
+						   <dl id="smsound-duration" class="f-block s-duration">
 						   <dt>duration</dt>
 						   <dd>The current length of the sound, specified in milliseconds.</dd>
-						   <dd>Note that during loading, this property reflects the length of downloaded data, not the full length, until completely loaded (see <a href="#whileloading" onclick="resetFilter()">whileloading()</a>.) For an approximate "full duration" value while loading, see <code>durationEstimate</code>.</dd>
+						   <dd>Note that during loading, this property reflects the length of downloaded data, not the full length, until completely loaded (see <a href="#smsound-whileloading" onclick="resetFilter()">whileloading()</a>.) For an approximate "full duration" value while loading, see <code>durationEstimate</code>.</dd>
 						   </dl>
 
-						   <dl class="f-block s-durationestimate">
+						   <dl id="smsound-durationestimate" class="f-block s-durationestimate">
 						   <dt>durationEstimate</dt>
 						   <dd>The estimated duration of the sound, specified in milliseconds.</dd>
 						   <dd>Due to the dynamic nature of <code>duration</code> while loading, this attempts to provide the full duration by calculating <code>parseInt((self.bytesTotal/self.bytesLoaded)*self.duration)</code> and is updated with each <code>whileloading()</code> interval.</dd>
@@ -835,78 +865,7 @@ for (prop in this.id3) {
 						   <dd>Note that this method works only with Constant Bitrate (CBR)-encoded MP3s due to the consistent data/time assumption. VBR-encoded MP3s will give inaccurate results.</dd>
 						   </dl>
 						
-						   <dl class="f-block s-isbuffering">
-						   <dt class="flash9">isBuffering</dt>
-						   <dd>Boolean value reflecting the buffering state of a playing or loading object. To be notified when this property changes, see <a href="#onbufferchange" onclick="resetFilter()">onbufferchange()</a>.</dd>
-						   <dd>Flash 9+ only. Related information on Adobe, <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Sound.html#isBuffering">Sound.isBuffering</a>.</dd>
-						   </dl>
-
-						   <dl class="f-block s-loaded">
-						   <dt>loaded</dt>
-						   <dd>Boolean value indicating load success as returned from Flash. True indicates success, False is a failure.</dd>
-						   <dd>Because of the potential for false positives, <code>duration</code> and other properties could be checked as a test of whether sound data actually loaded. For more granular state information, see <a href="#readystate" title="SMSound readyState documentation" onclick="resetFilter()">readyState</a>.</dd>
-						   </dl>
-
-						   <dl class="f-block s-muted">
-						   <dt>muted</dt>
-						   <dd>Boolean indicating muted status. True/False.</dd>
-						   <dd>Treat as read-only; use <code>mute()</code>, <code>unmute()</code> and <code>toggleMute()</code> methods to affect state.</dd>
-						   </dl>
-
-						   <dl class="f-block s-playstate">
-						   <dt>playState</dt>
-						   <dd>Numeric value indicating the current playing state of the sound.</dd>
-						   <dd>0 = stopped/uninitialised</dd>
-						   <dd>1 = playing <em>or</em> buffering sound (play has been called, waiting for data etc.)</dd>
-						   <dd>Note that a 1 may not always guarantee that sound is being heard, given buffering and autoPlay status.</dd>
-						   </dl>
-
-						   <dl class="f-block s-paused">
-						   <dt>paused</dt>
-						   <dd>Boolean indicating pause status. True/False.</dd>
-						   <dd>Treat as read-only; use <code>pause()</code>, <code>resume()</code> and <code>togglePause()</code> methods to affect state.</dd>
-						   </dl>
-
-						   <dl class="f-block s-readystate s-onload">
-						   <dt id="readystate">readyState</dt>
-						   <dd>Numeric value indicating a sound's current load status</dd>
-						   <dd>0 = uninitialised</dd>
-						   <dd>1 = loading</dd>
-						   <dd>2 = failed/error</dd>
-						   <dd>3 = loaded/success</dd>
-						   </dl>
-
-						   <dl class="f-block s-didbeforefinish">
-						   <dt>didBeforeFinish</dt>
-						   <dd>Boolean indicating whether <code>beforeFinish()</code> condition was reached.</dd>
-						   </dl>
-
-						   <dl class="f-block s-didjustbeforefinish">
-						   <dt>didJustBeforeFinish</dt>
-						   <dd>Boolean indicating whether <code>justBeforeFinish()</code> condition was reached.</dd>
-						   </dl>
-
-						   <dl class="f-block s-waveformdata">
-						   <dt title="Flash 9+ only" class="flash9">waveformData = {<span>left:[], right:[]</span>}</dt>
-						   <dd>Array of 256 floating-point (three decimal place) values from -1 to 1, can be used to draw a waveform while playing a sound. See <a href="../demo/page-player/#debug=1" title="Muxtape.com-style page-as-playlist, with debug output" onclick="checkDomain(this,true)">Page-as-playlist demo</a> for example implementation. Requires Flash 9+.</dd>
-						   <dd><code>waveformData</code> is set and updated during <code>whileplaying()</code>. A simple graph could be drawn by looping through the values and multiplying by a vertical scale value (eg. 32, which would make a graph with peaks of -32 and +32 pixels.)</dd>
-						   <dd>Example code:
-		<pre class="block"><code>someSoundObject.whileplaying = function() {<span>
-  <span>// Move 256 absolutely-positioned 1x1-pixel DIVs, for example (ugly, but works)</span>
-  var gPixels = document.getElementById('graphPixels').getElementsByTagName('div');
-  var gScale = 32; <span>// draw -32 to +32px from "zero" (i.e., center Y-axis point)</span>
-  for (var i=0; i&lt;256; i++) {
-    graphPixels[i].style.top = (gScale+Math.ceil(this.waveformData.left[i]*-gScale))+'px';
-  }
-</span>}</code></pre>
-						   </dd>
-						   <dd><strong>SM2 implementation note</strong>: <code>waveformData</code> contains both left and right channels, and the data represents a raw sound wave rather than a frequency spectrum.</dd>
-						   <dd>Related Adobe technical documentation (Flash 9/AS3 Sound() object): <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum()" title="Adobe Flash 9, sound object documentation">computeSpectrum()</a></dd>
-						   <dd><strong>Note</strong>: Flash security measures may deny access to waveformData when loading MP3s from remote domains.</dd>
-						   <dd><strong>Warning:</strong> This feature is experimental, and will probably eat up a lot of CPU. The amount of data passed from Flash to JS is not terribly large, but the JS-DOM updates and browser reflow can be expensive. Use with caution.</dd>
-						   </dl>
-
-						   <dl class="f-block s-eqdata">
+						   <dl id="smsound-eqdata" class="f-block s-eqdata">
 						   <dt title="Flash 9+ only" class="flash9">eqData = {<span>left:[], right: []</span>}</dt>
 						   <dd>Object containing two arrays of 256 floating-point (three decimal place) values from 0 to 1, the result of an FFT on the waveform data. Can be used to draw a spectrum (frequency range) graph while playing a sound. See <a href="../demo/page-player/#debug=1" title="Muxtape.com-style page-as-playlist, with debug output" onclick="checkDomain(this,true)">Page-as-playlist demo</a> for example implementation. Requires Flash 9+.</dd>
 						   <dd>A spectrum frequency graph reflects the level of frequencies being played, from left to right, low to high (i.e., 0 to 20,000 Hz.)</dd>
@@ -926,14 +885,87 @@ for (prop in this.id3) {
 						   <dd><strong>Warning:</strong> This feature is experimental, and will probably eat up a lot of CPU. The amount of data passed from Flash to JS is not terribly large, but the JS-DOM updates and browser reflow can be expensive. Use with caution.</dd>
 						   <dd><strong>Backward compatibility note:</strong> Up to SoundManager 2.95a.20090717, eqData was a single array containing one channel of data. In newer versions this is unchanged, except the array now has .left[] and .right[] objects attached to it. To ensure future compatibility, use eqData.left[0] instead of eqData[0] and so on.</dd>
 						   </dl>
+						
+						   <dl id="smsound-id3" class="f-block s-id3">
+						   <dt>id3</dt>
+						   <dd>An object literal populated, if applicable, when ID3 data is received (related handler: <code>onid3()</code>)</dd>
+						   <dd>For property details, see <a href="#onid3" title="onid3() documentation" onclick="resetFilter()">onid3()</a>.</dd>
+						   </dl>
+						
+						   <dl id="smsound-isbuffering" class="f-block s-isbuffering">
+						   <dt class="flash9">isBuffering</dt>
+						   <dd>Boolean value reflecting the buffering state of a playing or loading object. To be notified when this property changes, see <a href="#smsound-onbufferchange" onclick="resetFilter()">onbufferchange()</a>.</dd>
+						   <dd>Flash 9+ only. Related information on Adobe, <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Sound.html#isBuffering">Sound.isBuffering</a>.</dd>
+						   </dl>
 
-						   <dl class="f-block s-peakdata">
+						   <dl id="smsound-loaded" class="f-block s-loaded">
+						   <dt>loaded</dt>
+						   <dd>Boolean value indicating load success as returned from Flash. True indicates success, False is a failure.</dd>
+						   <dd>Because of the potential for false positives, <code>duration</code> and other properties could be checked as a test of whether sound data actually loaded. For more granular state information, see <a href="#readystate" title="SMSound readyState documentation" onclick="resetFilter()">readyState</a>.</dd>
+						   </dl>
+
+						   <dl id="smsound-muted" class="f-block s-muted">
+						   <dt>muted</dt>
+						   <dd>Boolean indicating muted status. True/False.</dd>
+						   <dd>Treat as read-only; use <code>mute()</code>, <code>unmute()</code> and <code>toggleMute()</code> methods to affect state.</dd>
+						   </dl>
+
+						   <dl id="smsound-paused" class="f-block s-paused">
+						   <dt>paused</dt>
+						   <dd>Boolean indicating pause status. True/False.</dd>
+						   <dd>Treat as read-only; use <code>pause()</code>, <code>resume()</code> and <code>togglePause()</code> methods to affect state.</dd>
+						   </dl>
+						
+						   <dl id="smsound-peakdata" class="f-block s-peakdata">
 						   <dt title="Flash 9+ only" class="flash9">peakData = {<span>left:0.0, right:0.0</span>}</dt>
 						   <dd>Object literal format including <code>left</code> and <code>right</code> properties with floating-point values ranging from 0 to 1, indicating "peak" (volume) level. Updated during <code>whileplaying()</code>. See <a href="../demo/page-player/#debug=1" title="Muxtape.com-style page-as-playlist, with debug output" onclick="checkDomain(this,true)">Page-as-playlist demo</a> as one example. Requires Flash 9+.</dd>
 						   <dd>Example (within relevant sound object handler):
 <pre class="block"><code>someSoundObject.whileplaying = function() {<span>
   soundManager._writeDebug('Peaks, L/R: '+this.peakData.left+'/'+this.peakData.right);
 </span>}</code></pre></dd>
+						   </dl>
+
+						   <dl id="smsound-playstate" class="f-block s-playstate">
+						   <dt>playState</dt>
+						   <dd>Numeric value indicating the current playing state of the sound.</dd>
+						   <dd>0 = stopped/uninitialised</dd>
+						   <dd>1 = playing <em>or</em> buffering sound (play has been called, waiting for data etc.)</dd>
+						   <dd>Note that a 1 may not always guarantee that sound is being heard, given buffering and autoPlay status.</dd>
+						   </dl>
+
+
+						   <dl id="smsound-position" class="f-block s-position">
+						   <dt>position</dt>
+						   <dd>The current location of the "play head" within the sound, specified in milliseconds (1 sec = 1000 msec).</dd>
+						   </dl>
+
+						   <dl id="smsound-readystate" class="f-block s-readystate s-onload">
+						   <dt id="readystate">readyState</dt>
+						   <dd>Numeric value indicating a sound's current load status</dd>
+						   <dd>0 = uninitialised</dd>
+						   <dd>1 = loading</dd>
+						   <dd>2 = failed/error</dd>
+						   <dd>3 = loaded/success</dd>
+						   </dl>
+
+						   <dl id="smsound-waveformdata" class="f-block s-waveformdata">
+						   <dt title="Flash 9+ only" class="flash9">waveformData = {<span>left:[], right:[]</span>}</dt>
+						   <dd>Array of 256 floating-point (three decimal place) values from -1 to 1, can be used to draw a waveform while playing a sound. See <a href="../demo/page-player/#debug=1" title="Muxtape.com-style page-as-playlist, with debug output" onclick="checkDomain(this,true)">Page-as-playlist demo</a> for example implementation. Requires Flash 9+.</dd>
+						   <dd><code>waveformData</code> is set and updated during <code>whileplaying()</code>. A simple graph could be drawn by looping through the values and multiplying by a vertical scale value (eg. 32, which would make a graph with peaks of -32 and +32 pixels.)</dd>
+						   <dd>Example code:
+		<pre class="block"><code>someSoundObject.whileplaying = function() {<span>
+  <span>// Move 256 absolutely-positioned 1x1-pixel DIVs, for example (ugly, but works)</span>
+  var gPixels = document.getElementById('graphPixels').getElementsByTagName('div');
+  var gScale = 32; <span>// draw -32 to +32px from "zero" (i.e., center Y-axis point)</span>
+  for (var i=0; i&lt;256; i++) {
+    graphPixels[i].style.top = (gScale+Math.ceil(this.waveformData.left[i]*-gScale))+'px';
+  }
+</span>}</code></pre>
+						   </dd>
+						   <dd><strong>SM2 implementation note</strong>: <code>waveformData</code> contains both left and right channels, and the data represents a raw sound wave rather than a frequency spectrum.</dd>
+						   <dd>Related Adobe technical documentation (Flash 9/AS3 Sound() object): <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum()" title="Adobe Flash 9, sound object documentation">computeSpectrum()</a></dd>
+						   <dd><strong>Note</strong>: Flash security measures may deny access to waveformData when loading MP3s from remote domains.</dd>
+						   <dd><strong>Warning:</strong> This feature is experimental, and will probably eat up a lot of CPU. The amount of data passed from Flash to JS is not terribly large, but the JS-DOM updates and browser reflow can be expensive. Use with caution.</dd>
 						   </dl>
 
 						  </div>
@@ -951,7 +983,7 @@ for (prop in this.id3) {
 						
 					  <div class="f-block">
 					   <h3>SMSound Object Methods</h3>
-					   <p class="in">SoundManager provides wrappers for most SMSound methods - eg. <code>soundManager.play('<span>mySound</span>')</code> checks for a valid sound object, and then calls <code>soundManager.sounds['<span>mySound</span>'].play()</code> on that particular object.</p>
+					   <p class="in">SoundManager provides wrappers for most SMSound methods - eg. <code>soundManager.play('<span>mySound</span>')</code> checks for a valid sound object, and then calls <code>soundManager.sounds['<span>mySound</span>'].play()</code> on that particular object; thus, it is the same as <code>var sound = soundManager.getSoundById('mySound'); mySound.play();</p>
 					   <p>The following methods can be called directly on a SMSound instance. The method calls are the same as the SoundManager global methods documented above for existing sound objects, minus the sound ID parameter.</p>
 					  </div>
 
@@ -959,18 +991,19 @@ for (prop in this.id3) {
 
 					  <dl class="tight">
 
-					   <dt>play(<span>[options object]</span>)</dt>
-					   <dt>setPosition(<span>msecOffset:integer</span>)</dt>
-					   <dt>pause()</dt>
-					   <dt>resume()</dt>
-					   <dt>togglePause()</dt>
-					   <dt>mute()</dt>
-					   <dt>unmute()</dt>
-					   <dt>setVolume(<span>volume:integer</span>)</dt>
-					   <dt>setPan(<span>pan:integer</span>)</dt>
-					   <dt>stop()</dt>
-					   <dt>unload()</dt>
-					   <dt>destruct() <span class="archive">(called via soundManager.destroySound())</span></dt>
+					   <dt id="smsound-destruct">destruct() <span class="archive">(also called via <a href="#soundmanager-destroysound">soundManager.destroySound()</a>.)</span></dt>
+					   <dt><a href="#smsound-load">load()</a></dt>
+					   <dt><a href="#smsound-mute">mute()</a></dt>
+					   <dt><a href="#smsound-pause">pause()</a></dt>
+					   <dt><a href="#smsound-play">play(<span>[options object]</span>)</a></dt>
+					   <dt><a href="#smsound-resume">resume()</a></dt>
+					   <dt><a href="#smsound-setposition">setPosition(<span>msecOffset:integer</span>)</a></dt>
+					   <dt><a href="#smsound-togglepause">togglePause()</a></dt>
+					   <dt><a href="#smsound-setvolume">setVolume(<span>volume:integer</span>)</a></dt>
+					   <dt><a href="#smsound-setpan">setPan(<span>pan:integer</span>)</a></dt>
+					   <dt><a href="#smsound-stop">stop()</a></dt>
+					   <dt><a href="#smsound-unload">unload()</a></dt>
+					   <dt><a href="#smsound-unmute">unmute()</a></dt>
 
 					  </dl>
 
@@ -1020,18 +1053,19 @@ for (prop in this.id3) {
   volume: 100,          <span>// self-explanatory. 0-100, the latter being the max.</span>
   whileloading: null,   <span>// callback function for updating progress (X of Y bytes received)</span>
   whileplaying: null,   <span>// callback during play (position update)</span>
+
   <span>// *** merged soundManager.flash9Options, as applicable ***</span>
   isMovieStar: null,    <span>// "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
   usePeakData: false,   <span>// enable left/right channel peak (level) data</span>
   useWaveformData:false,<span>// enable sound spectrum (raw waveform data) - WARNING: May set CPUs on fire.</span>
   useEQData: false,     <span>// enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.</span>
-  onbufferchange: null,	<span>// callback for "isBuffering" property change</span>
+  onbufferchange: null, <span>// callback for "isBuffering" property change</span>
   ondataerror: null     <span>// callback for waveform/eq data access error (flash playing audio in other tabs/domains)</span>
 
   <span>// *** merged soundManager.movieStarOptions, as applicable ***</span>
   onmetadata: null,     <span>// callback for when video width/height etc. are received</span>
   useVideo: false,      <span>// if loading movieStar content, whether to show video</span>
-  bufferTime: null	<span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
+  bufferTime: null <span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
 </span>}
 </code></pre>
 
@@ -1066,9 +1100,9 @@ for (prop in this.id3) {
   ondataerror: null	  <span>// callback for waveform/eq data access error (flash playing audio in other tabs/domains)</span>
 </span>}
 soundManager.movieStarOptions = {<span>
-  onmetadata: null,       <span>// callback for when video width/height etc. are received</span>
-  useVideo: false,        <span>// if loading movieStar content, whether to show video</span>
-  bufferTime: null	  <span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
+  onmetadata: null, <span>// callback for when video width/height etc. are received</span>
+  useVideo: false,  <span>// if loading movieStar content, whether to show video</span>
+  bufferTime: null  <span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
 </span>}
 <span><span>// if applicable, these options are merged into soundManager.defaultOptions at SM2 init.
 // soundManager.flash9Options.isMovieStar -&gt; soundManager.defaultOptions.isMovieStar, etc.</span></span>
@@ -1143,17 +1177,17 @@ soundManager.movieStarOptions = {<span>
 			  <dl>
 
 
-			   <dt title="object:function">onerror()</dt>
+			   <dt id="soundmanager-onerror" title="object:function">onerror()</dt>
 			   <dd>Function called when SoundManager fails to successfully initialise after Flash attempts an init call via ExternalInterface.</dd>
 			   <dd>Example: <code>soundManager.onerror = <span>function() { alert('SoundManager failed to load'); }</span></code></dd>
 			   <dd>This handler should be called if there is an ExternalInterface problem or other exceptions that fire when the initialisation function is called.</dd>
 			   <dd>If you want multiple listeners for this event, see <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a>.</dd>
 
-	   		   <dt title="object:function">oninitmovie()</dt>
+	   		   <dt id="soundmanager-oninitmovie" title="object:function">oninitmovie()</dt>
 	   		   <dd>Function called immediately after the SWF is either written to (or retrieved from) the DOM as part of the start-up process. This event can be useful if you wish to implement your own start-up time-out, eg. for handling flash blockers, start-up failures or other custom messaging.</dd>
 	   		   <dd>Example: <code>soundManager.oninitmovie = <span>function(){ alert('SWF init.'); }</span></code></dd>
 
-			   <dt title="object:function">onload()</dt>
+			   <dt id="soundmanager-onload" title="object:function">onload()</dt>
 			   <dd>Function called when SoundManager has successfully loaded.</dd>
 			   <dd>Example: <code>soundManager.onload = <span>function() { alert('SoundManager ready to use'); }</span></code></dd>
 			   <dd>Once this function has been called, all core methods will be available to use.</dd>
@@ -1283,7 +1317,7 @@ soundManager.movieStarOptions = {<span>
   <p>SoundManager and SMSound API</p>
 
   <ul id="shortcuts-list" class="first">
-   <li onclick="setFilter(event,'f-')" class="ignore">
+   <li onclick="return setFilter(event,'f-')" class="ignore">
 
     <h3 class="wedge">SoundManager<span class="l"></span><span class="r"></span></h3>
 	
@@ -1293,67 +1327,70 @@ soundManager.movieStarOptions = {<span>
 	 <li>allowPolling</li>
 	 <li class="flash9" title="Flash 9.0.r115+ only">allowFullScreen</li>
 	 <li class="new" title="New property">allowScriptAccess</li>
-     <li>altURL</li>
+     <li><a href="#soundmanager-alturl">altURL</a></li>
 	 <li>consoleOnly</li>
-	 <li class="new" title="New feature">debugFlash</li>
-	 <li>debugMode</li>
-	 <li>defaultOptions</li>
-	 <li class="flash9" title="Flash 9-only">flash9Options</li>
+	 <li class="new" title="New feature"><a href="#soundmanager-debugflash">debugFlash</a></li>
+	 <li><a href="#soundmanager-debugmode">debugMode</a></li>
+	 <li><a href="#smdefaults">defaultOptions</a></li>
+	 <li class="flash9" title="Flash 9-only"><a href="#sound-properties-flash9">flash9Options</a></li>
 
-     <li>features</li>
-     <li class="recent" title="Recently-added feature">flashLoadTimeout</li>
-     <li>flashVersion</li>
-	 <li class="flash9" title="Flash 9.0.r115+ only">isFullScreen</li>
-     <li class="flash9" title="Flash 9.0r115+ only">movieStarOptions</li>
+     <li><a href="#soundmanager-features">features</a></li>
+     <li class="recent" title="Recently-added feature"><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
+     <li><a href="#soundmanager-flashversion">flashVersion</a></li>
+	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-allowfullscreen">isFullScreen</a></li>
+     <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
 	 <li>nullURL</li>
-	 <li>url</li>
+	 <li><a href="#soundmanager-url">url</a></li>
 
 	 <li>useConsole</li>
-	 <li class="flash9 recent" title="Recently-added feature, Flash 9+ only">useFastPolling</li>
-	 <li>useHighPerformance</li>
+	 <li class="flash9 recent" title="Recently-added feature, Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
+	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
      <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
-	 <li class="flash9" title="Flash 9.0r115+ only">wmode</li>
+	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>
 	 <li>waitForWindowLoad</li>
 	</ul>
 
     <h4>Methods</h4>
 
     <ul>
-     <li>canPlayURL()</li>
-     <li>createSound()</li>
-	 <li class="flash9" title="Flash 9.0.r115+ only">createVideo()</li>
-     <li>destroySound()</li>
-	 <li class="flash9" title="Flash 9.0.r115+ only">destroyVideo()</li>
-	 <li class="flash9" title="Flash 9.0+ only, recent feature">getMemoryUse()</li>
-     <li>getSoundById()</li>
-     <li>loadFromXML()</li>
-     <li>mute()</li>
-     <li>pause()</li>
-     <li>pauseAll()</li>
-     <li>play()</li>
-     <li class="recent" title="Recently-added feature">reboot()</li>
-     <li>resume()</li>
+	 <li class="new"><a href="#soundmanager-canplaylink">canPlayLink()</a></li>
+	 <li class="new"><a href="#soundmanager-canplaymime">canPlayMIME()</a></li>
+     <li><a href="#soundmanager-canplayurl"canPlayURL()</a></li>
+     <li><a href="#soundmanager-createsound">createSound()</a></li>
+	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-createvideo">createVideo()</li>
+     <li><a href="#soundmanager-destroysound">destroySound()</a></li>
+	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-destroyvideo">destroyVideo()</a></li>
+	 <li class="flash9" title="Flash 9.0+ only, recent feature"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
+     <li><a href="#soundmanager-getsoundbyid">getSoundById()</a></li>
+     <li><a href="#soundmanager-load">load()</a></li>
+     <li><a href="#soundmanager-loadfromxml">loadFromXML()</a></li>
+     <li><a href="#soundmanager-mute">mute()</a></li>
+     <li><a href="#soundmanager-pause">pause()</a></li>
+     <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
+     <li><a href="#soundmanager-play">play()</a></li>
+     <li class="recent" title="Recently-added feature"><a href="#soundmanager-reboot">reboot()</a></li>
+     <li><a href="#soundmanager-resume">resume()</a></li>
 
-  	 <li>resumeAll()</li>
-     <li>setPan()</li>
-     <li>setPosition()</li>
-     <li>setVolume()</li>
-     <li>supported()</li>
-     <li>stop()</li>
+  	 <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
+     <li><a href="#soundmanager-setpan">setPan()</a></li>
+     <li><a href="#soundmanager-setposition">setPosition()</a></li>
+     <li><a href="#soundmanager-setvolume">setVolume()</a></li>
+     <li><a href="#soundmanager-supported">supported()</a></li>
+     <li><a href="#soundmanager-stop">stop()</a></li>
 
-     <li>stopAll()</li>
-	 <li>toggleMute()</li>
-     <li>togglePause()</li>
-     <li>unload()</li>
-     <li>unmute()</li>
+     <li><a href="#soundmanager-stopall">stopAll()</a></li>
+	 <li><a href="#soundmanager-togglemute">toggleMute()</a></li>
+     <li><a href="#soundmanager-togglepause">togglePause()</a></li>
+     <li><a href="#soundmanager-unload">unload()</a></li>
+     <li><a href="#soundmanager-unmute">unmute()</a></li>
     </ul>
 
     <h4>Events</h4>
     <ul>
-     <li>onerror()</li>
-     <li class="recent" title="Recently-added feature">oninitmovie()</li>
-     <li>onload()</li>
-     <li class="recent" title="Recently-added feature">onready()</li>
+     <li><a href="#soundmanager-onerror">onerror()</a></li>
+     <li class="recent" title="Recently-added feature"><a href="#soundmanager-oninitmovie">oninitmovie()</a></li>
+     <li><a href="#soundmanager-onload">onload()</a></li>
+     <li class="recent" title="Recently-added feature"><a href="#soundmanager-onready">onready()</a></li>
     </ul>
 
    </li>
@@ -1367,74 +1404,75 @@ soundManager.movieStarOptions = {<span>
      <li>autoLoad</li>
      <li>autoPlay</li>
      <li title="Flash 9.0r115+ only" class="flash9 recent">bufferTime</li>
-     <li title="Flash 9+ only" class="flash9">eqData</li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
      <li>multiShot</li>
      <li class="flash9 recent" title="Flash 9-only, recently-added feature">multiShotEvents</li>
      <li>onbeforefinishtime</li>
      <li>onjustbeforefinishtime</li>
      <li>pan</li>
-     <li title="Flash 9+ only" class="flash9">peakData</li>
-     <li>position</li>
-     <li>sID</li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-peakdata">peakData</a></li>
+     <li><a href="#smsound-position">position</a></li>
+     <li><a href="#smsound-sid">sID</a></li>
      <li>stream</li>
-     <li>url</li>
+     <li><a href="#smsound-url">url</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">useVideo</li>
      <li>volume</li>
-     <li title="Flash 9+ only" class="flash9">waveformData</li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-waveformdata">waveformData</a></li>
     </ul>
 
     <h4>Dynamic Properties</h4>
     <ul>
 
-     <li>bytesLoaded</li>
-     <li>bytesTotal</li>
-	 <li title="Flash 9+, recently-added feature" class="recent">isBuffering</li>
-     <li>didBeforeFinish</li>
-     <li>didJustBeforeFinish</li>
-     <li>duration</li>
-     <li>durationEstimate</li>
-     <li>loaded</li>
-	 <li>muted</li>
-     <li>paused</li>
-     <li>playState</li>
-     <li>position</li>
-     <li>readyState</li>
+     <li><a href="#smsound-bytesloaded">bytesLoaded</a></li>
+     <li><a href="#smsound-bytestotal">bytesTotal</a></li>
+	 <li title="Flash 9+, recently-added feature" class="recent"><a href="#smsound-isbuffering">isBuffering</a></li>
+     <li><a href="#smsound-didbeforefinish">didBeforeFinish</li>
+     <li><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</li>
+     <li><a href="#smsound-duration">duration</a></li>
+     <li><a href="#smsound-durationestimate">durationEstimate</a></li>
+     <li><a href="#smsound-loaded">loaded</a></li>
+	 <li><a href="#smsound-muted">muted</a></li>
+     <li><a href="#smsound-paused">paused</a></li>
+     <li><a href="#smsound-playstate">playState</a></li>
+     <li><a href="#smsound-position">position</a></li>
+     <li><a href="#smsound-readystate">readyState</a></li>
     </ul>
 
     <h4>Events</h4>
     <ul>
-	 <li title="Flash 9+ required, recently-added feature" class="recent">onbufferchange()</li>
-	 <li title="Flash 9.0.r115+" class="flash9">ondataerror()</li>
-     <li>onfinish()</li>
-     <li>onload()</li>
-     <li>onpause()</li>
-     <li>onplay()</li>
-     <li>onresume()</li>
-     <li>onstop()</li>
-     <li>onjustbeforefinish()</li>
-     <li>onbeforefinishcomplete()</li>
-     <li>onbeforefinish()</li>
-     <li>onid3()</li>
-     <li>whileloading()</li>
-     <li>whileplaying()</li>
+	 <li title="Flash 9+ required, recently-added feature" class="recent"><a href="#smsound-onbufferchange">onbufferchange()</a></li>
+	 <li title="Flash 9.0.r115+" class="flash9"><a href="#smsound-ondataerror">ondataerror()</a></li>
+     <li><a href="#smsound-onfinish">onfinish()</a></li>
+     <li><a href="#smsound-onload">onload()</a></li>
+     <li><a href="#smsound-onpause">onpause()</a></li>
+     <li><a href="#smsound-onplay">onplay()</a></li>
+     <li><a href="#smsound-onresume">onresume()</a></li>
+     <li><a href="#smsound-onstop">onstop()</a></li>
+     <li><a href="#smsound-onbeforefinishcomplete">onbeforefinishcomplete()</a></li>
+     <li><a href="#smsound-onbeforefinish">onbeforefinish()</a></li>
+     <li><a href="#smsound-onjustbeforefinish">onjustbeforefinish()</a></li>
+     <li><a href="#smsound-onid3">onid3()</a></li>
+     <li><a href="#smsound-whileloading">whileloading()</a></li>
+     <li><a href="#smsound-whileplaying">whileplaying()</a></li>
     </ul>
 
     <h4>Methods</h4>
 
     <ul>
-	 <li>destruct()</li>
-     <li>mute()</li>
-     <li>pause()</li>
-     <li>resume()</li>
-     <li>setPan()</li>
-     <li>setPosition()</li>
-     <li>setVolume()</li>
-     <li>stop()</li>
-	 <li class="recent">toggleMute()</li>
-     <li>togglePause()</li>
-     <li>unload()</li>
-     <li>unmute()</li>
+	 <li><a href="#smsound-destruct">destruct()</a></li>
+	 <li><a href="#smsound-load">load()</a></li>
+     <li><a href="#smsound-mute">mute()</a></li>
+     <li><a href="#smsound-pause">pause()</a></li>
+     <li><a href="#smsound-resume">resume()</a></li>
+     <li><a href="#smsound-setpan">setPan()</a></li>
+     <li><a href="#smsound-setposition">setPosition()</a></li>
+     <li><a href="#smsound-setvolume">setVolume()</a></li>
+     <li><a href="#smsound-stop">stop()</a></li>
+	 <li class="recent"><a href="#smsound-togglemute">toggleMute()</a></li>
+     <li><a href="#smsound-togglepause">togglePause()</a></li>
+     <li><a href="#smsound-unload">unload()</a></li>
+     <li><a href="#smsound-unmute">unmute()</a></li>
     </ul>
 
    </li>
