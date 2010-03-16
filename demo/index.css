@@ -1304,14 +1304,31 @@ ul.graphic li a.sm2_link {
 }
 
 #sm2-container {
+ position:absolute;
+ left:-9999em;
+ top:-9999em;
  background:#f9f9f9;
  width:6px;
  height:6px;
 }
 
+#sm2-container.swf_timedout {
+ position:relative;
+ left:0px;
+ top:0px;
+ border:1px solid red;
+ border-bottom-color:#fff6f0;
+ width:48px;
+ height:48px;
+ z-index:2;
+}
+
 #sm2-support {
  display:none;
  font-size:1em;
+ border:1px solid #ff3333;
+ background:#fff6f0;
+ margin-top:-1px;
 }
 
 #demo-box {

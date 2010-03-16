@@ -16,7 +16,7 @@
 <link rel="stylesheet" type="text/css" href="demo/360-player/360player.css" />
 <link rel="stylesheet" type="text/css" href="demo/mp3-player-button/css/mp3-player-button.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="demo/index.css" />
-<script type="text/javascript" src="script/soundmanager2.js"></script>
+<script type="text/javascript" src="script/soundmanager2-nodebug-jsmin.js"></script>
 <script type="text/javascript">
 var PP_CONFIG = {
   flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
@@ -53,7 +53,10 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 	threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
 }
 	soundManager.onready(function() {
-	  doChristmasLights();
+	  if (soundManager.supported()) {
+		_id('sm2-support').style.display = 'none';
+	    doChristmasLights();
+	  }
 	});
 
 	soundManager.onerror = function() {
@@ -62,10 +65,16 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 	  o.innerHTML = smLoadFailWarning;
       o.style.marginBottom = '1.5em';
 	  o.style.display = 'block';
+/*
+	  o.style.borderColor = '#ff3333';
+	  o.style.backgroundColor = '#fff6f0';
+*/
+	/*
 	  o.style.borderColor = _id('demo-header').style.borderColor = '#ff3333';
 	  o.style.backgroundColor = _id('demo-header').style.backgroundColor = '#fff6f0';
-      _id('demo-header').innerHTML = '';
-	  _id('demos').style.display = 'none';
+	*/
+      // _id('demo-header').innerHTML = '';
+	  // _id('demos').style.display = 'none';
 	}
 	
 	pagePlayer.events.metadata = function() {
@@ -225,10 +234,11 @@ function doChristmasLights() {
 		</div>
 
 		<div id="demo-box">
+			<div id="sm2-container"><!-- SM2 SWF, video, goes here --></div>
 			<a href="#debug=1" id="with-debug" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a>
 			<script type="text/javascript">if (document.location.href.match(/debug=1/i)) document.getElementById('with-debug').style.display = 'none';</script>
-			<p id="demo-header"><strong style="font-size:1.1em;font-weight:bold">Inline Javascript Sound API Examples</strong></p>
             <div id="sm2-support" class="demo-block"></div>
+			<p id="demo-header"><strong style="font-size:1.1em;font-weight:bold">Inline Javascript Sound API Examples</strong></p>
 			<div id="demos">
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Basic MP3 Buttons<span class="l"></span><span class="r"></span><a href="demo/mp3-player-button/" title="Basic MP3 Play Button demo" class="cta-more">More &raquo;</a></h3>
 			<div class="demo-block">
@@ -262,9 +272,10 @@ function doChristmasLights() {
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="inline-exclude">Untitled Groove</a></li>
 				</ul>
 			</div>
+			
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">MPEG-4 Video <span style="font-size:90%">(experimental)</span><span class="l"></span><span class="r"></span><a href="demo/video/" title="Video player demo" class="cta-more">More &raquo;</a></h3>
 			<div style="margin-bottom:1.5em" class="demo-block">
-				<div id="sm2-container"><!-- SM2 SWF, video, goes here --></div>
+				<!-- video could go here -->
 				<ul class="playlist" style="margin-top:0.3em">
 				 <li><a href="http://freshly-ground.com/data/video/xmaslights-iphone.m4v" title="iPhone-compatible H.264 video" class="inline-exclude">JS + Canvas Lights</a></li>
 				 <li><a href="http://freshly-ground.com/data/video/Jack%20Dempsey%20Cichlids.flv" title="Personal .FLV from YouTube" class="inline-exclude">Aquarium</a></li>
