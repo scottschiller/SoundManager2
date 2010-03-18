@@ -1166,7 +1166,7 @@ function SoundManager(smURL, smID) {
       _s.didFlashBlock = true;
     } else {
       // SM2 loaded OK (or recovered)
-      _s.oMC.className = _s.getSWFCSS() + ' ' + _s.swfCSS.swfDefault + (_s.didFlashBlock?' '+_s.swfCSS.swfUnblocked:'');
+      _s.oMC.className = _s.getSWFCSS() + ' ' + _s.swfCSS.swfDefault + (' '+_s.swfCSS.swfUnblocked);
     }
   };
 
