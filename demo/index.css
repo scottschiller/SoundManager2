@@ -1304,23 +1304,87 @@ ul.graphic li a.sm2_link {
 }
 
 #sm2-container {
+ /* where the SM2 flash movie goes. */
+ position:relative;
+ margin:1px 0px 0px 1px;
+}
+
+#sm2-container {
+ /* where the SM2 flash movie goes. */
+ position:relative;
+ width:auto;
+ height:auto;
+}
+
+#sm2-container embed,
+#sm2-container.swf_timedout,
+body.home #sm2-container.swf_timedout {
+ /* 48px square flash placeholder is typically used by blockers */
+ margin-top:0px;
+ width:48px;
+ height:48px;
+}
+
+#sm2-container.swf_timedout {
+ /* likely a flash block situation. Maybe make it more bold, red, show descriptive nested elements? */
+ border:1px solid red;
+}
+
+#sm2-container object,
+#sm2-container embed {
+ /* hide flash off-screen by default */
  position:absolute;
  left:-9999em;
  top:-9999em;
- background:#f9f9f9;
+}
+
+#sm2-container.swf_timedout object,
+#sm2-container.swf_timedout embed {
+ /* when blocked, make visible inside container */
+ left:auto;
+ top:auto;
+}
+
+#sm2-container object,
+#sm2-container embed {
+ /* 6x6 is small enough to be "invisible" and not blocked by click2flash if allowed, also enough to be really fast/performant on-screen */
+ width:48px;
+ height:48px;
+}
+
+#sm2-container.swf_unblocked object,
+#sm2-container.swf_unblocked embed {
  width:6px;
  height:6px;
 }
 
-#sm2-container.swf_timedout {
- position:relative;
+#sm2-container.high_performance {
+ position:absolute;
+ position:fixed;
+ _top:0px; /* IE 6 hax */
+ bottom:0px;
+ left:0px;
+}
+
+#sm2-container.high_performance object,
+#sm2-container.high_performance embed {
+ position:absolute;
  left:0px;
  top:0px;
- border:1px solid red;
- border-bottom-color:#fff6f0;
- width:48px;
- height:48px;
- z-index:2;
+}
+/* for the homepage, we want special behaviour. */
+
+body.home #sm2-container.high_performance {
+ position:relative;
+ bottom:auto;
+ left:auto;
+ top:auto;
+}
+
+body.home #sm2-container.swf_timedout {
+ border:1px solid #ff3333;
+ border-bottom:none;
+ margin:0px;
 }
 
 #sm2-support {
@@ -1482,7 +1546,7 @@ body.fast .xlsf-light {
  color:#666;
 }
 
-#sm2-container.flash-debug {
+#sm2-container.flash_debug {
  /* flash movie, when soundManager.debugFlash = true */
  position:relative;
  width:auto;
@@ -1492,9 +1556,12 @@ body.fast .xlsf-light {
  border:1px solid #ccc;
 }
 
-#sm2-container.flash-debug object,
-#sm2-container.flash-debug embed {
- border:1px solid #fff;
+#sm2-container.flash_debug object,
+#sm2-container.flash_debug embed {
+ width:100%;
+ height:100%;
+ left:auto;
+ top:auto;
 }
 
 ul.file-structure ul {

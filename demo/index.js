@@ -129,7 +129,7 @@ var utils = new Utils();
 
 var lastSelected = null;
 
-var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.75em"><h3>Oh snap!</h3><p>SoundManager 2 was unable to start.<p>'+(!soundManager._overHTTP?'Viewing offline? You may need to change a Flash security setting.':'Possible causes: Adblock, Flashblock, missing .SWF, or no Flash?')+' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot">Troubleshooting</a></p></div>';
+var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>SoundManager 2 was unable to start.</p>'+(!soundManager.getMoviePercent()?'If you have a flash blocker, try allowing the above SWF to run.</p>':'')+'<p>'+(!soundManager._overHTTP?'Viewing offline? You may need to change a Flash security setting.':'Other possible causes: Missing .SWF, or no Flash?')+' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot">Troubleshooting</a></p></div>';
 
 function resetFilter(o) {
   // reset everything

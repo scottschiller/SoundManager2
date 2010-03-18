@@ -75,6 +75,9 @@ soundManager.onload = function() {}
    <div class="details">
     <p>Once the flash component of SM2 has loaded, it tries to make a call to Javascript-land. This is a common point of failure, for security reasons:</p>
     <ul>
+	 <li>
+		<p><b>Have a flash blocker?</b> Check that the <a href="#flashdebug">SM2 flash movie</a> (below) is loading and is not being blocked.</p>
+	</li>
      <li>
 	Is your browser URL at file:// or c:/path/ or otherwise not using HTTP? Flash security "whitelisting" is required to allow Flash + JS to work when offline, placing it in the "LocalTrusted" Flash security sandbox rather than "localWithFile".
 	

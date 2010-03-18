@@ -18,7 +18,7 @@
 
 <p>In this case, we assume the user has a flash blocker of some sort installed which will prevent the flash movie from loading, and will cause a timeout/failure in SM2 as it waits for a response from Flash.</p>
 
-<p>For most use cases, it's best to try to start SM2 normally, and then highlight error/timeout cases as applicable. Alternately if your app absolutely requires sound, you can defer starting of your app until SM2 has successfully loaded. In either case, it is good to set <code>soundManager.flashLoadTimeout = 0</code> so SM2 waits indefinitely for flash to load, rather than firing <code>soundManager.onerror()</code> and related handlers.</p>
+<p>For most use cases, it's best to try to start SM2 normally, and then highlight error/timeout cases as applicable. Alternately if your app absolutely requires sound, you can defer starting of your app until SM2 has successfully loaded. In either case, it is good to set <code>soundManager.handleFlashBlock = true;</code> so SM2 waits indefinitely for flash to load.</p>
 
 <h2>Handling Flash blockers</h2>
 
@@ -28,7 +28,7 @@
 
 <p>Rather than hide off-screen or in a small space, the SoundManager 2 SWF container is put inline in the document so the user can take action without later interruption after a timeout. In the event SM2 starts without issue, the node can be moved out of view to its regular "hidden" place.</p>
 
-<p>The following demo initially places the movie out of view, but then makes it visible if a timeout is detected. If the user then allows the SWF to load, it loads and SM2 becomes hidden again.</p>
+<p>The following demo initially places the movie in view (transparent to normal viewers and a "play flash" placeholder for flash blockers), and can optionally highlight it if a timeout is detected. If the user then allows the SWF to load, SM2 will start up and the flash can be hidden again.</p>
 
 <p><a href="method1/" onclick="if (window.location.protocol != 'http' && !this.href.match(/index/i)) this.href+='index.html'" class="cta"><b>Flashblock demo</b></a></p>
 

@@ -192,3 +192,24 @@ ul.flat a.sm2_paused:hover {
  /* "clicking will resume" */
  border-left-color:#33cc33;
 }
+
+#sm2-container {
+ /* where the SM2 flash movie goes. */
+ position:relative;
+ width:auto;
+ height:auto;
+}
+
+#sm2-container object,
+#sm2-container embed,
+#sm2-container.swf_timedout {
+ width:48px;
+ height:48px;
+}
+
+#sm2-container object,
+#sm2-container embed {
+ position:absolute;
+ left:-9999em;
+ top:-9999em;
+}

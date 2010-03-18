@@ -376,8 +376,11 @@ soundManager.onerror = function() {
 				  <li id="d-flashtojs" class="default">
 				   <h3><span class="yay">OK</span><span class="boo">Error</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>Flash -&gt; JS</span></h3>
 				   <div class="details">
-				    <p>Once the flash component of SM2 has loaded, it tries to make a call to Javascript-land. This is a common point of failure, for security reasons:</p>
+				    <p>Once the flash component of SM2 has loaded, it tries to make a call to Javascript-land. This is a common point of failure, for security reasons.</p>
 				    <ul>
+					 <li>
+						<p><b>Have a flash blocker?</b> Check that the <a href="#flashdebug">SM2 flash movie</a> (below) is loading and is not being blocked.</p>
+					</li>
 				     <li>
 					First time opening SM2 after downloading it? Is your browser URL at file:// or c:/path/ or otherwise not using HTTP? Flash security "whitelisting" is required to allow Flash + JS to work when offline, placing it in the "LocalTrusted" Flash security sandbox rather than "localWithFile".
 					
@@ -433,6 +436,14 @@ soundManager.onerror = function() {
 			
 				<p>Flash detection code from <a href="http://www.featureblend.com/javascript-flash-detection-library.html" title="Javascript flash detection library">Flash Detect</a> (featureblend.com)</p>
 
+				<h3 id="flashdebug">Flash Movie Debug Output</h3>
+				<p>When <code>soundManager.debugFlash = true</code>, Flash will write debug info as text to the flash movie. This can be helpful for troubleshooting Flash/JS issues when timeouts or security errors are involved which prevent Flash from talking to Javascript, potentially hiding useful debug information. A CSS class of <code>flash_debug</code> will also be appended to the Flash <code>#sm2-container</code> DIV element when enabled, if you wish to style it differently.</p>
+				<p>You can also specify ?debug=1 in the URL to the SWF, and it will write debug output. Try <a href="../../swf/soundmanager2.swf?debug=1" title="Test debug output" class="norewrite">soundmanager2.swf?debug=1</a>, or <a href="../../swf/soundmanager2_flash9.swf?debug=1" title="Test debug output, Flash 9" class="norewrite">soundmanager2_flash9.swf?debug=1</a>.
+
+				<div id="sm2-container">
+					<!-- flash movie with debug output goes here -->
+				</div>
+
 				<h3>Live Debug Output</h3>
 				<p>SoundManager 2 relies on Javascript and Flash communicating via ExternalInterface, and this is subject to a number of timing, loading and browser security conditions. Because of this complexity, debug information is essential for troubleshooting start-up, loading, initialization and error conditions between Flash and Javascript.</p>
 				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to javascript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
@@ -444,14 +455,6 @@ soundManager.onerror = function() {
 				 </div>
 				</div>
 				<p>For more examples of live debug output, see the <a href="../../demo/template/" title="Basic SoundManager 2 template">Basic Template</a>, <a href="../../demo/api/" title="API demo">API demo</a> and other demos in the top navigation.</p>
-
-				<h3 id="flashdebug">Flash Movie Debug Output</h3>
-				<p>When <code>soundManager.debugFlash = true</code>, Flash will write debug info as text to the flash movie. This can be helpful for troubleshooting Flash/JS issues when timeouts or security errors are involved which prevent Flash from talking to Javascript, potentially hiding useful debug information. A CSS class of <code>flash-debug</code> will also be appended to the Flash <code>#sm2-container</code> DIV element when enabled, if you wish to style it differently.</p>
-				<p>You can also specify ?debug=1 in the URL to the SWF, and it will write debug output. Try <a href="../../swf/soundmanager2.swf?debug=1" title="Test debug output" class="norewrite">soundmanager2.swf?debug=1</a>, or <a href="../../swf/soundmanager2_flash9.swf?debug=1" title="Test debug output, Flash 9" class="norewrite">soundmanager2_flash9.swf?debug=1</a>.
-
-				<div id="sm2-container">
-					<!-- flash movie with debug output goes here -->
-				</div>
 
 				<h3>Standalone version of troubleshooting tool</h3>
 				<p class="in">For debugging your development/production environment with this widget, see the <a href="../../troubleshoot/" title="SoundManager 2: Standalone debug widget">troubleshooting</a> subdirectory of the SoundManager 2 package.</p>

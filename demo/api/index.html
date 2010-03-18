@@ -164,6 +164,10 @@ function getRandomMP3URL() {
 
  <p>If you're wondering <em>"How to include SM2 in my page?"</em>, the <a href="../template/" title="SoundManager 2 bare-bones template" onclick="if (!document.domain) this.href=this.href+'index.html'">basic template</a> will get you started.</p>
 
+ <div id="sm2-container">
+   <!-- flash is appended here -->
+ </div>
+
  <h2>The basics (old-skool style): onload() + onerror()</h2>
 
  <p>Once you have SM2 included in your page, you merely need to hook into its <code>onload()</code>/<code>onerror()</code> events:</p>
@@ -612,10 +616,6 @@ setTimeout(sound16.stop,1500);
 
 
 <span id="flash-ram-use" title="Flash plugin RAM use (across this browser)" style="position:fixed;_position:absolute;top:0.5em;right:0.5em;background:#666;color:#fff;font-weight:bold;padding:0.3em 0.4em;cursor:pointer;cursor:hand;display:none" onclick="this.style.display='none';window.clearTimeout(t)">N/A</span>
-
- <div id="sm2-container" class="swf-default">
-   <!-- flash is appended here -->
- </div>
 
 </div>
 

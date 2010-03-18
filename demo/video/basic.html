@@ -8,6 +8,23 @@
  /* SM2 debug container (optional, use or customize this as you like - makes in-browser debug output more useable) */
  position:fixed;_position:absolute;right:1em;bottom:1em;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:monaco,"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);
 }
+
+/* flashblock handling */
+
+#sm2-container object,
+#sm2-container embed {
+ left:auto;
+ top:auto;
+ width:100%;
+ height:100%;
+}
+
+#sm2-container.swf_unblocked object,
+#sm2-container.swf_unblocked embed {
+ width:100%;
+ height:100%;
+}
+
 </style>
 <!-- some CSS for this demo page, not required for SM2 -->
 <link rel="stylesheet" href="template.css" />

@@ -49,6 +49,25 @@ soundManager.url = '../../swf/';
  height:240px;
 }
 
+#sm2-container.swf_unblocked {
+ left:0px;
+ top:0px;
+}
+
+/* flashblock handling */
+
+#sm2-container object,
+#sm2-container embed {
+ left:auto;
+ top:auto;
+}
+
+#sm2-container.swf_unblocked object,
+#sm2-container.swf_unblocked embed {
+ width:100%;
+ height:100%;
+}
+
 pre.block {
  margin-top:0.5em;
 }

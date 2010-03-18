@@ -1,48 +1,61 @@
-#sm2-container.swf-default,
-#sm2-container.swf-timedout,
-#sm2-container.swf-loaded {
- /*
-
-  Default style for SM2 container, effectively "hidden" out of view (on-screen via position:fixed for efficiency)
-  Apply this class name when SM2 has started, so the movie can be repositioned to its normal "hidden" place
-
- */
-  position:fixed;
-  bottom:0px;
-  left:0px;
-  width:8px;
-  height:8px;
-  margin:2px;
-
-  /* IE 6 hax, since no position:fixed */
-  _position:absolute;
-  _left:-9999px;
-  _top:-9999px;
+#sm2-container {
+ /* where the SM2 flash movie goes. */
+ position:relative;
 }
 
-#sm2-container.swf-default,
-#sm2-container.swf-timedout {
- /* 
-
-  The box where the SWF is appended and hasn't loaded in time, OR hasn't started loading yet.
-  Once the SWF has loaded and SM2 starts, this will change to .swf-loaded
-  Shown here at 48x48px so a flash icon has room to be shown, etc.
-
- */
+#sm2-container,
+#sm2-container embed,
+#sm2-container.swf_timedout {
+ /* 48px square flash placeholder is typically used by blockers */
  width:48px;
  height:48px;
- padding:1px;
- _position:absolute; /* IE 6 hax */
- _left:0px;
- _top:0px;
 }
 
-#sm2-container.swf-timedout {
- margin:1px;
- border:1px solid #ff3333;
+#sm2-container.swf_timedout {
+ /* likely a flash block situation. Maybe make it more bold, red, show descriptive nested elements? */
+ border:1px solid red;
 }
 
-#sm2-container.swf-loaded {
- border:none;
- background-color:transparent;
+#sm2-container object,
+#sm2-container embed {
+ /* hide flash off-screen by default */
+ position:absolute;
+ left:-9999em;
+ top:-9999em;
+}
+
+#sm2-container.swf_timedout object,
+#sm2-container.swf_timedout embed {
+ /* when blocked, make visible inside container */
+ left:auto;
+ top:auto;
+}
+
+#sm2-container object,
+#sm2-container embed {
+ /* 6x6 is small enough to be "invisible" and not blocked by click2flash if allowed, also enough to be really fast/performant on-screen */
+ width:48px;
+ height:48px;
+}
+
+#sm2-container.swf_unblocked,
+#sm2-container.swf_unblocked object,
+#sm2-container.swf_unblocked embed {
+ width:6px;
+ height:6px;
+}
+
+#sm2-container.high_performance {
+ position:absolute;
+ position:fixed;
+ _top:0px; /* IE 6 hax */
+ bottom:0px;
+ left:0px;
+}
+
+#sm2-container.high_performance object,
+#sm2-container.high_performance embed {
+ position:absolute;
+ left:0px;
+ top:0px;
 }

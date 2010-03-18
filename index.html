@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>SoundManager 2: Javascript Sound For The Web</title>
-<meta name="description" content="Play sound from JavaScript including MP3 audio and MPEG-4 video formats with SoundManager 2, a cross-browser/platform sound API. BSD licensed." />
-<meta name="keywords" content="javascript sound, javascript audio, javascript play mp3, javascript sound control, javascript video, mp3, mp4, mpeg4, flv video, Scott Schiller, Schill, Schillmania" />
+<meta name="description" content="Play sound from JavaScript including MP3 and MPEG-4 audio formats with SoundManager 2, a cross-browser/platform sound API. BSD licensed." />
+<meta name="keywords" content="javascript sound, javascript audio, javascript play mp3, javascript sound control, mp3, mp4, mpeg4, flv video, Scott Schiller, Schill, Schillmania" />
 <meta name="robots" content="all" />
 <meta name="author" content="Scott Schiller" />
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
@@ -16,12 +16,10 @@
 <link rel="stylesheet" type="text/css" href="demo/360-player/360player.css" />
 <link rel="stylesheet" type="text/css" href="demo/mp3-player-button/css/mp3-player-button.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="demo/index.css" />
-<script type="text/javascript" src="script/soundmanager2-nodebug-jsmin.js"></script>
+<script type="text/javascript" src="script/soundmanager2.js"></script>
 <script type="text/javascript">
 var PP_CONFIG = {
   flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
-  useMovieStar: true,    // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
-  useVideo: true,        // show video when applicable
   usePeakData: true      // L/R peak data
 }
 </script>
@@ -38,14 +36,8 @@ var PP_CONFIG = {
 // <![CDATA[
 
 	var isHome = true;
-	soundManager.bgColor = '#000000';
+	soundManager.bgColor = '#ffffff';
 	soundManager.wmode = 'transparent';
-
-	if (navigator.platform.match(/win32/i) && !navigator.userAgent.match(/msie/i)) {
-	  // special case: Windows and wmode transparent don't get along. Sacrifice background color.
-	  soundManager.bgColor = '#f9f9f9';
-	}
-	
 	soundManager.debugMode = false;
 	soundManager.url = 'swf/';
 
@@ -69,14 +61,15 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 	  o.style.borderColor = '#ff3333';
 	  o.style.backgroundColor = '#fff6f0';
 */
-	/*
+/*
 	  o.style.borderColor = _id('demo-header').style.borderColor = '#ff3333';
 	  o.style.backgroundColor = _id('demo-header').style.backgroundColor = '#fff6f0';
-	*/
+*/
       // _id('demo-header').innerHTML = '';
 	  // _id('demos').style.display = 'none';
 	}
 	
+/*
 	pagePlayer.events.metadata = function() {
 	  // video-only stuff
 	  var sm = soundManager;
@@ -85,7 +78,7 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 	  sm2c.style.width = '100%';
 	  sm2c.style.height = parseInt(this.height*(parseInt(sm2c.offsetWidth)/this.width))+'px';
 	}
-	
+*/	
 	// side note: If it's not december but you want to smash things, try #christmas=1 in the homepage URL.
 
 // 	]]>
@@ -234,7 +227,7 @@ function doChristmasLights() {
 		</div>
 
 		<div id="demo-box">
-			<div id="sm2-container"><!-- SM2 SWF, video, goes here --></div>
+			<div id="sm2-container"><!-- SM2 flash component goes here --></div>
 			<a href="#debug=1" id="with-debug" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a>
 			<script type="text/javascript">if (document.location.href.match(/debug=1/i)) document.getElementById('with-debug').style.display = 'none';</script>
             <div id="sm2-support" class="demo-block"></div>
@@ -271,21 +264,13 @@ function doChristmasLights() {
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="inline-exclude">Armstrong Beat</a></li>
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="inline-exclude">Untitled Groove</a></li>
 				</ul>
-			</div>
-			
-			<h3 class="wedge" style="border-bottom:none;margin-top:0px">MPEG-4 Video <span style="font-size:90%">(experimental)</span><span class="l"></span><span class="r"></span><a href="demo/video/" title="Video player demo" class="cta-more">More &raquo;</a></h3>
-			<div style="margin-bottom:1.5em" class="demo-block">
-				<!-- video could go here -->
-				<ul class="playlist" style="margin-top:0.3em">
-				 <li><a href="http://freshly-ground.com/data/video/xmaslights-iphone.m4v" title="iPhone-compatible H.264 video" class="inline-exclude">JS + Canvas Lights</a></li>
-				 <li><a href="http://freshly-ground.com/data/video/Jack%20Dempsey%20Cichlids.flv" title="Personal .FLV from YouTube" class="inline-exclude">Aquarium</a></li>
-          		        </ul>
 				<p class="note" style="margin-top:3px;margin-bottom:0px;margin-left:0.8em">More: <a href="demo/video/">Video</a> | <a href="demo/page-player/">Muxtape UI</a> | <a href="demo/play-mp3-links/" class="exclude">Play MP3 links</a></p>
 			</div>
+			
 			<div class="clear">&nbsp;</div>
 			</div>
-			
-			<h4 class="tight">As Heard On <span style="text-decoration:line-through;color:#999;font-size:xx-small">TV</span> The Internets</h4>
+
+			<h4>As Heard On <span style="text-decoration:line-through;color:#999;font-size:xx-small">TV</span> The Internets</h4>
 			<p class="tight compact">A few nifty sites that have implemented SoundManager 2 for driving audio:</p>
 			<p class="inthewild">
 			 <a href="http://muxtape.com/" title="Muxtape"><img src="demo/_image/muxtape-logo.png" alt="Muxtape logo" /></a>
