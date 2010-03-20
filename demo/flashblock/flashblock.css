@@ -38,8 +38,8 @@
 
 #sm2-container.swf_unblocked {
  /* SWF unblocked, or was never blocked to begin with; try to collapse container as much as possible. */
- width:0px;
- height:0px;
+ width:1px;
+ height:1px;
 }
 
 #sm2-container.swf_unblocked object,

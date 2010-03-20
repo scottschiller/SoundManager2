@@ -1327,8 +1327,8 @@ body.home #sm2-container.swf_timedout {
 }
 
 body.home #sm2-container.swf_unblocked {
- width:0px;
- height:0px;
+ width:1px;
+ height:1px;
 }
 
 #sm2-support {
