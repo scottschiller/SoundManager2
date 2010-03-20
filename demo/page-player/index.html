@@ -10,6 +10,9 @@
 <!-- player core CSS -->
 <link rel="stylesheet" type="text/css" href="css/page-player.css" />
 
+<!-- optional: flash block handling -->
+<link rel="stylesheet" type="text/css" href="../flashblock/flashblock.css" />
+
 <!-- optional: annotations/sub-tracks/notes, and alternate themes -->
 <link rel="stylesheet" type="text/css" href="css/optional-annotations.css" />
 <link rel="stylesheet" type="text/css" href="css/optional-themes.css" />
@@ -30,6 +33,7 @@ ul.playlist li .comment {font-size:0.65em;opacity:0.5}
 
 // demo only..
 soundManager.useHighPerformance = true; // keep flash on screen, boost performance
+soundManager.wmode = 'transparent'; // transparent SWF, if possible
 soundManager.useFastPolling = true; // increased JS callback frequency
 soundManager.url = '../../swf/';
 

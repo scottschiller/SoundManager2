@@ -100,6 +100,9 @@ soundManager.onready(function(oStatus) {
 
 &lt;/script&gt;</pre></code>
 
+ <h2 id="flashblock-handling">Handling flash blockers</h2>
+ <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info on this, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="if (!document.domain) this.href=this.href+'index.html'">Flashblock</a> example.</p>
+
  <h2>Making SM2 wait for window.onload()</h2>
  <p>If you prefer to have the library wait for window.onload() before calling soundManager.onload()/onerror() methods, you can modify SM2's "waitForWindowLoad" property:</p>
 <code>soundManager.waitForWindowLoad = true;</code>

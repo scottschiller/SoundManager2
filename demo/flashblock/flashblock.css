@@ -1,0 +1,90 @@
+/* Flash positioning and flashblock / clicktoflash handling */
+
+#sm2-container {
+ /*
+  where the SM2 flash movie goes. by default, relative container.
+  set relative or absolute here, and don't touch it later or bad things will happen (see below comments.)
+ */
+ position:relative;
+ width:0px;
+ height:0px;
+}
+
+#sm2-container object,
+#sm2-container embed {
+ /*
+  the actual movie bit.
+  SWF needs to be able to be moved off-screen without display: or position: changes. important.
+  changing display: or position: or overflow: here or on parent can cause SFW reload or other weird issues after unblock,
+  eg. SM2 starts but strange errors, no whileplaying() etc.
+ */
+ position:absolute;
+}
+
+#sm2-container object,
+#sm2-container embed,
+#sm2-container.swf_timedout,
+#sm2-container.swf_timedout object,
+#sm2-container.swf_timedout embed {
+ /* 
+  when SM2 didn't start normally, time-out case. flash blocked, missing SWF, no flash?
+  48px square flash placeholder is typically used by blockers.
+ */
+ left:auto;
+ top:auto;
+ width:48px;
+ height:48px;
+}
+
+#sm2-container.swf_unblocked {
+ /* SWF unblocked, or was never blocked to begin with; try to collapse container as much as possible. */
+ width:0px;
+ height:0px;
+}
+
+#sm2-container.swf_unblocked object,
+#sm2-container.swf_unblocked embed {
+ /* hide flash off-screen (relative to container) when it has loaded OK */
+ left:-9999em;
+ top:-9999em;
+}
+
+#sm2-container.high_performance {
+ /* "high performance" case: keep on-screen at all times */
+ position:absolute;
+ position:fixed;
+ _top:-9999px; /* IE 6 hax, no position:fixed */
+ _left:-9999px;
+ bottom:0px;
+ left:0px;
+ /*
+  special case: show at first with w/h, hide when unblocked.
+  might be bad/annoying.
+ */
+ width:48px;
+ height:48px;
+ z-index:99; /* try to stay on top */
+}
+
+#sm2-container.high_performance.swf_unblocked {
+ z-index:auto;
+}
+
+#sm2-container.high_performance.swf_unblocked,
+#sm2-container.high_performance.swf_unblocked object,
+#sm2-container.high_performance.swf_unblocked embed {
+ /* 6x6px is good for fast performance, even better when on-screen via position:fixed */
+ width:6px;
+ height:6px;
+}
+
+#sm2-container.high_performance.swf_unblocked object,
+#sm2-container.high_performance.swf_unblocked embed {
+ /* high-performance case must stay on-screen */
+ left:auto;
+ top:auto;
+}
+
+#sm2-container.high_performance.swf_timedout {
+ z-index:99; /* try to stay on top */
+}

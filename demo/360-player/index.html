@@ -26,6 +26,10 @@ soundManager.url = '../../swf/';
 <!-- makes the fonts nicer etc. -->
 <link rel="stylesheet" type="text/css" href="../index.css" />
 <link rel="stylesheet" type="text/css" href="demo.css" />
+
+<!-- optional flash block handling -->
+<link rel="stylesheet" type="text/css" href="../flashblock/flashblock.css" />
+
 <style type="text/css">
 
 /* Demo page, general layout */
@@ -40,32 +44,6 @@ soundManager.url = '../../swf/';
  padding-top:0px;
  margin-bottom:0.25em;
  color:#666;
-}
-
-#sm2-container embed,
-#sm2-container object {
- /* fixed video dimensions */
- width:320px;
- height:240px;
-}
-
-#sm2-container.swf_unblocked {
- left:0px;
- top:0px;
-}
-
-/* flashblock handling */
-
-#sm2-container object,
-#sm2-container embed {
- left:auto;
- top:auto;
-}
-
-#sm2-container.swf_unblocked object,
-#sm2-container.swf_unblocked embed {
- width:100%;
- height:100%;
 }
 
 pre.block {
@@ -84,6 +62,10 @@ pre.block {
 
  <p class="note" style="color:#666;margin-bottom:0.5em">Canvas-based UI. Load progress, seek, play/pause etc. Also see <a href="canvas-visualization.html" title="Javascript canvas visualization with waveform/eq data">360&deg; UI visualization</a> demo.</p>
 
+<div id="sm2-container">
+ <!-- flash movie is added here -->
+</div>
+
 <div style="margin-top:1.25em">
 
 	<div style="float:left;display:inline"> <!-- float is just for this demo layout, you don't need it. -->
@@ -92,17 +74,10 @@ pre.block {
 
 	 <div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3">20090119 - Untitled Groove</a></div>
 
-	 <div class="ui360"><a href="../jsAMP-preview/audio/walking.mp3">Walking</a></div>
-	
-     <div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20090207%20-%20Loverman.mp3">20090207 - Loverman</a></div>
-	
-	 <!-- files from the web (note that ID3 information will *not* load from remote domains without permission, Flash restriction) -->
-	 <div class="ui360"><a href="http://www.freshly-ground.com/misc/music/carl-3-barlp.mp3">Barrlping with Carl (featureblend.com)</a></div>
-
 	</div>
 
 
-	<div style="float:left;display:inline;margin-left:40px;border-left:1px solid #ccc;padding-left:30px;padding-right:30px;border-right:1px solid #ccc;width:140px">
+	<div style="float:left;display:inline;margin-left:40px;border-left:1px solid #ccc;padding-left:30px;width:140px">
 
 	 <p style="margin-top:1em;margin-bottom:0px">Alternate style: inline</p>
 
@@ -114,20 +89,7 @@ pre.block {
 
 	 </div>
 
-	 <p style="margin-bottom:0px">Video playback control</p>
-
-	 <div class="sm2-inline-block"> <!-- note the CSS class, changes the layout -->
-
-	  <div class="ui360"><a href="http://freshly-ground.com/data/video/coffee.mp4">Drip Coffee</a></div>
-	  <div class="ui360"><a href="http://freshly-ground.com/data/video/magnets.mp4">Magnets</a></div>
-
-	 </div>
-	
-	<div style="position:absolute;left:540px;top:8px;margin-top:50px;width:320px;height:240px">
-	 <!-- SM2 video box -->
-	 <div id="sm2-container">
-	 </div>
-    </div>
+	</div>
 
 </div>
 
@@ -184,24 +146,6 @@ pre.block {
   height:<span>50px</span>;</span>
 }
 </code></pre>
-
-<h3>Using the 360&deg; UI for video</h3>
-
-<p>With SoundManager "MovieStar" and video modes enabled, you may also control video using the same callbacks as sound.</p>
-
-<pre class="block"><code>soundManager.useMovieStar = true;
-soundManager.movieStarOptions.useVideo = true;
-</code></pre>
-
-
-<script type="text/javascript">
-
-// for video demo, example only
-
-soundManager.useMovieStar = true;
-soundManager.movieStarOptions.useVideo = true;
-
-</script>
 
 <h3>Third-party Components</h3>
 

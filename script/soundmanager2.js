@@ -7,7 +7,7 @@
    Code provided under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.95b.20100101+DEV.20100317
+   V2.95b.20100101+DEV.20100320
 */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
@@ -34,7 +34,7 @@ function SoundManager(smURL, smID) {
   this.wmode = null;                 // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowFullScreen = true;       // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
-  this.handleFlashBlock = true;      // allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
+  this.handleFlashBlock = true;      // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
 
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
@@ -81,7 +81,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound, _s = this, _sm = 'soundManager', _id, flashCPLink = 'http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html', _doNothing;
   this.version = null;
-  this.versionNumber = 'V2.95b.20100101+DEV.20100317';
+  this.versionNumber = 'V2.95b.20100101+DEV.20100320';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -94,7 +94,6 @@ function SoundManager(smURL, smID) {
     swfDefault: 'movieContainer',
     swfTimeout: 'swf_timedout', // used w/handleFlashBlock
     swfUnblocked: 'swf_unblocked',
-    swfError: 'swf_error', // something really broke
     sm2Debug: 'sm2_debug',
     highPerf: 'high_performance',
     flashDebug: 'flash_debug'
@@ -204,7 +203,7 @@ function SoundManager(smURL, smID) {
     localFail: _sm + ': Non-HTTP page (' + document.location.protocol + ' URL?) Review Flash player security settings for this special case:\n' + flashCPLink + '\nMay need to add/allow path, eg. c:/sm2/ or /users/me/sm2/',
     waitFocus: _sm + ': Special case: Waiting for focus-related event..',
     waitImpatient: _sm + ': Getting impatient, still waiting for Flash%s...',
-    waitForever: _sm + ': Waiting indefinitely for Flash...',
+    waitForever: _sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
     needFunction: _sm + '.onready(): Function object expected',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
     fl9Vid: 'flash 9 required for video. Exiting.',
@@ -629,25 +628,14 @@ function SoundManager(smURL, smID) {
 
   this._complain = function(sMsg, oCaller) {
     // Try to create meaningful custom errors, w/stack trace to the "offending" line
-    var sPre = 'Error: ', e, stackMsg = null, splitChar = '@', stackTmp, errorDesc;
+    var sPre = 'Error: ', errorDesc;
     if (!oCaller) {
       return new Error(sPre + sMsg);
-    }
-    e = new Error(''); // make a mistake.
-    if (e.stack) {
-      // potentially dangerous: Try to return a meaningful stacktrace where provided (Mozilla)
-      try {
-        stackTmp = e.stack.split(splitChar);
-        stackMsg = stackTmp[4]; // try to return only the relevant bit, skipping internal SM2 shiz
-      } catch (ee) {
-        // oops.
-        stackMsg = e.stack;
-      }
     }
     if (typeof console !== 'undefined' && typeof console.trace !== 'undefined') {
       console.trace();
     }
-    errorDesc = sPre + sMsg + '. \nCaller: ' + oCaller.toString() + (e.stack?' \nTop of stacktrace: ' + stackMsg:(e.message?' \nMessage: ' + e.message:''));
+    errorDesc = sPre + sMsg + '. \nCaller: ' + oCaller.toString();
     // See JS error/debug/console output for real error source, stack trace / message detail where possible.
     return new Error(errorDesc);
   };
@@ -1111,7 +1099,7 @@ function SoundManager(smURL, smID) {
         }
         _s._debugTS('flashtojs', false, ': Timed out' + (_s._overHTTP)?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
       }
-      // if still not initialized and no other options, give up
+      // give up / time-out, depending
       if (!_s._didInit && _s._okToDisable) {
         if (!p) {
           // SWF failed. Maybe blocked.
@@ -1122,14 +1110,14 @@ function SoundManager(smURL, smID) {
             _s._wDS('waitForever');
           } else {
             // old SM2 behaviour, simply fail
-            _s.failSafely(true); // don't disable, for reboot()
+            _s._failSafely(true);
           }
         } else {
           // flash loaded? Shouldn't be a blocking issue, then.
           if (_s.flashLoadTimeout === 0) {
              _s._wDS('waitForever');
           } else {
-            _s._failSafely(true); // don't disable, for reboot()
+            _s._failSafely(true);
           }
         }
       }
@@ -1207,7 +1195,7 @@ function SoundManager(smURL, smID) {
     }
     _s._wD('-- SoundManager 2 ' + (_s._disabled?'failed to load':'loaded') + ' (' + (_s._disabled?'security/load error':'OK') + ') --', 1);
     if (_s._disabled || bNoDisable) {
-      _s.oMC.className = _s.getSWFCSS() + ' ' + (wasTimeout?_s.swfCSS.swfTimeout:_s.swfCSS.swfError);
+      _s.oMC.className = _s.getSWFCSS() + ' ' + _s.swfCSS.swfTimeout;
       _s._processOnReady();
       _s._debugTS('onload', false);
       if (_s.onerror instanceof Function) {
@@ -1412,7 +1400,8 @@ function SoundManager(smURL, smID) {
 
     _s.enabled = false;
     _s._didInit = false;
-    _s._waitingforEI = true;
+    // _s._waitingforEI = false; // _s === soundManager, but this doesn't work? scope issue?
+    soundManager._waitingForEI = false; // wtf.
     _s._initPending = false;
     _s._didAppend = false;
     _s._appendSuccess = false;
