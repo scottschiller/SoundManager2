@@ -1,4 +1,7 @@
-/* Flash positioning and flashblock / clicktoflash handling */
+/*
+ SoundManager 2 + useFlashBlock
+ Flash positioning and flashblock / clicktoflash handling
+*/
 
 #sm2-container {
  /*
@@ -6,8 +9,8 @@
   set relative or absolute here, and don't touch it later or bad things will happen (see below comments.)
  */
  position:relative;
- width:0px;
- height:0px;
+ width:1px;
+ height:1px;
 }
 
 #sm2-container object,

@@ -2,7 +2,7 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>SoundManager 2: Flash blocker handling examples</title>
+<title>SoundManager 2: Flash Block handling examples</title>
 <meta name="description" content="Demo of SoundManager 2 handling flashblock / &quot;click to flash&quot; blockers gracefully" />
 <meta name="keywords" content="javascript sound, javascript audio, DHTML sound, flashblock, flash blocker, handling flashblock, click to flash, click2flash" />
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
@@ -15,6 +15,9 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 
 <script type="text/javascript">
+// enable flash block handling
+soundManager.useFlashBlock = true;
+
 // custom demo options, not for your needs
 soundManager.debugMode = true;
 soundManager.url = '../../swf/';
@@ -53,11 +56,27 @@ soundManager.onready(function(){
 
 	<h3>Show SWF inline, wait indefinitely for load (click-to-run or whitelist)</h3>
 
- <p class="note">You can run this demo with <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal mode) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance mode</a> (higher JS callback frequency).</p>
+        <p class="note">You can run this demo with <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal mode) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance mode</a> (higher JS callback frequency).</p>
 
-	<p>To handle potential flash block cases, put <code>&lt;div id="sm2-container"&gt;&lt;/div&gt;</code> in your markup where you'd like the SWF to be shown (if at all.) The SWF object/embed will be appended to this element and can be targeted with CSS. In the blocked/failed start-up case, <code>#sm2-container</code> will have a class name of <code>swf_timedout</code> applied to it.</p>
-    <p>SM2 will start its init process, and will fire <code>onready()</code>, <code>onload()</code> and <code>onerror()</code> handlers accordingly. Keep in mind that while <code>onerror()</code> may fire at first, it may be preceded by a successful <code>onload()</code> if the user first loads the page and then later unblocks the flash movie.</p>
+        <h4>Where (and when) to show the SWF</h4>
+
+	<p>To handle potential flash block cases, put <code>&lt;div id="sm2-container"&gt;&lt;/div&gt;</code> in your markup where you'd like the SWF to appear in those cases. If not specified, SM2 will create and append the <code>#sm2-container</code> node to the document when it starts.</p>
+
+        <p>When <code>soundManager.useFlashBlock</code> is true, SM2 will not apply styles (eg. <code>style.position.left</code>) directly to the flash; rather, it will assign CSS classes and you can handle it as you choose.</p>
+
+        <h4>Handling failed start-up cases</h4>
+
+        <p>In the blocked/failed start-up case, <code>#sm2-container</code> will have a class name of <code>swf_timedout</code> applied to it.</p>
+
+        <p>SM2 will start its init process, and will fire <code>onready()</code>, <code>onload()</code> and <code>onerror()</code> handlers accordingly. Keep in mind that while <code>onerror()</code> may fire at first, it may be preceded by a successful <code>onload()</code> if the user first loads the page and then later unblocks the flash movie.</p>
+
 	<p>Note that flash blockers may not run when viewing offline (via <code>file://</code>) content, so try viewing this demo online. For FlashBlock (under Firefox), you can also go to <code>about:config</code> using your address bar and change the value of <code>flashblock.blockLocal</code> to test while offline.</p>
+
+        <h3>Flash Block Example</h3>
+
+        <p>Here, Flash is appended by SM2 to the <code>#sm2-container</code> DIV and after a failed start attempt (if you have a blocker active), will have a <code>swf_timedout</code> class appended.</p>
+
+        <p>The SWF uses <code>position:absolute</code> and negative left/top values so as not to affect the normal page layout, but shifts to <code>left:auto;top:auto</code> (effectively left/top:0) in the blocked case, and becomes visible to the user. On a successful unblock, the movie goes back to left/top:-9999em and is hidden from view.</p>
 
 	<p>SoundManager 2 load status: <b id="sm2-status">Loading...</b></p>
 
@@ -65,10 +84,13 @@ soundManager.onready(function(){
 
 	<div id="sm2-container">
  	  <!-- flash is appended here -->
-    </div>
+        </div>
 	
+	<h3>Flash Block-related CSS</h3>
+	
+	<p>When <code>soundManager.useFlashBlock</code> is enabled, CSS is applied to <code>#sm2-container</code> depending on the progress of SM2's start-up.</p>
+	<p>This page + demos use the rules below, fully-defined and commented in <a href="flashblock.css">flashblock.css</a>. Use it as a base for your own SM2 + flash block implementations.</p>
 
-	<p>When <code>soundManager.handleFlashBlock</code> is enabled, CSS is applied to <code>#sm2-container</code> depending on the progress of SM2's start-up:</p>
 <pre class="block"><code>#sm2-container {
  <span><span>/* Initial state: position:absolute/off-screen, or left/top:0 */</span></span>
 }
@@ -89,7 +111,9 @@ soundManager.onready(function(){
   <span><span>/* Additional modifier for flash debug output mode
   should use width/height 100% so you can read debug messages */</span></span>
 }</code></pre>
-	
-	<p>Take a look at <a href="flashblock.css">flashblock.css</a> for implementation details.</p>
 
+	<h3>Basic Demo</h3>
+	
+	<p>For a more minimal example, see the <a href="basic.html" title="SoundManager 2: Basic Flashblock handling demo">basic flashblock demo</a>.</p>
+	
 </div>

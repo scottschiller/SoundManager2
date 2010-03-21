@@ -602,7 +602,7 @@ ul.standard ul {
 }
 
 .c3 ul li a:hover {
- color:#fff;
+ color:#000;
  _color:#000;
 }
 
@@ -1324,6 +1324,7 @@ body.home #sm2-container.swf_timedout {
  border:1px solid #ff3333;
  border-bottom:none;
  margin:0px;
+ z-index:2;
 }
 
 body.home #sm2-container.swf_unblocked {

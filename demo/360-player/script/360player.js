@@ -1209,6 +1209,7 @@ soundManager.debugMode = (window.location.href.match(/debug=1/i)); // disable or
 soundManager.consoleOnly = true;
 soundManager.flashVersion = 9;
 soundManager.useHighPerformance = true;
+soundManager.useFlashBlock = true;
 
 // soundManager.useFastPolling = true; // for more aggressive, faster UI updates (higher CPU use)
 

@@ -11,9 +11,11 @@
 <meta name="language" content="en-us" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" media="screen" href="../demo/index.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="../demo/flashblock/flashblock.css" />
 <script type="text/javascript" src="../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../demo/index.js"></script>
 <script type="text/javascript">
+	soundManager.useFlashBlock = false;
 	soundManager.debugMode = false;
 	soundManager.url = '../swf/';
 	soundManager.onload = function() {
@@ -148,7 +150,8 @@ useHighPerformance = false;<span>// position:fixed flash movie for faster JS/fla
 waitForWindowLoad = false; <span>// always delay soundManager.onload() until after window.onload()</span>
 wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HTML on top of flash)</span>
 allowFullScreen = true;    <span>// enter full-screen (via double-click on movie) for flash 9+ video</span>
-allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed property), 'always' or 'sameDomain'</span>
+allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed prop.), 'always' or 'sameDomain'</span>
+useFlashBlock = true;      <span>// better handling of SWF if load fails, let user unblock. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span>
 </span></code></pre>
 			  <p>To modify global SoundManager default paramaters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
@@ -217,10 +220,11 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		
 		    </div>
 
+
 		  <div class="f-block f-flashloadtimeout">
 		        <h4 id="soundmanager-flashloadtimeout" title="Recently added" class="recent">soundManager.flashLoadTimeout</h4>
 			<p class="in">After initializing the flash component during start-up, SM2 will wait for a defined period of time before timing out and calling <code>soundManager.onerror()</code>.</p>
-			<p>The default value is 1000 (msec.) Setting a value of 0 disables the timeout and makes SM2 wait indefinitely for a call from the flash component.</p>
+			<p>The default value is 1000 (msec.) Setting a value of 0 disables the timeout and makes SM2 wait indefinitely for a call from the flash component. If you want to handle flash block-type situations, see <a href="#soundmanager-useflashblock" onclick="resetFilter()">soundManager.useFlashBlock</a>.</p>
 			<p>Setting this parameter to 0 may be useful when attempting to gracefully recover from a flashBlock situation, where the user has whitelisted the movie after it was blocked etc.</p>
 			<p>Note that when the timeout is disabled, soundManager will not fire its onerror() handler if there is an error at the flash loading stage.</p>
 		  </div>
@@ -236,6 +240,15 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			<p><code class="in">soundManager.useHighPerformance = true;</code></p>
 			<p>This has made a noticeable impact in responsiveness on Mac OS X, and Safari on Windows; animation lag is practically non-existent (see <a href="../demo/animation-2b/" title="SoundManager JS + DOM + sound demo 2b" style="display:inline" onclick="checkDomain(this)">demo</a>). Because setting wmode=transparent and fixed position has been reported to cause some issues, the feature is disabled by default.</p>
 			<p>To be least-obtrusive, SM2 attempts to set position:fixed, and uses bottom/left:0px to stay within view (though using wmode=transparent where possible, to be hidden from view.) It occupies an 8x8px square. If you wish to position the movie yourself or show it inline, perhaps for playing video, have a DIV element with the ID of <code class="in">sm2-container</code> present in the DOM for SM2 to reference and it will write the movie there without positioning.</p>
+		  </div>
+		
+		  <div class="f-block f-useflashblock">
+			<h4 id="soundmanager-useflashblock" title="New feature" class="new">soundManager.useFlashBlock</h4>
+			<p>Flash blockers (eg. FlashBlock, "Click To Flash") can prevent the flash portion of SM2 from loading, which will cause a start-up error with a time-out.</p>
+			<p>SM2 historically has kept the flash movie off-screen and out of view, and thus the user could not click on and unblock it. Now with <code>useFlashBlock = true</code>, the movie positioning can be handled by CSS. The initial state is still off-screen by default, but will change to be in view when a blocking (time-out) situation may be encountered. You can also edit the CSS to taste, of course.</p>
+			<p>When starting up, CSS classes are appended to the <code>#sm2-container</code> DIV (which you can provide, or SM2 will create and append to the document.) The CSS classes change with the state of SM2's start-up, eg. <code>#sm2-container.swf_timedout { border:1px solid red; }</code> could be used to highlight the movie to the user for unblocking and so on.</p>
+			<p>Setting <code>useFlashBlock = true</code> will cause SM2 to wait infinitely for the Flash content to load after an initial (non-fatal) timeout, having already waited for <code>flashLoadTimeout</code> to pass. If <code>flashLoadTimeout = 0</code>, SM2 will immediately go into "flash block mode" on start-up.</p>
+			<p>For a live example, see the <a href="../demo/flashblock/">FlashBlock Demo</a>.</p>
 		  </div>
 		
 		  <div class="f-block f-wmode">
@@ -1338,13 +1351,13 @@ soundManager.movieStarOptions = {<span>
      <li><a href="#soundmanager-features">features</a></li>
      <li class="recent" title="Recently-added feature"><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
      <li><a href="#soundmanager-flashversion">flashVersion</a></li>
-	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-allowfullscreen">isFullScreen</a></li>
+     <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-allowfullscreen">isFullScreen</a></li>
      <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
 	 <li>nullURL</li>
 	 <li><a href="#soundmanager-url">url</a></li>
-
 	 <li>useConsole</li>
 	 <li class="flash9 recent" title="Recently-added feature, Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
+     <li class="new" title="New feature"><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
 	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
      <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
 	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>

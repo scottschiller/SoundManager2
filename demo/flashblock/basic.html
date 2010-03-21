@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: Flash blocker handling - basic example</title>
+<meta name="description" content="Demo of SoundManager 2 handling flashblock / &quot;click to flash&quot; blockers gracefully" />
+<meta name="keywords" content="javascript sound, javascript audio, DHTML sound, flashblock, flash blocker, handling flashblock, click to flash, click2flash" />
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+
+<!-- actual flashblock demo stuff, this is for you -->
+<link rel="stylesheet" type="text/css" href="flashblock.css" />
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+
+<script type="text/javascript">
+// enable flash block handling
+soundManager.useFlashBlock = true;
+
+// custom demo options, not for your needs
+soundManager.debugMode = true;
+soundManager.url = '../../swf/';
+
+</script>
+</head>
+<body>
+
+<div>
+	
+	<h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Flashblock / "click to flash" handling: Basic Demo</h1>
+
+	<div id="sm2-container">
+		<!-- flash movie will be placed here -->
+	</div>
+
+	<p>See <a href="flashblock.css">flashblock.css</a> as a template for making your own SM2 + flash block implementations.</p>
+
+</div>

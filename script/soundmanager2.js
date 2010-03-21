@@ -34,7 +34,7 @@ function SoundManager(smURL, smID) {
   this.wmode = null;                 // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowFullScreen = true;       // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
-  this.handleFlashBlock = true;      // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
+  this.useFlashBlock = false;        // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
 
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
@@ -92,8 +92,8 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.swfCSS = {
     swfDefault: 'movieContainer',
-    swfTimeout: 'swf_timedout', // used w/handleFlashBlock
-    swfUnblocked: 'swf_unblocked',
+    swfTimeout: 'swf_timedout',
+    swfUnblocked: 'swf_unblocked', // or loaded OK
     sm2Debug: 'sm2_debug',
     highPerf: 'high_performance',
     flashDebug: 'flash_debug'
@@ -723,7 +723,7 @@ function SoundManager(smURL, smID) {
     // TODO: revisit
     // if (_s.wmode !== null && _s.flashLoadTimeout !== 0 && (!_s.useHighPerformance || _s.debugFlash) && !_s.isIE && navigator.platform.match(/win32/i)) {
 
-    if (_s.wmode !== null && !_s.isIE && navigator.platform.match(/win32/i)) {
+    if (_s.wmode !== null && !_s.isIE && !_s.useHighPerformance && navigator.platform.match(/win32/i)) {
       _s.specialWmodeCase = true;
       // extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
       // does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
@@ -822,25 +822,27 @@ function SoundManager(smURL, smID) {
         // "hide" flash movie
         s = null;
         oEl = null;
-        if (_s.useHighPerformance) {
-          s = {
-            position: 'fixed',
-            width: '6px',
-            height: '6px',
-            // must be at least 6px for flash to run fast. odd? yes.
-            bottom: '0px',
-            left: '0px',
-            overflow: 'hidden'
-            // zIndex:-1 // sit behind everything else - potentially dangerous/buggy?
-          };
-        } else {
-          s = {
-            position: 'absolute',
-            width: '6px',
-            height: '6px',
-            top: '-9999px',
-            left: '-9999px'
-          };
+        if (!_s.useFlashBlock) {
+          if (_s.useHighPerformance) {
+            s = {
+              position: 'fixed',
+              width: '6px',
+              height: '6px',
+              // must be at least 6px for flash to run fast. odd? yes.
+              bottom: '0px',
+              left: '0px',
+              overflow: 'hidden'
+              // zIndex:-1 // sit behind everything else - potentially dangerous/buggy?
+            };
+          } else {
+            s = {
+              position: 'absolute',
+              width: '6px',
+              height: '6px',
+              top: '-9999px',
+              left: '-9999px'
+            };
+          }
         }
         x = null;
         if (!_s.debugFlash) {
@@ -897,7 +899,7 @@ function SoundManager(smURL, smID) {
       _s._wD(specialCase);
     }
 
-    _s._wD('-- SoundManager 2 ' + _s.version + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.handleFlashBlock?', flashBlock mode':'') + ' --', 1);
+    _s._wD('-- SoundManager 2 ' + _s.version + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
     _s._wD('soundManager._createMovie(): Trying to load ' + smURL + (!_s._overHTTP && _s.altURL?' (alternate URL)':''), 1);
   };
 
@@ -1103,8 +1105,8 @@ function SoundManager(smURL, smID) {
       if (!_s._didInit && _s._okToDisable) {
         if (!p) {
           // SWF failed. Maybe blocked.
-          if (_s.handleFlashBlock || _s.flashLoadTimeout === 0) {
-            if (_s.handleFlashBlock) {
+          if (_s.useFlashBlock || _s.flashLoadTimeout === 0) {
+            if (_s.useFlashBlock) {
               _s.flashBlockHandler();
             }
             _s._wDS('waitForever');
@@ -1189,7 +1191,7 @@ function SoundManager(smURL, smID) {
       return false;
     }
     var sClass = _s.oMC.className,
-    wasTimeout = (_s.handleFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent());
+    wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent());
     if (!wasTimeout) {
       _s._didInit = true;
     }
@@ -1238,7 +1240,7 @@ function SoundManager(smURL, smID) {
       success: (ignoreInit?_s.supported():!_s._disabled)
     },
     queue = [], i, j,
-    canRetry = (!_s.handleFlashBlock || (_s.handleFlashBlock && !_s.supported()));
+    canRetry = (!_s.useFlashBlock || (_s.useFlashBlock && !_s.supported()));
     for (i = 0, j = _s._onready.length; i < j; i++) {
       if (_s._onready[i].fired !== true) {
         queue.push(_s._onready[i]);
@@ -1261,7 +1263,7 @@ function SoundManager(smURL, smID) {
 
   this._initUserOnload = function() {
     window.setTimeout(function() {
-      if (_s.handleFlashBlock) {
+      if (_s.useFlashBlock) {
         _s.flashBlockHandler();
       }
       _s._processOnReady();

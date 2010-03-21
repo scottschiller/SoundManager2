@@ -15,8 +15,9 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
+	soundManager.useFlashBlock = true;
 	soundManager.debugMode = true;
-        soundManager.debugFlash = true; // enable flash debug output for this page
+	soundManager.debugFlash = true; // enable flash debug output for this page
 	soundManager.url = '../../swf/';
 	soundManager.onload = function() {
 	}
@@ -140,7 +141,7 @@
 			  <p>Within <code class="in">&lt;head&gt;</code>:</p>
 			  <pre>&lt;script type="text/javascript" src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
 
-			  <p>Alternate "minified" version (~6 KB over the wire with gzip, 60% less code, no debug output/comments):</p>
+			  <p>Alternate "minified" version, &lt; 8 KB over the wire with gzip, ~60% less code, no debug output/comments:</p>
 			  <pre>&lt;script type="text/javascript" src="<span>soundmanager2-nodebug-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
 			
 			  <p>You then need to tell SM2 where to find the SWF it needs, and optionally, what version to use:</p>
@@ -149,7 +150,12 @@
 &lt;script&gt;
 soundManager.url = '<span>/path/to/swf-files/</span>';
 soundManager.flashVersion = 9; <span><span>// optional: shiny features (default = 8)</span></span>
+soundManager.useFlashBlock = false; <span><span>// optionally, enable when you're ready to <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">dive in</a></span></span>
 &lt;/script&gt;</pre>
+
+<p>If you plan to eventually use the flash block handling feature (disabled in this example), you'll want to look at the <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">flash block demo</a> and include the relevant CSS it uses.</p>
+
+
 
 				<h4 id="basic-template">Basic SoundManager Template</h4>
 

@@ -85,6 +85,7 @@ if (soundManager.flashVersion != 8) {
 soundManager.url = '../../swf/'; // path to load SWF from (overriding default)
 soundManager.debugMode = false;
 soundManager.consoleOnly = false;
+soundManager.useFlashBlock = true;
 
 soundManager.onready(function() {
 

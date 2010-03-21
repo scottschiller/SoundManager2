@@ -72,6 +72,7 @@ function PagePlayer(oConfigOverride) {
   this.cssBase = this.cssBase.join(' ');
 
   // apply some items to SM2
+  sm.useFlashBlock = true;
   sm.flashVersion = this.config.flashVersion;
   if (sm.flashVersion >= 9) {
     sm.useMovieStar = this.config.useMovieStar; // enable playing FLV, MP4 etc.
