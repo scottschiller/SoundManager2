@@ -52,6 +52,11 @@
  top:-9999em;
 }
 
+#sm2-container.swf_error {
+ /* when there is a fatal error (flash loaded, but SM2 failed) */
+ display:none;
+}
+
 #sm2-container.high_performance {
  /* "high performance" case: keep on-screen at all times */
  position:absolute;

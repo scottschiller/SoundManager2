@@ -15,6 +15,7 @@
 <link rel="stylesheet" type="text/css" href="demo/page-player/css/page-player.css" />
 <link rel="stylesheet" type="text/css" href="demo/360-player/360player.css" />
 <link rel="stylesheet" type="text/css" href="demo/mp3-player-button/css/mp3-player-button.css" />
+<link rel="stylesheet" type="text/css" href="demo/flashblock/flashblock.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="demo/index.css" />
 <script type="text/javascript" src="script/soundmanager2.js"></script>
 <script type="text/javascript">
@@ -56,6 +57,10 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 	  // failed to load
 	  var o = _id('sm2-support');
 	  o.innerHTML = smLoadFailWarning;
+	  if (soundManager.getMoviePercent()) {
+	    // movie loaded at least somewhat, so don't show flashblock things
+		_id('flashblocker').style.display = 'none';
+	  }
       o.style.marginBottom = '1.5em';
 	  o.style.display = 'block';
 /*

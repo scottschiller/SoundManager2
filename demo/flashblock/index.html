@@ -102,6 +102,11 @@ soundManager.onready(function(){
   <span><span>/* Applied if movie loads successfully
   (flash started, so move off-screen etc.) */</span></span>
 }
+#sm2-container.swf_error {
+  <span><span>/* "Fatal" error case: SWF loaded,
+  but SM2 was unable to start for some reason.
+  (Flash security or other error case.) */</span></span>
+}
 #sm2-container.high_performance {
   <span><span>/* Additional modifier for "high performance" mode
   should apply position:fixed and left/bottom 0 to stay on-screen

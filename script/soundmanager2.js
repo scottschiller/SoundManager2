@@ -7,7 +7,7 @@
    Code provided under the BSD License:
    http://schillmania.com/projects/soundmanager2/license.txt
 
-   V2.95b.20100101+DEV.20100320
+   V2.95b.20100101+DEV.20100321
 */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
@@ -81,7 +81,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound, _s = this, _sm = 'soundManager', _id, flashCPLink = 'http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html', _doNothing;
   this.version = null;
-  this.versionNumber = 'V2.95b.20100101+DEV.20100320';
+  this.versionNumber = 'V2.95b.20100101+DEV.20100321';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -92,7 +92,8 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.swfCSS = {
     swfDefault: 'movieContainer',
-    swfTimeout: 'swf_timedout',
+    swfError: 'swf_error', // SWF loaded, but SM2 couldn't start (other error)
+    swfTimedout: 'swf_timedout',
     swfUnblocked: 'swf_unblocked', // or loaded OK
     sm2Debug: 'sm2_debug',
     highPerf: 'high_performance',
@@ -226,7 +227,7 @@ function SoundManager(smURL, smID) {
     queue: _sm + '.onready(): Queueing handler',
     smFail: _sm + ': Failed to initialise.',
     smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
-    fbTimeout: 'No flash response, applying .'+_s.swfCSS.swfTimeout+' CSS..',
+    fbTimeout: 'No flash response, applying .'+_s.swfCSS.swfTimedout+' CSS..',
     manURL: 'SMSound.load(): Using manually-assigned URL',
     onURL: _sm + '.load(): current URL already assigned.',
     badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.'
@@ -1142,12 +1143,14 @@ function SoundManager(smURL, smID) {
 
   this.flashBlockHandler = function() {
     // *possible* flash block situation.
-    var name = 'soundManager.flashBlockHandler()';
+    var name = 'soundManager.flashBlockHandler()', p = _s.getMoviePercent();
     _s._wD(name);
     if (!_s.supported()) {
       // make the movie more visible, so user can fix
-      _s.oMC.className = _s.getSWFCSS() + ' ' + _s.swfCSS.swfDefault + ' ' + _s.swfCSS.swfTimeout;
-      _s._wD(name+': '+_s.strings.fbTimeout);
+      _s.oMC.className = _s.getSWFCSS() + ' ' + _s.swfCSS.swfDefault + ' ' + (!p?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
+      if (!p) {
+        _s._wD(name+': '+_s.strings.fbTimeout);
+      }
       _s._processOnReady(true); // fire onready(), complain lightly
       // onerror?
       if (_s.onerror instanceof Function) {
@@ -1197,7 +1200,9 @@ function SoundManager(smURL, smID) {
     }
     _s._wD('-- SoundManager 2 ' + (_s._disabled?'failed to load':'loaded') + ' (' + (_s._disabled?'security/load error':'OK') + ') --', 1);
     if (_s._disabled || bNoDisable) {
-      _s.oMC.className = _s.getSWFCSS() + ' ' + _s.swfCSS.swfTimeout;
+      if (_s.useFlashBlock) {
+        _s.oMC.className = _s.getSWFCSS() + ' ' + (!_s.getMoviePercent()?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
+      }
       _s._processOnReady();
       _s._debugTS('onload', false);
       if (_s.onerror instanceof Function) {

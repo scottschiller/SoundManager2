@@ -248,6 +248,33 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			<p>SM2 historically has kept the flash movie off-screen and out of view, and thus the user could not click on and unblock it. Now with <code>useFlashBlock = true</code>, the movie positioning can be handled by CSS. The initial state is still off-screen by default, but will change to be in view when a blocking (time-out) situation may be encountered. You can also edit the CSS to taste, of course.</p>
 			<p>When starting up, CSS classes are appended to the <code>#sm2-container</code> DIV (which you can provide, or SM2 will create and append to the document.) The CSS classes change with the state of SM2's start-up, eg. <code>#sm2-container.swf_timedout { border:1px solid red; }</code> could be used to highlight the movie to the user for unblocking and so on.</p>
 			<p>Setting <code>useFlashBlock = true</code> will cause SM2 to wait infinitely for the Flash content to load after an initial (non-fatal) timeout, having already waited for <code>flashLoadTimeout</code> to pass. If <code>flashLoadTimeout = 0</code>, SM2 will immediately go into "flash block mode" on start-up.</p>
+			<p>The relevant CSS is as follows:</p>
+<pre class="block"><code>#sm2-container {
+ <span><span>/* Initial state: position:absolute/off-screen, or left/top:0 */</span></span>
+}
+#sm2-container.swf_timedout {
+  <span><span>/* Didn't load before time-out, show to user.
+  Maybe highlight on-screen, red border, etc..? */</span></span>
+}
+#sm2-container.swf_unblocked {
+  <span><span>/* Applied if movie loads successfully
+  (flash started, so move off-screen etc.) */</span></span>
+}
+#sm2-container.swf_error {
+  <span><span>/* "Fatal" error case: SWF loaded,
+  but SM2 was unable to start for some reason.
+  (Flash security or other error case.) */</span></span>
+}
+#sm2-container.high_performance {
+  <span><span>/* Additional modifier for "high performance" mode
+  should apply position:fixed and left/bottom 0 to stay on-screen
+  at all times (better flash performance) */</span></span>
+}
+#sm2-container.flash_debug {
+  <span><span>/* Additional modifier for flash debug output mode
+  should use width/height 100% so you can read debug messages */</span></span>
+}</code></pre>
+
 			<p>For a live example, see the <a href="../demo/flashblock/">FlashBlock Demo</a>.</p>
 		  </div>
 		
