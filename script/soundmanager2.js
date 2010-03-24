@@ -81,7 +81,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound, _s = this, _sm = 'soundManager', _id, flashCPLink = 'http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html', _doNothing;
   this.version = null;
-  this.versionNumber = 'V2.95b.2010323';
+  this.versionNumber = 'V2.95b.20100323';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;

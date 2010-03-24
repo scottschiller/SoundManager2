@@ -130,9 +130,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.95b.20100101</p>
-				<p><b>New shiny!</b> <code>debugFlash</code> option for troubleshooting SWF start-up/security issues, both (L/R) channels now included for <code>eqData</code>, improved debug/troubleshooting messaging, code clean-up and more. See <a href="#history">revision history</a> for details.</p>
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv295b-20100101.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95b.20100101</a></p>
+				<p>Current version: 2.95b.20100323</p>
+				<p><b>New shiny!</b> <code>useFlashBlock</code>, better handling of time-out/errors (CSS-based SWF repositioning options for unblocking on time-out), "play MP3 button" demo, <code>canPlayLink()</code>, <code>canPlayMIME()</code>, <code>eqData</code> + <code>waveformData</code> for AAC/H.264 (movieStar) content, missing documentation fixes and more. See <a href="#history">revision history</a> for details.</p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv295b-20100323.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95b.20100323</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a></p>
 			</div>
 			
@@ -158,7 +158,41 @@
 				
 				
 			   <li class="in">
-			    <h3><b>V2.95b.20100101</b></h3>
+			    <h3><b>V2.95b.20100323</b></h3>
+			    <p><b>New shiny!</b> <code>useFlashBlock</code>, better handling of time-out/errors (CSS-based SWF repositioning options for unblocking on time-out), "play MP3 button" demo, <code>canPlayLink()</code>, <code>canPlayMIME()</code>, <code>eqData</code> + <code>waveformData</code> for AAC/H.264 (movieStar) content, missing documentation and miscellaneous bug fixes.</p>
+
+			    <ul class="double">
+
+			     <li class="in">
+			      <p class="compact">API Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New <code>soundManager.useFlashBlock</code> (disabled by default) - enables CSS classes assigned to SWF container indicate start-up state (ok/error/blocked), allowing positioning/display of SWF for unblock cases and successful recovery from unblocking. Built into homepage + (most) demos. Updated flashblock demo as well.</li>
+				   <li>playableClass attribute eg. <code>&lt;a href="foo.php" class="inline-playable"&gt;</code>, allowing URLs without .mp3 to be picked up</li>
+				   <li>New <code>soundManager.canPlayLink()</code> + <code>canPlayMIME()</code>, ability to check &lt;a href="foo.php" type="audio/mp3"> for example</li>
+				  </ul>
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li><code>soundManager.play()</code> type check fix, instanceof Object vs. typeof x === 'Object' (typo)</li>
+				   <li><code>computeSpectrum()</code> can access waveform and eq (spectrum) data for movieStar (AAC/MP4, netstream-based) objects, too.</li>
+			      </ul>
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+					<li>
+				   	<li>Moved old demo code using <code>$()</code> to <code>_id()</code>, <code>_$</code> in <code>soundManager2</code> to <code>_id()</code> to avoid potential jQuery (and other $-based library) collisions</li>
+					<li>Make <code>new SoundManager('/path/to/swfs/');</code> actually work.</li>
+					<li>Flash time-out (flash blockers) vs. security failure detection/other error cases is smarter on the SM2 homepage now</li>
+					<li>New "MP3 player button" demo</li>
+					<li>Removed old IE onclick handler fix in several demos for non-MP3 links</li>
+					<li><code>eqeqeq = true</code> for jslint, why not.</li>
+			      </ul>
+			     </li>
+
+				</ul>
+			   </li>
+
+				
+			   <li class="in">
+			    <h3><b>V2.95b.20100101</b> (<a href="../../download/soundmanagerv295b-20100101.zip">Download archived version</a>)</h3>
 			    <p>New features: Flash movie debugging in SWF via <code>debugFlash</code> (default:false), <code>SMSound.eqData = { left:[], right:[] }</code>, code tidying and debug output clean-up</p>
 
 			    <ul class="double">
