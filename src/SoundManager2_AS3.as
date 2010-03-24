@@ -35,7 +35,7 @@ package {
   import flash.external.ExternalInterface; // woo
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.95b.20100101+DEV.20100223";
+    public var version:String = "V2.95b.20100323";
     public var version_as:String = "(AS3/Flash 9)";
 
     // Cross-domain security exception stuffs

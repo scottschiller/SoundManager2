@@ -36,7 +36,7 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "2.95b.20100101";
+    var version = "2.95b.20100323";
     var version_as = "(AS2/Flash 8)";
 
     // Cross-domain security exception shiz
