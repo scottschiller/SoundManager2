@@ -1,4 +1,4 @@
-/* larger canvas, spectrum + EQ vis and other items */
+/* larger canvas, spectrum + EQ visualization and other items */
 
 .ui360,
 .sm2-360ui {
@@ -13,7 +13,9 @@
  padding-top:1px;
  padding-bottom:1px;
  margin-bottom:-18px; /* approximate "line height" we want */
- margin-left:248px; /* full width, minus a few */
+ padding-left:248px;
+ margin-left:0px;
+ background-position:22.6% 50%; /* (~109px) initial play button position */
 }
 
 .ui360 a {
@@ -45,6 +47,8 @@
 
 .sm2-inline-list .ui360 {
  margin:8px 13px 7px 0px;
+ padding-left:0px;
+ background-position:50% 50%; /* initial play button position */
 }
 
 .sm2-inline-list .sm2-360ui {

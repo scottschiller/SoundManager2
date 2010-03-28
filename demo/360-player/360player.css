@@ -18,7 +18,7 @@
  padding-top:1px;
  padding-bottom:1px;
  margin-bottom:-18px; /* approximate "line height" we want */
- margin-left:42px; /* 50px, with a few off */
+ padding-left:42px; /* 50px, with a few off - margin used for visualization UI */
 }
 
 .ui360 a {
@@ -139,10 +139,19 @@
 
 /* this could be optimized a fair bit. */
 
+.ui360,
 .ui360 .sm2-360btn-default {
  background:transparent url(360-button-play.png) no-repeat 50% 50%;
  _background:transparent url(360-button-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
  cursor:pointer;
+}
+
+.ui360 {
+ /*
+  "fake" button shown before SM2 has started, non-JS/non-SM2 case etc.
+  background image will be removed via JS, in threeSixyPlayer.init()
+ */
+ background-position:6px 50%;
 }
 
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn {

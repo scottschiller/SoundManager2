@@ -882,6 +882,8 @@ this.updatePlaying = function() {
 
     for (var i=0,j=oItems.length; i<j; i++) {
 	  oLinks.push(oItems[i].getElementsByTagName('a')[0]);
+	  // remove "fake" play button (unsupported case)
+	  oItems[i].style.backgroundImage = 'none';
     }
     // grab all links, look for .mp3
     var foundItems = 0;
@@ -1213,6 +1215,7 @@ soundManager.useFlashBlock = true;
 
 // soundManager.useFastPolling = true; // for more aggressive, faster UI updates (higher CPU use)
 
+// FPS data, testing/debug only
 if (soundManager.debugMode) {
   var t = window.setInterval(function(){
 	if (threeSixtyPlayer && threeSixtyPlayer.lastSound && threeSixtyPlayer.lastSound._360data.fps) {
