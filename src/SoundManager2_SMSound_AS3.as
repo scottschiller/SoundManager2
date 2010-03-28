@@ -162,9 +162,9 @@ package {
       if (this.oVideo) {
         // set dimensions accordingly
         if (!infoObject.width && !infoObject.height) {
-          writeDebug('No width/height specified');
-          infoObject.width = 0;
-          infoObject.height = 0;
+          writeDebug('No width/height specified, using stage dimensions');
+          infoObject.width = this.sm.stage.width;
+          infoObject.height = this.sm.stage.height;
         }
         writeDebug('video dimensions: ' + infoObject.width + 'x' + infoObject.height + ' (w/h)');
         this.videoWidth = infoObject.width;
