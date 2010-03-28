@@ -231,7 +231,7 @@ soundManager.debugMode = true; // disable or enable debug output
 soundManager.useFlashBlock = true;
 soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
 
-// optional: enable MPEG-4/AAC support
+// optional: enable MPEG-4/AAC support (requires flash 9)
 
 soundManager.flashVersion = 9;
 soundManager.useMovieStar = true;
