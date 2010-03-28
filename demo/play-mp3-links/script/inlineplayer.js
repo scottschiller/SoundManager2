@@ -28,7 +28,7 @@ function InlinePlayer() {
 
   this.config = {
     playNext: false, // stop after one sound, or play through list until end
-	autoPlay: false  // start playing the first sound right away
+    autoPlay: false, // start playing the first sound right away
   }
 
   this.css = {
@@ -144,10 +144,10 @@ function InlinePlayer() {
       if (!o) return true;
     }
     var sURL = o.getAttribute('href');
-    if (!o.href || (!o.href.match(/\.mp3(\\?.*)$/i) && !self.classContains(o,self.playableClass)) || self.classContains(o,self.excludeClass)) {
+    if (!o.href || (!sm.canPlayLink(o) && !self.classContains(o,self.playableClass)) || self.classContains(o,self.excludeClass)) {
       return true; // pass-thru for non-MP3/non-links
     }
-    sm._writeDebug('handleClick()');
+    sm._writeDebug('inlinePlayer.handleClick()');
     var soundURL = (o.href);
     var thisSound = self.getSoundByURL(soundURL);
     if (thisSound) {
@@ -205,7 +205,7 @@ function InlinePlayer() {
     // grab all links, look for .mp3
     var foundItems = 0;
     for (var i=0, j=oLinks.length; i<j; i++) {
-      if ((oLinks[i].href.match(/\.mp3/i) || self.classContains(oLinks[i],self.playableClass)) && !self.classContains(oLinks[i],self.excludeClass)) {
+      if ((sm.canPlayLink(oLinks[i]) || self.classContains(oLinks[i],self.playableClass)) && !self.classContains(oLinks[i],self.excludeClass)) {
         self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
@@ -214,9 +214,9 @@ function InlinePlayer() {
     }
     if (foundItems>0) {
       self.addEventHandler(document,'click',self.handleClick);
-	  if (self.config.autoPlay) {
-	    self.handleClick({target:self.links[0],preventDefault:function(){}});
-	  }
+      if (self.config.autoPlay) {
+        self.handleClick({target:self.links[0],preventDefault:function(){}});
+      }
     }
     sm._writeDebug('inlinePlayer.init(): Found '+foundItems+' relevant items.');
   }
@@ -230,6 +230,13 @@ var inlinePlayer = null;
 soundManager.debugMode = true; // disable or enable debug output
 soundManager.useFlashBlock = true;
 soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
+
+// optional: enable MPEG-4/AAC support
+
+soundManager.flashVersion = 9;
+soundManager.useMovieStar = true;
+
+// ----
 
 soundManager.onready(function() {
   if (soundManager.supported()) {
