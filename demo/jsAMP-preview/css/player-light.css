@@ -521,8 +521,6 @@ image/sec-left-arr1.gif);
  bottom:0px;
  background:transparent url(../image/skin-3-ui.png) no-repeat 100% 100%;
  _background-image:url(../image/skin-3-ui.gif);
- xmargin-left:3px; /* leave room for left cap */
- xmargin-right:-3px;
  width:3px;
  height:2px;
 }
