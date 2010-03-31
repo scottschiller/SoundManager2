@@ -185,7 +185,15 @@ package {
         this.oVideo.visible = true; // show ze video!
       }
       if (!this.loaded) {
-        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, infoObject.duration);
+        writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
+        if (this.ns.bytesLoaded) {
+          this.lastValues.bytesLoaded = this.ns.bytesLoaded;
+        }
+        if (this.ns.bytesTotal) {
+          this.lastValues.bytes = this.ns.bytesTotal;
+        }
+        // TODO: investigate loaded/total values
+        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
       }
       this.duration = infoObject.duration * 1000;
       // null this out for the duration of this object's existence.
