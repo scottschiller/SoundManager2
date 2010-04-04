@@ -396,6 +396,9 @@ package {
           }
         }
 
+        var newDataError:Boolean = false;
+        var dataErrors:Array = [];
+
         // raw waveform + EQ spectrum data
         if (oSoundChannel || oSound.useNetstream) {
           if (oSound.useWaveformData) {
@@ -412,8 +415,8 @@ package {
               } catch(e: Error) {
                 writeDebug('getWaveformData() (waveform data) '+e.toString());
                 // oSound.useWaveformData = false;
-                sMethod = baseJSObject + "['" + sounds[i] + "']._ondataerror";
-                ExternalInterface.call(sMethod, 'Spectrum data: ' + e.toString());
+                newDataError = true;
+                dataErrors.push(e.toString());
                 oSound.handledDataError = true;
               }
             }
@@ -424,6 +427,9 @@ package {
                 oSound.getEQData();
               } catch(e: Error) {
                 writeDebug('getEQData() warning: ' + e.toString());
+                newDataError = true;
+                dataErrors.push(e.toString());
+                oSound.handledDataError = true;
               }
             } else if (oSound.handledDataError != true && oSound.ignoreDataError != true) {
               try {
@@ -431,8 +437,8 @@ package {
               } catch(e: Error) {
                 // writeDebug('computeSpectrum() (EQ data) '+e.toString());
                 // oSound.useEQData = false;
-                sMethod = baseJSObject + "['" + sounds[i] + "']._ondataerror";
-                ExternalInterface.call(sMethod, 'EQ Data: ' + e.toString());
+                newDataError = true;
+                dataErrors.push(e.toString());
                 oSound.handledDataError = true;
               }
             }
@@ -447,10 +453,17 @@ package {
           }
         }
 
+        if (newDataError) {
+            sMethod = baseJSObject + "['" + sounds[i] + "']._ondataerror";
+            var errors:String = dataErrors.join('<br>\n');
+            ExternalInterface.call(sMethod, 'data unavailable: ' + errors);
+        }
+
         // special case: Netstream may try to fire whileplaying() after finishing. check that stop hasn't fired.
         isPlaying = (!oSound.useNetstream || (oSound.useNetstream && oSound.lastNetStatus != "NetStream.Play.Stop")); // don't update if stream has ended
 
         if (typeof nP != 'undefined' && hasNew && isPlaying) { // and IF VIDEO, is still playing?
+
           // oSound.lastValues.position = nP;
           sMethod = baseJSObject + "['" + sounds[i] + "']._whileplaying";
           var waveDataLeft:String = (newWaveformData ? oSound.waveformDataArray.slice(0, 256).join(',') : null);

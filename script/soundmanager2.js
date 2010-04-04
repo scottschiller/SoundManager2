@@ -772,6 +772,7 @@ function SoundManager(smURL, smID) {
       }
     }
 
+    // <d>
     if (_s.debugMode) {
 
       oD = document.createElement('div');
@@ -808,6 +809,7 @@ function SoundManager(smURL, smID) {
       }
 
     }
+    // </d>
 
     extraClass = _s.getSWFCSS();
 
@@ -879,7 +881,7 @@ function SoundManager(smURL, smID) {
         }
         _s._appendSuccess = true;
       }
-
+      // <d>
       if (_s.debugMode && !_id(_s.debugID) && ((!_s._hasConsole || !_s.useConsole) || (_s.useConsole && _s._hasConsole && !_s.consoleOnly))) {
         oDebug = document.createElement('div');
         oDebug.id = _s.debugID;
@@ -894,6 +896,7 @@ function SoundManager(smURL, smID) {
         }
       }
       oTarget = null;
+      // </d>
     }
 
     if (specialCase) {
@@ -905,6 +908,7 @@ function SoundManager(smURL, smID) {
   };
 
   this._writeDebug = function(sText, sType, bTimestamp) { // aliased to this._wD()
+    // <d>
     var sDID = 'soundmanager-debug', o, oItem, sMethod;
     if (!_s.debugMode) {
       return false;
@@ -953,6 +957,7 @@ function SoundManager(smURL, smID) {
       // oh well
     }
     o = null;
+    // </d>
   };
   this._writeDebug._protected = true;
   this._wdCount = 0;
@@ -960,14 +965,17 @@ function SoundManager(smURL, smID) {
   this._wD = this._writeDebug;
 
   this._wDS = function(o, errorLevel) {
+  // <d>
     if (!o) {
       return '';
     } else {
       return _s._wD(_s._str(o), errorLevel);
     }
+  // </d>
   };
   this._wDS._protected = true;
 
+  // <d>
   this._wDAlert = function(sText) {
     alert(sText);
   };
@@ -975,8 +983,10 @@ function SoundManager(smURL, smID) {
   if (window.location.href.indexOf('debug=alert') + 1 && _s.debugMode) {
     _s._wD = _s._wDAlert;
   }
+  // </d>
 
   this._toggleDebug = function() {
+    // <d>
     var o = _id(_s.debugID),
     oT = _id(_s.debugID + '-toggle');
     if (!o) {
@@ -991,15 +1001,18 @@ function SoundManager(smURL, smID) {
       o.style.display = 'block';
     }
     _s._debugOpen = !_s._debugOpen;
+    // </d>
   };
 
   this._toggleDebug._protected = true;
 
   this._debug = function() {
+    // <d>
     _s._wDS('currentObj', 1);
     for (var i = 0, j = _s.soundIDs.length; i < j; i++) {
       _s.sounds[_s.soundIDs[i]]._debug();
     }
+    // </d>
   };
 
   this._debugTS = function(sEventType, bSuccess, sMessage) {
@@ -1810,7 +1823,7 @@ function SoundManager(smURL, smID) {
           };
         }
         if (_t._iO.useEQData) {
-          if (typeof oEQData !== 'undefined' && oEQData.leftEQ) {
+          if (typeof oEQData !== 'undefined' && oEQData && oEQData.leftEQ) {
             var eqLeft = oEQData.leftEQ.split(',');
             _t.eqData = eqLeft;
             _t.eqData.left = eqLeft;
