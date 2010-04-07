@@ -133,8 +133,8 @@ function SoundManager(smURL, smID) {
     flash9: /\.mp3(\?\.*)?$/i
   };
 
-  this.baseMimeTypes = /^audio\/(?:x-)?(?:mp(?:eg|3))\s*;?/i; // mp3
-  this.netStreamMimeTypes = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex)\s*;?/i; // mp3, mp4, aac etc.
+  this.baseMimeTypes = /^\saudio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
+  this.netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3, mp4, aac etc.
   this.netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2']; // Flash v9.0r115+ "moviestar" formats
   this.netStreamPattern = new RegExp('\\.(' + this.netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
   this.mimePattern = _s.baseMimeTypes;
@@ -1457,6 +1457,7 @@ function SoundManager(smURL, smID) {
     this._lastURL = null;
 
     this._debug = function() {
+      // <d>
       if (_s.debugMode) {
         var stuff = null, msg = [], sF, sfBracket, maxLength = 64; // # of characters of function code to show before truncating
         for (stuff in _t.options) {
@@ -1474,6 +1475,7 @@ function SoundManager(smURL, smID) {
         }
         _s._wD('SMSound() merged options: {\n' + msg.join(', \n') + '\n}');
       }
+      // </d>
     };
 
     this._debug();
