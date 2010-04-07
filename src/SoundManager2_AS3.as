@@ -250,26 +250,6 @@ package {
       debugEnabled = false;
     }
 
-/*
-    public function checkLoadProgress(e: Event) : void {
-      try {
-        var oSound:Object = e.target;
-        var bL: int = oSound.bytesLoaded;
-        var bT: int = oSound.bytesTotal;
-        var nD: int = oSound.length || oSound.duration || 0;
-        // writeDebug('checkLoadProgress: '+bL+','+bT+','+nD);
-        var sMethod:String = baseJSObject + "['" + oSound.sID + "']._whileloading";
-        // ExternalInterface.call(sMethod, bL, bT, nD);
-        if (bL && bT && bL >= oSound.lastValues.bytes) {
-          oSound.lastValues.bytes = bL;
-          ExternalInterface.call(sMethod, bL, bT, nD);
-        }
-      } catch(e: Error) {
-        writeDebug('checkLoadProgress(): ' + e.toString());
-      }
-    }
-*/
-
     public function checkProgress() : void {
       var bL: int = 0;
       var bT: int = 0;
@@ -335,7 +315,7 @@ package {
 
         } else {
 
-          // MP3/MP4 sound
+          // MP3 sound
 
           oSoundChannel = oSound.soundChannel;
           bL = oSound.bytesLoaded;
@@ -347,6 +327,14 @@ package {
 
           if (oSoundChannel) {
             nP = (oSoundChannel.position || 0);
+// writeDebug('loops: '+oSound.lastValues.loops+', '+nP+'/'+oSound.length);
+            if (oSound.lastValues.loops > 1 && nP > oSound.length) {
+	          // round down to nearest loop
+// 	writeDebug('rounding to nearest loop');
+              var playedLoops:Number = Math.floor(nP/oSound.length);
+// writeDebug('playedLoops: '+playedLoops);
+              nP = nP - (oSound.length*playedLoops);
+            }
             if (oSound.usePeakData) {
               lP = int((oSoundChannel.leftPeak) * 1000) / 1000;
               rP = int((oSoundChannel.rightPeak) * 1000) / 1000;
@@ -364,7 +352,7 @@ package {
             hasNew = true;
           }
 
-          if (nD > oSound.lastValues.duration) {
+          if (nD > oSound.lastValues.duration) { // original sound duration * number of sound loops
             oSound.lastValues.duration = nD;
             hasNew = true;
           }
@@ -664,9 +652,13 @@ package {
         if (s.soundChannel) {
           s.soundChannel.stop();
         }
-        writeDebug('setPosition: ' + nSecOffset); // +', '+(s.lastValues.nLoops?s.lastValues.nLoops:1));
+        writeDebug('setPosition: ' + nSecOffset); // +', '+(s.lastValues.loops?s.lastValues.loops:1));
+        if (s.lastValues.loops > 1 && nSecOffset != 0) {
+          writeDebug('Warning: Looping functionality being disabled due to Flash limitation.');
+          s.lastValues.loops = 1;
+        }
         try {
-          s.start(nSecOffset, s.lastValues.nLoops || 1); // start playing at new position
+          s.start(nSecOffset, s.lastValues.loops || 1); // start playing at new position
         } catch(e: Error) {
           writeDebug('Warning: Could not set position on ' + sID + ': ' + e.toString());
         }
@@ -684,7 +676,7 @@ package {
       }
     }
 
-    public function _load(sID:String, sURL:String, bStream: Boolean, bAutoPlay: Boolean) : void {
+    public function _load(sID:String, sURL:String, bStream: Boolean, bAutoPlay: Boolean, nLoops:Number) : void {
       writeDebug('_load()');
       if (typeof bAutoPlay == 'undefined') bAutoPlay = false;
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
@@ -696,6 +688,7 @@ package {
         writeDebug('recreating sound ' + sID + ' in order to load ' + sURL);
         var ns:Object = new Object();
         ns.sID = s.sID;
+        ns.loops = nLoops||1;
         ns.justBeforeFinishOffset = s.justBeforeFinishOffset;
         ns.usePeakData = s.usePeakData;
         ns.useWaveformData = s.useWaveformData;
@@ -704,7 +697,7 @@ package {
         ns.useVideo = s.useVideo;
         ns.bufferTime = s.bufferTime;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime);
+        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.loops);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -807,6 +800,7 @@ package {
       }
       var ns:Object = new Object();
       ns.sID = s.sID;
+      ns.loops = s.loops;
       ns.justBeforeFinishOffset = s.justBeforeFinishOffset;
       ns.usePeakData = s.usePeakData;
       ns.useWaveformData = s.useWaveformData;
@@ -815,11 +809,11 @@ package {
       ns.useVideo = s.useVideo;
       ns.bufferTime = s.bufferTime;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime);
+      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.loops);
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number) : void {
+    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, loops:Number) : void {
       soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime);
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
@@ -834,7 +828,7 @@ package {
       s.lastValues = {
         bytes: 0,
         position: 0,
-        nLoops: 1,
+        loops: loops||1,
         leftPeak: 0,
         rightPeak: 0
       };
@@ -922,9 +916,9 @@ package {
     public function _start(sID:String, nLoops: int, nMsecOffset: int) : void {
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
-      writeDebug('start: ' + nMsecOffset);
+      writeDebug('start: ' + nMsecOffset+(nLoops?', loops: '+nLoops:''));
       s.lastValues.paused = false; // reset pause if applicable
-      s.lastValues.nLoops = (nLoops || 1);
+      s.lastValues.loops = (nLoops || 1);
       s.lastValues.position = nMsecOffset;
       s.handledDataError = false; // reset this flag
       try {
@@ -959,12 +953,12 @@ package {
         }
       } else {
         // resume playing from last position
-        // writeDebug('resuming - playing at '+s.lastValues.position+', '+s.lastValues.nLoops+' times');
+        // writeDebug('resuming - playing at '+s.lastValues.position+', '+s.lastValues.loops+' times');
         s.paused = false;
         if (s.useNetstream) {
           s.ns.resume();
         } else {
-          s.start(s.lastValues.position, s.lastValues.nLoops);
+          s.start(s.lastValues.position, s.lastValues.loops);
         }
         try {
           registerOnComplete(sID);

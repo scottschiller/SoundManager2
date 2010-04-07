@@ -56,12 +56,13 @@ package {
     public var duration: Number;
     public var handledDataError: Boolean = false;
     public var ignoreDataError: Boolean = false;
+    public var loops: Number = 1;
     public var lastValues: Object = {
       bytes: 0,
       position: 0,
       volume: 100,
       pan: 0,
-      nLoops: 1,
+      loops: 1,
       leftPeak: 0,
       rightPeak: 0,
       waveformDataArray: null,
@@ -79,7 +80,6 @@ package {
     public var useVideo: Boolean = false;
     public var bufferTime: Number = -1;
     public var lastNetStatus: String = null;
-
     public var oVideo: Video = null;
     public var videoWidth: Number = 0;
     public var videoHeight: Number = 0;
@@ -235,6 +235,7 @@ package {
         // this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
       } else {
+        // writeDebug('start: seeking to '+nMsecOffset+', '+nLoops+(nLoops==1?' loop':' loops'));
         this.soundChannel = this.play(nMsecOffset, nLoops);
         this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();

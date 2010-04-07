@@ -243,7 +243,7 @@ class SoundManager2 {
       s.didJustBeforeFinish = false;
     }
 
-    var _createSound = function (sID, justBeforeFinishOffset) {
+    var _createSound = function (sID, justBeforeFinishOffset, loops) {
       soundObjects[sID] = new Sound();
       var s = soundObjects[sID];
       s.setVolume(100);
@@ -255,7 +255,7 @@ class SoundManager2 {
       s.lastValues = {
         bytes: 0,
         position: 0,
-        nLoops: 1
+        nLoops: loops||1
       };
       sounds.push(sID);
     }

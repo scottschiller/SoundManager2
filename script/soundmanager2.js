@@ -40,6 +40,7 @@ function SoundManager(smURL, smID) {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
     'stream': true,                // allows playing before entire file has loaded (recommended)
     'autoPlay': false,             // enable playing of file as soon as possible (much faster if "stream" is true)
+    'loops': 1,                    // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >1)
     'onid3': null,                 // callback function for "ID3 data is added/available"
     'onload': null,                // callback function for "load finished"
     'whileloading': null,          // callback function for "download progress update" (X of Y bytes received)
@@ -133,7 +134,7 @@ function SoundManager(smURL, smID) {
     flash9: /\.mp3(\?\.*)?$/i
   };
 
-  this.baseMimeTypes = /^\saudio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
+  this.baseMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
   this.netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3, mp4, aac etc.
   this.netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2']; // Flash v9.0r115+ "moviestar" formats
   this.netStreamPattern = new RegExp('\\.(' + this.netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
@@ -303,9 +304,9 @@ function SoundManager(smURL, smID) {
     _s.soundIDs[_s.soundIDs.length] = _tO.id;
     // AS2:
     if (_s.flashVersion === 8) {
-      _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime);
+      _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1);
     } else {
-      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false));
+      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops?_tO.loops:1);
     }
     if (_tO.autoLoad || _tO.autoPlay) {
       // TODO: does removing timeout here cause problems?
@@ -1554,9 +1555,9 @@ function SoundManager(smURL, smID) {
       _t.playState = 0; // (oOptions.autoPlay?1:0); // if autoPlay, assume "playing" is true (no way to detect when it actually starts in Flash unless onPlay is watched?)
       try {
         if (_s.flashVersion === 8) {
-          _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0));
+          _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1);
         } else {
-          _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false); // ,(_tO.whileloading?true:false)
+          _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1); // ,(_tO.whileloading?true:false)
           if (_t._iO.isMovieStar && _t._iO.autoLoad && !_t._iO.autoPlay) {
             // special case: MPEG4 content must start playing to load, then pause to prevent playing.
             _t.pause();
@@ -1640,7 +1641,7 @@ function SoundManager(smURL, smID) {
         }
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
-        _s.o._start(_t.sID, _t._iO.loop || 1, (_s.flashVersion === 9?_t.position:_t.position / 1000));
+        _s.o._start(_t.sID, _t._iO.loops || 1, (_s.flashVersion === 9?_t.position:_t.position / 1000));
       }
     };
 
