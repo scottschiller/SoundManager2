@@ -36,13 +36,25 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "2.95b.20100323";
+    var version = "2.95b.20100323+DEV";
     var version_as = "(AS2/Flash 8)";
 
-    // Cross-domain security exception shiz
-    // HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
-    // See http://livedocs.adobe.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00002647.html
-    // System.security.allowDomain("foo.com");
+    /*
+    *  Cross-domain security options
+    *  HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
+    *  // allow_xdomain_scripting = true;
+    *  // xdomain = "foo.com";
+    *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
+    *  See "allowDomain (security.allowDomain method)" in Flash 8/AS2 liveDocs documentation (AS2 reference -> classes -> security)
+    *  download from http://livedocs.macromedia.com/flash/8/
+    */
+    var allow_xdomain_scripting = false;
+    var xdomain = "*";
+
+    if (allow_xdomain_scripting && xdomain) {
+      System.security.allowDomain(xdomain);
+      version_as += ' - cross-domain enabled';
+    }
 
     // externalInterface references (for Javascript callbacks)
     var baseJSController = "soundManager";
@@ -206,6 +218,10 @@ class SoundManager2 {
       var s = soundObjects[sID];
       // writeDebug('_setPosition()');
       s.lastValues.position = s.position;
+      if (s.lastValues.loops > 1 && nSecOffset != 0) {
+        writeDebug('Warning: Looping functionality being disabled due to Flash limitation.');
+        s.lastValues.loops = 1;
+      }
       s.start(nSecOffset, s.lastValues.nLoops || 1); // start playing at new position
       if (isPaused) s.stop();
     }

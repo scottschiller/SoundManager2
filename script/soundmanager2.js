@@ -231,7 +231,8 @@ function SoundManager(smURL, smID) {
     fbTimeout: 'No flash response, applying .'+_s.swfCSS.swfTimedout+' CSS..',
     manURL: 'SMSound.load(): Using manually-assigned URL',
     onURL: _sm + '.load(): current URL already assigned.',
-    badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.'
+    badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.',
+    as2loop: 'Note: Setting stream:false so looping can work (flash 8 limitation)'
   };
 
   this._str = function() { // o [,items to replace]
@@ -245,6 +246,15 @@ function SoundManager(smURL, smID) {
     }
     return str;
   };
+
+  function loopFix(sOpt) {
+    // flash 8 requires stream = false for looping to work.
+    if (_s.flashVersion === 8 && sOpt.loops > 1 && sOpt.stream) {
+      _s._wDS('as2loop');
+      sOpt.stream = false;
+    }
+    return sOpt;
+  }
 
   // --- public methods ---
   this.supported = function() {
@@ -280,10 +290,12 @@ function SoundManager(smURL, smID) {
     }
     thisOptions = _s._mergeObjects(oOptions); // inherit SM2 defaults
     _tO = thisOptions; // alias
-    if (_tO.id.toString().charAt(0).match(/^[0-9]$/)) { // hopefully this isn't buggy regexp-fu. :D
+    // <d>
+    if (_tO.id.toString().charAt(0).match(/^[0-9]$/)) {
       _s._wD(_cs + _s._str('badID', _tO.id), 2);
     }
     _s._wD(_cs + _tO.id + ' (' + _tO.url + ')', 1);
+    // </d>
     if (_s._idCheck(_tO.id, true)) {
       _s._wD(_cs + _tO.id + ' exists', 1);
       return _s.sounds[_tO.id];
@@ -300,8 +312,9 @@ function SoundManager(smURL, smID) {
         _tO.usePeakData = false;
       }
     }
+    thisOptions = loopFix(thisOptions);
     _s.sounds[_tO.id] = new SMSound(_tO);
-    _s.soundIDs[_s.soundIDs.length] = _tO.id;
+    _s.soundIDs.push(_tO.id);
     // AS2:
     if (_s.flashVersion === 8) {
       _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1);
@@ -650,7 +663,7 @@ function SoundManager(smURL, smID) {
 
   this._disableObject = function(o) {
     for (var oProp in o) {
-      if (typeof o[oProp] === 'function' && typeof o[oProp]._protected === 'undefined') {
+      if (o.hasOwnProperty(oProp) && typeof o[oProp] === 'function' && typeof o[oProp]._protected === 'undefined') {
         o[oProp] = _doNothing;
       }
     }
@@ -1017,6 +1030,7 @@ function SoundManager(smURL, smID) {
   };
 
   this._debugTS = function(sEventType, bSuccess, sMessage) {
+    // <d>
     // troubleshooter debug hooks
     if (typeof sm2Debugger !== 'undefined') {
       try {
@@ -1025,6 +1039,7 @@ function SoundManager(smURL, smID) {
         // oh well  
       }
     }
+    // </d>
   };
 
   this._debugTS._protected = true;
@@ -1418,7 +1433,6 @@ function SoundManager(smURL, smID) {
     // actually, force recreate of movie.
     _s.oRemovedHTML = null;
     _s.oRemoved = null;
-
     _s.enabled = false;
     _s._didInit = false;
     // _s._waitingforEI = false; // _s === soundManager, but this doesn't work? scope issue?
@@ -1454,7 +1468,6 @@ function SoundManager(smURL, smID) {
     // assign property defaults (volume, pan etc.)
     this.pan = this.options.pan;
     this.volume = this.options.volume;
-
     this._lastURL = null;
 
     this._debug = function() {
@@ -1468,9 +1481,9 @@ function SoundManager(smURL, smID) {
               sF = _t.options[stuff].toString();
               sF = sF.replace(/\s\s+/g, ' '); // normalize spaces
               sfBracket = sF.indexOf('{');
-              msg[msg.length] = ' ' + stuff + ': {' + sF.substr(sfBracket + 1, (Math.min(Math.max(sF.indexOf('\n') - 1, maxLength), maxLength))).replace(/\n/g, '') + '... }';
+              msg.push(' ' + stuff + ': {' + sF.substr(sfBracket + 1, (Math.min(Math.max(sF.indexOf('\n') - 1, maxLength), maxLength))).replace(/\n/g, '') + '... }');
             } else {
-              msg[msg.length] = ' ' + stuff + ': ' + _t.options[stuff];
+              msg.push(' ' + stuff + ': ' + _t.options[stuff]);
             }
           }
         }
@@ -1553,6 +1566,7 @@ function SoundManager(smURL, smID) {
       _t.loaded = false;
       _t.readyState = 1;
       _t.playState = 0; // (oOptions.autoPlay?1:0); // if autoPlay, assume "playing" is true (no way to detect when it actually starts in Flash unless onPlay is watched?)
+      _t._iO = loopFix(_t._iO);
       try {
         if (_s.flashVersion === 8) {
           _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1);
@@ -1636,6 +1650,7 @@ function SoundManager(smURL, smID) {
           _t.instanceCount++;
         }
         _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
+        _t._iO = loopFix(_t._iO);
         if (_t._iO.onplay) {
           _t._iO.onplay.apply(_t);
         }
@@ -1646,6 +1661,7 @@ function SoundManager(smURL, smID) {
     };
 
     this.start = this.play; // just for convenience
+
     this.stop = function(bAll) {
       if (_t.playState === 1) {
         _t.playState = 0;

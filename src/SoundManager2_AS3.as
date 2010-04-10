@@ -38,10 +38,16 @@ package {
     public var version:String = "V2.95b.20100323+DEV";
     public var version_as:String = "(AS3/Flash 9)";
 
-    // Cross-domain security exception stuffs
-    // HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
-    // See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
-    // Security.allowDomain("foo.com");
+    /*
+    *  Cross-domain security options
+    *  HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
+    *  // allow_xdomain_scripting = true;
+    *  // xdomain = "foo.com";
+    *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
+    *  See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
+    */
+    public var allow_xdomain_scripting:Boolean = false;
+    public var xdomain:String = "*";
 
     // externalInterface references (for Javascript callbacks)
     public var baseJSController:String = "soundManager";
@@ -59,7 +65,6 @@ package {
     public var loaded: Boolean = false;
     public var isFullScreen: Boolean = false;
     public var currentObject: SoundManager2_SMSound_AS3 = null;
-
     public var paramList:Object = null;
     public var messages:Array = [];
     public var textField: TextField = null;
@@ -68,6 +73,11 @@ package {
     public var caughtFatal: Boolean = false;
 
     public function SoundManager2_AS3() {
+
+      if (allow_xdomain_scripting && xdomain) {
+        Security.allowDomain(xdomain);
+        version_as += ' - cross-domain enabled';
+      }
 
       this.setDefaultStageScale();
 
@@ -119,7 +129,6 @@ package {
         // flashDebug('Init OK');
       });
       timer.start();
-
       // delayed, see above
       // _externalInterfaceTest(true);
       this.stage.addEventListener(MouseEvent.DOUBLE_CLICK, toggleFullScreen);
@@ -127,15 +136,16 @@ package {
       this.stage.addEventListener(FullScreenEvent.FULL_SCREEN, fullscreenHandler);
 
     } // SoundManager2()
+
     public function flashDebug(txt:String) : void {
       messages.push(txt);
       if (this.flashDebugEnabled) {
         var didCreate: Boolean = false;
         textStyle.font = 'Arial';
         textStyle.size = 12;
-	    // 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
-	    var w:Number = this.stage.width?this.stage.width:320;
-	    var h:Number = this.stage.height?this.stage.height:240;
+        // 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
+       var w:Number = this.stage.width?this.stage.width:320;
+       var h:Number = this.stage.height?this.stage.height:240;
         if (textField == null) {
           didCreate = true;
           textField = new TextField();
@@ -193,7 +203,6 @@ package {
       stage.scaleMode = StageScaleMode.NO_SCALE;
       stage.align = StageAlign.TOP_LEFT;
     }
-
 
     // methods
     // -----------------------------------
@@ -278,7 +287,6 @@ package {
         if (oSound.useNetstream) {
 
           // video stream
-
           bL = oSound.ns.bytesLoaded;
           bT = oSound.ns.bytesTotal;
           nD = int(oSound.duration || 0); // can sometimes be null with short MP3s? Wack.
@@ -316,7 +324,6 @@ package {
         } else {
 
           // MP3 sound
-
           oSoundChannel = oSound.soundChannel;
           bL = oSound.bytesLoaded;
           bT = oSound.bytesTotal;
@@ -327,12 +334,9 @@ package {
 
           if (oSoundChannel) {
             nP = (oSoundChannel.position || 0);
-// writeDebug('loops: '+oSound.lastValues.loops+', '+nP+'/'+oSound.length);
             if (oSound.lastValues.loops > 1 && nP > oSound.length) {
-	          // round down to nearest loop
-// 	writeDebug('rounding to nearest loop');
+              // round down to nearest loop
               var playedLoops:Number = Math.floor(nP/oSound.length);
-// writeDebug('playedLoops: '+playedLoops);
               nP = nP - (oSound.length*playedLoops);
             }
             if (oSound.usePeakData) {
