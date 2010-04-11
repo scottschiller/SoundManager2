@@ -92,7 +92,7 @@ package {
         addChild(canvas);
       }
 
-      flashDebug('SM2 SWF V' + version + ' ' + version_as);
+      flashDebug('SM2 SWF ' + version + ' ' + version_as);
 
       if (ExternalInterface.available) {
         flashDebug('ExternalInterface available');
@@ -237,7 +237,7 @@ package {
           ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime());
           flashDebug('Flash -&gt; JS OK');
         } else {
-          writeDebug('SM2 SWF V' + version + ' ' + version_as);
+          writeDebug('SM2 SWF ' + version + ' ' + version_as);
           flashDebug('JS -> Flash OK');
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
           writeDebug('JS to/from Flash OK');

@@ -36,7 +36,7 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "2.95b.20100323+DEV";
+    var version = "V2.95b.20100323+DEV";
     var version_as = "(AS2/Flash 8)";
 
     /*
@@ -129,7 +129,7 @@ class SoundManager2 {
             flashDebug('Flash -&gt; JS OK');
           }
         } else {
-          writeDebug('SM2 SWF V' + version + ' ' + version_as);
+          writeDebug('SM2 SWF ' + version + ' ' + version_as);
           flashDebug('JS -&gt; Flash OK');
           writeDebug('JS to/from Flash OK');
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
@@ -414,7 +414,7 @@ class SoundManager2 {
       // flashDebug('Init OK');
     }
 
-    flashDebug('SM2 SWF V' + version + ' ' + version_as);
+    flashDebug('SM2 SWF ' + version + ' ' + version_as);
 
     if (ExternalInterface.available) {
       flashDebug('ExternalInterface available');
