@@ -326,7 +326,7 @@ function XLSF(oTarget,urlBase,lightClass) {
     this.smash = function(e) {
       if (self.broken) return false;
       self.broken = true;
-      if (soundManager && soundManager._didInit && !soundManager._disabled) {
+      if (soundManager && soundManager.supported()) {
         soundManager.play(self.soundID,{pan:self.pan});
         // soundManager.sounds[self.soundID].play({pan:self.pan});
         // if (self.bonusSound != null) window.setTimeout(self.smashBonus,1000);
@@ -508,17 +508,3 @@ function smashInit(urlBase,lightClass) {
   xlsf.initSounds();
   // document.getElementById('loading').style.display = 'none';
 }
-
-/*
-soundManager.flashVersion = 9;
-soundManager.debugMode = false;
-// soundManager._disabled = true;
-
-soundManager.onload = function() {
-  setTimeout(smashInit,500);
-}
-
-soundManager.onerror = function() {
-  setTimeout(smashInit,500);
-}
-*/
