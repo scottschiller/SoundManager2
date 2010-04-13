@@ -185,7 +185,7 @@ package {
         this.oVideo.visible = true; // show ze video!
       }
       if (!this.loaded) {
-        writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
+        // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
         if (this.ns.bytesLoaded) {
           this.lastValues.bytesLoaded = this.ns.bytesLoaded;
         }
