@@ -164,6 +164,7 @@ function SoundManager(smURL, smID) {
       return (a && typeof a.canPlayType === 'function' && a.canPlayType(m) !== '' && a.canPlayType(m) !== 'no');
     }
     _s.html5_audio_capabilities = {
+      canPlayType: (typeof a.canPlayType !== 'undefined'),
       mp3: _cp('audio/mpeg'),
       aac: _cp('audio/aac'),
       ogg: _cp('audio/ogg')
@@ -172,10 +173,6 @@ function SoundManager(smURL, smID) {
   }());
 
   this.useAltURL = !_overHTTP; // use altURL if not "online"
-
-  if (this.enableHTML5Audio && !this.html5_audio_capabilities.mp3) {
-    this.enableHTML5Audio = false;
-  } 
 
   // --- public API methods ---
 
@@ -852,6 +849,7 @@ function SoundManager(smURL, smID) {
   };
 
   _createMovie = function(smID, smURL) {
+
     var specialCase = null,
     remoteURL = (smURL?smURL:_s.url),
     localURL = (_s.altURL?_s.altURL:remoteURL),
@@ -1051,6 +1049,11 @@ function SoundManager(smURL, smID) {
       }
       oTarget = null;
       // </d>
+    }
+
+    if (_s.enableHTML5Audio && !_s.html5_audio_capabilities.canPlayType) {
+      _s._wD('SoundManager2: No HTML5 Audio().canPlayType() support detected.');
+      _s.enableHTML5Audio = false;
     }
 
     if (specialCase) {
@@ -1899,10 +1902,12 @@ return true;
     this._onTimer = function(bForce) {
       // HTML 5-only _whileplaying() etc.
       if (_t._hasTimer || bForce) {
+        var time;
         if (_t.__element && (bForce || ((_t.playState > 0 || _t.readyState === 1) && !_t.paused))) { // TODO: May not need to track readyState (1 = loading)
-          _t.duration = ((_t.__element.duration * 1000)||null);
+          _t.duration = ((_t.__element.duration * 1000) || null);
           _t.durationEstimate = _t.duration;
-          _t._whileplaying(((_t.__element.currentTime * 1000)||0),{},{},{},{});
+          time = ((_t.__element.currentTime ? _t.__element.currentTime * 1000 : 0) || (_t.__element.buffered && _t.__element.buffered.length ? _t.__element.buffered.end(0) : 0));
+          _t._whileplaying(time,{},{},{},{});
           return true;
         } else {
          _s._wD('_onTimer: Warn for "'+_t.sID+'": '+(!_t.__element?'Could not find element. ':'')+(_t.playState === 0?'playState bad, 0?':'playState = '+_t.playState+', OK'));
@@ -1986,14 +1991,15 @@ return true;
       }
       _t._added_events = true;
       _s._wD('_add_html5_events()');
-      _t.__element.addEventListener('load', function() {
+
+      _t.__element.addEventListener('load', function(e) {
         _s._wD('HTML5::load: '+_t.sID);
         if (_t.__element) {
           // all bytes have loaded
           _t._whileloading(_t.bytesTotal, _t.bytesTotal, ((_t.__element.duration * 1000)||undefined));
           _t._onload(1);
         }
-      });
+      }, false);
 
       _t.__element.addEventListener('progress', function(e) { // Note: No one has implemented this fully yet, but it does get fired.
         /*
@@ -2008,23 +2014,49 @@ return true;
         if (!_t.loaded && _t.__element) {
           _t._whileloading(e.loaded||0, e.total||1, ((_t.__element.duration * 1000)||undefined));
         }
-      });
+      }, false);
 
-      _t.__element.addEventListener('end', function(event) {
+      _t.__element.addEventListener('end', function(e) {
         _s._wD('HTML5::end: '+_t.sID);
         // _t.__element = null;
         _t._onfinish();
         // _t._added_events = false; // ??
         // delete _t.__element;
-      });
+      }, false);
+
+      _t.__element.addEventListener('error', function(e) {
+        _s._wD('HTML5::error: '+_t.__element.error);
+        // call load with error state?
+      }, false);
+
+      _t.__element.addEventListener('empty', function(e) {
+        _s._wD('HTML5::empty');
+      }, false);
+
+      _t.__element.addEventListener('loadstart', function(e) {
+        // assume buffering at first
+        _t._onbufferchange(1);
+      }, false);
+
+      _t.__element.addEventListener('play', function(e) {
+        // once play starts, no buffering
+        _t._onbufferchange(0);
+      }, false);
+
+/*
+      _t.__element.addEventListener('timeupdate', function(e) {
+        // timeupdate
+        _// t._whileplaying(); ?
+      }, false);
+*/
 
       // Shitty bug in safari that calls ended prematurely, so wait a little bit before attaching
       setTimeout(function(){
         if (_t && _t.__element) {
-          _t.__element.addEventListener('ended',function(event) {
+          _t.__element.addEventListener('ended',function(e) {
             _s._wD('HTML5::ended: '+_t.sID);
             _t._onfinish();
-          });
+          }, false);
         }
       }, 250);
       _s._wD('_add_html5_events(): OK');
