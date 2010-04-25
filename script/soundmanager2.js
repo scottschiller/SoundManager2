@@ -32,7 +32,8 @@ function SoundManager(smURL, smID) {
   this.wmode = null;               // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowFullScreen = true;     // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
-
+  this.onfailure = undefined;
+  
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
     'stream': true,                // allows playing before entire file has loaded (recommended)
@@ -671,6 +672,9 @@ function SoundManager(smURL, smID) {
     if (!_s._disabled || bNoDisable) {
       _s._wDS('smFail', 2);
       _s.disable(bNoDisable);
+      if (_s.onfailure !== undefined) {
+        _s.onfailure();  
+      }
     }
   };
 
