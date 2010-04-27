@@ -1,17 +1,16 @@
-/*!
-   SoundManager 2: Javascript Sound for the Web
-   --------------------------------------------
-   http://schillmania.com/projects/soundmanager2/
-
-   Copyright (c) 2007, Scott Schiller. All rights reserved.
-   Code provided under the BSD License:
-   http://schillmania.com/projects/soundmanager2/license.txt
-
-   V2.95b.20100323+DEV
-*/
+/** @license
+ * SoundManager 2: Javascript Sound for the Web
+ * --------------------------------------------
+ * http://schillmania.com/projects/soundmanager2/
+ *
+ * Copyright (c) 2007, Scott Schiller. All rights reserved.
+ * Code provided under the BSD License:
+ * http://schillmania.com/projects/soundmanager2/license.txt
+ *
+ * V2.95b.20100323+DEV
+ */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
-
 
 (function(window) {
 
@@ -159,7 +158,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay,
+  _s = this, _sm = 'soundManager', _id, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _isMobile = (navigator.userAgent.match(/mobile/i)?true:false),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
   _overHTTP = (document.location?document.location.protocol.match(/http/i):null),
   _isFocused = (typeof document.hasFocus !== 'undefined'?document.hasFocus():null),
@@ -188,19 +187,29 @@ function SoundManager(smURL, smID) {
     function _testBase64(sType, onComplete) {
       var a, didFire = false;
       testsQueued++;
-      function handler(isOK, e) {
-        testsDone++;
-        if (!didFire) {
-          didFire = true;
-          base64_results[sType] = isOK;
-          onComplete(isOK);
-        }
+      function checkReady() {
         if (testsDone >= testsQueued && !_html5Ready) {
           _html5Ready = true;
           if (_didDCLoaded) {
             // domready etc. already fired and missed
             _go();
           }
+        }
+      }
+      if (_isMobile) {
+        // ipad straight up barfs with this, other mobile phones likely do also.
+        testsDone++;
+        onComplete();
+        checkReady();
+        return false;
+      }
+      function handler(isOK, e) {
+        if (!didFire) {
+          didFire = true;
+          testsDone++;
+          base64_results[sType] = isOK;
+          onComplete(isOK);
+          checkReady();
         }
       }
       if (typeof base64_results[sType] !== 'undefined') {
@@ -252,10 +261,10 @@ if (typeof window.console !== 'undefined' && console.log) {
         _s.html5.mp3 = isOK;
       } else {
         // console.log('mp3 failed, trying mpeg');
-        _testBase64('mpeg', function(isOK) {
-          // console.log('mpeg result: '+isOK);
-          if (isOK) {
-            _s.html5.mp3 = isOK;
+        _testBase64('mpeg', function(isMPEGOK) {
+          // console.log('mpeg result: '+isMPEGOK);
+          if (isMPEGOK) {
+            _s.html5.mp3 = isMPEGOK;
           }
         });
       }
@@ -1625,15 +1634,15 @@ if (typeof window.console !== 'undefined' && console.log) {
 
   _dcLoaded = function() {
     _didDCLoaded = true;
-    if (document.removeEventListener) {
-      document.removeEventListener('DOMContentLoaded', _dcLoaded, false);
-    }
     if (_s.useHTML5Audio && _s.hasHTML5) {
       if (_html5Ready) { // tests have completed
         _go();
       }
     } else {
       _go();
+    }
+    if (document.removeEventListener) {
+      document.removeEventListener('DOMContentLoaded', _dcLoaded, false);
     }
   };
 
