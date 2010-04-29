@@ -158,7 +158,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _isMobile = (navigator.userAgent.match(/mobile/i)?true:false),
+  _s = this, _sm = 'soundManager', _id, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _isMobile = (navigator.userAgent.match(/mobile/i)?true:false), _dcIE,
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
   _overHTTP = (document.location?document.location.protocol.match(/http/i):null),
   _isFocused = (typeof document.hasFocus !== 'undefined'?document.hasFocus():null),
@@ -169,11 +169,11 @@ function SoundManager(smURL, smID) {
   (function() {
     var a = (typeof Audio !== 'undefined' ? new Audio():null),
     base64_data = {
-      mp3: 'data:audio/*;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
+      mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
       wav: 'data:audio/wave;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAD//w=='
     },
     base64 = {
-      mp3: base64_data.mp3.replace('*','mp3'),
+      mp3: base64_data.mp3,
       wav: base64_data.wav
     },
     testsQueued = 0,
@@ -251,9 +251,9 @@ if (typeof window.console !== 'undefined' && console.log) {
     }
     _s.html5 = {
       canPlayType: (a?_cp:null),
-      mp3: (_cp('audio/mpeg')||_cp('audio/mp3')), // may need to specify codec, too.
-      aac: _cp('audio/aac'),
-      ogg: _cp('audio/ogg')
+      mp3: (_cp('audio/mpeg; codecs="MP3"')||_cp('audio/mp3')), // may need to specify codec, too.
+      aac: (_cp('audio/aac')||_cp('audio/x-m4a')),
+      ogg: _cp('audio/ogg; codecs="vorbis"')
     };
     _testBase64('mp3', function(isOK) {
       // console.log('HTML5 MP3: '+isOK);
@@ -637,6 +637,12 @@ if (typeof window.console !== 'undefined' && console.log) {
       _disableObject(_s.sounds[_s.soundIDs[i]]);
     }
     _initComplete(bNoDisable); // fire "complete", despite fail
+    if (window.removeEventListener) {
+      window.removeEventListener('load', _initUserOnload, false);
+    } /* else if (window.detachEvent) {
+      // "operation aborted" error (confirmed in IE 6) if this fires.
+      // window.detachEvent('onload', _initUserOnload);
+    } */
     // _disableObject(_s); // taken out to allow reboot()
   };
 
@@ -825,7 +831,7 @@ if (typeof window.console !== 'undefined' && console.log) {
   };
 
   this.beginDelayedInit = function() {
-    // _s._wD('soundManager.beginDelayedInit()');
+    _s._wD('soundManager.beginDelayedInit()');
     _windowLoaded = true;
     setTimeout(_waitForEI, 500);
     setTimeout(_beginInit, 20);
@@ -1066,6 +1072,7 @@ if (typeof window.console !== 'undefined' && console.log) {
       // _setVersionInfo();
       _initMsg();
       _s._wD('_createMovie: No flash needed.');
+      _s.oMC = _id(_s.movieID);
       _init();
       // no flash needed
       return false;
@@ -1282,7 +1289,6 @@ if (typeof window.console !== 'undefined' && console.log) {
   };
 
   _initMovie = function() {
-    // attempt to get, or create, movie
     if (_html5Only) {
       _setVersionInfo();
       _initDebug();
@@ -1292,6 +1298,7 @@ if (typeof window.console !== 'undefined' && console.log) {
       // _s.oninitmovie();
       return false;
     }
+    // attempt to get, or create, movie
     if (_s.o) {
       return false; // may already exist
     }
@@ -1416,7 +1423,11 @@ if (typeof window.console !== 'undefined' && console.log) {
       if (_s.didFlashBlock) {
         _s._wD(name+': Unblocked');
       }
-      _s.oMC.className = _getSWFCSS() + ' ' + _s.swfCSS.swfDefault + (' '+_s.swfCSS.swfUnblocked);
+      if (_s.oMC) {
+        _s.oMC.className = _getSWFCSS() + ' ' + _s.swfCSS.swfDefault + (' '+_s.swfCSS.swfUnblocked);
+      } else {
+	
+	}
     }
   };
 
@@ -1450,6 +1461,7 @@ if (typeof window.console !== 'undefined' && console.log) {
       // all good.
       _didInit = true;
       _processOnReady();
+      _initUserOnload();
       return true;
     }
     var sClass = _s.oMC.className,
@@ -1640,9 +1652,6 @@ if (typeof window.console !== 'undefined' && console.log) {
       }
     } else {
       _go();
-    }
-    if (document.removeEventListener) {
-      document.removeEventListener('DOMContentLoaded', _dcLoaded, false);
     }
   };
 
@@ -2582,9 +2591,22 @@ return true;
     }
   }
 
+  _dcIE = function() {
+    if (document.readyState === 'complete') {
+      _dcLoaded();
+    }
+    document.detachEvent('onreadystatechange', _dcIE);
+  };
+
   if (document.addEventListener) {
     document.addEventListener('DOMContentLoaded', _dcLoaded, false);
+  } else if (document.attachEvent) {
+    document.attachEvent('onreadystatechange', _dcIE);
   }
+
+  if (document.readyState === 'complete') {
+    setTimeout(_dcLoaded,100);
+  } 
 
 } // SoundManager()
 
