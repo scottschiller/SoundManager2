@@ -30,12 +30,12 @@ function PagePlayer(oConfigOverride) {
     useEQData: false,       // [Flash 9 only]: enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
     fillGraph: false,       // [Flash 9 only]: draw full lines instead of only top (peak) spectrum points
     allowRightClick:true,   // let users right-click MP3 links ("save as...", etc.) or discourage (can't prevent.)
-    useThrottling: false,   // try to rate-limit potentially-expensive calls (eg. dragging position around)
+    useThrottling: true,   // try to rate-limit potentially-expensive calls (eg. dragging position around)
     autoStart: false,       // begin playing first sound when page loads
     playNext: true,         // stop after one sound, or play through list until end
     updatePageTitle: true,  // change the page title while playing sounds
     emptyTime: '-:--',      // null/undefined timer values (before data is available)
-    useFavIcon: true       // try to show peakData in address bar (Firefox + Opera)
+    useFavIcon: false       // try to show peakData in address bar (Firefox + Opera) - may be too CPU heavy
   }
 
   sm.debugMode = (window.location.href.toString().match(/debug=1/i)?true:false); // enable with #debug=1 for example
@@ -93,6 +93,7 @@ function PagePlayer(oConfigOverride) {
   this.dragTimer = null;
   this.pageTitle = document.title;
   this.lastWPExec = new Date();
+  this.lastWLExec = new Date();
   this.vuMeterData = [];
   this.oControls = null;
 
@@ -103,6 +104,8 @@ function PagePlayer(oConfigOverride) {
   this.removeEventHandler = function(o,evtName,evtHandler) {
     typeof(attachEvent)=='undefined'?o.removeEventListener(evtName,evtHandler,false):o.detachEvent('on'+evtName,evtHandler);
   }
+
+var count = 0;
 
   this.hasClass = function(o,cStr) {
     return (typeof(o.className)!='undefined'?new RegExp('(^|\\s)'+cStr+'(\\s|$)').test(o.className):false);
@@ -121,7 +124,7 @@ function PagePlayer(oConfigOverride) {
   }
 
   this.getElementsByClassName = function(className,tagNames,oParent) {
-    var doc = (oParent||document);
+    var doc = (oParent?oParent:document);
     var matches = [];
     var i,j;
     var nodes = [];
@@ -263,11 +266,23 @@ function PagePlayer(oConfigOverride) {
     },
 
     whileloading: function() {
-      this._data.oLoading.style.width = (((this.bytesLoaded/this.bytesTotal)*100)+'%'); // theoretically, this should work.
-      if (!this._data.didRefresh && this._data.metadata) {
-        this._data.didRefresh = true;
-        this._data.metadata.refresh();
+      function doWork() {
+        this._data.oLoading.style.width = (((this.bytesLoaded/this.bytesTotal)*100)+'%'); // theoretically, this should work.
+        if (!this._data.didRefresh && this._data.metadata) {
+          this._data.didRefresh = true;
+          this._data.metadata.refresh();
+        }
       }
+      if (!pl.config.useThrottling) {
+        doWork.apply(this);
+      } else {
+        d = new Date();
+        if (d && d-self.lastWLExec>30) {
+          doWork.apply(this);
+          self.lastWLExec = d;
+        }
+      }
+
     },
 
     onload: function() {
@@ -315,7 +330,7 @@ function PagePlayer(oConfigOverride) {
         this._data.oPosition.style.width = (((this.position/self.getDurationEstimate(this))*100)+'%');
       } else {
         d = new Date();
-        if (d-self.lastWPExec>500) {
+        if (d-self.lastWPExec>30) {
           self.updateTime.apply(this);
 	      if (sm.flashVersion >= 9) {
             if (pl.config.usePeakData && this.instanceOptions.usePeakData) {
@@ -323,7 +338,7 @@ function PagePlayer(oConfigOverride) {
 	        }
 	        if (pl.config.useWaveformData && this.instanceOptions.useWaveformData || pl.config.useEQData && this.instanceOptions.useEQData) {
 		      self.updateGraph.apply(this);
-			}
+		}
           }
           if (this._data.metadata) self.refreshMetadata(this);
           this._data.oPosition.style.width = (((this.position/self.getDurationEstimate(this))*100)+'%');
@@ -602,10 +617,13 @@ function PagePlayer(oConfigOverride) {
   }
   
   this.stopEvent = function(e) {
-   if (typeof e != 'undefined' && typeof e.preventDefault != 'undefined') {
-      e.preventDefault();
-    } else if (typeof event != 'undefined' && typeof event.returnValue != 'undefined') {
-      event.returnValue = false;
+   if (typeof e != 'undefined') {
+      if (typeof e.preventDefault != 'undefined') {
+        e.preventDefault();
+      } else if (typeof e.returnValue != 'undefined' || event != 'undefined') {
+        (e||event).cancelBubble = true;
+        (e||event).returnValue = false;
+      }
     }
     return false;
   }
