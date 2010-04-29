@@ -42,6 +42,7 @@ var PP_CONFIG = {
 	soundManager.wmode = 'transparent';
 	soundManager.debugMode = false;
 	soundManager.url = 'swf/';
+    soundManager.useFastPolling = true;
 
 if (!navigator.userAgent.match(/msie 6/i)) {
 	threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
@@ -115,6 +116,13 @@ function doChristmasLights() {
 .ui360 {
  /* Firefox 3 doesn't show links otherwise? */
  width:100%;
+}
+
+body #sm2-container object,
+body #sm2-container embed {
+ /* otherwise, firefox on win32 barfs on homepage. */
+ left:0px;
+ top:0px;
 }
 
 </style>
@@ -259,7 +267,7 @@ function doChristmasLights() {
 			<div class="demo-block" style="overflow:hidden">
 			 <div style="margin-bottom:16px;margin-left:8px;margin-top:-4px">
 			  <div class="ui360" style="float:left;display:inline;margin-right:16px"><a href="http://freshly-ground.com/data/audio/binaural/Mak.mp3" title="Demo MP3" class="exclude inline-exclude">Random</a></div>
-			  <div class="ui360" style="position:absolute;left:50%"><a href="http://freshly-ground.com/data/audio/binaural/Rain%20on%20Car%20Roof.mp3" title="Demo MP3" class="exclude inline-exclude">Rain on Car</a></div>
+			  <div class="ui360" style="position:absolute;left:50%"><a href="http://freshly-ground.com/data/audio/binaural/Rain on Car Roof.mp3" title="Demo MP3" class="exclude inline-exclude">Rain on Car</a></div>
 			  <div class="clear"></div>
 			 </div>
 			</div>
@@ -267,8 +275,8 @@ function doChristmasLights() {
 			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Muxtape-style UI<span class="l"></span><span class="r"></span><a href="demo/page-player/" title="Muxtape-style UI demo" class="cta-more">More &raquo;</a></h3>
 			<div class="demo-block">
 				<ul class="playlist" style="margin-top:0.5em">
-				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="inline-exclude">Armstrong Beat</a></li>
-				 <li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="inline-exclude">Untitled Groove</a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826 - Armstrong.mp3" class="inline-exclude">Armstrong Beat</a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/mpc/20090119 - Untitled Groove.mp3" class="inline-exclude">Untitled Groove</a></li>
 				</ul>
 				<p class="note" style="margin-top:3px;margin-bottom:0px;margin-left:0.8em">More: <a href="demo/video/">Video</a> | <a href="demo/page-player/">Muxtape UI</a> | <a href="demo/play-mp3-links/" class="exclude">Play MP3 links</a></p>
 			</div>
