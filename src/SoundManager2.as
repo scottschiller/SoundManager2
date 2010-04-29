@@ -45,8 +45,10 @@ class SoundManager2 {
     *  // allow_xdomain_scripting = true;
     *  // xdomain = "foo.com";
     *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
+    *  When loading from HTTPS, use System.security.allowInsecureDomain();
     *  See "allowDomain (security.allowDomain method)" in Flash 8/AS2 liveDocs documentation (AS2 reference -> classes -> security)
     *  download from http://livedocs.macromedia.com/flash/8/
+    *  Related AS3 documentation: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain%28%29
     */
     var allow_xdomain_scripting = false;
     var xdomain = "*";
@@ -64,7 +66,7 @@ class SoundManager2 {
     var sounds = []; // indexed string array
     var soundObjects = []; // associative Sound() object array
     var timer = null;
-    var timerInterval = 20;
+    var timerInterval = 50;
     var pollingEnabled = false; // polling (timer) flag - disabled by default, enabled by JS->Flash call
     var debugEnabled = true; // Flash debug output enabled by default, disabled by JS call
     var flashDebugEnabled = false; // debug output to flash movie, off by default

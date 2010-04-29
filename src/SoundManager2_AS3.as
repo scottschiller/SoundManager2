@@ -12,27 +12,37 @@
 
 package {
 
-  import flash.system.*;
-  import flash.events.*;
   import flash.display.Sprite;
   import flash.display.StageAlign;
   import flash.display.StageDisplayState;
   import flash.display.StageScaleMode;
+  import flash.events.Event;
+  import flash.events.FullScreenEvent;
+  import flash.events.IOErrorEvent;
+  import flash.events.MouseEvent;
+  import flash.events.SecurityErrorEvent;
+  import flash.events.AsyncErrorEvent;
+  import flash.events.NetStatusEvent;
+  import flash.events.TimerEvent;
+  import flash.external.ExternalInterface; // woo
   import flash.geom.Rectangle;
   import flash.media.Sound;
   import flash.media.SoundChannel;
   import flash.media.SoundMixer;
+  import flash.net.URLLoader;
+  import flash.net.URLRequest;
+  import flash.system.Security;
+  import flash.system.System;
+  import flash.text.TextField;
+  import flash.text.TextFormat;
+  import flash.text.TextFieldAutoSize;
   import flash.utils.setInterval;
   import flash.utils.clearInterval;
   import flash.utils.Dictionary;
   import flash.utils.Timer;
-  import flash.net.URLLoader;
-  import flash.net.URLRequest;
-  import flash.text.TextField;
-  import flash.text.TextFormat;
-  import flash.text.TextFieldAutoSize;
-  import flash.xml.*;
-  import flash.external.ExternalInterface; // woo
+  import flash.xml.XMLDocument;
+  import flash.xml.XMLNode;
+
   public class SoundManager2_AS3 extends Sprite {
 
     public var version:String = "V2.95b.20100323+DEV";
@@ -44,6 +54,7 @@ package {
     *  // allow_xdomain_scripting = true;
     *  // xdomain = "foo.com";
     *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
+    *  When loading from HTTPS, use System.security.allowInsecureDomain();
     *  See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
     */
     public var allow_xdomain_scripting:Boolean = false;
@@ -56,8 +67,8 @@ package {
     // internal objects
     public var sounds:Array = []; // indexed string array
     public var soundObjects: Dictionary = new Dictionary(); // associative Sound() object Dictionary type
-    public var timerInterval: uint = 20;
-    public var timerIntervalHighPerformance: uint = 1; // make callbacks as fast as possible
+    public var timerInterval: uint = 50;
+    public var timerIntervalHighPerformance: uint = 10; // ~30fps (in Safari on OSX, anyway..)
     public var timer: Timer = null;
     public var pollingEnabled: Boolean = false; // polling (timer) flag - disabled by default, enabled by JS->Flash call
     public var debugEnabled: Boolean = true; // Flash debug output enabled by default, disabled by JS call
@@ -318,6 +329,7 @@ package {
               writeDebug('_whileLoading/_onload error: ' + e.toString());
             }
           } else if (oSound.loaded != true && hasNew) {
+            // writeDebug('whileloading() loaded/total/duration: '+bL+', '+bT+', '+nD);
             ExternalInterface.call(sMethod, bL, bT, nD); // _whileloading()
           }
 
@@ -329,8 +341,6 @@ package {
           bT = oSound.bytesTotal;
           nD = int(oSound.length || 0); // can sometimes be null with short MP3s? Wack.
           isBuffering = oSound.isBuffering;
-
-          // writeDebug('loaded/total/duration: '+bL+', '+bT+', '+nD);
 
           if (oSoundChannel) {
             nP = (oSoundChannel.position || 0);
@@ -681,7 +691,7 @@ package {
     }
 
     public function _load(sID:String, sURL:String, bStream: Boolean, bAutoPlay: Boolean, nLoops:Number) : void {
-      writeDebug('_load()');
+      // writeDebug('_load()');
       if (typeof bAutoPlay == 'undefined') bAutoPlay = false;
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
@@ -998,7 +1008,7 @@ package {
       }
     }
 
-    public function _getMemoryUse() :String {
+    public function _getMemoryUse() : String {
       return System.totalMemory.toString();
     }
 
