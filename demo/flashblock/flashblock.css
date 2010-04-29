@@ -11,6 +11,7 @@
  position:relative;
  width:1px;
  height:1px;
+ _overflow:hidden; /* screw IE 6, just make it display nice */
 }
 
 #sm2-container object,

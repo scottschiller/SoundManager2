@@ -42,7 +42,7 @@ var PP_CONFIG = {
   usePeakData: true,     // [Flash 9 only] whether or not to show peak data (left/right channel values) - nor noticable on CPU
   useWaveformData: true, // [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
   useEQData: false,      // [Flash 9 only] show EQ (frequency spectrum) data
-  useFavIcon: true,      // try to apply peakData to address bar (Firefox + Opera) - performance note: appears to make Firefox 3 do some temporary, heavy disk access/swapping/garbage collection at first(?)
+  useFavIcon: false,     // try to apply peakData to address bar (Firefox + Opera) - performance note: appears to make Firefox 3 do some temporary, heavy disk access/swapping/garbage collection at first(?) - may be too heavy on CPU
   useMovieStar: true     // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
 }
 
@@ -102,8 +102,6 @@ function setShiny(bShiny) {
  <h3>A subset of MPEG4 <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">is supported</a> including AAC, FLV, MP4, M4A, MOV, MP4V, 3GP and 3G2 files.</h3>
  <p>MEPG4 video can be shown while playing these files, too. See the <a href="../video/" onclick="if (!document.domain) this.href=this.href+'index.html'">video demo</a>.</p>
 
- </div>
-
  <ul class="playlist">
   <li><a href="http://freshly-ground.com/data/video/Rain%20on%20Car%20Roof.aac">Rain on Car Roof <span class="comment">(MPEG4 .AAC audio, 128 kbps AAC-LC exported from QuickTime)</span></a></li>
   <li><a href="http://freshly-ground.com/data/video/Jellyfish.mov">Jellyfish <span class="comment">(848x480 H.264 video, playing audio portion only)</span></a></li>
@@ -114,16 +112,16 @@ function setShiny(bShiny) {
   <div class="controls">
    <div class="statusbar">
     <div class="loading"></div>
-     <div class="position"></div>
+    <div class="position"></div>
    </div>
   </div>
   <div class="timing">
    <div id="sm2_timing" class="timing-data">
-    <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span></div>
+    <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span>
+   </div>
   </div>
   <div class="peak">
-   <div class="peak-box"><span class="l"></span><span class="r"></span>
-   </div>
+   <div class="peak-box"><span class="l"></span><span class="r"></span></div>
   </div>
  </div>
 
@@ -248,7 +246,6 @@ function setShiny(bShiny) {
     usePeakData: true,     <span>// [Flash 9 only] whether or not to show peak data (no notable CPU cost)</span>
     useWaveformData: true  <span>// [Flash 9 only] show raw waveform data. WARNING: Experimental, likely CPU-heavy</span>
   }</code></pre>
-</div>
 
 <p>Any options specified in PP_CONFIG will override the defaults defined in page-player.js.</p>
 

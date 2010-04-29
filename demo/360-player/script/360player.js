@@ -344,7 +344,7 @@ function ThreeSixtyPlayer() {
 	  return true;
     }
     var sURL = o.getAttribute('href');
-    if (!o.href || !sm.canPlayURL(o.href) || self.hasClass(o,self.excludeClass)) {
+    if (!o.href || !sm.canPlayLink(o) || self.hasClass(o,self.excludeClass)) {
       return true; // pass-thru for non-MP3/non-links
     }
     sm._writeDebug('handleClick()');
@@ -928,7 +928,7 @@ this.updatePlaying = function() {
 	self.oUITemplate.innerHTML = self.getUIHTML().join('');
 
     for (i=0,j=oLinks.length; i<j; i++) {
-      if (sm.canPlayURL(oLinks[i].href) && !self.hasClass(oLinks[i],self.excludeClass)) {
+      if (sm.canPlayLink(oLinks[i]) && !self.hasClass(oLinks[i],self.excludeClass)) {
         self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
@@ -1207,6 +1207,11 @@ ThreeSixtyPlayer.prototype.Metadata = function(oSound, oParent) {
 
 var threeSixtyPlayer = null;
 
+if (navigator.userAgent.match(/webkit/i) && navigator.userAgent.match(/mobile/i)) {
+  // iPad, iPhone etc.
+  soundManager.useHTML5Audio = true;
+}
+
 soundManager.debugMode = (window.location.href.match(/debug=1/i)); // disable or enable debug output
 soundManager.consoleOnly = true;
 soundManager.flashVersion = 9;
@@ -1218,7 +1223,7 @@ soundManager.useFlashBlock = true;
 // FPS data, testing/debug only
 if (soundManager.debugMode) {
   var t = window.setInterval(function(){
-	if (threeSixtyPlayer && threeSixtyPlayer.lastSound && threeSixtyPlayer.lastSound._360data.fps) {
+	if (threeSixtyPlayer && threeSixtyPlayer.lastSound && threeSixtyPlayer.lastSound._360data.fps && typeof window.isHome === 'undefined') {
 	  soundManager._writeDebug('fps: ~'+threeSixtyPlayer.lastSound._360data.fps);
 	  threeSixtyPlayer.lastSound._360data.fps = 0;
 	}

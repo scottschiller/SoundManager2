@@ -105,7 +105,14 @@ soundManager.onready(function() {
 
   // get drumkit sounds from XML file (as opposed to using createSound)
 
-  soundManager.loadFromXML('acoustic-drumkit.xml');
+  if (!soundManager.hasHTML5) {
+    soundManager.loadFromXML('acoustic-drumkit.xml');
+  } else {
+    var soundURLs = 'AMB_BD_1,AMB_FTM2,AMB_HHCL,AMB_HHOP,AMB_HHPD,AMB_HTM,AMB_LTM2,AMB_MTM,AMB_RIM1,AMB_SN13,AMB_SN_5,CHINA_1,CRASH_1,CRASH_5,CRASH_6,RIDE_1'.split(',');
+    for (var i=0; i<soundURLs.length; i++) {
+      soundManager.createSound('s'+i, 'audio/'+soundURLs[i]+'.mp3');
+    }
+  }
 
   /*
 

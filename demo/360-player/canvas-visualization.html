@@ -50,8 +50,8 @@ if (threeSixtyPlayer.config.usePeakData) {
   soundManager.flash9Options.usePeakData = true;
 }
 
-// include the favicon, why not.
-threeSixtyPlayer.config.useFavIcon = true;
+// favicon is expensive CPU-wise, but can be used.
+threeSixtyPlayer.config.useFavIcon = false;
 
 </script>
 
@@ -222,7 +222,7 @@ pre.block {
 	<pre id="config-pre-block" class="block"><code id="config-code">Code goes here</code></pre>
 		  </div>
 
-		</div>
+		 </div>
 
 		</div>
 		
@@ -304,9 +304,6 @@ pre.block {
 		  </li>
 
 		 </ul>
-
-	</div>
-
 
 	<div style="clear:both"></div>
 	

@@ -240,72 +240,74 @@ function doEvil() {
 
 // HIGHLY EXPERIMENTAL (and dangerous) optimation testing - attempting to override Flash's ExternalInterface JS. :D - The below may have only been relevant to Flash 8.
 
-window.__flash__argumentsToXML = function(obj,index) {
-	var s = ["<arguments>"];
-	for (var i=index, j=obj.length; i<j; i++) {
-		s[s.length] = __flash__toXML(obj[i]);
+if (typeof window.__flash__argumentsToXML !== 'undefined') {
+
+	window.__flash__argumentsToXML = function(obj,index) {
+		var s = ["<arguments>"];
+		for (var i=index, j=obj.length; i<j; i++) {
+			s[s.length] = __flash__toXML(obj[i]);
+		}
+	        s[s.length] = "</arguments>";
+	        // console.log('argumentsToXML: '+s.length+' items');
+		return s.join('');
 	}
-        s[s.length] = "</arguments>";
-        // console.log('argumentsToXML: '+s.length+' items');
-	return s.join('');
-}
 
-window.__flash__arrayToXML = function(obj) {
-	var s = ["<array>"];
-	for (var i=0,j=obj.length; i<j; i++) {
-		s[s.length] = "<property id=\"" + i + "\">" + __flash__toXML(obj[i]) + "</property>";
+	window.__flash__arrayToXML = function(obj) {
+		var s = ["<array>"];
+		for (var i=0,j=obj.length; i<j; i++) {
+			s[s.length] = "<property id=\"" + i + "\">" + __flash__toXML(obj[i]) + "</property>";
+		}
+	        s[s.length] = "</array>";
+	        // console.log('arrayToXML: '+s.length+' items');
+		return s.join('');
 	}
-        s[s.length] = "</array>";
-        // console.log('arrayToXML: '+s.length+' items');
-	return s.join('');
-}
 
-window.__flash__escapeXML = function(s) {
-        // console.log('escapeXML'); //  '+s.length);
-	return s; // s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
-}
-
-window.__flash__objectToXML = function(obj) {
-        console.log('objectToXML');
-	var s = ["<object>"];
-	for (var prop in obj) {
-		s[s.length] = "<property id=\"" + prop + "\">" + __flash__toXML(obj[prop]) + "</property>";
+	window.__flash__escapeXML = function(s) {
+	        // console.log('escapeXML'); //  '+s.length);
+		return s; // s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 	}
-        s[s.length] = "</object>";
-	return s.join('');
-}
 
-window.__flash__toXML = function(value) {
-   // console.log('toXML');
-   var type = typeof(value);
-	if (type == "string") {
-		return "<string>" + __flash__escapeXML(value) + "</string>";
-	} else if (type == "undefined") {
-        return "<undefined/>";
-	} else if (type == "number") {
-        return "<number>" + value + "</number>";
-	} else if (value == null) {
-        return "<null/>";
-	} else if (type == "boolean") {
-        return value ? "<true/>" : "<false/>";
-	} else if (value instanceof Date) {
-        return "<date>" + value.getTime() + "</date>";
-   } else if (value instanceof Array) {
-       return __flash__arrayToXML(value);
-   } else if (type == "object") {
-       return __flash__objectToXML(value);
-   } else {
-	    return "<null/>"; //???
+	window.__flash__objectToXML = function(obj) {
+	        console.log('objectToXML');
+		var s = ["<object>"];
+		for (var prop in obj) {
+			s[s.length] = "<property id=\"" + prop + "\">" + __flash__toXML(obj[prop]) + "</property>";
+		}
+	        s[s.length] = "</object>";
+		return s.join('');
 	}
-}
 
+	window.__flash__toXML = function(value) {
+	   // console.log('toXML');
+	   var type = typeof(value);
+		if (type == "string") {
+			return "<string>" + __flash__escapeXML(value) + "</string>";
+		} else if (type == "undefined") {
+	        return "<undefined/>";
+		} else if (type == "number") {
+	        return "<number>" + value + "</number>";
+		} else if (value == null) {
+	        return "<null/>";
+		} else if (type == "boolean") {
+	        return value ? "<true/>" : "<false/>";
+		} else if (value instanceof Date) {
+	        return "<date>" + value.getTime() + "</date>";
+	   } else if (value instanceof Array) {
+	       return __flash__arrayToXML(value);
+	   } else if (type == "object") {
+	       return __flash__objectToXML(value);
+	   } else {
+		    return "<null/>"; //???
+		}
+	}
 
-// this one non-IE, only?
+	// this one non-IE, only?
 
-if (!navigator.userAgent.match(/MSIE/i)) {
-  window.__flash__request.prototype = function(name) {
-    return "<invoke name=\"" + name + "\" returntype=\"javascript\">" + __flash__argumentstoXML(arguments, 1) + "</invoke>";
-  }
+	if (!navigator.userAgent.match(/MSIE/i)) {
+	  window.__flash__request.prototype = function(name) {
+	    return "<invoke name=\"" + name + "\" returntype=\"javascript\">" + __flash__argumentstoXML(arguments, 1) + "</invoke>";
+	  }
+	}
 }
 
 }
