@@ -2594,8 +2594,8 @@ return true;
   _dcIE = function() {
     if (document.readyState === 'complete') {
       _dcLoaded();
+      document.detachEvent('onreadystatechange', _dcIE);
     }
-    document.detachEvent('onreadystatechange', _dcIE);
   };
 
   if (document.addEventListener) {
