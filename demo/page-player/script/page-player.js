@@ -277,7 +277,7 @@ var count = 0;
         doWork.apply(this);
       } else {
         d = new Date();
-        if (d && d-self.lastWLExec>30) {
+        if (d && d-self.lastWLExec>30 || this.bytesLoaded === this.bytesTotal) {
           doWork.apply(this);
           self.lastWLExec = d;
         }
