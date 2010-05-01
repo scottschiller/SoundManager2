@@ -158,7 +158,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _isMobile = (navigator.userAgent.match(/mobile/i)?true:false), _dcIE,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _isMobile = _ua.match(/mobile/i), _isiPad = _ua.match(/ipad/i), _dcIE,
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
   _overHTTP = (document.location?document.location.protocol.match(/http/i):null),
   _isFocused = (typeof document.hasFocus !== 'undefined'?document.hasFocus():null),
@@ -169,7 +169,7 @@ function SoundManager(smURL, smID) {
   (function() {
     var a = (typeof Audio !== 'undefined' ? new Audio():null),
     base64_data = {
-      mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
+      mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq==',
       wav: 'data:audio/wave;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAD//w=='
     },
     base64 = {
@@ -179,14 +179,17 @@ function SoundManager(smURL, smID) {
     testsQueued = 0,
     testsDone = 0,
     base64_results = {}; // mp3: true/false results will be stored here
+
     function _cp(m) {
       // we will take a "probably" or "maybe" as OK in this case.
       var canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m).toLowerCase() : false);
       return (canPlay && (canPlay === 'probably' || canPlay === 'maybe'));
     }
+
     function _testBase64(sType, onComplete) {
       var a, didFire = false;
       testsQueued++;
+
       function checkReady() {
         if (testsDone >= testsQueued && !_html5Ready) {
           _html5Ready = true;
@@ -196,6 +199,7 @@ function SoundManager(smURL, smID) {
           }
         }
       }
+
       if (_isMobile) {
         // ipad straight up barfs with this, other mobile phones likely do also.
         testsDone++;
@@ -203,6 +207,7 @@ function SoundManager(smURL, smID) {
         checkReady();
         return false;
       }
+
       function handler(isOK, e) {
         if (!didFire) {
           didFire = true;
@@ -212,6 +217,7 @@ function SoundManager(smURL, smID) {
           checkReady();
         }
       }
+
       if (typeof base64_results[sType] !== 'undefined') {
         didFire = true;
         onComplete(base64_results[sType]);
@@ -246,15 +252,17 @@ if (typeof window.console !== 'undefined' && console.log) {
             a.src = base64[sType];
             a.load();
           }
-        },250);
+        },(_s.isSafari?500:1));
       }
     }
+
     _s.html5 = {
       canPlayType: (a?_cp:null),
       mp3: (_cp('audio/mpeg; codecs="MP3"')||_cp('audio/mp3')), // may need to specify codec, too.
       aac: (_cp('audio/aac')||_cp('audio/x-m4a')),
       ogg: _cp('audio/ogg; codecs="vorbis"')
     };
+
     _testBase64('mp3', function(isOK) {
       // console.log('HTML5 MP3: '+isOK);
       if (isOK) {
@@ -269,6 +277,7 @@ if (typeof window.console !== 'undefined' && console.log) {
         });
       }
     });
+
     _testBase64('wav', function(isOK) {
       _s.html5.wav = isOK;
     });
@@ -964,7 +973,8 @@ if (typeof window.console !== 'undefined' && console.log) {
       alert(_str('badFV', _s.flashVersion, _defaultFlashVersion));
       _s.flashVersion = _defaultFlashVersion;
     }
-    _s.version = _s.versionNumber + (_s.flashVersion === 9?' (AS3/Flash 9)':' (AS2/Flash 8)');
+    var isDebug = (_s.debugMode || _s.debugFlash?'_debug.swf':'.swf'); // debug flash movie, if applicable
+    _s.version = _s.versionNumber + (_html5Only?' (HTML5-only mode)':(_s.flashVersion === 9?' (AS3/Flash 9)':' (AS2/Flash 8)'));
     // set up default options
     if (_s.flashVersion > 8) {
       _s.defaultOptions = _mergeObjects(_s.defaultOptions, _s.flash9Options);
@@ -981,7 +991,7 @@ if (typeof window.console !== 'undefined' && console.log) {
       _s.features.movieStar = false;
     }
     _s.filePattern = _s.filePatterns[(_s.flashVersion !== 8?'flash9':'flash8')];
-    _s.movieURL = (_s.flashVersion === 8?'soundmanager2.swf':'soundmanager2_flash9.swf');
+    _s.movieURL = (_s.flashVersion === 8?'soundmanager2.swf':'soundmanager2_flash9.swf').replace('.swf',isDebug);
     _s.features.peakData = _s.features.waveformData = _s.features.eqData = (_s.flashVersion > 8);
   };
 
@@ -1026,7 +1036,7 @@ if (typeof window.console !== 'undefined' && console.log) {
       oD.onclick = _toggleDebug;
       oD.title = 'Toggle SM2 debug console';
 
-      if (navigator.userAgent.match(/msie 6/i)) {
+      if (_ua.match(/msie 6/i)) {
         oD.style.position = 'absolute';
         oD.style.cursor = 'hand';
       }
@@ -1063,13 +1073,11 @@ if (typeof window.console !== 'undefined' && console.log) {
     localURL = (_s.altURL?_s.altURL:remoteURL),
     oEmbed, oMovie, oTarget, tmp, movieHTML, oEl, extraClass, s, x, sClass, side = '100%';
     smID = (typeof smID === 'undefined'?_s.id:smID);
-
     function _initMsg() {
       _s._wD('-- SoundManager 2 ' + _s.version + (_s.useHTML5Audio && _s.hasHTML5?', HTML5 audio enabled':'') + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
     }
-
     if (_html5Only) {
-      // _setVersionInfo();
+      _setVersionInfo();
       _initMsg();
       _s._wD('_createMovie: No flash needed.');
       _s.oMC = _id(_s.movieID);
@@ -1290,12 +1298,11 @@ if (typeof window.console !== 'undefined' && console.log) {
 
   _initMovie = function() {
     if (_html5Only) {
-      _setVersionInfo();
       _initDebug();
       _s._wD('_initMovie: No flash needed.');
       // no flash needed here.
       _createMovie();
-      // _s.oninitmovie();
+      _init();
       return false;
     }
     // attempt to get, or create, movie
@@ -1459,6 +1466,7 @@ if (typeof window.console !== 'undefined' && console.log) {
     }
     if (_html5Only) {
       // all good.
+      _s._wD('-- SoundManager 2: loaded --');
       _didInit = true;
       _processOnReady();
       _initUserOnload();
@@ -1593,13 +1601,15 @@ if (typeof window.console !== 'undefined' && console.log) {
     }
 
     if (_html5Only) {
-      // we don't need no steenking flash!
-      _s._wD('_init: No flash needed.');
-      // event cleanup
-      _s._wD('soundManager: HTML 5-only mode');
-      _cleanup();
-      _s.enabled = true;
-      _initComplete();
+      if (!_didInit) {
+        // we don't need no steenking flash!
+        _s._wD('_init: No flash needed.');
+        // event cleanup
+        _s._wD('soundManager: HTML 5-only mode');
+        _cleanup();
+        _s.enabled = true;
+        _initComplete();
+      }
       return true;
     }
 
@@ -1649,6 +1659,8 @@ if (typeof window.console !== 'undefined' && console.log) {
     if (_s.useHTML5Audio && _s.hasHTML5) {
       if (_html5Ready) { // tests have completed
         _go();
+      } else {
+        // console.log('HTML 5 is not ready yet?');
       }
     } else {
       _go();
@@ -1673,8 +1685,10 @@ if (typeof window.console !== 'undefined' && console.log) {
       oSound._hasTimer = true;
     }
     if (!_smTimer) {
-      _s._wD('Starting HTML 5 interval');
-      _smTimer = window.setInterval(_onTimer, _s.useFastPolling?33:100); // ~30 fps or 10 fps
+      var i = _isMobile && !_isiPad?500:(_s.useFastPolling?(_isiPad?100:33):100);
+      _s._wD('Starting HTML 5 interval ('+i+' ms)');
+      // try to be nice to mobile devices, iPad etc. Give iPad ~10fps under fast polling, though.
+      _smTimer = window.setInterval(_onTimer, i); // ~30 fps or 10 fps
     }
   };
 
@@ -2005,9 +2019,11 @@ return true;
       }
       var offset = Math.min(_t.duration, Math.max(nMsecOffset, 0)); // position >= 0 and <= current available (loaded) duration
       _t._iO.position = offset;
+/*
       if (!bNoDebug) {
         // _s._wD('SMSound.setPosition('+nMsecOffset+')'+(nMsecOffset !== offset?', corrected value: '+offset:''));
       }
+*/
       if (!_t.useHTML5) {
         _s.o._setPosition(_t.sID, (_s.flashVersion === 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
       } else if (_t.__element) {
