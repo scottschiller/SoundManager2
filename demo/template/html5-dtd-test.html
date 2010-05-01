@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script>
+
+// -- Movie size/positioning test case, Firefox/Win32 --
+
+// SM2 normally works at 6x6px SWF size, position:fixed bottom/left:0px.
+// Was failing with this case using HTML 5 doctype? ..
+// Started working when 8x8px SWF size was used.
+
+// Previous notes, courtesy Jacob Sedelein ...
+
+// This fails to load in Firefox 3.6 (Win7) but will load after one of the following changes:
+// 1. Remove the doctype or set it to eg. 
+//    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+// 2. Set soundManager.useHighPerformance = false
+// 3. Set soundManager.debugFlash = true
+
+function loadScript(sURL,onLoad) {
+  try {
+  var loadScriptHandler = function() {
+    var rs = this.readyState;
+    if (rs == 'loaded' || rs == 'complete') {
+      this.onreadystatechange = null;
+      this.onload = null;
+      if (onLoad) {
+        onLoad();
+      }
+    }
+  }
+  function scriptOnload() {
+    this.onreadystatechange = null;
+    this.onload = null;
+    window.setTimeout(onLoad,20);
+  }
+  var oS = document.createElement('script');
+  oS.type = 'text/javascript';
+  if (onLoad) {
+    oS.onreadystatechange = loadScriptHandler;
+    oS.onload = scriptOnload;
+  }
+  oS.src = sURL;
+  document.getElementsByTagName('head')[0].appendChild(oS);
+  } catch(e) {
+    // oh well
+  }
+}
+
+window.onload = function() {
+	loadScript('../../script/soundmanager2.js', function() {
+		soundManager.flashVersion = 9;
+		soundManager.flash9Options.useEQData = true;
+		soundManager.flash9Options.useWaveformData = true;
+		soundManager.allowPolling = true;
+		soundManager.url = '../../swf/'; // path to directory containing SoundManager2 .SWF file
+		soundManager.onload = function() {
+			alert('Loaded!');
+
+		};
+		soundManager.debugMode = true;
+		soundManager.useHighPerformance = true;
+		soundManager.debugFlash = false;
+//		soundManager.beginDelayedInit();
+
+	});
+}
+
+</script>
+
+</head>
+
+<body>
+
+</body>
+</html>
+
