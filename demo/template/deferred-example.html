@@ -24,7 +24,7 @@ function loadScript(sURL,onLoad) {
       this.onreadystatechange = null;
       this.onload = null;
       if (onLoad) {
-        window.setTimeout(onLoad,20);
+        onLoad();
       }
     }
   }
