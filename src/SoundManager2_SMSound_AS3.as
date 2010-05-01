@@ -143,8 +143,8 @@ package {
       this.oVideo.height = this.sm.stage.stageHeight;
     }
 
-    public function writeDebug(s: String, bTimestamp: Boolean = false) : Boolean {
-      return this.sm.writeDebug(s, bTimestamp); // defined in main SM object
+    public function writeDebug (s: String, bTimestamp: Boolean = false) : Boolean {
+      return this.sm.writeDebug (s, bTimestamp); // defined in main SM object
     }
 
     public function doNetStatus(e: NetStatusEvent) : void {

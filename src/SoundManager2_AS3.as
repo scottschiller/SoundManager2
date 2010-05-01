@@ -93,6 +93,8 @@ package {
       this.setDefaultStageScale();
 
       this.paramList = this.root.loaderInfo.parameters;
+
+      // <d>
       if (this.paramList['debug'] == 1) {
         this.flashDebugEnabled = true;
       }
@@ -102,6 +104,7 @@ package {
         canvas.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
         addChild(canvas);
       }
+      // </d>
 
       flashDebug('SM2 SWF ' + version + ' ' + version_as);
 
@@ -148,7 +151,8 @@ package {
 
     } // SoundManager2()
 
-    public function flashDebug(txt:String) : void {
+    public function flashDebug (txt:String) : void {
+      // <d>
       messages.push(txt);
       if (this.flashDebugEnabled) {
         var didCreate: Boolean = false;
@@ -175,6 +179,7 @@ package {
           this.addChild(textField);
         }
       }
+      // </d>
     }
 
     public function fullscreenHandler(e: FullScreenEvent) : void {
@@ -229,10 +234,13 @@ package {
       }
     }
 
-    public function writeDebug(s:String, bTimestamp: Boolean = false) : Boolean {
+    public function writeDebug (s:String, bTimestamp: Boolean = false) : Boolean {
       if (!debugEnabled) return false;
+      // <d>
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
+      // </d>
       return true;
+
     }
 
     public function _externalInterfaceTest(isFirstCall: Boolean) : Boolean {
