@@ -1163,9 +1163,9 @@ if (typeof window.console !== 'undefined' && console.log) {
           if (_s.useHighPerformance) {
             s = {
               position: 'fixed',
-              width: '6px',
-              height: '6px',
-              // must be at least 6px for flash to run fast. odd? yes.
+              width: '8px',
+              height: '8px',
+              // >= 6px for flash to run fast, >= 8px to start up under Firefox/win32 in some cases. odd? yes.
               bottom: '0px',
               left: '0px',
               overflow: 'hidden'
