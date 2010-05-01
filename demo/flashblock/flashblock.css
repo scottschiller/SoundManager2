@@ -82,9 +82,9 @@
 #sm2-container.high_performance.swf_unblocked,
 #sm2-container.high_performance.swf_unblocked object,
 #sm2-container.high_performance.swf_unblocked embed {
- /* 6x6px is good for fast performance, even better when on-screen via position:fixed */
- width:6px;
- height:6px;
+ /* 8x8px is required minimum to load in fx/win32 in some cases(?), 6x6+ good for fast performance, even better when on-screen via position:fixed */
+ width:8px;
+ height:8px;
 }
 
 #sm2-container.high_performance.swf_unblocked object,
