@@ -103,6 +103,7 @@ package {
           ExternalInterface.addCallback('_loadFromXML', _loadFromXML);
           ExternalInterface.addCallback('_createSound', _createSound);
           ExternalInterface.addCallback('_destroySound', _destroySound);
+          ExternalInterface.addCallback('_setAutoPlay', _setAutoPlay);
         } catch(e: Error) {
           flashDebug('Fatal: ExternalInterface error: ' + e.toString());
         }
@@ -154,6 +155,11 @@ package {
           this.addChild(textField);
         }
       }
+    }
+
+    public function _setAutoPlay(sID:String, autoPlay:Boolean) : void {
+      var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      s.setAutoPlay(autoPlay);
     }
 
     public function fullscreenHandler(e: FullScreenEvent) : void {
@@ -560,24 +566,23 @@ package {
         // We wait for the buffer to fill up before pausing the just-loaded song because only if the
         // buffer is full will the song continue to buffer until the user hits play.
         if (e.info.code == "NetStream.Buffer.Full" && oSound.pauseOnBufferFull) {
-
           oSound.ns.pause();
           oSound.paused = true;
           oSound.pauseOnBufferFull = false;
           writeDebug('Pausing song because buffer is now full.');
         }
-        
+
         // Increase the size of the buffer
         if (e.info.code == "NetStream.Buffer.Full") {
-          if (oSound.ns.bufferTime == oSound.bufferTime) { 
+          if (oSound.ns.bufferTime == oSound.bufferTime) {
             oSound.ns.bufferTime = 15;
             writeDebug('increasing buffer to 15 secs');
-          } else if (oSound.ns.bufferTime == 15) {
-            oSound.ns.bufferTime = 30;
-            writeDebug('increasing buffer to 30 secs');
-          }
+          }/* else if (oSound.ns.bufferTime == 15) {
+                      oSound.ns.bufferTime = 30;
+                      writeDebug('increasing buffer to 30 secs');
+                    }*/
         }
-        
+
         var isNetstreamBuffering: Boolean = (e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Play.Start");
         // assume buffering when we start playing, eg. initial load.
         if (isNetstreamBuffering != oSound.lastValues.isBuffering) {
@@ -602,6 +607,13 @@ package {
         writeDebug('attempting to reconnect...');
         oSound.nc.connect(oSound.nc.uri);
         oSound.ns.resume();
+      } else if (e.info.code == "NetStream.Failed") {
+        if (oSound.failed) {
+          writeDebug('ignoring, already reported failure.');
+        } else {
+          oSound.failed = true;
+          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfailure");
+        }
       }
       oSound.lastNetStatus = e.info.code;
     }
@@ -646,9 +658,9 @@ package {
         writeDebug('setting buffer to '+s.ns.bufferTime+' secs');
 
         nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
-        writeDebug('setPosition: ' + nSecOffset);        
+        writeDebug('setPosition: ' + nSecOffset);
         s.ns.seek(nSecOffset);
-        
+
         checkProgress(); // force UI update
       } else {
         if (s.soundChannel) {
@@ -675,7 +687,7 @@ package {
     }
 
     public function _load(sID:String, sURL:String, bStream: Boolean, bAutoPlay: Boolean) : void {
-      writeDebug('_load()');
+      writeDebug('_load() got autoPlay: ' +bAutoPlay);
       if (typeof bAutoPlay == 'undefined') bAutoPlay = false;
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
@@ -697,7 +709,7 @@ package {
         ns.duration = s.duration;
         ns.totalBytes = s.totalBytes;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes);
+        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes, bAutoPlay);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -726,11 +738,6 @@ package {
           this.addNetstreamEvents(s);
           ExternalInterface.call(baseJSObject + "['" + s.sID + "']._whileloading", s.ns.bytesLoaded, s.ns.bytesTotal || s.totalBytes, int(s.duration || 0));
           s.ns.play(sURL);
-          if (!bAutoPlay) {
-            // We wait for the buffer to fill up before pausing the just-loaded song because only if the
-            // buffer is full will the song continue to buffer until the user hits play.
-            s.pauseOnBufferFull = true;
-          }
         } catch(e: Error) {
           writeDebug('_load(): error: ' + e.toString());
         }
@@ -747,15 +754,6 @@ package {
       }
 
       s.didJustBeforeFinish = false;
-      if (bAutoPlay != true) {
-        // s.soundChannel.stop(); // prevent default auto-play behaviour
-        // writeDebug('auto-play stopped');
-      } else {
-        // writeDebug('auto-play allowed');
-        // s.start(0,1);
-        // registerOnComplete(sID);
-      }
-
     }
 
     public function _unload(sID:String, sURL:String) : void {
@@ -812,13 +810,14 @@ package {
       ns.serverUrl = s.serverUrl;
       ns.duration = s.duration;
       ns.totalBytes = s.totalBytes;
+      ns.autoPlay = s.autoPlay;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes);
+      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes, ns.autoPlay);
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String, duration:Number, totalBytes:Number) : void {
-      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, totalBytes);
+    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String, duration:Number, totalBytes:Number, autoPlay:Boolean) : void {
+      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, totalBytes, autoPlay);
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
       this.currentObject = s;

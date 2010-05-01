@@ -60,7 +60,8 @@ package {
     public var totalBytes: Number;
     public var handledDataError: Boolean = false;
     public var ignoreDataError: Boolean = false;
-    public var pauseOnBufferFull: Boolean = false;
+    public var autoPlay: Boolean = false;
+    public var pauseOnBufferFull: Boolean = true;
 
     public var lastValues: Object = {
       bytes: 0,
@@ -92,7 +93,7 @@ package {
     public var videoWidth: Number = 0;
     public var videoHeight: Number = 0;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -117,7 +118,9 @@ package {
       if (netStreamBufferTime != -1) {
         this.bufferTime = netStreamBufferTime;
       }
-      writeDebug('in SoundManager2_SMSound_AS3, got duration '+duration+' and totalBytes '+totalBytes);
+      setAutoPlay(autoPlay);
+
+      writeDebug('in SoundManager2_SMSound_AS3, got duration '+duration+' and totalBytes '+totalBytes+' autoPlay: '+autoPlay);
 
       if (this.useNetstream) {
         this.cc = new Object();
@@ -175,17 +178,20 @@ package {
           } catch(e: Error) {
             this.failed = true;
             writeDebug('netStream error: ' + e.toString());
+            ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection failed!');
           }
           break;
 
         case "NetStream.Play.StreamNotFound":
           this.failed = true;
           writeDebug("NetConnection: Stream not found!");
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Stream not found!');
           break;
 
         case "NetConnection.Connect.Closed":
           this.failed = true;
           writeDebug("NetConnection: Connection closed!");
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection closed!');
           break;
 
         default:
@@ -277,17 +283,17 @@ package {
       if (this.useNetstream) {
         writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
         this.cc.onMetaData = this.metaDataHandler;
-        
+
         // Don't seek if we don't have to because it destroys the buffer
         if (this.lastValues.position != null && this.lastValues.position != nMsecOffset) {
-          
+
           // Minimize the buffer so playback starts ASAP
           this.ns.bufferTime = this.bufferTime;
           writeDebug('setting buffer to '+this.bufferTime+' secs');
 
-          this.ns.seek(nMsecOffset); 
+          this.ns.seek(nMsecOffset);
         }
-        
+
         if (this.paused) {
           this.ns.resume(); // get the sound going again
           if (!this.didLoad) this.didLoad = true;
@@ -328,6 +334,17 @@ package {
         } catch(e: Error) {
           writeDebug('error during loadSound(): ' + e.toString());
         }
+      }
+    }
+
+    public function setAutoPlay(autoPlay: Boolean) : void {
+      this.autoPlay = autoPlay;
+      if (this.autoPlay) {
+        this.pauseOnBufferFull = false;
+        writeDebug('cancelling pauseOnBufferFull because autoPlay is on');
+      } else if (!this.autoPlay) {
+        this.pauseOnBufferFull = true;
+        writeDebug('pausing on buffer full because autoPlay is off');
       }
     }
 

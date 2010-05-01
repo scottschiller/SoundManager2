@@ -33,7 +33,7 @@ function SoundManager(smURL, smID) {
   this.allowFullScreen = true;     // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.onfailure = undefined;
-  
+
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
     'stream': true,                // allows playing before entire file has loaded (recommended)
@@ -46,6 +46,7 @@ function SoundManager(smURL, smID) {
     'onresume': null,              // callback for "resume" (pause toggle)
     'whileplaying': null,          // callback during play (position update)
     'onstop': null,                // callback for "user stop"
+    'onfailure': null,             // callback function for when playing fails
     'onfinish': null,              // callback function for "sound finished playing"
     'onbeforefinish': null,        // callback for "before sound finished playing (at [time])"
     'onbeforefinishtime': 5000,    // offset (milliseconds) before end of sound to trigger beforefinish (eg. 1000 msec = 1 second)
@@ -300,7 +301,7 @@ function SoundManager(smURL, smID) {
       }
     } else {
       var sound = _s.sounds[_tO.id];
-      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes);
+      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes, _tO.autoPlay);
       if (!_tO.serverUrl) {
         // We are connected immediately
         sound.connected = true;
@@ -673,7 +674,7 @@ function SoundManager(smURL, smID) {
       _s._wDS('smFail', 2);
       _s.disable(bNoDisable);
       if (_s.onfailure !== undefined) {
-        _s.onfailure();  
+        _s.onfailure();
       }
     }
   };
@@ -1393,7 +1394,7 @@ if (_s.debugMode) {
     // assign property defaults (volume, pan etc.)
     this.pan = this.options.pan;
     this.volume = this.options.volume;
-
+    this.autoPlay = oOptions.autoPlay ? oOptions.autoPlay : false;
     this._lastURL = null;
 
     this._debug = function() {
@@ -1462,6 +1463,7 @@ if (_s.debugMode) {
       // dirty hack for now: also have left/right arrays off this, maintain compatibility
       _t.eqData.left = [];
       _t.eqData.right = [];
+      _t.failures = 0;
     };
 
     _t.resetProperties();
@@ -1602,6 +1604,11 @@ if (_s.debugMode) {
         _t._iO = {};
         // _t.instanceOptions = _t._iO;
       }
+    };
+
+    this.setAutoPlay = function(autoPlay) {
+      _t.autoPlay = autoPlay;
+      _s.o._setAutoPlay(_t.sID, autoPlay);
     };
 
     this.setPosition = function(nMsecOffset, bNoDebug) {
@@ -1810,6 +1817,7 @@ if (_s.debugMode) {
       _t.connected = bSuccess;
 
       if (bSuccess) {
+        _t.failures = 0;
         if (_t._iO.autoLoad || _t._iO.autoPlay) {
           _t.load(_t._iO);
         }
@@ -1860,6 +1868,18 @@ if (_s.debugMode) {
           _s._wD('SMSound._onjustbeforefinish(): "'+_t.sID+'"');
           _t._iO.onjustbeforefinish.apply(_t);
         }
+      }
+    };
+
+    // Only fire the onfailure callback once
+    this._onfailure = function(msg) {
+      _t.failures = _t.failures + 1;
+      _s._wD('SMSound._onfailure(): "'+_t.sID+'" count '+_t.failures);
+      if (_t._iO.onfailure) {
+        _t._iO.onfailure(_t, msg);
+        _t._iO.onfailure = undefined;
+      } else {
+        _s._wD('SMSound._onfailure(): ignoring');
       }
     };
 
