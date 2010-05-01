@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<title>SoundManager 2: HTML 5 DTD test</title>
+<meta name="description" content="A test page using SoundManager 2 under an HTML 5 DOCTYPE." />
 <script>
 
 // -- Movie size/positioning test case, Firefox/Win32 --
@@ -10,7 +11,7 @@
 // Was failing with this case using HTML 5 doctype? ..
 // Started working when 8x8px SWF size was used.
 
-// Previous notes, courtesy Jacob Sedelein ...
+// Previous notes, courtesy Jacob Seidelin ...
 
 // This fails to load in Firefox 3.6 (Win7) but will load after one of the following changes:
 // 1. Remove the doctype or set it to eg. 
@@ -57,13 +58,11 @@ window.onload = function() {
 		soundManager.url = '../../swf/'; // path to directory containing SoundManager2 .SWF file
 		soundManager.onload = function() {
 			alert('Loaded!');
-
 		};
 		soundManager.debugMode = true;
 		soundManager.useHighPerformance = true;
 		soundManager.debugFlash = false;
-//		soundManager.beginDelayedInit();
-
+		soundManager.beginDelayedInit(); // ensure things start, in case document.readyState / domReady are missed (eg. Firefox 3.5.5/win32 with HTML5 DTD, no document.readyState??)
 	});
 }
 

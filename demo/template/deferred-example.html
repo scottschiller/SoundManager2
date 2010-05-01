@@ -2,7 +2,8 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>SoundManager 2 Template</title>
+<title>SoundManager 2: Lazy / Deferred Loading Example</title>
+<meta name="description" content="How to load soundmanager2.js on-the-fly using JavaScript, and start it dynamically after window.load() has already fired using beginDelayedInit()." />
 <style type="text/css">
 #soundmanager-debug {
  /* SM2 debug container (optional, use or customize this as you like - makes in-browser debug output more useable) */
@@ -64,6 +65,7 @@ window.onload = function() {
         }).play();
         msg(soundManager.supported()?'started OK':'Error/unsupported');
       });
+      soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
     });
   },1000);
 }
@@ -95,6 +97,7 @@ window.onload = function() {
         }).play();
         <span>// soundManager.supported()?'started OK':'Error/unsupported';</span>
       });
+      soundManager.beginDelayedInit(); <span>// ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable</span>
     });
   },1000);
 }</pre>
