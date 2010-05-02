@@ -40,8 +40,15 @@ function SoundManager(smURL, smID) {
   this.requiredFormats = {
     // determines whether HTML 5 alone is OK, or Flash is also needed
     // eg. if MP3s must play, use Flash if no HTML 5 support
-    'audio/mpeg': true, // MP3 format support. Safari needs "audio/mpeg"
-    'audio/aac': false // safari can do this natively. If using this, set flashVersion = 9.
+    'mp3': {
+      // MP3 format support test. Varies slightly by browser.
+      type: ['audio/mpeg; codecs="MP3"','audio/mp3','audio/mpeg3'],
+      required: true
+    }, 
+    'aac': {
+      type: ['audio/aac', 'audio/x-m4a'],
+      required: false // safari can do this natively. If using this, set flashVersion = 9 too.
+    }
   };
 
   this.defaultOptions = {
@@ -153,6 +160,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.hasHTML5 = null; // reflects actual browser support
+  this.html5 = {}; // hash for canPlayType() etc.
   // this.hasFlash = null; // likewise, determined
 
   // --- private SM2 internals ---
@@ -164,127 +172,6 @@ function SoundManager(smURL, smID) {
   _isFocused = (typeof document.hasFocus !== 'undefined'?document.hasFocus():null),
   _tryInitOnFocus = (typeof document.hasFocus === 'undefined' && this.isSafari),
   _okToDisable = !_tryInitOnFocus;
-
-  if (_s.useHTML5Audio && typeof Audio !== 'undefined') {
-  (function() {
-    var a = (typeof Audio !== 'undefined' ? new Audio():null),
-    base64_data = {
-      mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq==',
-      wav: 'data:audio/wave;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAD//w=='
-    },
-    base64 = {
-      mp3: base64_data.mp3,
-      wav: base64_data.wav
-    },
-    testsQueued = 0,
-    testsDone = 0,
-    base64_results = {}; // mp3: true/false results will be stored here
-
-    function _cp(m) {
-      // we will take a "probably" or "maybe" as OK in this case.
-      var canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m).toLowerCase() : false);
-      return (canPlay && (canPlay === 'probably' || canPlay === 'maybe'));
-    }
-
-    function _testBase64(sType, onComplete) {
-      var a, didFire = false;
-      testsQueued++;
-
-      function checkReady() {
-        if (testsDone >= testsQueued && !_html5Ready) {
-          _html5Ready = true;
-          if (_didDCLoaded) {
-            // domready etc. already fired and missed
-            _go();
-          }
-        }
-      }
-
-      if (_isMobile) {
-        // ipad straight up barfs with this, other mobile phones likely do also.
-        testsDone++;
-        onComplete();
-        checkReady();
-        return false;
-      }
-
-      function handler(isOK, e) {
-        if (!didFire) {
-          didFire = true;
-          testsDone++;
-          base64_results[sType] = isOK;
-          onComplete(isOK);
-          checkReady();
-        }
-      }
-
-      if (typeof base64_results[sType] !== 'undefined') {
-        didFire = true;
-        onComplete(base64_results[sType]);
-      } else {
-        // TODO: Ensure that empty constructor (with no URL) is OK everywhere
-        a = new Audio(); // '' or 'about:blank' means media errors, so don't use this.
-
-        a.addEventListener('canplaythrough', function(e) {
-          // sound loaded, supported (can be played)
-// DEV - remove later
-if (typeof window.console !== 'undefined' && console.log) {
-          console.log('Audio()::canplaythrough(), type: '+sType);
-}
-          handler(true, e);
-          a = null;
-        }, false);
-
-        a.addEventListener('error', function(e) {
-          // MEDIA_ERR_SRC_NOT_SUPPORTED = 4
-          // console.log('error: '+this.error||e);
-// DEV - remove later
-if (typeof window.console !== 'undefined' && console.log) {
-          console.log('Audio()::error(), code: '+this.error.code+', type: '+sType);
-}
-          handler(false, this.error?this.error:e);
-          a = null;
-        }, false);
-
-        setTimeout(function(){
-          // timeout for Safari 4.0.5, as creating Audio() + trying to load right away fails in Safari for some reason?
-          if (a) {
-            a.src = base64[sType];
-            a.load();
-          }
-        },(_s.isSafari?500:1));
-      }
-    }
-
-    _s.html5 = {
-      canPlayType: (a?_cp:null),
-      mp3: (_cp('audio/mpeg; codecs="MP3"')||_cp('audio/mp3')), // may need to specify codec, too.
-      aac: (_cp('audio/aac')||_cp('audio/x-m4a')),
-      ogg: _cp('audio/ogg; codecs="vorbis"')
-    };
-
-    _testBase64('mp3', function(isOK) {
-      // console.log('HTML5 MP3: '+isOK);
-      if (isOK) {
-        _s.html5.mp3 = isOK;
-      } else {
-        // console.log('mp3 failed, trying mpeg');
-        _testBase64('mpeg', function(isMPEGOK) {
-          // console.log('mpeg result: '+isMPEGOK);
-          if (isMPEGOK) {
-            _s.html5.mp3 = isMPEGOK;
-          }
-        });
-      }
-    });
-
-    _testBase64('wav', function(isOK) {
-      _s.html5.wav = isOK;
-    });
-  }());
-  } else {
-    // no HTML 5
-  }
 
   _html5CanPlay = function(sURL) {
     // try to find MIME, test and return truthiness
@@ -304,7 +191,7 @@ if (typeof window.console !== 'undefined' && console.log) {
       fileExt = fileExt[0].substr(1); // "mp3", for example
     }
     if (typeof _s.html5[fileExt] !== 'undefined') {
-      // has been tested already..
+      // has been tested already.
       return _s.html5[fileExt];
     } else {
       if (fileExt && extToMime[fileExt]) {
@@ -1009,9 +896,6 @@ if (typeof window.console !== 'undefined' && console.log) {
   function _initDebug() {
     // <d>
     var oD, oDebug, oTarget, oToggle, tmp;
-    if (_s.debugURLParam.test(window.location.href.toString())) {
-      _s.debugMode = true; // allow force of debug mode via URL
-    }
     if (_s.debugMode) {
 
       oD = document.createElement('div');
@@ -1074,7 +958,7 @@ if (typeof window.console !== 'undefined' && console.log) {
     oEmbed, oMovie, oTarget, tmp, movieHTML, oEl, extraClass, s, x, sClass, side = '100%';
     smID = (typeof smID === 'undefined'?_s.id:smID);
     function _initMsg() {
-      _s._wD('-- SoundManager 2 ' + _s.version + (_s.useHTML5Audio && _s.hasHTML5?', HTML5 audio enabled':'') + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
+      _s._wD('-- SoundManager 2 ' + _s.version + (_s.useHTML5Audio && _s.hasHTML5?', HTML5 audio supported':'no HTML5 audio support') + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
     }
     if (_html5Only) {
       _setVersionInfo();
@@ -1297,6 +1181,9 @@ if (typeof window.console !== 'undefined' && console.log) {
   };
 
   _initMovie = function() {
+    if (_s.debugURLParam.test(window.location.href.toString())) {
+      _s.debugMode = true; // allow force of debug mode via URL
+    }
     if (_html5Only) {
       _initDebug();
       _s._wD('_initMovie: No flash needed.');
@@ -1576,9 +1463,13 @@ if (typeof window.console !== 'undefined' && console.log) {
     // does client have flash? Is it needed based on "required" formats?
     for (item in _s.requiredFormats) {
       if (_s.requiredFormats.hasOwnProperty(item)) {
-        if (_s.requiredFormats[item] && !_s.html5.canPlayType(item)) {
+        if (_s.requiredFormats[item].required && !_s.html5.canPlayType(_s.requiredFormats[item].type)) {
           // html 5 doesn't support this required format. Need flash.
           needsFlash = true;
+// DEV - remove later
+if (typeof window.console !== 'undefined' && console.log) {
+	console.log('_featureCheck: Flash may be needed for '+item);
+}
         }
       }
     }
@@ -1586,9 +1477,16 @@ if (typeof window.console !== 'undefined' && console.log) {
     return needsFlash;
   };
 
-  _needsFlash = _featureCheck();
-
   _init = function() {
+
+if (_didInit) {
+	// DEV - remove later
+	if (typeof window.console !== 'undefined' && console.log) {
+      console.log('::init(): Warning: Ignoring double-init case');
+    }
+	return false;
+}
+
     _wDS('init');
     // called after onload()
 
@@ -1619,8 +1517,6 @@ if (typeof window.console !== 'undefined' && console.log) {
       _wDS('didInit');
       return false;
     }
-    // event cleanup
-    _cleanup();
     try {
       _wDS('flashJS');
       _s.o._externalInterfaceTest(false); // attempt to talk to Flash
@@ -1642,6 +1538,8 @@ if (typeof window.console !== 'undefined' && console.log) {
       return false;
     }
     _initComplete();
+    // event cleanup
+    _cleanup();
   };
 
   _beginInit = function() {
@@ -1847,6 +1745,7 @@ if (typeof window.console !== 'undefined' && console.log) {
             _t.play();
           }
         } else {
+          _t.useHTML5 = false;
           if (_s.flashVersion === 8) {
             _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1);
           } else {
@@ -2239,7 +2138,7 @@ return true;
     this._setup_html5 = function(oOptions) {
       var _iO = _mergeObjects(_t._iO, oOptions);
       if (_t.__element) {
-        if (_t.__element.src !== _iO.url) {
+        if (decodeURI(_t.__element.src) !== _iO.url) {
           _s._wD('SETUP_HTML5: SETTING NEW URL on EXISTING object: '+_iO.url);
           _t.__element.src = _iO.url;
         }
@@ -2249,6 +2148,7 @@ return true;
       _t.__element = new Audio(_iO.url);
       // _t.__element.setAttribute('url', _iO.url);
       // _t.__element.src = _iO.url;
+      // _iO.url = _t.__element.src; // ?
       _t.useHTML5 = true;
       // _t.__element.id = _t.sID; // may not be needed.
       _add_html5_events();
@@ -2583,6 +2483,162 @@ return true;
     };
 
   }; // SMSound()
+
+  if (_s.useHTML5Audio && typeof Audio !== 'undefined') {
+  (function() {
+    var a = (typeof Audio !== 'undefined' ? new Audio():null),
+    base64_data = {
+      mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
+      wav: 'data:audio/wave;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAD//w=='
+    },
+    base64 = {
+      mp3: base64_data.mp3,
+      wav: base64_data.wav
+    },
+    testsQueued = 0,
+    testsDone = 0,
+    base64_results = {}; // mp3: true/false results will be stored here
+
+    function _cp(m) {
+      // we will take a "probably" as OK in this case.
+      var canPlay, i, j, isOK = false;
+      if (!a || typeof a.canPlayType !== 'function') {
+        return false;
+      }
+      if (m instanceof Array) {
+        // iterate through all mime types, return any successes
+        for (i=0, j=m.length; i<j && !isOK; i++) {
+          if (_s.html5[m[i]] || a.canPlayType(m[i]).match(/probably/i)) {
+			if (typeof window.console !== 'undefined' && console.log) {
+				// dev: remove later
+				console.log('canPlay test: '+m[i]+' = \'probably\' (OK)');
+			}
+            isOK = true;
+            _s.html5[m[i]] = true;
+          } else {
+				// dev: remove later
+				if (typeof window.console !== 'undefined' && console.log) {
+					console.log('canPlay test: Ignoring false-y response for '+m[i]+' = \''+a.canPlayType(m[i])+'\'');
+				}
+		  }
+        }
+        return isOK;
+      } else {
+if (typeof window.console !== 'undefined' && console.log) {
+	// dev: remove later
+	console.log('canPlay test: checking single mime: '+m);
+}
+        canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m) : false);
+        return (canPlay && (canPlay.match(/probably/i)?true:false));
+      }
+    }
+
+    function _testBase64(sType, onComplete) {
+      var a, didFire = false;
+      testsQueued++;
+
+      function checkReady() {
+        if (testsDone >= testsQueued && !_html5Ready) {
+          _html5Ready = true;
+          if (_didDCLoaded) {
+            // domready etc. already fired and missed
+            _go();
+          }
+        }
+      }
+
+      if (_isMobile) {
+        // ipad straight up barfs with this, other mobile phones likely do also.
+        testsDone++;
+        onComplete();
+        checkReady();
+        return false;
+      }
+
+      function handler(isOK, e) {
+        if (!didFire) {
+          didFire = true;
+          testsDone++;
+          base64_results[sType] = isOK;
+          onComplete(isOK);
+          checkReady();
+        }
+      }
+
+      if (typeof base64_results[sType] !== 'undefined') {
+        didFire = true;
+        onComplete(base64_results[sType]);
+      } else {
+        // TODO: Ensure that empty constructor (with no URL) is OK everywhere
+        a = new Audio(); // '' or 'about:blank' means media errors, so don't use this.
+
+        a.addEventListener('canplaythrough', function(e) {
+          // sound loaded, supported (can be played)
+// DEV - remove later
+if (typeof window.console !== 'undefined' && console.log) {
+          console.log('data/base64: Audio()::canplaythrough(), type: '+sType);
+}
+          handler(true, e);
+          a = null;
+        }, false);
+
+        a.addEventListener('error', function(e) {
+          // MEDIA_ERR_SRC_NOT_SUPPORTED = 4
+          // console.log('error: '+this.error||e);
+// DEV - remove later
+if (typeof window.console !== 'undefined' && console.log) {
+          console.log('data/base64: Audio()::error(), code: '+this.error.code+', type: '+sType+' (may be false positive, ignoring)');
+}
+          handler(false, this.error?this.error:e);
+          a = null;
+        }, false);
+
+        setTimeout(function(){
+          // timeout for Safari 4.0.5, as creating Audio() + trying to load right away fails in Safari for some reason?
+          if (a) {
+            a.src = base64[sType];
+            a.load();
+          }
+        },(_s.isSafari?500:1));
+      }
+    }
+
+    _s.html5 = _mergeObjects(_s.html5, {
+      canPlayType: (a?_cp:null),
+      mp3: _cp(['audio/mpeg; codecs="MP3"','audio/mp3','audio/mpeg']), // codec may be required
+      aac: _cp(['audio/aac','audio/x-m4a']),
+      ogg: _cp('audio/ogg; codecs="vorbis"')
+    });
+
+if (typeof window.console !== 'undefined' && console.log) {
+  // DEV - remove later
+  console.log('Initial HTML5 canPlayType() tests: MP3: '+_s.html5.mp3+' AAC: '+_s.html5.aac+', OGG: '+_s.html5.ogg);
+}
+
+    _testBase64('mp3', function(isOK) {
+      // console.log('HTML5 MP3: '+isOK);
+      if (isOK) {
+        _s.html5.mp3 = isOK;
+      } else {
+        // console.log('mp3 failed, trying mpeg');
+        _testBase64('mpeg', function(isMPEGOK) {
+          // console.log('mpeg result: '+isMPEGOK);
+          if (isMPEGOK) {
+            _s.html5.mp3 = isMPEGOK;
+          }
+        });
+      }
+    });
+
+    _testBase64('wav', function(isOK) {
+      _s.html5.wav = isOK;
+    });
+  }());
+  } else {
+    // no HTML 5
+  }
+
+  _needsFlash = _featureCheck();
 
   // register a few event handlers
   
