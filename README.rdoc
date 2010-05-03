@@ -1,4 +1,4 @@
-= SoundManager 2 
+= SoundManager 2
 
 SoundManager 2 makes it easier to play sounds using Javascript.
 
@@ -10,27 +10,29 @@ This version adds support for streaming using RTMP (and its variants) from a Fla
 
 Having delved deeply into the code implementing these changes I would recommend FlowPlayer for RTMP.  The code looks excellent and very modular.  SoundManager2 is a great product but the code makes extending its features rather difficult.
 
+If your FMS server supports a <tt>getStreamLength</tt> call you can use that to get the length of the music stream. However, this isn't being used at the moment because our FMS server mis-reports stream lengths.
+
 To use these features you must:
 
-* Use the Flash 9 <tt>soundmanager2_flash9.swf</tt> 
+* Use the Flash 9 <tt>soundmanager2_flash9.swf</tt>
 * Enable the global <tt>useMovieStar</tt> option
 * Pass <tt>isMovieStar = true</tt> in your options to <tt>createSound</tt>
 * Pass a value for <tt>serverUrl</tt> in your options to <tt>createSound</tt>.  This will be the URL for the FMS server.
-* Your FMS (or similar) server must support a <tt>getStreamLength</tt> call to get the length of the music stream. <i>This isn't being used ATM because our FMS server mis-reports stream lengths.</i>
-* Use the <tt>soundmanager2.js</tt> JavaScript file (I haven't created a no-debug version).
-
-There is now an <tt>onconnect</tt> callback which is called when the connection to the server is made which you can use if you wish.  Pass it like the other callbacks in your call to <tt>createSound</tt>.
+* Use the <tt>soundmanager2.js</tt> JavaScript file.  I've also generated a no-debug version <tt>soundmanager2-nodebug.js</tt>.
 
 New options to createSound:
 
+* <tt>serverUrl</tt> URL for the FMS server
+* <tt>onconnect</tt> callback called when the connection to the server is made
 * <tt>totalBytes</tt> total size of the file in bytes
 * <tt>duration</tt> duration of the song in seconds
+* <tt>onfailure</tt> duration of the song in seconds
 
 === Example
 
     soundManager.flashVersion = 9;
     soundManager.useMovieStar = true;
-    
+
     var options = {
       id: 1234,
       url: 'mp3:01_Shes_Like_The_Wind',
@@ -48,7 +50,21 @@ New options to createSound:
       whileloading: self.showLoadingProgress,
     };
     return self.sm.createSound(options);
-    
+
+== Debugging
+
+1. Set
+
+    soundManager.debugFlash = true;
+
+2. Generate a debug version of the SWF
+
+    make-flash9-debug.sh
+
+3. Open the Flash IDE.  Open the SM2 source code files. Start a remote debugging session.
+4. Refresh the application in the browser (make sure caching is off)
+5. The SWF should connect to Flash and allow you to step through the source.
+
 == Basic API Features (Flash 8)
 
     * Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript
