@@ -354,6 +354,7 @@ function SoundManager(smURL, smID) {
     if (!_s._idCheck(sID)) {
       return false;
     }
+
     for (var i=0; i<_s.soundIDs.length; i++) {
       if (_s.soundIDs[i] == sID) {
         _s.soundIDs.splice(i, 1);
@@ -1530,6 +1531,10 @@ if (_s.debugMode) {
     this.destruct = function() {
       // kill sound within Flash
       _s._wD('SMSound.destruct(): "'+_t.sID+'"');
+
+      // Disable the onfailure handler
+      _t._iO.onfailure = undefined;
+
       _s.o._destroySound(_t.sID);
       _s.destroySound(_t.sID, true); // ensure deletion from controller
     };
@@ -1871,13 +1876,14 @@ if (_s.debugMode) {
       }
     };
 
-    // Only fire the onfailure callback once
+    // Only fire the onfailure callback once because after one failure
+    // we often get another.  At this point we just recreate failed
+    // sounds rather than trying to reconnect.
     this._onfailure = function(msg) {
       _t.failures = _t.failures + 1;
       _s._wD('SMSound._onfailure(): "'+_t.sID+'" count '+_t.failures);
-      if (_t._iO.onfailure) {
+      if (_t._iO.onfailure && _t.failures == 1) {
         _t._iO.onfailure(_t, msg);
-        _t._iO.onfailure = undefined;
       } else {
         _s._wD('SMSound._onfailure(): ignoring');
       }
