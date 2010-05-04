@@ -314,7 +314,6 @@ function SoundManager(smURL, smID) {
           }
         }
         if (_tO.autoPlay) {
-          sound.playState = 1;
           sound.play();
         }
       } else if (_tO.autoLoad && !_tO.autoPlay) {
