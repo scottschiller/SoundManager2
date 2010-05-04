@@ -36,6 +36,7 @@ function SoundManager(smURL, smID) {
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = true;         // EXPERIMENTAL IN-PROGRESS feature: Use HTML 5 <audio> / new Audio() where API is supported (Safari, Chrome), Firefox (but no MP3/MP4 as of April 2010.) Ideally, will be transparent vs. Flash API where possible.
+  this.html5Test = /^probably$/i;    // canPlayType() test. Default "probably" only. /^(probably|maybe)$/i if you wanted to be more liberal.
 
   this.requiredFormats = {
     // determines whether HTML 5 alone is OK, or Flash is also needed
@@ -175,34 +176,42 @@ function SoundManager(smURL, smID) {
 
   _html5CanPlay = function(sURL) {
     // try to find MIME, test and return truthiness
-    // TODO: accept link, also check "type" attribute for MIME as with canPlayMime() etc.
+    // TODO: accept link or object, with "type" attribute for MIME as with canPlayMime() etc.
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
-    var extToMime = {
-      mp3: 'audio/mpeg',
-      aac: 'audio/aac'
-    },
-    mime, result,
-    fileExt = sURL.match(/\.(aac|mp3|mp4|ogg)/i);
+    // console.log('_html5CanPlay('+(sURL && !sURL.type?sURL:sURL+'/type:'+sURL.type)+')');
+    var result,
+    mime = (typeof sURL.type !== 'undefined'?sURL.type:null),
+    fileExt = (typeof sURL === 'string'?sURL.match(/\.(aac|mp3|mp4|ogg)/i):null); // TODO: Strip URL queries, etc.
+    // console.log('fileExt/mime: '+fileExt+'/'+mime);
     if (!fileExt || !fileExt.length) {
-      return false;
+      if (!mime) {
+        return false;
+      }
     } else {
       fileExt = fileExt[0].substr(1); // "mp3", for example
     }
-    if (typeof _s.html5[fileExt] !== 'undefined') {
+    if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
       // has been tested already.
+      // console.log('already tested, '+_s.html5[fileExt]);
+      _s._wD('canPlayType: already tested, result: '+result);
       return _s.html5[fileExt];
     } else {
-      if (fileExt && extToMime[fileExt]) {
-        mime = extToMime[fileExt];
-      } else {
-        // best-case guess, audio/whatever-dot-filename-format-you're-playing
-        mime = 'audio/'+fileExt;
+      if (!mime) {
+        if (fileExt && _s.html5[fileExt]) {
+          // console.log('canPlayType, found match for file extension: '+result);
+          _s._wD('canPlayType file extension match: '+result);
+          return _s.html5[fileExt];
+        } else {
+          // best-case guess, audio/whatever-dot-filename-format-you're-playing
+          mime = 'audio/'+fileExt;
+        }
       }
       result = _s.html5.canPlayType(mime);
-      // _s._wD('result for canPlayType: '+result);
+      _s._wD('result for canPlayType: '+result);
       _s.html5[fileExt] = result;
+      // console.log('canPlayType, found result: '+result);
       return result;
     }
   };
@@ -542,12 +551,30 @@ function SoundManager(smURL, smID) {
     // _disableObject(_s); // taken out to allow reboot()
   };
 
-  this.canPlayMIME = function(sURL) {
-    return (sURL?(sURL.match(_s.mimePattern)?true:false):null);
+  this.canPlayMIME = function(sMIME) {
+    var result;
+    if (_s.hasHTML5) {
+      result = _html5CanPlay({type:sMIME});
+    }
+    if (!_needsFlash || result) {
+      // no flash, or OK
+      return result;
+    } else {
+      return (sMIME?(sMIME.match(_s.mimePattern)?true:false):null);
+    }
   };
 
   this.canPlayURL = function(sURL) {
-    return (sURL?(sURL.match(_s.filePattern)?true:false):null);
+    var result;
+    if (_s.hasHTML5) {
+      result = _html5CanPlay(sURL);
+    }
+    if (!_needsFlash || result) {
+      // no flash, or OK
+      return result;
+    } else {
+      return (sURL?(sURL.match(_s.filePattern)?true:false):null);
+    }
   };
 
   this.canPlayLink = function(oLink) {
@@ -2487,20 +2514,20 @@ return true;
   if (_s.useHTML5Audio && typeof Audio !== 'undefined') {
   (function() {
     var a = (typeof Audio !== 'undefined' ? new Audio():null),
-    base64_data = {
+    test_uris = {
+      // external files could be used, too - TODO: make that actually work
       mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
       wav: 'data:audio/wave;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAD//w=='
     },
     base64 = {
-      mp3: base64_data.mp3,
-      wav: base64_data.wav
+      mp3: test_uris.mp3,
+      wav: test_uris.wav
     },
     testsQueued = 0,
     testsDone = 0,
     base64_results = {}; // mp3: true/false results will be stored here
 
     function _cp(m) {
-      // we will take a "probably" as OK in this case.
       var canPlay, i, j, isOK = false;
       if (!a || typeof a.canPlayType !== 'function') {
         return false;
@@ -2508,18 +2535,19 @@ return true;
       if (m instanceof Array) {
         // iterate through all mime types, return any successes
         for (i=0, j=m.length; i<j && !isOK; i++) {
-          if (_s.html5[m[i]] || a.canPlayType(m[i]).match(/probably/i)) {
+          if (_s.html5[m[i]] || a.canPlayType(m[i]).match(_s.html5Test)) {
 			if (typeof window.console !== 'undefined' && console.log) {
 				// dev: remove later
-				console.log('canPlay test: '+m[i]+' = \'probably\' (OK)');
+				console.log('canPlay test: '+m[i]+' (OK)');
 			}
             isOK = true;
             _s.html5[m[i]] = true;
           } else {
-				// dev: remove later
-				if (typeof window.console !== 'undefined' && console.log) {
-					console.log('canPlay test: Ignoring false-y response for '+m[i]+' = \''+a.canPlayType(m[i])+'\'');
-				}
+			// base64 test didn't work; not definitive, eg. a real MP3 file might play when base64 doesn't.
+			// dev: remove later
+			if (typeof window.console !== 'undefined' && console.log) {
+				console.log('canPlay test: Ignoring false-y response for '+m[i]+' = \''+a.canPlayType(m[i])+'\'');
+			}
 		  }
         }
         return isOK;
@@ -2529,7 +2557,7 @@ if (typeof window.console !== 'undefined' && console.log) {
 	console.log('canPlay test: checking single mime: '+m);
 }
         canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m) : false);
-        return (canPlay && (canPlay.match(/probably/i)?true:false));
+        return (canPlay && (canPlay.match(_s.html5Test)?true:false));
       }
     }
 
