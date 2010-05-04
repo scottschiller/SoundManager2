@@ -309,17 +309,15 @@ function SoundManager(smURL, smID) {
           _tO.onconnect.apply(sound);
         }
         if (_tO.autoLoad || _tO.autoPlay) {
-          // TODO: does removing timeout here cause problems?
           if (sound) {
             sound.load(_tO);
           }
         }
         if (_tO.autoPlay) {
+          sound.playState = 1;
           sound.play();
         }
-      // The track is paused on load
       } else if (_tO.autoLoad && !_tO.autoPlay) {
-        sound.paused = true;
         if (!sound.instanceCount || _s.flashVersion > 8) {
           sound.instanceCount++;
         }
@@ -1631,13 +1629,15 @@ if (_s.debugMode) {
       _s.o._setPosition(_t.sID, (_s.flashVersion >= 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
     };
 
-    this.pause = function() {
+    this.pause = function(update_flash) {
       if (_t.paused || (_t.playState === 0 && _t.readyState !== 1)) {
         return false;
       }
       _s._wD('SMSound.pause()');
       _t.paused = true;
-      _s.o._pause(_t.sID);
+      if (update_flash || update_flash === undefined) {
+        _s.o._pause(_t.sID);
+      }
       if (_t._iO.onpause) {
         _t._iO.onpause.apply(_t);
       }
