@@ -1610,6 +1610,7 @@ if (_s.debugMode) {
     };
 
     this.setAutoPlay = function(autoPlay) {
+      _t._iO.autoPlay = autoPlay;
       _t.autoPlay = autoPlay;
       _s.o._setAutoPlay(_t.sID, autoPlay);
     };
