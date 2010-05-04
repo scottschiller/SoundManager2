@@ -569,6 +569,10 @@ package {
           oSound.ns.pause();
           oSound.paused = true;
           oSound.pauseOnBufferFull = false;
+
+          // Call pause in JS.  This will call back to us to pause again, but
+          // that should be harmless.
+          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "'].pause", false);
           writeDebug('Pausing song because buffer is now full.');
         }
 
