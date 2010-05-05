@@ -600,7 +600,7 @@ package {
           //writeDebug('Buffer empty and last net status was Play.Stop or Buffer.Flush.  This must be the end!');
           oSound.didJustBeforeFinish = false; // reset
           oSound.finished = true;
-          writeDebug('calling onfinish for a sound');
+          writeDebug('calling onfinish for sound '+oSound.sID);
           checkProgress();
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
         } else if (e.info.code == "NetStream.Buffer.Empty" && oSound.ns.bufferTime != oSound.bufferTime) {

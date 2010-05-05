@@ -316,10 +316,8 @@ function SoundManager(smURL, smID) {
         if (_tO.autoPlay) {
           sound.play();
         }
-      } else if (_tO.autoLoad && !_tO.autoPlay) {
-        if (!sound.instanceCount || _s.flashVersion > 8) {
-          sound.instanceCount++;
-        }
+      } else if (_tO.autoLoad && _tO.autoPlay && !sound.instanceCount) {
+        sound.instanceCount++;
       }
     }
     return _s.sounds[_tO.id];
@@ -1579,7 +1577,7 @@ if (_s.debugMode) {
         _t.resume();
       } else {
         _t.playState = 1;
-        if (!_t.instanceCount || _s.flashVersion > 8) {
+        if (!_t.instanceCount) {
           _t.instanceCount++;
         }
         _t.position = (typeof _t._iO.position != 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
@@ -1612,6 +1610,10 @@ if (_s.debugMode) {
       _t._iO.autoPlay = autoPlay;
       _t.autoPlay = autoPlay;
       _s.o._setAutoPlay(_t.sID, autoPlay);
+
+      if (autoPlay && !_t.instanceCount) {
+        _t.instanceCount++;
+      }
     };
 
     this.setPosition = function(nMsecOffset, bNoDebug) {
@@ -1909,22 +1911,14 @@ if (_s.debugMode) {
           _t.instanceCount = 0;
           _t.instanceOptions = {};
         }
-        if (!_t.instanceCount || _t._iO.multiShotEvents) {
-          // fire onfinish for last, or every instance
-          if (_t._iO.onfinish) {
-            _s._wD('SMSound._onfinish(): "'+_t.sID+'"');
-            _t._iO.onfinish.apply(_t);
-          }
-        }
-      } else {
-        if (_t.useVideo) {
-          // video has finished
-          // may need to reset position for next play call, "rewind"
-          // _t.setPosition(0);
-        }
-        // _t.setPosition(0);
       }
-
+      if (!_t.instanceCount || _t._iO.multiShotEvents) {
+        // fire onfinish for last, or every instance
+        if (_t._iO.onfinish) {
+          _s._wD('SMSound._onfinish(): "'+_t.sID+'"');
+          _t._iO.onfinish.apply(_t);
+        }
+      }
     };
 
     this._onmetadata = function(oMetaData) {
