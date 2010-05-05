@@ -556,11 +556,7 @@ package {
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
           // and exit full-screen mode, too?
           stage.displayState = StageDisplayState.NORMAL;
-        }/* else {
-                  writeDebug('NetStream.Play.Stop called and ignored. Probably just buffer full.');
-                }*/
-      } else if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
-        this.onLoadError(oSound);
+        }
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
 
         // We wait for the buffer to fill up before pausing the just-loaded song because only if the
@@ -607,11 +603,12 @@ package {
           oSound.ns.bufferTime = oSound.bufferTime;
           writeDebug('setting buffer to '+oSound.ns.bufferTime+' secs');
         }
-      } else if (e.info.code == "NetConnection.Connect.Closed") {
-        writeDebug('attempting to reconnect...');
-        oSound.nc.connect(oSound.nc.uri);
-        oSound.ns.resume();
-      } else if (e.info.code == "NetStream.Failed") {
+
+      // Recover from failures
+      } else if (e.info.code == "NetConnection.Connect.Closed"
+          || e.info.code == "NetStream.Failed"
+          || e.info.code == "NetStream.Play.FileStructureInvalid"
+          || e.info.code == "NetStream.Play.StreamNotFound") {
         if (oSound.failed) {
           writeDebug('ignoring, already reported failure.');
         } else {

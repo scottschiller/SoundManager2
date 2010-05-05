@@ -1912,6 +1912,8 @@ if (_s.debugMode) {
           _t.instanceOptions = {};
         }
       }
+      // KJV May interfere with multi-shot events, but either way, the
+      // instanceCount is sometimes 0 when it should not be.
       if (!_t.instanceCount || _t._iO.multiShotEvents) {
         // fire onfinish for last, or every instance
         if (_t._iO.onfinish) {
