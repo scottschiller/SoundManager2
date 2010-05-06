@@ -504,7 +504,7 @@ var count = 0;
 	      // create sound
 	      thisSound = sm.createSound({
 	        id:'pagePlayerMP3Sound'+(self.soundCount++),
-	        url:soundURL,
+	        url:decodeURI(soundURL),
 	        onplay:self.events.play,
 	        onstop:self.events.stop,
 	        onpause:self.events.pause,
@@ -653,7 +653,7 @@ var count = 0;
     if (oSound.instanceOptions.isMovieStar) {
 	  return (oSound.duration);
     } else {
-      return (!oSound._data.metadata || !oSound._data.metadata.data.givenDuration?oSound.durationEstimate:oSound._data.metadata.data.givenDuration);
+      return (!oSound._data.metadata || !oSound._data.metadata.data.givenDuration?(oSound.durationEstimate||0):oSound._data.metadata.data.givenDuration);
     }
   }
 
