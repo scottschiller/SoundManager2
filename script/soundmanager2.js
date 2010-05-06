@@ -36,21 +36,25 @@ function SoundManager(smURL, smID) {
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = true;         // EXPERIMENTAL IN-PROGRESS feature: Use HTML 5 <audio> / new Audio() where API is supported (Safari, Chrome), Firefox (but no MP3/MP4 as of April 2010.) Ideally, will be transparent vs. Flash API where possible.
-  this.html5Test = /^probably$/i;    // canPlayType() test. Default "probably" only. /^(probably|maybe)$/i if you wanted to be more liberal.
+  this.html5Test = /^probably$/i;    // HTML5 Audio canPlayType() test. Default "probably" only. /^(probably|maybe)$/i if you want to be more liberal.
 
   this.requiredFormats = {
     // determines whether HTML 5 alone is OK, or Flash is also needed
     // eg. if MP3s must play, use Flash if no HTML 5 support
+    // take shotgun approach to testing, as browser response varies with type
     'mp3': {
-      // MP3 format support test. Varies slightly by browser.
-      type: ['audio/mpeg; codecs="MP3"','audio/mp3','audio/mpeg3'],
+      type: ['audio/mpeg','audio/mpeg; codecs="mp3"','audio/mp3','audio/mpeg3'], // Chrome/OSX (maybe win32) returns "maybe" at best? Annoying.
       required: true
     }, 
     'aac': {
-      type: ['audio/aac', 'audio/x-m4a'],
-      required: false // safari can do this natively. If using this, set flashVersion = 9 too.
+      type: ['audio/aac','audio/mp4; codecs="mp4a.40.2"','audio/x-m4a'],
+      required: true
     }
   };
+
+  if (this.requiredFormats.aac.required) {
+    this.flashVersion = 9;
+  }
 
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
@@ -180,7 +184,6 @@ function SoundManager(smURL, smID) {
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
-    // console.log('_html5CanPlay('+(sURL && !sURL.type?sURL:sURL+'/type:'+sURL.type)+')');
     var result,
     mime = (typeof sURL.type !== 'undefined'?sURL.type:null),
     fileExt = (typeof sURL === 'string'?sURL.match(/\.(aac|mp3|mp4|ogg)/i):null); // TODO: Strip URL queries, etc.
@@ -192,10 +195,13 @@ function SoundManager(smURL, smID) {
     } else {
       fileExt = fileExt[0].substr(1); // "mp3", for example
     }
+    if (fileExt || mime) {
+      _s._wD('_html5CanPlay('+(sURL && !sURL.type?decodeURI(sURL.substr(sURL.indexOf('/') !== -1?sURL.lastIndexOf('/')+1:0)):decodeURI(sURL)+'/type:'+sURL.type)+')');
+    }
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
       // has been tested already.
-      // console.log('already tested, '+_s.html5[fileExt]);
-      _s._wD('canPlayType: already tested, result: '+result);
+      // console.log('already tested '+fileExt+', '+_s.html5[fileExt]);
+      _s._wD('canPlayType: already tested '+fileExt+', result: '+_s.html5[fileExt]);
       return _s.html5[fileExt];
     } else {
       if (!mime) {
@@ -239,8 +245,7 @@ function SoundManager(smURL, smID) {
 
   this.createSound = function(oOptions) {
     var _cs = 'soundManager.createSound(): ',
-    thisOptions = null,
-    _tO = null;
+    thisOptions = null, oSound = null, _tO = null;
     if (!_didInit) {
       throw _complain(_cs + _str('notReady'), arguments.callee.caller);
     }
@@ -263,28 +268,34 @@ function SoundManager(smURL, smID) {
       _s._wD(_cs + _tO.id + ' exists', 1);
       return _s.sounds[_tO.id];
     }
-    if (_s.flashVersion > 8 && _s.useMovieStar) {
-      if (_tO.isMovieStar === null) {
-        _tO.isMovieStar = (_tO.url.match(_s.netStreamPattern)?true:false);
-      }
-      if (_tO.isMovieStar) {
-        _s._wD(_cs + 'using MovieStar handling');
-      }
-      if (_tO.isMovieStar && _tO.usePeakData) {
-        _wDS('noPeak');
-        _tO.usePeakData = false;
-      }
+
+    function make() {
+      thisOptions = _loopFix(thisOptions);
+      _s.sounds[_tO.id] = new SMSound(_tO);
+      _s.soundIDs.push(_tO.id);
+      return _s.sounds[_tO.id];
     }
-    thisOptions = _loopFix(thisOptions);
-    _s.sounds[_tO.id] = new SMSound(_tO);
-    _s.soundIDs.push(_tO.id);
 
     if (_html5CanPlay(_tO.url)) {
+      oSound = make();
       _s._wD('Loading sound '+_tO.id+' from HTML5');
-      _s.sounds[_tO.id]._setup_html5({
+      oSound._setup_html5({
         url: _tO.url
       });
     } else {
+      if (_s.flashVersion > 8 && _s.useMovieStar) {
+        if (_tO.isMovieStar === null) {
+          _tO.isMovieStar = (_tO.url.match(_s.netStreamPattern)?true:false);
+        }
+        if (_tO.isMovieStar) {
+          _s._wD(_cs + 'using MovieStar handling');
+        }
+        if (_tO.isMovieStar && _tO.usePeakData) {
+          _wDS('noPeak');
+          _tO.usePeakData = false;
+        }
+      }
+      oSound = make();
       // flash
       // AS2:
       if (_s.flashVersion === 8) {
@@ -296,14 +307,19 @@ function SoundManager(smURL, smID) {
 
     if (_tO.autoLoad || _tO.autoPlay) {
       // TODO: does removing timeout here cause problems?
-      if (_s.sounds[_tO.id]) {
-        _s.sounds[_tO.id].load(_tO);
+      if (oSound) {
+        if (_s.useHTML5) {
+          oSound.autobuffer = 'auto'; // early HTML5 implementation (non-standard)
+          oSound.preload = 'auto'; // standard
+        } else {
+          oSound.load(_tO);
+        }
       }
     }
     if (_tO.autoPlay) {
-      _s.sounds[_tO.id].play();
+      oSound.play();
     }
-    return _s.sounds[_tO.id];
+    return oSound;
   };
 
   this.createVideo = function(oOptions) {
@@ -1216,7 +1232,7 @@ function SoundManager(smURL, smID) {
       _s._wD('_initMovie: No flash needed.');
       // no flash needed here.
       _createMovie();
-      _init();
+//      _init();
       return false;
     }
     // attempt to get, or create, movie
@@ -1473,8 +1489,16 @@ function SoundManager(smURL, smID) {
   };
 
   _featureCheck = function() {
-    var needsFlash, item;
+    var needsFlash, item, isSpecial = (navigator.userAgent.match(/iphone os 3_0/i));
     // html 5 support?
+    if (isSpecial) {
+      // has HTML5, but is broken; let it load links directly.
+      _s.hasHTML5 = true;
+      if (_s.oMC) {
+        _s.oMC.style.display = 'none';
+      }
+      return false;
+    }
     if (_s.useHTML5Audio) {
       if (!_s.html5 || !_s.html5.canPlayType) {
         _s._wD('SoundManager: No HTML5 Audio() support detected.');
@@ -2221,7 +2245,7 @@ return true;
       },false);
 
       _t.__element.addEventListener('progress', function(e) { // Note: No one has implemented this fully yet, but it does get fired.
-        _s._wD('html5::progress: '+_t.sID);
+        _s._wD('HTML5::progress: '+_t.sID);
         var o = _t.__element;
         /*
           e = {
@@ -2633,8 +2657,8 @@ if (typeof window.console !== 'undefined' && console.log) {
 
     _s.html5 = _mergeObjects(_s.html5, {
       canPlayType: (a?_cp:null),
-      mp3: _cp(['audio/mpeg; codecs="MP3"','audio/mp3','audio/mpeg']), // codec may be required
-      aac: _cp(['audio/aac','audio/x-m4a']),
+      mp3: _cp(_s.requiredFormats.mp3.type), // codec may be required
+      aac: _cp(_s.requiredFormats.aac.type),
       ogg: _cp('audio/ogg; codecs="vorbis"')
     });
 
