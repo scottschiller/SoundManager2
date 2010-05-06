@@ -328,7 +328,7 @@ package {
           }
           if (oSound.loaded != true && nD > 0 && bL == bT) {
             // non-MP3 has loaded
-            writeDebug('ns: time/duration, bytesloaded/total: '+nP+'/'+nD+', '+bL+'/'+bT);
+            // writeDebug('ns: time/duration, bytesloaded/total: '+nP+'/'+nD+', '+bL+'/'+bT);
             oSound.loaded = true;
             try {
               ExternalInterface.call(sMethod, bL, bT, nD); // _whileloading()
