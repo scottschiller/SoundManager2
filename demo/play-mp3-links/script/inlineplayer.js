@@ -147,7 +147,6 @@ function InlinePlayer() {
     if (!o.href || (!sm.canPlayLink(o) && !self.classContains(o,self.playableClass)) || self.classContains(o,self.excludeClass)) {
       return true; // pass-thru for non-MP3/non-links
     }
-    sm._writeDebug('inlinePlayer.handleClick()');
     var soundURL = (o.href);
     var thisSound = self.getSoundByURL(soundURL);
     if (thisSound) {
