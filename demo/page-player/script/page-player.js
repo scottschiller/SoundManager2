@@ -512,7 +512,7 @@ var count = 0;
 	        onfinish:self.events.finish,
 	        whileloading:self.events.whileloading,
 	        whileplaying:self.events.whileplaying,
-			onmetadata:self.events.metadata,
+	        onmetadata:self.events.metadata,
 	        onload:self.events.onload
 	      });
 	      // append control template
