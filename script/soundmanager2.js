@@ -184,7 +184,7 @@ function SoundManager(smURL, smID) {
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
-    var result,
+    var result, msg,
     mime = (typeof sURL.type !== 'undefined'?sURL.type:null),
     fileExt = (typeof sURL === 'string'?sURL.match(/\.(aac|mp3|mp4|ogg)/i):null); // TODO: Strip URL queries, etc.
     // console.log('fileExt/mime: '+fileExt+'/'+mime);
@@ -196,18 +196,22 @@ function SoundManager(smURL, smID) {
       fileExt = fileExt[0].substr(1); // "mp3", for example
     }
     if (fileExt || mime) {
-      _s._wD('_html5CanPlay('+(sURL && !sURL.type?decodeURI(sURL.substr(sURL.indexOf('/') !== -1?sURL.lastIndexOf('/')+1:0)):decodeURI(sURL)+'/type:'+sURL.type)+')');
+      msg = '_html5CanPlay('+(sURL && !sURL.type?decodeURI(sURL.substr(sURL.indexOf('/') !== -1?sURL.lastIndexOf('/')+1:0)):decodeURI(sURL)+'/type:'+sURL.type)+'): ';
+    } else {
+      msg = '';
     }
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
       // has been tested already.
       // console.log('already tested '+fileExt+', '+_s.html5[fileExt]);
-      _s._wD('canPlayType: already tested '+fileExt+', result: '+_s.html5[fileExt]);
+      msg += fileExt+' = '+_s.html5[fileExt];
+      _s._wD(msg);
       return _s.html5[fileExt];
     } else {
       if (!mime) {
         if (fileExt && _s.html5[fileExt]) {
           // console.log('canPlayType, found match for file extension: '+result);
-          _s._wD('canPlayType file extension match: '+result);
+          msg += 'canPlayType file extension match: '+result;
+          _s._wD(msg);
           return _s.html5[fileExt];
         } else {
           // best-case guess, audio/whatever-dot-filename-format-you're-playing
@@ -215,7 +219,8 @@ function SoundManager(smURL, smID) {
         }
       }
       result = _s.html5.canPlayType(mime);
-      _s._wD('result for canPlayType: '+result);
+      msg += 'result for canPlayType: '+result;
+      _s._wD(msg);
       _s.html5[fileExt] = result;
       // console.log('canPlayType, found result: '+result);
       return result;
@@ -1894,7 +1899,11 @@ if (_didInit) {
           _s._wD(fN + 'Attempting to load "' + _t.sID + '"', 1);
           // try to get this sound playing ASAP
           //_t._iO.stream = true; // breaks stream=false case?
+if (!_t.useHTML5) {
+// HTML5 doesn't need this.
+// TODO: Investigate (this causes double-play bug for HTML5)
           _t._iO.autoPlay = true;
+}
           // TODO: need to investigate when false, double-playing
           // if (typeof oOptions.autoPlay=='undefined') _tO.autoPlay = true; // only set autoPlay if unspecified here
           _t.load(_t._iO); // try to get this sound playing ASAP
@@ -1913,7 +1922,7 @@ if (_didInit) {
       } else {
 if (_t.useHTML5 && _t.playState === 1) {
 _s._wD('TODO: WARNING: Double-play case? playState = 1');
-return true;
+// return true;
 }
         _s._wD(fN+'"'+ _t.sID+'" is starting to play');
         _t.playState = 1;
@@ -2189,24 +2198,25 @@ return true;
     this._setup_html5 = function(oOptions) {
       var _iO = _mergeObjects(_t._iO, oOptions);
       if (_t.__element) {
-        if (decodeURI(_t.__element.src) !== _iO.url) {
-          _s._wD('SETUP_HTML5: SETTING NEW URL on EXISTING object: '+_iO.url);
+        if (decodeURI(_t.__element.src) !== decodeURI(_iO.url)) {
+          _s._wD('SETUP_HTML5: SETTING NEW URL on EXISTING object: '+decodeURI(_iO.url));
           _t.__element.src = _iO.url;
         }
         return _t.__element;
+      } else {
+        _s._wD('creating HTML 5 audio element with URL: '+_iO.url);
+        _t.__element = new Audio(_iO.url);
+        // _t.__element.setAttribute('url', _iO.url);
+        // _t.__element.src = _iO.url;
+        // _iO.url = _t.__element.src; // ?
+        _t.useHTML5 = true;
+        // _t.__element.id = _t.sID; // may not be needed.
+        _add_html5_events();
+        // Ignoring these:
+        // _onbeforefinish
+        // _onjustbeforefinish
+        return _t.__element;
       }
-      _s._wD('creating HTML 5 audio element with URL: '+_iO.url);
-      _t.__element = new Audio(_iO.url);
-      // _t.__element.setAttribute('url', _iO.url);
-      // _t.__element.src = _iO.url;
-      // _iO.url = _t.__element.src; // ?
-      _t.useHTML5 = true;
-      // _t.__element.id = _t.sID; // may not be needed.
-      _add_html5_events();
-      // Ignoring these:
-      // _onbeforefinish
-      // _onjustbeforefinish
-      return _t.__element;
     };
 
     // related private methods
