@@ -27,7 +27,7 @@ function ThreeSixtyPlayer() {
   var isSafari = (navigator.userAgent.match(/safari/i));
   var isChrome = (navigator.userAgent.match(/chrome/i));
   var isFirefox = (navigator.userAgent.match(/firefox/i));
-  this.excludeClass = '360-exclude'; // CSS class for ignoring MP3 links
+  this.excludeClass = 'threesixty-exclude'; // CSS class for ignoring MP3 links
 
   this.links = [];
   this.sounds = [];
