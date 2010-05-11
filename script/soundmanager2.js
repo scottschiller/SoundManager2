@@ -1494,11 +1494,12 @@ function SoundManager(smURL, smID) {
   };
 
   _featureCheck = function() {
-    var needsFlash, item, isSpecial = (navigator.userAgent.match(/iphone os 3_0/i));
+    var needsFlash, item, isSpecial = (navigator.userAgent.match(/iphone os (3_0|3_1)/i)?true:false);
     // html 5 support?
     if (isSpecial) {
       // has HTML5, but is broken; let it load links directly.
       _s.hasHTML5 = true;
+      // _html5Only = true; // would ignore flash
       if (_s.oMC) {
         _s.oMC.style.display = 'none';
       }
