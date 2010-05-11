@@ -1308,13 +1308,14 @@ ul.graphic li a.sm2_link {
 /* special-case for the SM2 homepage only */
 
 body.home #sm2-container {
+ position:absolute;
  width:48px;
  height:48px;
  margin:1px 0px 0px 1px;
+ z-index:-1; /* sit behind, at first */
 }
 
 body.home #sm2-container.high_performance {
- position:relative;
  bottom:auto;
  left:auto;
  top:auto;
@@ -1337,7 +1338,7 @@ body.home #sm2-container.swf_unblocked {
  font-size:1em;
  border:1px solid #ff3333;
  background:#fff6f0;
- margin-top:-1px;
+ margin-top:48px;
 }
 
 #demo-box {
