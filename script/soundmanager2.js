@@ -36,7 +36,7 @@ function SoundManager(smURL, smID) {
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = true;         // EXPERIMENTAL IN-PROGRESS feature: Use HTML 5 <audio> / new Audio() where API is supported (Safari, Chrome), Firefox (but no MP3/MP4 as of April 2010.) Ideally, will be transparent vs. Flash API where possible.
-  this.html5Test = /^probably$/i;    // HTML5 Audio canPlayType() test. Default "probably" only. /^(probably|maybe)$/i if you want to be more liberal.
+  this.html5Test = /^probably$/i;    // HTML5 Audio() canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
 
   this.requiredFormats = {
     // determines whether HTML 5 alone is OK, or Flash is also needed
@@ -184,10 +184,10 @@ function SoundManager(smURL, smID) {
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
-    var result, msg,
+    var result,
     mime = (typeof sURL.type !== 'undefined'?sURL.type:null),
     fileExt = (typeof sURL === 'string'?sURL.match(/\.(aac|mp3|mp4|ogg)/i):null); // TODO: Strip URL queries, etc.
-    // console.log('fileExt/mime: '+fileExt+'/'+mime);
+    // _s._wD('fileExt/mime: '+fileExt+'/'+mime);
     if (!fileExt || !fileExt.length) {
       if (!mime) {
         return false;
@@ -195,23 +195,12 @@ function SoundManager(smURL, smID) {
     } else {
       fileExt = fileExt[0].substr(1); // "mp3", for example
     }
-    if (fileExt || mime) {
-      msg = '_html5CanPlay('+(sURL && !sURL.type?decodeURI(sURL.substr(sURL.indexOf('/') !== -1?sURL.lastIndexOf('/')+1:0)):decodeURI(sURL)+'/type:'+sURL.type)+'): ';
-    } else {
-      msg = '';
-    }
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
-      // has been tested already.
-      // console.log('already tested '+fileExt+', '+_s.html5[fileExt]);
-      msg += fileExt+' = '+_s.html5[fileExt];
-      _s._wD(msg);
+      // result known
       return _s.html5[fileExt];
     } else {
       if (!mime) {
         if (fileExt && _s.html5[fileExt]) {
-          // console.log('canPlayType, found match for file extension: '+result);
-          msg += 'canPlayType file extension match: '+result;
-          _s._wD(msg);
           return _s.html5[fileExt];
         } else {
           // best-case guess, audio/whatever-dot-filename-format-you're-playing
@@ -219,10 +208,8 @@ function SoundManager(smURL, smID) {
         }
       }
       result = _s.html5.canPlayType(mime);
-      msg += 'result for canPlayType: '+result;
-      _s._wD(msg);
       _s.html5[fileExt] = result;
-      // console.log('canPlayType, found result: '+result);
+      // _s._wD('canPlayType, found result: '+result);
       return result;
     }
   };
@@ -1011,10 +998,8 @@ function SoundManager(smURL, smID) {
     if (_html5Only) {
       _setVersionInfo();
       _initMsg();
-      _s._wD('_createMovie: No flash needed.');
       _s.oMC = _id(_s.movieID);
       _init();
-      // no flash needed
       return false;
     }
 
@@ -1232,12 +1217,12 @@ function SoundManager(smURL, smID) {
     if (_s.debugURLParam.test(window.location.href.toString())) {
       _s.debugMode = true; // allow force of debug mode via URL
     }
+    if (_s.hasHTML5) {
+      _s._wD('-- SoundManager 2: Initial HTML5 support tests: MP3: '+_s.html5.mp3+' AAC: '+_s.html5.aac+', OGG: '+_s.html5.ogg+ ' --');
+    }
     if (_html5Only) {
       _initDebug();
-      _s._wD('_initMovie: No flash needed.');
-      // no flash needed here.
       _createMovie();
-//      _init();
       return false;
     }
     // attempt to get, or create, movie
@@ -1367,9 +1352,7 @@ function SoundManager(smURL, smID) {
       }
       if (_s.oMC) {
         _s.oMC.className = _getSWFCSS() + ' ' + _s.swfCSS.swfDefault + (' '+_s.swfCSS.swfUnblocked);
-      } else {
-	
-	}
+      }
     }
   };
 
@@ -1517,16 +1500,11 @@ function SoundManager(smURL, smID) {
       // flash required.
       return true;
     }
-    // does client have flash? Is it needed based on "required" formats?
     for (item in _s.requiredFormats) {
       if (_s.requiredFormats.hasOwnProperty(item)) {
         if (_s.requiredFormats[item].required && !_s.html5.canPlayType(_s.requiredFormats[item].type)) {
-          // html 5 doesn't support this required format. Need flash.
+          // may need flash for this format?
           needsFlash = true;
-// DEV - remove later
-if (typeof window.console !== 'undefined' && console.log) {
-	console.log('_featureCheck: Flash may be needed for '+item);
-}
         }
       }
     }
@@ -1535,15 +1513,6 @@ if (typeof window.console !== 'undefined' && console.log) {
   };
 
   _init = function() {
-
-if (_didInit) {
-	// DEV - remove later
-	if (typeof window.console !== 'undefined' && console.log) {
-      console.log('::init(): Warning: Ignoring double-init case');
-    }
-	return false;
-}
-
     _wDS('init');
     // called after onload()
 
@@ -1558,9 +1527,6 @@ if (_didInit) {
     if (_html5Only) {
       if (!_didInit) {
         // we don't need no steenking flash!
-        _s._wD('_init: No flash needed.');
-        // event cleanup
-        _s._wD('soundManager: HTML 5-only mode');
         _cleanup();
         _s.enabled = true;
         _initComplete();
@@ -1629,7 +1595,7 @@ if (_didInit) {
       timerCount += (oS._onTimer() === true?1:0);
     }
     if (!timerCount) {
-      _s._wD('Stopping HTML 5 interval');
+      // stop timer
       window.clearInterval(_smTimer);
       _smTimer = null;
     }
@@ -1641,8 +1607,7 @@ if (_didInit) {
     }
     if (!_smTimer) {
       var i = _isMobile && !_isiPad?500:(_s.useFastPolling?(_isiPad?100:33):100);
-      _s._wD('Starting HTML 5 interval ('+i+' ms)');
-      // try to be nice to mobile devices, iPad etc. Give iPad ~10fps under fast polling, though.
+      // start timer. attempt being nice to mobile devices, iPad etc. iPad gets ~10fps under fast polling, though.
       _smTimer = window.setInterval(_onTimer, i); // ~30 fps or 10 fps
     }
   };
@@ -1650,7 +1615,6 @@ if (_didInit) {
   _stopTimer = function(oSound) {
     if (oSound._hasTimer) {
       oSound._hasTimer = false;
-      // _s._wD('removed timer');
     }
   };
 
@@ -1728,11 +1692,8 @@ if (_didInit) {
 
     this.id3 = {
       /* 
-        Name/value pairs set via Flash when available - see reference for names (download documentation):
+        Name/value pairs eg. this.id3.songname set via Flash when available - download docs for reference
         http://livedocs.macromedia.com/flash/8/
-        Previously-live URL:
-        http://livedocs.macromedia.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00001567.html
-        (eg., this.id3.songname or this.id3['songname'])
       */
     };
 
@@ -1796,9 +1757,9 @@ if (_didInit) {
           oS = _t._setup_html5({
             url: _t._iO.url
           });
-//          oS.load();
           // if autoplay..
           if (_t._iO.autoPlay) {
+            // oS.load(); // required? Uncertain.
             _t.play();
           }
         } else {
@@ -1835,10 +1796,8 @@ if (_didInit) {
           _stop_html5_timer();
           if (_t.__element) {
             // abort()-style method here, stop loading? (doesn't exist?)
-            // console.log(_t.__element);
             _t.__element.pause();
-            // _t.__element.src = 'data:audio/mp3;base64,xxx'; // throws errors too. about:blank, no better? any better way to cancel/unload??
-            _t.__element.src = 'about:blank';
+            _t.__element.src = 'about:blank'; // needed? does nulling object work? any better way to cancel/unload/abort?
             _t.__element.load();
             // detach events?
             _t.__element = null;
@@ -1890,7 +1849,7 @@ if (_didInit) {
         } else {
           _s._wD(fN + '"' + _t.sID + '" already playing (multi-shot)', 1);
           if (_t.useHTML5) {
-// TODO: BUG?
+            // TODO: BUG?
             _t.setPosition(_t._iO.position);
           }
         }
@@ -1900,14 +1859,13 @@ if (_didInit) {
           _s._wD(fN + 'Attempting to load "' + _t.sID + '"', 1);
           // try to get this sound playing ASAP
           //_t._iO.stream = true; // breaks stream=false case?
-if (!_t.useHTML5) {
-// HTML5 doesn't need this.
-// TODO: Investigate (this causes double-play bug for HTML5)
-          _t._iO.autoPlay = true;
-}
-          // TODO: need to investigate when false, double-playing
+          if (!_t.useHTML5) {
+            // HTML5 double-play bug otherwise.
+            _t._iO.autoPlay = true;
+            _t.load(_t._iO); // try to get this sound playing ASAP
+          }
           // if (typeof oOptions.autoPlay=='undefined') _tO.autoPlay = true; // only set autoPlay if unspecified here
-          _t.load(_t._iO); // try to get this sound playing ASAP
+          // _t.load(_t._iO); // moved into flash-only block
         } else if (_t.readyState === 2) {
           _s._wD(fN + 'Could not load "' + _t.sID + '" - exiting', 2);
           return false;
@@ -1921,10 +1879,6 @@ if (!_t.useHTML5) {
         _s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
       } else {
-if (_t.useHTML5 && _t.playState === 1) {
-_s._wD('TODO: WARNING: Double-play case? playState = 1');
-// return true;
-}
         _s._wD(fN+'"'+ _t.sID+'" is starting to play');
         _t.playState = 1;
         if (!_t.instanceCount || (_s.flashVersion > 8 && !_t.useHTML5)) {
@@ -1961,7 +1915,7 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
           _s.o._stop(_t.sID, bAll);
         } else {
           if (_t.__element) {
-            _t.__element.pause(); // Cuz there aint no stopping in html5
+            _t.__element.pause(); // html5 has no stop()
             _t.setPosition(0); // act like Flash, though
             _onTimer(); // and update UI
             _stop_html5_timer();
@@ -2127,11 +2081,10 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
           _t.duration = _get_html5_duration();
           _t.durationEstimate = _t.duration;
           time = o.currentTime?o.currentTime*1000:0;
-// console.log('duration: '+_t.duration);
-// console.log('_onTimer: '+time+','+t.duration+'/'+_t.__element.duration);
           _t._whileplaying(time,{},{},{},{});
           return true;
         } else {
+         // beta testing
          _s._wD('_onTimer: Warn for "'+_t.sID+'": '+(!o?'Could not find element. ':'')+(_t.playState === 0?'playState bad, 0?':'playState = '+_t.playState+', OK'));
           return false;
         }
@@ -2207,15 +2160,8 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
       } else {
         _s._wD('creating HTML 5 audio element with URL: '+_iO.url);
         _t.__element = new Audio(_iO.url);
-        // _t.__element.setAttribute('url', _iO.url);
-        // _t.__element.src = _iO.url;
-        // _iO.url = _t.__element.src; // ?
         _t.useHTML5 = true;
-        // _t.__element.id = _t.sID; // may not be needed.
         _add_html5_events();
-        // Ignoring these:
-        // _onbeforefinish
-        // _onjustbeforefinish
         return _t.__element;
       }
     };
@@ -2227,12 +2173,12 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
         return false;
       }
       _t._added_events = true;
-      _s._wD('_add_html5_events()');
 
-// events reference:
-// http://www.devx.com/webdev/Article/43324/1763/page/2
+      function _add(oEvt, oFn, bBubble) {
+        return (_t.__element ? _t.__element.addEventListener(oEvt, oFn, bBubble||false) : null);
+      }
 
-      _t.__element.addEventListener('load', function(e) {
+      _add('load', function(e) {
         var o = _t.__element;
         _s._wD('HTML5::load: '+_t.sID);
         if (o) {
@@ -2243,29 +2189,20 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
         }
       }, false);
 
-      _t.__element.addEventListener('canplay', function(e) {
+      _add('canplay', function(e) {
         _s._wD('HTML5::canplay: '+_t.sID);
         // enough has loaded to play
         _t._onbufferchange(0);
       },false);
 
-      _t.__element.addEventListener('waiting', function(e) {
+      _add('waiting', function(e) {
         _s._wD('HTML5::waiting: '+_t.sID);
         // playback faster than download rate, etc.
         _t._onbufferchange(1);
       },false);
 
-      _t.__element.addEventListener('progress', function(e) { // Note: No one has implemented this fully yet, but it does get fired.
-        _s._wD('HTML5::progress: '+_t.sID);
+      _add('progress', function(e) { // not supported everywhere yet..
         var o = _t.__element;
-        /*
-          e = {
-            lengthComputable: true/false
-            loaded: (bytes loaded)
-            total: (bytes total)
-          }
-          https://developer.mozilla.org/En/Using_audio_and_video_in_Firefox
-        */
         _s._wD('HTML5::progress: '+_t.sID+': loaded/total: '+(e.loaded||0)+','+(e.total||1));
         if (!_t.loaded && o) {
           _t._onbufferchange(0); // if progress, likely not buffering
@@ -2273,12 +2210,12 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
         }
       }, false);
 
-      _t.__element.addEventListener('end', function(e) {
+      _add('end', function(e) {
         _s._wD('HTML5::end: '+_t.sID);
         _t._onfinish();
       }, false);
 
-      _t.__element.addEventListener('error', function(e) {
+      _add('error', function(e) {
         if (_t.__element) {
           _s._wD('HTML5::error: '+_t.__element.error.code);
           // call load with error state?
@@ -2286,30 +2223,27 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
         }
       }, false);
 
-      _t.__element.addEventListener('empty', function(e) {
-        _s._wD('HTML5::empty');
-      }, false);
-
-      _t.__element.addEventListener('loadstart', function(e) {
+      _add('loadstart', function(e) {
         _s._wD('HTML5::loadstart: '+_t.sID);
         // assume buffering at first
         _t._onbufferchange(1);
       }, false);
 
-      _t.__element.addEventListener('play', function(e) {
+      _add('play', function(e) {
         _s._wD('HTML5::play: '+_t.sID);
         // once play starts, no buffering
         _t._onbufferchange(0);
       }, false);
 
-// TODO: See if this is actually implemented anywhere.
-      _t.__element.addEventListener('playing', function(e) {
+      // TODO: See if this is actually implemented anywhere.
+      _add('playing', function(e) {
         _s._wD('HTML5::playing: '+_t.sID);
         // once play starts, no buffering
         _t._onbufferchange(0);
       }, false);
 
 
+// TODO: verify support, consider use vs. poll-based interval
 /*
       _t.__element.addEventListener('timeupdate', function(e) {
         // timeupdate
@@ -2317,17 +2251,16 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
       }, false);
 */
 
-      // Shitty bug in safari that calls ended prematurely, so wait a little bit before attaching
+      // avoid stupid premature event-firing bug in Safari(?)
       setTimeout(function(){
         if (_t && _t.__element) {
-          _t.__element.addEventListener('ended',function(e) {
+          _add('ended',function(e) {
             _s._wD('HTML5::ended: '+_t.sID);
             _t._onfinish();
           }, false);
         }
       }, 250);
 
-      _s._wD('_add_html5_events(): OK');
     };
 
     // --- "private" methods called by Flash ---
@@ -2571,26 +2504,12 @@ _s._wD('TODO: WARNING: Double-play case? playState = 1');
         // iterate through all mime types, return any successes
         for (i=0, j=m.length; i<j && !isOK; i++) {
           if (_s.html5[m[i]] || a.canPlayType(m[i]).match(_s.html5Test)) {
-			if (typeof window.console !== 'undefined' && console.log) {
-				// dev: remove later
-				console.log('canPlay test: '+m[i]+' (OK)');
-			}
             isOK = true;
             _s.html5[m[i]] = true;
-          } else {
-			// base64 test didn't work; not definitive, eg. a real MP3 file might play when base64 doesn't.
-			// dev: remove later
-			if (typeof window.console !== 'undefined' && console.log) {
-				console.log('canPlay test: Ignoring false-y response for '+m[i]+' = \''+a.canPlayType(m[i])+'\'');
-			}
-		  }
+          }
         }
         return isOK;
       } else {
-if (typeof window.console !== 'undefined' && console.log) {
-	// dev: remove later
-	console.log('canPlay test: checking single mime: '+m);
-}
         canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m) : false);
         return (canPlay && (canPlay.match(_s.html5Test)?true:false));
       }
@@ -2637,27 +2556,20 @@ if (typeof window.console !== 'undefined' && console.log) {
 
         a.addEventListener('canplaythrough', function(e) {
           // sound loaded, supported (can be played)
-// DEV - remove later
-if (typeof window.console !== 'undefined' && console.log) {
-          console.log('data/base64: Audio()::canplaythrough(), type: '+sType);
-}
+          // _s._wD('data/base64: Audio()::canplaythrough(), type: '+sType);
           handler(true, e);
           a = null;
         }, false);
 
         a.addEventListener('error', function(e) {
           // MEDIA_ERR_SRC_NOT_SUPPORTED = 4
-          // console.log('error: '+this.error||e);
-// DEV - remove later
-if (typeof window.console !== 'undefined' && console.log) {
-          console.log('data/base64: Audio()::error(), code: '+this.error.code+', type: '+sType+' (may be false positive, ignoring)');
-}
+          // ignore base64: fail, may be a false positive.
           handler(false, this.error?this.error:e);
           a = null;
         }, false);
 
         setTimeout(function(){
-          // timeout for Safari 4.0.5, as creating Audio() + trying to load right away fails in Safari for some reason?
+          // timeout for Safari (4.0.5?), new Audio() + .load() right away will often fail?
           if (a) {
             a.src = base64[sType];
             a.load();
@@ -2673,30 +2585,18 @@ if (typeof window.console !== 'undefined' && console.log) {
       ogg: _cp('audio/ogg; codecs="vorbis"')
     });
 
-if (typeof window.console !== 'undefined' && console.log) {
-  // DEV - remove later
-  console.log('Initial HTML5 canPlayType() tests: MP3: '+_s.html5.mp3+' AAC: '+_s.html5.aac+', OGG: '+_s.html5.ogg);
-}
-
     _testBase64('mp3', function(isOK) {
-      // console.log('HTML5 MP3: '+isOK);
       if (isOK) {
         _s.html5.mp3 = isOK;
-      } else {
-        // console.log('mp3 failed, trying mpeg');
-        _testBase64('mpeg', function(isMPEGOK) {
-          // console.log('mpeg result: '+isMPEGOK);
-          if (isMPEGOK) {
-            _s.html5.mp3 = isMPEGOK;
-          }
-        });
       }
     });
 
     _testBase64('wav', function(isOK) {
       _s.html5.wav = isOK;
     });
+
   }());
+
   } else {
     // no HTML 5
   }
