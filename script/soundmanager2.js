@@ -35,7 +35,7 @@ function SoundManager(smURL, smID) {
   this.allowFullScreen = true;       // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
-  this.useHTML5Audio = true;         // EXPERIMENTAL IN-PROGRESS feature: Use HTML 5 <audio> / new Audio() where API is supported (Safari, Chrome), Firefox (but no MP3/MP4 as of April 2010.) Ideally, will be transparent vs. Flash API where possible.
+  this.useHTML5Audio = true;         // EXPERIMENTAL IN-PROGRESS feature: Use HTML 5 Audio() where API is supported (most Safari, Chrome versions), Firefox (but no MP3/MP4 as of April 2010.) Ideally, will be transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio() canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
 
   this.requiredFormats = {
@@ -993,7 +993,7 @@ function SoundManager(smURL, smID) {
     oEmbed, oMovie, oTarget, tmp, movieHTML, oEl, extraClass, s, x, sClass, side = '100%';
     smID = (typeof smID === 'undefined'?_s.id:smID);
     function _initMsg() {
-      _s._wD('-- SoundManager 2 ' + _s.version + (_s.useHTML5Audio && _s.hasHTML5?', HTML5 audio supported':'no HTML5 audio support') + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
+      _s._wD('-- SoundManager 2 ' + _s.version + (_s.useHTML5Audio && _s.hasHTML5?', HTML5 audio supported':', no HTML5 audio support') + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
     }
     if (_html5Only) {
       _setVersionInfo();
@@ -1216,9 +1216,6 @@ function SoundManager(smURL, smID) {
   _initMovie = function() {
     if (_s.debugURLParam.test(window.location.href.toString())) {
       _s.debugMode = true; // allow force of debug mode via URL
-    }
-    if (_s.hasHTML5) {
-      _s._wD('-- SoundManager 2: Initial HTML5 support tests: MP3: '+_s.html5.mp3+' AAC: '+_s.html5.aac+', OGG: '+_s.html5.ogg+ ' --');
     }
     if (_html5Only) {
       _initDebug();
@@ -1522,6 +1519,10 @@ function SoundManager(smURL, smID) {
       } else if (window.detachEvent) {
         window.detachEvent('onload', _s.beginDelayedInit);
       }
+    }
+
+    if (_s.hasHTML5) {
+      _s._wD('-- SoundManager 2: Initial HTML5 support tests: MP3: '+_s.html5.mp3+' AAC: '+_s.html5.aac+', OGG: '+_s.html5.ogg+ ' --');
     }
 
     if (_html5Only) {
@@ -1905,7 +1906,9 @@ function SoundManager(smURL, smID) {
     this.stop = function(bAll) {
       if (_t.playState === 1) {
         _t._onbufferchange(0);
-        _t.playState = 0;
+        if (!_t.useHTML5) {
+          _t.playState = 0;
+        }
         _t.paused = false;
         // if (_s.defaultOptions.onstop) _s.defaultOptions.onstop.apply(_s);
         if (_t._iO.onstop) {
@@ -1915,8 +1918,9 @@ function SoundManager(smURL, smID) {
           _s.o._stop(_t.sID, bAll);
         } else {
           if (_t.__element) {
-            _t.__element.pause(); // html5 has no stop()
             _t.setPosition(0); // act like Flash, though
+            _t.__element.pause(); // html5 has no stop()
+            _t.playState = 0;
             _onTimer(); // and update UI
             _stop_html5_timer();
           }
