@@ -57,10 +57,16 @@ if (!navigator.userAgent.match(/msie 6/i)) {
 	soundManager.onerror = function() {
 	  // failed to load
 	  var o = _id('sm2-support');
+	  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>'+(soundManager.hasHTML5?'The flash (required for this browser) portion of ':'')+'SoundManager 2 was unable to start. '+(soundManager.useHTML5Audio?(soundManager.hasHTML5?'</p><p>Partial HTML5 Audio() is present, but support for MP3 and/or MP4 are missing.':'<br>(No HTML5 Audio() support found, either.)'):'')+'<br>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it should be visible above.</p><p id="flash-offline">'+(!soundManager._overHTTP?'<b>Viewing offline</b>? You may need to change a Flash security setting.':'Other possible causes: Missing .SWF, or no Flash?')+' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot">Troubleshooting</a></p></div>';
+	  var hatesFlash = (navigator.userAgent.match(/(ipad|iphone)/i));
 	  o.innerHTML = smLoadFailWarning;
-	  if (soundManager.getMoviePercent()) {
+	  if (hatesFlash || soundManager.getMoviePercent()) {
 	    // movie loaded at least somewhat, so don't show flashblock things
 		_id('flashblocker').style.display = 'none';
+		if (hatesFlash) {
+		  // none of that here.
+		  _id('flash-offline').style.display = 'none';
+		}
 	  }
       o.style.marginBottom = '1.5em';
 	  o.style.display = 'block';
