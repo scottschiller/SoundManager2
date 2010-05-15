@@ -152,6 +152,7 @@ wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HT
 allowFullScreen = true;    <span>// enter full-screen (via double-click on movie) for flash 9+ video</span>
 allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed prop.), 'always' or 'sameDomain'</span>
 useFlashBlock = true;      <span>// better handling of SWF if load fails, let user unblock. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span>
+useHTML5Audio = false;     <span>// EXPERIMENTAL IN-PROGRESS feature: Use HTML5 Audio() where supported.</span>
 </span></code></pre>
 			  <p>To modify global SoundManager default paramaters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
@@ -243,7 +244,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		  </div>
 		
 		  <div class="f-block f-useflashblock">
-			<h4 id="soundmanager-useflashblock" title="New feature" class="new">soundManager.useFlashBlock</h4>
+			<h4 id="soundmanager-useflashblock" title="Recently-added feature" class="recent">soundManager.useFlashBlock</h4>
 			<p>Flash blockers (eg. FlashBlock, "Click To Flash") can prevent the flash portion of SM2 from loading, which will cause a start-up error with a time-out.</p>
 			<p>SM2 historically has kept the flash movie off-screen and out of view, and thus the user could not click on and unblock it. Now with <code>useFlashBlock = true</code>, the movie positioning can be handled by CSS. The initial state is still off-screen by default, but will change to be in view when a blocking (time-out) situation may be encountered. You can also edit the CSS to taste, of course.</p>
 			<p>When starting up, CSS classes are appended to the <code>#sm2-container</code> DIV (which you can provide, or SM2 will create and append to the document.) The CSS classes change with the state of SM2's start-up, eg. <code>#sm2-container.swf_timedout { border:1px solid red; }</code> could be used to highlight the movie to the user for unblocking and so on.</p>
@@ -277,7 +278,23 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 			<p>For a live example, see the <a href="../demo/flashblock/">FlashBlock Demo</a>.</p>
 		  </div>
-		
+
+		  <div class="f-block f-usehtml5audio">
+			<h4 id="soundmanager-usehtml5audio">soundManager.useHTML5Audio</h4>
+			<p><em><b style="color:#993333">Warning:</b> Experimental, in-progress feature; subject to bugs, API changes etc. By default, special check to enable feature for Apple iPad (which does not support Flash), but otherwise disabled by default.</em></p>
+			<p>Determines whether HTML5 Audio() support is used to play sound, if available, with Flash as the fallback for playing MP3/MP4 (AAC) formats. Browser support for HTML5 Audio varies, and format support (eg. MP3, MP4/AAC, OGG, WAV) can vary by browser/platform.</p>
+			<p>Ideally the SM2 API is seamless, identical and tranparent whether using Flash or HTML5 Audio() for sound playback. The HTML5 Audio API is roughly equivalent to the Flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available.)</p>
+			<h5>SoundManager 2 + useHTML5Audio: Init Process</h5>
+			<p>At DOM ready (if useHTML5Audio = true), a test for Audio() is done followed by a series of canPlayType() tests to see if MP3, MP4, WAV and OGG formats are supported. If none of the "required" formats (MP3 + MP4, by default) are supported natively, then Flash is also added as a requirement for SM2 to start.</p>
+			<p><code>soundManager.audioFormats</code> currently defines the list of formats to check (MP3, MP4 and so on), their possible canPlayType() strings (long story short, it's complicated) and whether or not they are "required" - that is, whether Flash should be loaded if they don't work under HTML5. (Again, only MP3 + MP4 are supported by Flash.) If you had a page solely using OGG, you could make MP3/MP4 non-required, but many browsers would not play them inline.</p>
+			<p>SM2 will indicate its state (HTML 5 support or not, using Flash or not) in console.log()-style debug output messages when <code>debugMode = true</code>.</p>
+			<h5>Apple iPad, iPhone: Special Cases</h5>
+			<p>The "big iPhone" doesn't do Flash, and does support HTML5 Audio() pretty decently - so SM2 makes a special exception to enable useHTML5Audio when it detects an iPad user agent string. Feel free to disable this if you wish.</p>
+			<p>The iPhone OS &lt;= 3.1 doesn't work, but 3.1 (possibly earlier versions) do have a native Audio() object. However, they seem to simply not play sound when play() is called, so SM2 looks for and ignores the iPad with these OS revisions.</p>
+			<h5>General Disclaimer</h5>
+			<p>HTML5 audio support may still be in flux, and may not be fully-supported or implemented consistently in modern browsers. Be careful out there.</p>
+		  </div>
+
 		  <div class="f-block f-wmode">
 			<h4 id="soundmanager-wmode">soundManager.wmode</h4>
 			<p>The <code>wmode</code> property is applied directly to the flash movie, and can be either <code>null</code>, <code>'window'</code>, <code>'transparent'</code> or <code>'opaque'</code>. By default if <code>useHighPerformance</code> is enabled, transparency will be attempted by SM2 unless there are known issues with the rendering mode.</p>
@@ -1367,7 +1384,7 @@ soundManager.movieStarOptions = {<span>
 
 	 <li>allowPolling</li>
 	 <li class="flash9" title="Flash 9.0.r115+ only">allowFullScreen</li>
-	 <li class="recent" title="Recently-added property">allowScriptAccess</li>
+	 <li>allowScriptAccess</li>
      <li><a href="#soundmanager-alturl">altURL</a></li>
 	 <li>consoleOnly</li>
 	 <li class="recent" title="Recently-added feature"><a href="#soundmanager-debugflash">debugFlash</a></li>
@@ -1376,7 +1393,7 @@ soundManager.movieStarOptions = {<span>
 	 <li class="flash9" title="Flash 9-only"><a href="#sound-properties-flash9">flash9Options</a></li>
 
      <li><a href="#soundmanager-features">features</a></li>
-     <li class="recent" title="Recently-added feature"><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
+     <li><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
      <li><a href="#soundmanager-flashversion">flashVersion</a></li>
      <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-allowfullscreen">isFullScreen</a></li>
      <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
@@ -1384,8 +1401,9 @@ soundManager.movieStarOptions = {<span>
 	 <li><a href="#soundmanager-url">url</a></li>
 	 <li>useConsole</li>
 	 <li class="flash9 recent" title="Recently-added feature, Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
-     <li class="new" title="New feature"><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
+     <li class="recent" title="Recently-added feature"><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
 	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
+     <li class="new" title="New, experimental in-progress feature">useHTML5Audio</li>
      <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
 	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>
 	 <li>waitForWindowLoad</li>
@@ -1394,8 +1412,8 @@ soundManager.movieStarOptions = {<span>
     <h4>Methods</h4>
 
     <ul>
-	 <li class="new"><a href="#soundmanager-canplaylink" title="New feature">canPlayLink()</a></li>
-	 <li class="new"><a href="#soundmanager-canplaymime" title="New feature">canPlayMIME()</a></li>
+	 <li class="recent"><a href="#soundmanager-canplaylink" title="Recently-added feature">canPlayLink()</a></li>
+	 <li class="recent"><a href="#soundmanager-canplaymime" title="Recently-added feature">canPlayMIME()</a></li>
      <li><a href="#soundmanager-canplayurl">canPlayURL()</a></li>
      <li><a href="#soundmanager-createsound">createSound()</a></li>
 	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-createvideo">createVideo()</a></li>
@@ -1409,7 +1427,7 @@ soundManager.movieStarOptions = {<span>
      <li><a href="#soundmanager-pause">pause()</a></li>
      <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
      <li><a href="#soundmanager-play">play()</a></li>
-     <li class="recent" title="Recently-added feature"><a href="#soundmanager-reboot">reboot()</a></li>
+     <li><a href="#soundmanager-reboot">reboot()</a></li>
      <li><a href="#soundmanager-resume">resume()</a></li>
 
   	 <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
@@ -1429,7 +1447,7 @@ soundManager.movieStarOptions = {<span>
     <h4>Events</h4>
     <ul>
      <li><a href="#soundmanager-onerror">onerror()</a></li>
-     <li class="recent" title="Recently-added feature"><a href="#soundmanager-oninitmovie">oninitmovie()</a></li>
+     <li><a href="#soundmanager-oninitmovie">oninitmovie()</a></li>
      <li><a href="#soundmanager-onload">onload()</a></li>
      <li class="recent" title="Recently-added feature"><a href="#soundmanager-onready">onready()</a></li>
     </ul>
@@ -1448,7 +1466,7 @@ soundManager.movieStarOptions = {<span>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
      <li>multiShot</li>
-     <li class="flash9 recent" title="Flash 9-only, recently-added feature">multiShotEvents</li>
+     <li>multiShotEvents</li>
      <li>onbeforefinishtime</li>
      <li>onjustbeforefinishtime</li>
      <li>pan</li>
