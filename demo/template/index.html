@@ -58,6 +58,8 @@ soundManager.onload = function() {
 
 soundManager.url = '<em><em>/path/to/sm2-flash-movies/</em></em>'; <span>// directory where SM2 .SWFs live</span>
 
+soundManager.useHTML5Audio = false; <span>// Experimental HTML5 audio support (works on iPad), flash-free sound for Safari + Chrome. Enable if you want to try it!</span>
+
 soundManager.useFlashBlock = false; <span>// skip for now. See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="if (!document.domain) this.href=this.href+'index.html'">flashblock demo</a> when you want to start getting fancy.</span>
 
 <span>// Note that SoundManager will determine and append the appropriate .SWF file to the URL.</span>

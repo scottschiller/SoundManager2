@@ -41,7 +41,12 @@ h3 {
 
 h4 {
  margin:1.5em 0px 0.5em 0px;
- font-size:1.1em;
+ font-size:1.15em;
+}
+
+h5 {
+ font-size:1em;
+ color:#666;
 }
 
 em em {
@@ -1120,6 +1125,55 @@ a.cta-more:hover {
  background-position:0px 0px;
 }
 
+#lastfm {
+ position:relative;
+ display:block;
+ width:80px;
+ height:28px;
+ margin:1em 0px 0px 0px;
+ padding:0px;
+ overflow:hidden;
+ background:transparent url(../demo/_image/lastfm.png) no-repeat 0px -28px;
+}
+
+#lastfm span {
+ position:absolute;
+ text-indent:-9999em;
+}
+
+#lastfm:hover {
+ background-position:0px 0px;
+}
+
+li.html5support span {
+ padding:0px 5px;
+ display:inline-block;
+ text-align:center;
+ font-weight:bold;
+ background:#ccc;
+ color:#fff;
+ -moz-border-radius:5px;
+ -webkit-border-radius:5px;
+ border-radius:5px;
+ margin-left:0.5em;
+}
+
+li.html5support span.true {
+ background:#669966;
+}
+
+li.html5support span.partial {
+ background:#336699;
+}
+
+li.html5support em.partial {
+ color:#336699;
+}
+
+li.html5support em.true {
+ color:#669966;
+}
+
 #nav ul li ul {
  /* eh, why not. */
  -moz-box-shadow:2px 2px 2px rgba(51,153,204,0.2);
@@ -1181,8 +1235,14 @@ a.feature:hover {
  padding:0px;
 }
 
+/*
 .inthewild {
  text-align:center;
+}
+*/
+
+.inthewild {
+ margin-top:1em;
 }
 
 .inthewild a,
