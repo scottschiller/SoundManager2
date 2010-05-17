@@ -39,21 +39,17 @@ function SoundManager(smURL, smID) {
   this.useHTML5Audio = false;        // EXPERIMENTAL IN-PROGRESS feature: Use HTML 5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio() canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
 
-  if (navigator.userAgent.match(/(ipad|iphone)/i)) {
-    // might as well force it, given infamous lack of flash support. :D
-    this.useHTML5Audio = true;
-  }
-
   this.audioFormats = {
-    // determines whether HTML 5 alone is OK, or Flash is also needed to play MP3 + AAC.
-    // eg. if MP3 required, Flash is used if no HTML 5 support
-    // take shotgun approach to testing types, lots of browser variance
+    // determines HTML5 support, flash requirements
+    // eg. if MP3 or MP4 required, Flash fallback is used if HTML5 can't play it
+    // shotgun approach to MIME testing due to browser variance
     'mp3': {
-      type: ['audio/mpeg; codecs="mp3"','audio/mpeg','audio/mp3','audio/mpeg3'],
+      type: ['audio/mpeg; codecs="mp3"','audio/mpeg','audio/mp3','audio/MPA','audio/mpa-robust'],
       required: true
     }, 
-    'aac': {
-      type: ['audio/mp4; codecs="mp4a.40.2"','audio/aac','audio/x-m4a'],
+    'mp4': {
+      related: ['aac','m4a'], // unless I'm mistaken, AAC + M4A are under the MPEG4 umbrella.
+      type: ['audio/mp4; codecs="mp4a.40.2"','audio/aac','audio/x-m4a','audio/MP4A-LATM','audio/mpeg4-generic'],
       required: true
     },
     'ogg': {
@@ -61,12 +57,12 @@ function SoundManager(smURL, smID) {
       required: false
     },
     'wav': {
-      type: ['audio/wav; codecs="1"','audio/wav','audio/x-wav'],
+      type: ['audio/wav; codecs="1"','audio/wav','audio/wave','audio/x-wav'],
       required: false
     }
   };
 
-  if (this.audioFormats.aac.required) {
+  if (this.audioFormats.mp4.required) {
     this.flashVersion = 9;
   }
 
@@ -110,6 +106,16 @@ function SoundManager(smURL, smID) {
     'useVideo': false,      // if loading movieStar content, whether to show video
     'bufferTime': 3         // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try increasing.)
   };
+
+  // Temporary feature: allow HTML5 enabling via URL
+  // <d>
+  if (window.location.href.toString().indexOf('#sm2-usehtml5audio=1') !==-1 && !this.useHTML5Audio) {
+    if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+      console.log('Enabling useHTML5Audio via URL parameter');
+    }
+    this.useHTML5Audio = true;
+  }
+  // </d>
 
   this.version = null;
   this.versionNumber = 'V2.95b.20100323+DEV';
@@ -175,14 +181,17 @@ function SoundManager(smURL, smID) {
     'noLocal': null
   };
 
-  this.hasHTML5 = null; // will reflect actual browser support
-  this.html5 = {}; // hash for canPlayType() etc.
-  // this.hasFlash = null; // likewise, determined
+  this.hasHTML5 = null; // switch for handling logic
+  this.html5 = {}; // stores canPlayType() results, etc.
+  this.ignoreFlash = false; // used for special cases (eg. iPad/iPhone/palm OS?)
 
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _html5Ext, _isMobile = _ua.match(/mobile/i), _isiPad = _ua.match(/ipad/i), _dcIE, _testHTML5,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
+  _is_pre = navigator.userAgent.match(/pre\//i),
+  _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
+  _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
   _overHTTP = (document.location?document.location.protocol.match(/http/i):null),
   _isFocused = (typeof document.hasFocus !== 'undefined'?document.hasFocus():null),
@@ -190,6 +199,17 @@ function SoundManager(smURL, smID) {
   _okToDisable = !_tryInitOnFocus;
 
   this.useAltURL = !_overHTTP; // use altURL if not "online"
+
+  if (_iPadOrPhone || _is_pre) {
+    // might as well force it on Apple + Palm, flash support unlikely
+    this.useHTML5Audio = true;
+    this.ignoreFlash = true;
+  }
+
+  if (_is_pre) {
+    // less-strict canPlayType() checking for Palm Pre.
+    this.html5Test = /^(probably|maybe)$/i;
+  }
 
   // --- public API methods ---
 
@@ -750,12 +770,15 @@ function SoundManager(smURL, smID) {
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
-    var result, mime, fileExt, item;
+    var result, mime, fileExt, item, aF = _s.audioFormats;
     if (!_html5Ext) {
       _html5Ext = [];
-      for (item in _s.audioFormats) {
-        if (_s.audioFormats.hasOwnProperty(item)) {
+      for (item in aF) {
+        if (aF.hasOwnProperty(item)) {
           _html5Ext.push(item);
+          if (aF[item].related) {
+            _html5Ext = _html5Ext.concat(aF[item].related);
+          }
         }
       }
       _html5Ext = new RegExp('\\.('+_html5Ext.join('|')+')','i');
@@ -798,7 +821,7 @@ function SoundManager(smURL, smID) {
       mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
       wav: 'data:audio/wave;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAD//w=='
     },
-    testsQueued = 0, testsDone = 0, base64_results = {}, item, support = {};
+    testsQueued = 0, testsDone = 0, base64_results = {}, item, support = {}, aF, i;
 
     function _cp(m) {
       var canPlay, i, j, isOK = false;
@@ -881,11 +904,19 @@ function SoundManager(smURL, smID) {
     }
 
     // test all registered formats + codecs
-    for (item in _s.audioFormats) {
-      if (_s.audioFormats.hasOwnProperty(item)) {
-        support[item] = _cp(_s.audioFormats[item].type);
+    aF = _s.audioFormats;
+    for (item in aF) {
+      if (aF.hasOwnProperty(item)) {
+        support[item] = _cp(aF[item].type);
+        // assign result to related formats, too
+        if (aF[item] && aF[item].related) {
+          for (i=0; i<aF[item].related.length; i++) {
+            _s.html5[aF[item].related[i]] = support[item];
+          }
+        }
       }
     }
+
     support.canPlayType = (a?_cp:null);
 
     _s.html5 = _mergeObjects(_s.html5, support);
@@ -1652,6 +1683,10 @@ function SoundManager(smURL, smID) {
         }
       }
     }
+    // sanity check..
+    if (_s.ignoreFlash) {
+      needsFlash = false;
+    }
     _html5Only = (_s.useHTML5Audio && _s.hasHTML5 && !needsFlash);
     return needsFlash;
   };
@@ -1744,26 +1779,9 @@ function SoundManager(smURL, smID) {
     }
   };
 
-  _onTimer = function() {
-    var i, timerCount = 0, oS = null;
-    for (i=_s.soundIDs.length; i--;) {
-      oS = _s.sounds[_s.soundIDs[i]];
-      timerCount += (oS._onTimer() === true?1:0);
-    }
-    if (!timerCount) {
-      window.clearInterval(_smTimer);
-      _smTimer = null;
-    }
-  };
-
   _startTimer = function(oSound) {
     if (!oSound._hasTimer) {
       oSound._hasTimer = true;
-    }
-    if (!_smTimer) {
-      var i = _isMobile && !_isiPad?500:(_s.useFastPolling?(_isiPad?100:33):100);
-      // start timer. attempt being nice to mobile devices, iPad etc. iPad gets ~10fps under fast polling, though.
-      _smTimer = window.setInterval(_onTimer, i); // ~30 fps or 10 fps
     }
   };
 
@@ -2077,8 +2095,10 @@ function SoundManager(smURL, smID) {
             _t.setPosition(0); // act like Flash, though
             _t.__element.pause(); // html5 has no stop()
             _t.playState = 0;
-            _onTimer(); // and update UI
+            _t._onTimer(); // and update UI
             _stop_html5_timer();
+            _t.unload();
+            _t.__element = null;
           }
         }
         _t.instanceCount = 0;
@@ -2091,7 +2111,7 @@ function SoundManager(smURL, smID) {
       if (typeof nMsecOffset === 'undefined') {
         nMsecOffset = 0;
       }
-      var offset = Math.min(_t.duration, Math.max(nMsecOffset, 0)); // position >= 0 and <= current available (loaded) duration
+      var offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
       _t._iO.position = offset;
 /*
       if (!bNoDebug) {
@@ -2115,7 +2135,7 @@ function SoundManager(smURL, smID) {
           _s._wD('HTML 5 warning: cannot set position while playState == 0 (not playing)',2);
         }
         if (_t.paused) { // if paused, refresh UI right away
-          _onTimer(true); // force update
+          _t._onTimer(true); // force update
         }
       }
     };
@@ -2316,8 +2336,8 @@ function SoundManager(smURL, smID) {
     this._setup_html5 = function(oOptions) {
       var _iO = _mergeObjects(_t._iO, oOptions);
       if (_t.__element) {
-        if (decodeURI(_t.__element.src) !== decodeURI(_iO.url)) {
-          _s._wD('SETUP_HTML5: SETTING NEW URL on EXISTING object: '+decodeURI(_iO.url));
+        if (_t.url !== _iO.url) {
+          _s._wD('::setup_html5: Setting new URL on existing object: '+decodeURI(_iO.url));
           _t.__element.src = _iO.url;
         }
         return _t.__element;
@@ -2408,12 +2428,11 @@ function SoundManager(smURL, smID) {
 
 
 // TODO: verify support, consider use vs. poll-based interval
-/*
       _t.__element.addEventListener('timeupdate', function(e) {
         // timeupdate
-        _// t._whileplaying(); ?
+        // t._whileplaying(); ?
+        _t._onTimer();
       }, false);
-*/
 
       // avoid stupid premature event-firing bug in Safari(?)
       setTimeout(function(){
@@ -2590,6 +2609,10 @@ function SoundManager(smURL, smID) {
             _t._iO.onfinish.apply(_t);
           }
         }
+        if (_t.isHTML5) {
+          _t.unload();
+          _t.__element = null;
+        }
       }
     };
 
@@ -2683,7 +2706,7 @@ function SoundManager(smURL, smID) {
 
   if (document.readyState === 'complete') {
     setTimeout(_dcLoaded,100);
-  } 
+  }
 
 } // SoundManager()
 
