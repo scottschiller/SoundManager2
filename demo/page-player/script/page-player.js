@@ -446,7 +446,7 @@ var count = 0;
   }
 
   this.getTheDamnTarget = function(e) {
-    return (e.target||e.srcElement||window.event.srcElement);
+    return (e.target||(window.event?window.event.srcElement:null));
   }
   
   this.withinStatusBar = function(o) {
@@ -460,6 +460,9 @@ var count = 0;
       return (pl.config.allowRightClick); // ignore right-clicks
     }
     var o = self.getTheDamnTarget(e);
+    if (!o) {
+      return true;
+    }
     if (self.dragActive) self.stopDrag(); // to be safe
     if (self.withinStatusBar(o)) {
       // self.handleStatusClick(e);
@@ -563,6 +566,9 @@ var count = 0;
       return (pl.config.allowRightClick); // ignore right-clicks
     }
     var o = self.getTheDamnTarget(e);
+    if (!o) {
+      return true;
+    }
     if (!self.withinStatusBar(o)) return true;
     self.dragActive = true;
     self.lastSound.pause();
@@ -631,6 +637,9 @@ var count = 0;
   this.setPosition = function(e) {
     // called from slider control
     var oThis = self.getTheDamnTarget(e);
+    if (!oThis) {
+      return true;
+    }
     var oControl = oThis;
     while (!self.hasClass(oControl,'controls') && oControl.parentNode) {
       oControl = oControl.parentNode;
