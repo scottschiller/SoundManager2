@@ -134,7 +134,12 @@ soundManager.onready(function(oStatus) {
 
 function checkRAM() {
   if (soundManager.supported()) {
-    document.getElementById('flash-ram-use').innerHTML = (soundManager.getMemoryUse()/1024/1024).toFixed(2)+' MB';
+	var ram = (soundManager.getMemoryUse()/1024/1024).toFixed(2);
+    if (!isNaN(ram)) {
+      document.getElementById('flash-ram-use').innerHTML = ram+' MB';
+    } else {
+	  document.getElementById('flash-ram-use').style.display = 'none';
+    }
   }
 }
 
@@ -161,7 +166,7 @@ function getRandomMP3URL() {
 
  <h1><a href="http://www.schillmania.com/projects/soundmanager2/" style="color:#000;text-decoration:none">SoundManager 2</a> / API Demo and Code Examples</h1>
 
- <p class="note">You can run the API demos with <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency).</p>
+ <p class="note">You can run the API demos with <a href="#sm2-usehtml5audio=1" onclick="window.location.replace(this.href);window.location.reload()">HTML5</a> enabled, <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency).</p>
 
  <p>Wondering where to start? This page has inline executable code examples using the SoundManager 2 API.</p>
 

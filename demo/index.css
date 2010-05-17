@@ -1156,6 +1156,11 @@ li.html5support span {
  -webkit-border-radius:5px;
  border-radius:5px;
  margin-left:0.5em;
+ margin-bottom:0.25em;
+}
+
+li.html5support em {
+ font-weight:bold;
 }
 
 li.html5support span.true {
@@ -1163,11 +1168,11 @@ li.html5support span.true {
 }
 
 li.html5support span.partial {
- background:#336699;
+ background:#993333;
 }
 
 li.html5support em.partial {
- color:#336699;
+ color:#993333;
 }
 
 li.html5support em.true {
@@ -1317,6 +1322,13 @@ ul.playlist li .peak .r {
 
 ul.playlist li .peak .r {
  left:9px;
+}
+
+ul.playlist li a.not-supported {
+ /* give user a hint that the format doesn't work */
+ text-decoration:line-through;
+ color:#666;
+ opacity:0.5;
 }
 
 ul.graphic li {
