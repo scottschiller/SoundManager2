@@ -27,7 +27,6 @@ function SoundManager(smURL, smID) {
   this.allowFullScreen = true;     // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.onfailure = undefined;
-  
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
     'stream': true,                // allows playing before entire file has loaded (recommended)
@@ -40,6 +39,7 @@ function SoundManager(smURL, smID) {
     'onresume': null,              // callback for "resume" (pause toggle)
     'whileplaying': null,          // callback during play (position update)
     'onstop': null,                // callback for "user stop"
+    'onfailure': null,             // callback function for when playing fails
     'onfinish': null,              // callback function for "sound finished playing"
     'onbeforefinish': null,        // callback for "before sound finished playing (at [time])"
     'onbeforefinishtime': 5000,    // offset (milliseconds) before end of sound to trigger beforefinish (eg. 1000 msec = 1 second)
@@ -271,7 +271,7 @@ function SoundManager(smURL, smID) {
       }
     } else {
       var sound = _s.sounds[_tO.id];
-      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes);
+      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes, _tO.autoPlay);
       if (!_tO.serverUrl) {
         // We are connected immediately
         sound.connected = true;
@@ -279,7 +279,6 @@ function SoundManager(smURL, smID) {
           _tO.onconnect.apply(sound);
         }
         if (_tO.autoLoad || _tO.autoPlay) {
-          // TODO: does removing timeout here cause problems?
           if (sound) {
             sound.load(_tO);
           }
@@ -287,12 +286,8 @@ function SoundManager(smURL, smID) {
         if (_tO.autoPlay) {
           sound.play();
         }
-      // The track is paused on load
-      } else if (_tO.autoLoad && !_tO.autoPlay) {
-        sound.paused = true;
-        if (!sound.instanceCount || _s.flashVersion > 8) {
-          sound.instanceCount++;
-        }
+      } else if (_tO.autoLoad && _tO.autoPlay && !sound.instanceCount) {
+        sound.instanceCount++;
       }
     }
     return _s.sounds[_tO.id];
@@ -593,7 +588,7 @@ function SoundManager(smURL, smID) {
     if (!_s._disabled || bNoDisable) {
       _s.disable(bNoDisable);
       if (_s.onfailure !== undefined) {
-        _s.onfailure();  
+        _s.onfailure();
       }
     }
   };
@@ -1210,6 +1205,7 @@ if (_s.debugMode) {
     // assign property defaults (volume, pan etc.)
     this.pan = this.options.pan;
     this.volume = this.options.volume;
+    this.autoPlay = oOptions.autoPlay ? oOptions.autoPlay : false;
     this._lastURL = null;
     this._debug = function() {
       if (_s.debugMode) {
@@ -1273,6 +1269,7 @@ if (_s.debugMode) {
       // dirty hack for now: also have left/right arrays off this, maintain compatibility
       _t.eqData.left = [];
       _t.eqData.right = [];
+      _t.failures = 0;
     };
     _t.resetProperties();
     // --- public methods ---
@@ -1326,6 +1323,8 @@ if (_s.debugMode) {
     };
     this.destruct = function() {
       // kill sound within Flash
+      // Disable the onfailure handler
+      _t._iO.onfailure = undefined;
       _s.o._destroySound(_t.sID);
       _s.destroySound(_t.sID, true); // ensure deletion from controller
     };
@@ -1365,7 +1364,7 @@ if (_s.debugMode) {
         _t.resume();
       } else {
         _t.playState = 1;
-        if (!_t.instanceCount || _s.flashVersion > 8) {
+        if (!_t.instanceCount) {
           _t.instanceCount++;
         }
         _t.position = (typeof _t._iO.position != 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
@@ -1392,6 +1391,14 @@ if (_s.debugMode) {
         // _t.instanceOptions = _t._iO;
       }
     };
+    this.setAutoPlay = function(autoPlay) {
+      _t._iO.autoPlay = autoPlay;
+      _t.autoPlay = autoPlay;
+      _s.o._setAutoPlay(_t.sID, autoPlay);
+      if (autoPlay && !_t.instanceCount) {
+        _t.instanceCount++;
+      }
+    };
     this.setPosition = function(nMsecOffset, bNoDebug) {
       if (typeof nMsecOffset == 'undefined') {
         nMsecOffset = 0;
@@ -1405,12 +1412,14 @@ if (_s.debugMode) {
       }
       _s.o._setPosition(_t.sID, (_s.flashVersion >= 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
     };
-    this.pause = function() {
+    this.pause = function(update_flash) {
       if (_t.paused || (_t.playState === 0 && _t.readyState !== 1)) {
         return false;
       }
       _t.paused = true;
-      _s.o._pause(_t.sID);
+      if (update_flash || update_flash === undefined) {
+        _s.o._pause(_t.sID);
+      }
       if (_t._iO.onpause) {
         _t._iO.onpause.apply(_t);
       }
@@ -1570,6 +1579,7 @@ if (_s.debugMode) {
       bSuccess = (bSuccess == 1?true:false);
       _t.connected = bSuccess;
       if (bSuccess) {
+        _t.failures = 0;
         if (_t._iO.autoLoad || _t._iO.autoPlay) {
           _t.load(_t._iO);
         }
@@ -1613,6 +1623,16 @@ if (_s.debugMode) {
         }
       }
     };
+    // Only fire the onfailure callback once because after one failure
+    // we often get another.  At this point we just recreate failed
+    // sounds rather than trying to reconnect.
+    this._onfailure = function(msg) {
+      _t.failures = _t.failures + 1;
+      if (_t._iO.onfailure && _t.failures == 1) {
+        _t._iO.onfailure(_t, msg);
+      } else {
+      }
+    };
     this._onfinish = function() {
       // sound has finished playing
       // TODO: calling user-defined onfinish() should happen after setPosition(0)
@@ -1633,19 +1653,14 @@ if (_s.debugMode) {
           _t.instanceCount = 0;
           _t.instanceOptions = {};
         }
-        if (!_t.instanceCount || _t._iO.multiShotEvents) {
-          // fire onfinish for last, or every instance
-          if (_t._iO.onfinish) {
-            _t._iO.onfinish.apply(_t);
-          }
+      }
+      // KJV May interfere with multi-shot events, but either way, the
+      // instanceCount is sometimes 0 when it should not be.
+      if (!_t.instanceCount || _t._iO.multiShotEvents) {
+        // fire onfinish for last, or every instance
+        if (_t._iO.onfinish) {
+          _t._iO.onfinish.apply(_t);
         }
-      } else {
-        if (_t.useVideo) {
-          // video has finished
-          // may need to reset position for next play call, "rewind"
-          // _t.setPosition(0);
-        }
-        // _t.setPosition(0);
       }
     };
     this._onmetadata = function(oMetaData) {

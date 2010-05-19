@@ -27,6 +27,7 @@ package {
   import flash.media.Video;
   import flash.net.URLRequest;
   import flash.utils.ByteArray;
+  import flash.utils.getTimer;
   import flash.net.NetConnection;
   import flash.net.NetStream;
 
@@ -92,6 +93,9 @@ package {
     public var oVideo: Video = null;
     public var videoWidth: Number = 0;
     public var videoHeight: Number = 0;
+    public var START_TIME: Number;
+    public var CONNECT_TIME: Number;
+    public var PLAY_TIME: Number;
 
     public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false) {
       this.sm = oSoundManager;
@@ -120,6 +124,7 @@ package {
       }
       setAutoPlay(autoPlay);
 
+      this.START_TIME = getTimer();
       writeDebug('in SoundManager2_SMSound_AS3, got duration '+duration+' and totalBytes '+totalBytes+' autoPlay: '+autoPlay);
 
       if (this.useNetstream) {
@@ -143,6 +148,7 @@ package {
         }
         this.nc.connect(serverUrl);
       } else {
+        this.CONNECT_TIME = this.START_TIME;
         this.connected = true;
       }
     }
@@ -174,6 +180,8 @@ package {
               this.oVideo.height = this.sm.stage.stageHeight;
             }
             this.connected = true;
+            this.CONNECT_TIME = getTimer();
+            writeDebug('connected in '+ Math.round(this.CONNECT_TIME - this.START_TIME) + ' ms');
             ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
           } catch(e: Error) {
             this.failed = true;

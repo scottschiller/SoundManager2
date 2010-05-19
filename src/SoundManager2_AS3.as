@@ -24,6 +24,7 @@ package {
   import flash.media.SoundMixer;
   import flash.utils.setInterval;
   import flash.utils.clearInterval;
+  import flash.utils.getTimer;
   import flash.utils.Dictionary;
   import flash.utils.Timer;
   import flash.net.URLLoader;
@@ -558,6 +559,12 @@ package {
           stage.displayState = StageDisplayState.NORMAL;
         }
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
+
+        // First time buffer has filled.  Print debugging output.
+        if (!oSound.PLAY_TIME) {
+          oSound.PLAY_TIME = getTimer();
+          writeDebug('play took '+ Math.round(oSound.PLAY_TIME - oSound.CONNECT_TIME) +' since connection and '+  Math.round(oSound.PLAY_TIME - oSound.START_TIME) +' since initialization');
+        }
 
         // We wait for the buffer to fill up before pausing the just-loaded song because only if the
         // buffer is full will the song continue to buffer until the user hits play.
