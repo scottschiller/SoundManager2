@@ -35,7 +35,7 @@ function SoundManager(smURL, smID) {
   this.wmode = null;                 // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowFullScreen = true;       // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
-  this.useFlashBlock = false;        // allow showing of SWF + recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
+  this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = false;        // EXPERIMENTAL IN-PROGRESS feature: Use HTML 5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio() canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
 
@@ -48,12 +48,12 @@ function SoundManager(smURL, smID) {
       required: true
     }, 
     'mp4': {
-      related: ['aac','m4a'], // unless I'm mistaken, AAC + M4A are under the MPEG4 umbrella.
+      related: ['aac','m4a'], // additional formats under the MP4 container.
       type: ['audio/mp4; codecs="mp4a.40.2"','audio/aac','audio/x-m4a','audio/MP4A-LATM','audio/mpeg4-generic'],
       required: true
     },
     'ogg': {
-      type: ['audio/ogg; codecs="vorbis"'],
+      type: ['audio/ogg; codecs=vorbis'],
       required: false
     },
     'wav': {
@@ -266,9 +266,7 @@ function SoundManager(smURL, smID) {
     if (_html5CanPlay(_tO.url)) {
       oSound = make();
       _s._wD('Loading sound '+_tO.id+' from HTML5');
-      oSound._setup_html5({
-        url: _tO.url
-      });
+      oSound._setup_html5(_tO);
     } else {
       if (_s.flashVersion > 8 && _s.useMovieStar) {
         if (_tO.isMovieStar === null) {
@@ -277,9 +275,14 @@ function SoundManager(smURL, smID) {
         if (_tO.isMovieStar) {
           _s._wD(_cs + 'using MovieStar handling');
         }
-        if (_tO.isMovieStar && _tO.usePeakData) {
-          _wDS('noPeak');
-          _tO.usePeakData = false;
+        if (_tO.isMovieStar) {
+          if (_tO.usePeakData) {
+            _wDS('noPeak');
+            _tO.usePeakData = false;
+          }
+          if (_tO.loops > 1) {
+            _wDS('noNSLoop');
+          }
         }
       }
       oSound = make();
@@ -880,7 +883,12 @@ function SoundManager(smURL, smID) {
         onComplete(base64_results[sType]);
       } else {
         // TODO: Ensure that empty constructor (with no URL) is OK everywhere
-        a = new Audio(); // '' or 'about:blank' means media errors, so don't use this.
+        a = new Audio(test_uris[sType]); // '' or 'about:blank' may mean media errors, so don't use this.
+
+        a.addEventListener('canplay', function(e) {
+          handler(true, e);
+          a = null;
+        }, false);
 
         a.addEventListener('canplaythrough', function(e) {
           handler(true, e);
@@ -893,13 +901,13 @@ function SoundManager(smURL, smID) {
           a = null;
         }, false);
 
-        setTimeout(function(){
-          // timeout for Safari (4.0.5?), new Audio() + .load() right away will often fail?
-          if (a) {
-            a.src = test_uris[sType];
-            a.load();
-          }
-        },(_s.isSafari?500:1));
+        a.addEventListener('stalled', function(e) {
+          handler(false, e);
+          a = null;
+        }, false);
+
+        // a.src = test_uris[sType];
+        a.load();
       }
     }
 
@@ -979,7 +987,8 @@ function SoundManager(smURL, smID) {
     manURL: 'SMSound.load(): Using manually-assigned URL',
     onURL: _sm + '.load(): current URL already assigned.',
     badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.',
-    as2loop: 'Note: Setting stream:false so looping can work (flash 8 limitation)'
+    as2loop: 'Note: Setting stream:false so looping can work (flash 8 limitation)',
+    noNSLoop: 'Note: Looping not implemented for MovieStar formats'
   };
 
   _id = function(sID) {
@@ -1081,7 +1090,6 @@ function SoundManager(smURL, smID) {
       _s.mimePattern = _s.netStreamMimeTypes;
       _s.features.movieStar = true;
     } else {
-      _s.useMovieStar = false;
       _s.features.movieStar = false;
     }
     _s.filePattern = _s.filePatterns[(_s.flashVersion !== 8?'flash9':'flash8')];
@@ -1923,20 +1931,18 @@ function SoundManager(smURL, smID) {
       _t.loaded = false;
       _t.readyState = 1;
       _t.playState = 0; // (oOptions.autoPlay?1:0); // if autoPlay, assume "playing" is true (no way to detect when it actually starts in Flash unless onPlay is watched?)
-      _t._iO = _loopFix(_t._iO);
-      try {
-        if (_html5CanPlay(_t._iO.url)) {
-          _s._wD('HTML 5 load: '+_t._iO.url);
-          oS = _t._setup_html5({
-            url: _t._iO.url
-          });
-          // if autoplay..
-          if (_t._iO.autoPlay) {
-            // oS.load(); // required? Uncertain.
-            _t.play();
-          }
-        } else {
+      if (_html5CanPlay(_t._iO.url)) {
+        _s._wD('HTML 5 load: '+_t._iO.url);
+        oS = _t._setup_html5(_t._iO);
+        // if autoplay..
+        if (_t._iO.autoPlay) {
+          // oS.load(); // required? Uncertain.
+          _t.play();
+        }
+      } else {
+        try {
           _t.isHTML5 = false;
+          _t._iO = _loopFix(_t._iO);
           if (_s.flashVersion === 8) {
             _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1);
           } else {
@@ -1946,12 +1952,12 @@ function SoundManager(smURL, smID) {
               _t.pause();
             }
           }
-        } 
-      } catch(e) {
-        _wDS('smError', 2);
-        _debugTS('onload', false);
-        _s.onerror();
-        _s.disable();
+        } catch(e) {
+          _wDS('smError', 2);
+          _debugTS('onload', false);
+          _s.onerror();
+          _s.disable();
+        }
       }
     };
 
@@ -2009,9 +2015,7 @@ function SoundManager(smURL, smID) {
       _t._iO = _mergeObjects(_t._iO, _t.options);
       _t.instanceOptions = _t._iO;
       if (_html5CanPlay(_t._iO.url)) {
-        _t._setup_html5({
-          url: _t._iO.url
-        });
+        _t._setup_html5(_t._iO);
         _start_html5_timer();
       }
       if (_t.playState === 1) {
@@ -2067,7 +2071,7 @@ function SoundManager(smURL, smID) {
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
         if (!_t.isHTML5) {
-          _s.o._start(_t.sID, _t._iO.loop || 1, (_s.flashVersion === 9?_t.position:_t.position / 1000));
+          _s.o._start(_t.sID, _t._iO.loops || 1, (_s.flashVersion === 9?_t.position:_t.position / 1000));
         } else {
           _start_html5_timer();
           _t._setup_html5().play();
@@ -2337,17 +2341,17 @@ function SoundManager(smURL, smID) {
       var _iO = _mergeObjects(_t._iO, oOptions);
       if (_t.__element) {
         if (_t.url !== _iO.url) {
-          _s._wD('::setup_html5: Setting new URL on existing object: '+decodeURI(_iO.url));
+          _s._wD('setting new URL on existing object: '+_iO.url);
           _t.__element.src = _iO.url;
         }
-        return _t.__element;
       } else {
         _s._wD('creating HTML 5 audio element with URL: '+_iO.url);
         _t.__element = new Audio(_iO.url);
         _t.isHTML5 = true;
         _add_html5_events();
-        return _t.__element;
       }
+      _t.__element.loop = (_iO.loops>1?'loop':'');
+      return _t.__element;
     };
 
     // related private methods
