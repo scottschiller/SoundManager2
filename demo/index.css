@@ -1168,11 +1168,11 @@ li.html5support span.true {
 }
 
 li.html5support span.partial {
- background:#993333;
+ background:#336699;
 }
 
 li.html5support em.partial {
- color:#993333;
+ color:#336699;
 }
 
 li.html5support em.true {
@@ -1594,4 +1594,48 @@ ul.file-structure li {
 
 ul.file-structure li span {
 	color:#999;
+}
+
+#sm2-filesizes {
+	border:1px solid #ddd;
+}
+
+#sm2-filesizes tr:nth-child(2n+1) {
+	background:#f9f9f9;
+}
+
+#sm2-filesizes th {
+	background:#eee;
+	font-weight:bold;
+	text-align:left;
+}
+
+#sm2-filesizes th {
+	padding:4px 6px;
+}
+
+#sm2-filesizes td {
+	padding:0px 6px;
+	border:1px solid #eee;
+}
+
+#sm2-filesizes p {
+	margin-top:0.5em;
+	margin-bottom:0px;
+}
+
+#sm2-filesizes pre {
+	border-left:none;
+	margin-top:0.5em;
+	margin-bottom:0.5em;
+}
+
+#sm2-filesizes .nw {
+	white-space:nowrap;
+}
+
+#sm2-filesizes .booyaa {
+	/* in the words of Paris Hilton, "that's hot." (in the nerdy sense, I suppose.) */
+	background:#fff9f9;
+	color:#990000;
 }

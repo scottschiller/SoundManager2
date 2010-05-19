@@ -16,7 +16,7 @@
 
 <script type="text/javascript">
 // enable flash block handling
-soundManager.useFlashBlock = true;
+soundManager.useFlashBlock = true; // make sure you check and use flashblock.css too, as that is used to position the SWF with this feature on!
 
 // custom demo options, not for your needs
 soundManager.debugMode = true;
@@ -62,7 +62,7 @@ soundManager.onready(function(){
 
 	<p>To handle potential flash block cases, put <code>&lt;div id="sm2-container"&gt;&lt;/div&gt;</code> in your markup where you'd like the SWF to appear in those cases. If not specified, SM2 will create and append the <code>#sm2-container</code> node to the document when it starts.</p>
 
-        <p>When <code>soundManager.useFlashBlock</code> is true, SM2 will not apply styles (eg. <code>style.position.left</code>) directly to the flash; rather, it will assign CSS classes and you can handle it as you choose.</p>
+        <p>When <code>soundManager.useFlashBlock</code> is true, SM2 will not apply styles (eg. <code>style.position.left</code>) directly to the flash; rather, it will assign CSS classes and you can handle it as you choose. Take a look at <a href="#flashblock-css">the related CSS</a> file you will also need if you turn this feature on.</p>
 
         <h4>Handling failed start-up cases</h4>
 
@@ -86,7 +86,7 @@ soundManager.onready(function(){
  	  <!-- flash is appended here -->
         </div>
 	
-	<h3>Flash Block-related CSS</h3>
+	<h3 id="flashblock-css">Flash Block-related CSS</h3>
 	
 	<p>When <code>soundManager.useFlashBlock</code> is enabled, CSS is applied to <code>#sm2-container</code> depending on the progress of SM2's start-up.</p>
 	<p>This page + demos use the rules below, fully-defined and commented in <a href="flashblock.css">flashblock.css</a>. Use it as a base for your own SM2 + flash block implementations.</p>

@@ -127,9 +127,9 @@
 			
 				 <h3>SoundManager 2 Tutorial: What, Why, How</h3>
 			
-				 <p><strong>Problem:</strong> Browsers lack good, consistent native audio/video support. (HTML 5's &lt;audio&gt; and &lt;video&gt; are on the way, but don't have majority support yet.)</p>
-				 <p><strong>Solution:</strong> Javascript API via Flash + ExternalInterface, works almost everywhere</p>
-				 <p>SoundManager 2 wraps and extends the Flash Sound API, and exposes it to Javascript. (The flash portion is hidden, transparent to both developers and end users.)</p>
+				 <p><strong>Problem:</strong> Browsers lack good, consistent native audio/video support. (HTML 5's <code>Audio()</code> is the future, but does not have majority support yet.)</p>
+				 <p><strong>Solution:</strong> Javascript API via Flash + ExternalInterface, works almost everywhere. If HTML5 audio support is enabled, flash fallback used for browsers that don't support "non-free" MP3 + MP4 formats.</p>
+				 <p>SoundManager 2 wraps and extends both the Flash and HTML Audio Sound APIs, providing a single, unified sound API to Javascript; the API is the same, whether HTML or Flash is ultimately used to play sound. (The flash portion is hidden, transparent to both developers and end users.)</p>
 
 				</div>
 
@@ -138,19 +138,58 @@
 
 			  <h4 id="basic-inclusion">Including SoundManager</h4>
 
-			  <p>Within <code class="in">&lt;head&gt;</code>:</p>
-			  <pre>&lt;script type="text/javascript" src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
-
-			  <p>Alternate "minified" version, &lt; 8 KB over the wire with gzip, ~60% less code, no debug output/comments:</p>
-			  <pre>&lt;script type="text/javascript" src="<span>soundmanager2-nodebug-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
+			  <p>A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds. In the best case, SM2 can shrink down to 9 KB over the wire - a mere 10% of the original code size!</p>
 			
-			  <p>You then need to tell SM2 where to find the SWF it needs, and optionally, what version to use:</p>
+			  <table id="sm2-filesizes" cellpadding="0" cellspacing="0">
+
+			   <tr>
+			    <th>Build version</th>
+			    <th>Recommended use</th>
+			    <th class="nw">File size</th>
+			    <th class="nw">+ <a href="http://www.sergeychernyshev.com/blog/speed-up-your-site-drop-in-htaccess-file/" title="If you're at all serious about performance, make sure you use gzip!">gzip</a></th>
+			   </tr>
+
+			   <tr>
+				 <td>
+				  <p>Original, formatted debug-enabled version with comments. Passes <a href="http://jslint.com" title="jslint, the JavaScript code quality tool.">jslint</a>.</p>
+				  <pre>&lt;script type="text/javascript" src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
+				 </td>
+				 <td>Development, testing, debugging</td>
+				 <td class="nw">91 KB</td>
+				 <td class="nw">~24 KB</td>
+			   </tr>
+
+			   <tr>
+				 <td>
+				  <p>Compressed (Google Closure-munged, no comments or whitespace), debug-enabled version</p>
+				  <pre>&lt;script type="text/javascript" src="<span>soundmanager2-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
+				 </td>
+				 <td>Production, with an option for debugging (eg. via #debug=1)</td>
+				 <td class="nw">41 KB</td>
+				 <td class="nw">~13 KB</td>
+			   </tr>
+
+			   <tr>
+				 <td>
+				  <p>Build-script optimized, compressed, no-debug version</p>
+				  <pre>&lt;script type="text/javascript" src="<span>soundmanager2-nodebug-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
+				 </td>
+				 <td>Performance + bandwidth-optimized, no debug option</td>
+				 <td class="nw">33 KB</td>
+				 <td class="nw booyaa" title="Best-case scenario for load time/performance">~9 KB!</td>
+			   </tr>
+
+			  </table>
+
+			  <p>You then need to tell SM2 where to find the SWF it needs, and optionally, what version and other features to use:</p>
 
 <pre>
 &lt;script&gt;
 soundManager.url = '<span>/path/to/swf-files/</span>';
 soundManager.flashVersion = 9; <span><span>// optional: shiny features (default = 8)</span></span>
 soundManager.useFlashBlock = false; <span><span>// optionally, enable when you're ready to <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">dive in</a></span></span>
+<span><span>// enable <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.</span></span>
+<span><span>// soundManager.useHTML5Audio = true;</span></span>
 &lt;/script&gt;</pre>
 
 <p>If you plan to eventually use the flash block handling feature (disabled in this example), you'll want to look at the <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">flash block demo</a> and include the relevant CSS it uses.</p>
@@ -163,7 +202,7 @@ soundManager.useFlashBlock = false; <span><span>// optionally, enable when you'r
 			
 			  <h4 id="file-structure">SoundManager File Structure</h4>
 			  <p>Or, "What you get when you download SM2."</p>
-			  <p>The core audio API bits require <code>script/soundmanager2.js</code> and the SWF files <code>swf/soundmanager2.swf</code> and <code>swf/soundmanager2_flash9.swf</code>. The flash 9 SWF enables some extra API features, and is only used if you set <code>soundManager.flashVersion = 9</code> (the default is 8.)</p>
+			  <p>The core audio API bits require <code>script/soundmanager2.js</code> and the SWF files <code>swf/soundmanager2.swf</code> and <code>swf/soundmanager2_flash9.swf</code>, as well as the <code>_debug</code> versions of the SWFs. The flash 9 SWF enables some extra API features, and is only used if you set <code>soundManager.flashVersion = 9</code> (the default is 8.)</p>
 
 			  <ul class="file-structure">
 			   <li>
