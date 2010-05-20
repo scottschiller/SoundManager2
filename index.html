@@ -37,11 +37,14 @@ var PP_CONFIG = {
 // <![CDATA[
 
 	var isHome = true;
-    soundManager.useHTML5Audio = true; // w00t.
+	if (!window.location.href.toString().match(/sm2-usehtml5audio/i)) {
+      soundManager.useHTML5Audio = true; // w00t.
+    }
 	soundManager.useFlashBlock = true;
 	soundManager.bgColor = '#ffffff';
 	soundManager.debugMode = false;
 	soundManager.url = 'swf/';
+	soundManager.wmode = 'transparent'; // hide initial flash of white on everything except firefox/win32
 	soundManager.useFastPolling = true;
 
     if (!navigator.userAgent.match(/msie 6/i)) {
@@ -53,6 +56,7 @@ var PP_CONFIG = {
 		_id('sm2-support').style.display = 'none';
 	    doChristmasLights();
 	    // if using HTML5, show some additional format support info
+	    // written while watching The Big Lebowski for the Nth time. Donny, you're out of your element!
         var s = soundManager;
 	    if (s.useHTML5Audio && s.hasHTML5) {
 	      var li = document.createElement('li');
@@ -67,7 +71,10 @@ var PP_CONFIG = {
           }
           li.innerHTML = 'Your browser\'s <em class="true">HTML5</em> vs. <em class="partial">Flash</em> support (best guess):<b>'+items.join('')+'</b>';
 	      _id('html5-audio-notes').appendChild(li);
-	    }
+	      _id('without-html5').style.display = 'inline';
+	    } else {
+	      _id('without-html5').style.display = 'none';
+		}
 	    // check inline player / HTML 5 bits
 	    var items = _id('muxtape-html5').getElementsByTagName('a');
 	    for (var i=0, j=items.length; i<j; i++) {
@@ -243,7 +250,7 @@ body #sm2-container embed {
 
 		<img src="demo/_image/speaker.png" alt="speaker icon" style="float:left;display:inline;width:68px;height:68px;margin:1em 1em 0px 0px" />
 
-		<h2 class="special" style="margin-top:0.33em">SoundManager 2 makes it easier to play sound using JavaScript.</h2>
+		<h2 class="special" style="margin-top:0.33em">SoundManager 2 makes it easier to play audio using JavaScript.</h2>
 		
 		<p style="margin-top:0.5em">By wrapping and extending the Flash and HTML5 Audio APIs, SoundManager 2 brings solid audio functionality to JavaScript. <a href="doc/getstarted/#intro" class="cta" style="white-space:nowrap">How it works <span>&raquo;</span></a></p>
 
@@ -299,7 +306,8 @@ body #sm2-container embed {
 
 			<div class="clear">&nbsp;</div>
 
-			<div style="position:relative;clear:both;margin-top:1em">
+			<div style="position:relative;clear:both;margin-top:1em;text-align:right">
+			  <span id="without-html5"><a href="#sm2-usehtml5audio=0" onclick="document.location.href=this.href;document.location.reload()" title="View this page without HTML5 Audio support">-html5</a>&nbsp;&nbsp;|&nbsp;</span>
 			  <a href="#debug=1" id="with-debug" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a>
 			  <script type="text/javascript">if (document.location.href.match(/debug=1/i)) document.getElementById('with-debug').style.display = 'none';</script>
 			</div>

@@ -49,6 +49,11 @@ h5 {
  color:#666;
 }
 
+.c2 h5 {
+ border-bottom:1px solid #CCCCCC;
+ padding-bottom:0.25em;
+}
+
 em em {
  /* special highlight */
  color:#003366;
@@ -566,6 +571,7 @@ div.clear {
 ul.standard {
  line-height:1.5em;
  padding-left:1.2em;
+ *padding-left:0px;
  color:#333;
  margin-top:0.5em;
  margin-bottom:0.5em;
@@ -1429,17 +1435,27 @@ body.home #sm2-container.swf_unblocked {
  _top:-9999em;
 }
 
-#demo-box #with-debug {
- position:absolute;
- right:0px;
- top:0px;
- margin-right:1.5em;
+#demo-box #without-html5 {
+ display:none;
+}
+
+#demo-box #with-debug,
+#demo-box #without-html5,
+#demo-box #without-html5 a {
+ display:inline;
  margin-top:-0.75em;
  font-weight:normal;
  font-size:x-small;
+ text-decoration:none;
+ font-weight:normal;
  color:#666;
 }
 
+#demo-box #with-debug {
+	margin-right:1.5em;
+}
+
+#demo-box #without-html5 a:hover,
 #demo-box #with-debug:hover {
  color:#fff;
 }
