@@ -626,7 +626,7 @@ var count = 0;
    if (typeof e != 'undefined') {
       if (typeof e.preventDefault != 'undefined') {
         e.preventDefault();
-      } else if (typeof e.returnValue != 'undefined' || event != 'undefined') {
+      } else if (typeof e.returnValue != 'undefined' || typeof event != 'undefined') {
         (e||event).cancelBubble = true;
         (e||event).returnValue = false;
       }
