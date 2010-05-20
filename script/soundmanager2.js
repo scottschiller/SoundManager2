@@ -107,16 +107,6 @@ function SoundManager(smURL, smID) {
     'bufferTime': 3         // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try increasing.)
   };
 
-  // Temporary feature: allow HTML5 enabling via URL
-  // <d>
-  if (window.location.href.toString().indexOf('#sm2-usehtml5audio=1') !==-1 && !this.useHTML5Audio) {
-    if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
-      console.log('Enabling useHTML5Audio via URL parameter');
-    }
-    this.useHTML5Audio = true;
-  }
-  // </d>
-
   this.version = null;
   this.versionNumber = 'V2.95b.20100323+DEV';
   this.movieURL = null;
@@ -202,14 +192,28 @@ function SoundManager(smURL, smID) {
 
   if (_iPadOrPhone || _is_pre) {
     // might as well force it on Apple + Palm, flash support unlikely
-    this.useHTML5Audio = true;
-    this.ignoreFlash = true;
+    _s.useHTML5Audio = true;
+    _s.ignoreFlash = true;
   }
 
   if (_is_pre) {
     // less-strict canPlayType() checking for Palm Pre.
-    this.html5Test = /^(probably|maybe)$/i;
+    _s.html5Test = /^(probably|maybe)$/i;
   }
+
+  // Temporary feature: allow force of HTML5 via URL: #sm2-usehtml5audio=0 or 1
+  // <d>
+  (function(){
+    var a = '#sm2-usehtml5audio=', l = window.location.href.toString(), b = null;
+    if (l.indexOf(a) !== -1) {
+      b = (l.substr(l.indexOf(a)+a.length) === '1');
+      if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+        console.log((b?'Enabling ':'Disabling ')+'useHTML5Audio via URL parameter');
+      }
+      _s.useHTML5Audio = b;
+    }
+  }());
+  // </d>
 
   // --- public API methods ---
 
@@ -550,10 +554,7 @@ function SoundManager(smURL, smID) {
     _initComplete(bNoDisable); // fire "complete", despite fail
     if (window.removeEventListener) {
       window.removeEventListener('load', _initUserOnload, false);
-    } /* else if (window.detachEvent) {
-      // "operation aborted" error (confirmed in IE 6) if this fires.
-      // window.detachEvent('onload', _initUserOnload);
-    } */
+    }
     // _disableObject(_s); // taken out to allow reboot()
   };
 
@@ -1662,7 +1663,6 @@ function SoundManager(smURL, smID) {
   _featureCheck = function() {
     var needsFlash, item,
     isSpecial = (navigator.userAgent.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 support currently unknown.)
-    // html 5 support?
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
       _html5Only = true; // ignore flash case, however
@@ -1830,7 +1830,6 @@ function SoundManager(smURL, smID) {
     _debugTS('swf', true);
     _debugTS('flashtojs', true);
     _s.swfLoaded = true;
-    // _s.hasFlash = true;
     _tryInitOnFocus = false;
     if (_s.isIE) {
       // IE needs a timeout OR delay until window.onload - may need TODO: investigating
@@ -1978,7 +1977,6 @@ function SoundManager(smURL, smID) {
             _t.__element.pause();
             _t.__element.src = 'about:blank'; // needed? does nulling object work? any better way to cancel/unload/abort?
             _t.__element.load();
-            // detach events?
             _t.__element = null;
             // delete _t.__element;
           }
@@ -2117,11 +2115,6 @@ function SoundManager(smURL, smID) {
       }
       var offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
       _t._iO.position = offset;
-/*
-      if (!bNoDebug) {
-        // _s._wD('SMSound.setPosition('+nMsecOffset+')'+(nMsecOffset !== offset?', corrected value: '+offset:''));
-      }
-*/
       if (!_t.isHTML5) {
         _s.o._setPosition(_t.sID, (_s.flashVersion === 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
       } else if (_t.__element) {
@@ -2234,7 +2227,6 @@ function SoundManager(smURL, smID) {
       if (!_t.isHTML5) {
         _s.o._setVolume(_t.sID, 0);
       } else if (_t.__element) {
-        // _t.setVolume(0, false);
         _t.__element.muted = true;
       }
     };
@@ -2245,7 +2237,6 @@ function SoundManager(smURL, smID) {
       if (!_t.isHTML5) {
         _s.o._setVolume(_t.sID, hasIO?_t._iO.volume:_t.options.volume);
       } else if (_t.__element) {
-        // _t.setVolume((hasIO?_t._iO.volume:_t.options.volume));
         _t.__element.muted = false;
       }
     };
@@ -2370,7 +2361,6 @@ function SoundManager(smURL, smID) {
         var o = _t.__element;
         _s._wD('HTML5::load: '+_t.sID);
         if (o) {
-          // all bytes have loaded
           _t._onbufferchange(0);
           _t._whileloading(_t.bytesTotal, _t.bytesTotal, _get_html5_duration());
           _t._onload(1);
@@ -2430,11 +2420,7 @@ function SoundManager(smURL, smID) {
         _t._onbufferchange(0);
       }, false);
 
-
-// TODO: verify support, consider use vs. poll-based interval
       _t.__element.addEventListener('timeupdate', function(e) {
-        // timeupdate
-        // t._whileplaying(); ?
         _t._onTimer();
       }, false);
 
