@@ -152,7 +152,7 @@ wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HT
 allowFullScreen = true;    <span>// enter full-screen (via double-click on movie) for flash 9+ video</span>
 allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed prop.), 'always' or 'sameDomain'</span>
 useFlashBlock = true;      <span>// better handling of SWF if load fails, let user unblock. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span>
-useHTML5Audio = false;     <span>// EXPERIMENTAL IN-PROGRESS feature: Use HTML5 Audio() where supported.</span>
+useHTML5Audio = false;     <span>// <a href="#soundmanager-usehtml5audio">Experimental in-progress</a> feature: Use HTML5 Audio() where supported.</span>
 </span></code></pre>
 			  <p>To modify global SoundManager default paramaters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
@@ -285,9 +285,10 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			
 			<p><em><b style="color:#993333">Warning:</b> Experimental, in-progress feature; subject to bugs, API changes etc. By default, special check to enable feature for the Apple iPad (which does not support Flash), but otherwise disabled by default.</em></p>
 			<p>Determines whether HTML5 <code>Audio()</code> support is used to play sound, if available, with Flash as the fallback for playing MP3/MP4 (AAC) formats. Browser support for HTML5 Audio varies, and format support (eg. MP3, MP4/AAC, OGG, WAV) can vary by browser/platform.</p>
-			<p>Ideally the SM2 API is seamless, identical and tranparent whether using Flash or HTML5 <code>Audio()</code> for sound playback. The HTML5 Audio API is roughly equivalent to the Flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available.)</p>
+			<p>The SM2 API is effectively transparent, consistent whether using Flash or HTML5 <code>Audio()</code> for sound playback behind the scenes. The HTML5 Audio API is roughly equivalent to the Flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available.)</p>
 
 			<h5>SoundManager 2 + useHTML5Audio: Init Process</h5>
+
 			<p>At DOM ready (if useHTML5Audio = true), a test for <code>Audio()</code> is done followed by a series of <code>canPlayType()</code> tests to see if MP3, MP4, WAV and OGG formats are supported. If none of the "required" formats (MP3 + MP4, by default) are supported natively, then Flash is also added as a requirement for SM2 to start.</p>
 			<p><code>soundManager.audioFormats</code> currently defines the list of formats to check (MP3, MP4 and so on), their possible <code>canPlayType()</code> strings (long story short, it's complicated) and whether or not they are "required" - that is, whether Flash should be loaded if they don't work under HTML5. (Again, only MP3 + MP4 are supported by Flash.) If you had a page solely using OGG, you could make MP3/MP4 non-required, but many browsers would not play them inline.</p>
 			<p>SM2 will indicate its state (HTML 5 support or not, using Flash or not) in <code>console.log()</code>-style debug output messages when <code>debugMode = true</code>.</p>
@@ -317,8 +318,10 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			
 			<p>As of the May, 2010 release of SM2 (V2.96a.20100525):</p>
 			<ul>
-			 <li>Safari 4.0.5 on OS X Snow Leopard (10.6.x) appears to have an annoying bug where audio inconsistently fails to load / play. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases. Note that Safari on OS X 10.5 "Leopard" and on Windows <i>do not</i> appear to have this bug; it seems to be limited to Snow Leopard, seen on OS X 10.6.3.</li>
-			 <li>Some browsers do not fire <code>progress</code> events, and/or do not implement bytesLoaded/bytesTotal-style attributes.</li>
+			 <li>Safari 4.0.5 on OS X Snow Leopard (10.6.x) appears to have an annoying bug where audio inconsistently fails to load / play; SM2 will currently disable or ignore the HTML5 feature on this exact browser + OS version. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases. Note that Safari on OS X 10.5 "Leopard" and on Windows <i>do not</i> appear to have this bug; it seems to be limited to Snow Leopard, seen on OS X 10.6.3.</li>
+			 <li>Some browsers (and iPad 3.2?) do not fire <code>progress</code> events, and/or do not implement bytesLoaded/bytesTotal-style attributes.</li>
+			 <li>iPad 3.2 appears to be able to only play one sound at a time, and will terminate other sounds.</li>
+			 <li>iPad 3.2 may also loop AAC+ (HE-AAC) and WAV sounds, perhaps not firing onfinish() and resetting the position to 0 each time, but is fine with MP3s. This has been observed, but not fully-tested.</li>
 			 <li>Looping in HTML5 is either "infinite" or "none". A wrapper may be created for SM2 so that a number of loops can be specified, as with Flash. This is not yet implemented.</li>
 			 <li>Panning (left/right channel balance) does not appear to be in HTML5.</li>
 			 <li>Flash-only features such as ID3 tag reading, waveform and spectrum data will simply be ignored, and their related events will not fire on SMSound objects which are using HTML5.</li>
@@ -1114,7 +1117,7 @@ for (prop in this.id3) {
 				
 				<div class="c2">
 					
-					  <div class="f-block f-defaultoptions s-autoload s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-pan s-volume s-ismoviestar s-onmetadata s-usevideo s-flash9options s-moviestaroptions s-buffertime">
+					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-pan s-volume s-ismoviestar s-onmetadata s-usevideo s-flash9options s-moviestaroptions s-buffertime">
 
 					  <h3 id="sound-properties">SoundManager Global Sound Object Defaults</h3>
 
@@ -1124,6 +1127,7 @@ for (prop in this.id3) {
 <pre class="small block"><code>soundManager.defaultOptions = {<span>
   autoLoad: false,       <span>// enable automatic loading (otherwise .load() will call with .play())</span>
   autoPlay: false,       <span>// enable playing of file ASAP (much faster if "stream" is true)</span>
+  loops: 1,              <span>// number of times to play the sound. Related: <a href="http://www.flickr.com/photos/schill/4499319436/" title="Seamless Looping MP3s in Flash (demo)">Seamless Looping</a>.</span>
   multiShot: true,       <span>// let sounds "restart" or "chorus" when played multiple times..</span>
   multiShotEvents: false,<span>// allow events (onfinish()) to fire for each shot, if supported.</span>
   onid3: null,           <span>// callback function for "ID3 data is added/available"</span>
@@ -1498,6 +1502,7 @@ soundManager.movieStarOptions = {<span>
      <li title="Flash 9.0r115+ only" class="flash9 recent">bufferTime</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
+     <li title="Newly-implemented feature, Flash 9-only" class="new flash9">loops</li>
      <li>multiShot</li>
      <li>multiShotEvents</li>
      <li>onbeforefinishtime</li>

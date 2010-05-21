@@ -1390,7 +1390,6 @@ body.home #sm2-container {
  width:48px;
  height:48px;
  margin:1px 0px 0px 1px;
- z-index:-1; /* sit behind, at first */
 }
 
 body.home #sm2-container.high_performance {
@@ -1654,4 +1653,8 @@ ul.file-structure li span {
 	/* in the words of Paris Hilton, "that's hot." (in the nerdy sense, I suppose.) */
 	background:#fff9f9;
 	color:#990000;
+}
+
+#history li.in > p.compact {
+	font-weight:bold;
 }

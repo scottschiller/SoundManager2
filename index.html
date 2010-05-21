@@ -75,6 +75,12 @@ var PP_CONFIG = {
 	    } else {
 	      _id('without-html5').style.display = 'none';
 		}
+		var _ua = navigator.userAgent;
+		if (soundManager.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/531\.22\.7/i)) {
+		  var complaint = document.createElement('li');
+		  complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled on Safari 531.22.7 + OS X 10.6.3, see <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)';
+		  _id('html5-audio-notes').appendChild(complaint);
+		}
 	    // check inline player / HTML 5 bits
 	    var items = _id('muxtape-html5').getElementsByTagName('a');
 	    for (var i=0, j=items.length; i<j; i++) {
@@ -307,7 +313,7 @@ body #sm2-container embed {
 			<div class="clear">&nbsp;</div>
 
 			<div style="position:relative;clear:both;margin-top:1em;text-align:right">
-			  <span id="without-html5"><a href="#sm2-usehtml5audio=0" onclick="document.location.href=this.href;document.location.reload()" title="View this page without HTML5 Audio support">-html5</a>&nbsp;&nbsp;|&nbsp;</span>
+			  <span id="without-html5" style="display:none"><a href="#sm2-usehtml5audio=0" onclick="document.location.href=this.href;document.location.reload()" title="View this page without HTML5 Audio support">-html5</a>&nbsp;&nbsp;|&nbsp;</span>
 			  <a href="#debug=1" id="with-debug" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a>
 			  <script type="text/javascript">if (document.location.href.match(/debug=1/i)) document.getElementById('with-debug').style.display = 'none';</script>
 			</div>

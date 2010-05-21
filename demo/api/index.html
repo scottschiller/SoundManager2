@@ -166,7 +166,7 @@ function getRandomMP3URL() {
 
  <h1><a href="http://www.schillmania.com/projects/soundmanager2/" style="color:#000;text-decoration:none">SoundManager 2</a> / API Demo and Code Examples</h1>
 
- <p class="note">You can run the API demos with <a href="#sm2-usehtml5audio=1" onclick="window.location.replace(this.href);window.location.reload()">HTML5</a> enabled, <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency).</p>
+ <p class="note">You can run the API demos with <a href="#sm2-usehtml5audio=1" onclick="window.location.replace(this.href);window.location.reload()">HTML5</a> enabled, <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (API default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency).</p>
 
  <p>Wondering where to start? This page has inline executable code examples using the SoundManager 2 API.</p>
 
@@ -302,7 +302,7 @@ soundManager.play('<span>aRimSound</span>');</code></pre>
  <p>This will crate and play a new sound, using the "onfinish" handler to create and play a second, new sound.</p>
  <p>It is recommended to create sound objects first, to simplify troubleshooting.</p>
 
-<h2 id="looping">Demo 4c: Looping a sound</h2>
+<h2 id="looping-conventional">Demo 4c: Looping a sound (conventional)</h2>
 <pre id="demo4c" class="block"><code>var s = soundManager.createSound({
   id:'<span>hhCymbal</span>',
   url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
@@ -316,8 +316,22 @@ s.play({
 });
 </code></pre>
 
-<button onclick="return doEval(document.getElementById('demo4c').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
-<p>Note that there are issues with seamlessly-looping sounds, effectively it is not possible with Flash 8/9 at this point. You can try to get creative with <i>onbeforefinish</i> and timing, but it is difficult if not impractical.</p>
+<button onclick="return doEval(document.getElementById('demo4d').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
+<p>Note that there are issues with seamlessly-looping sounds, it is nearly impossible with Flash 8/9 at this point. You can try to get creative with <i>onbeforefinish</i> and timing, but it is difficult and unreliable.</p>
+
+<h2 id="looping">Demo 4d: Looping a sound (Flash 9 method)</h2>
+<pre id="demo4d" class="block"><code>var s = soundManager.createSound({
+  id:'<span>hhCymbal</span>',
+  url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
+});
+
+s.play({
+  loops: 3
+});
+</code></pre>
+
+<button onclick="return doEval(document.getElementById('demo4d').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
+<p>Looping is possible within Flash 9. For tighter looping, see See <a href="http://www.flickr.com/photos/schill/4499319436/" title="Seamless looping MP3 sounds in Flash">Seamless Looping MP3 in Flash</a> for further details.</p>
  
 <h2>Demo 5a: Set sound parameters, then play</h2>
 <pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>'); <span><span>// predefined/preloaded sound</span></span>

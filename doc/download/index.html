@@ -130,9 +130,10 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.95b.20100323</p>
-				<p><b>New shiny!</b> <code>useFlashBlock</code>, better handling of time-out/errors (CSS-based SWF repositioning options for unblocking on time-out), "play MP3 button" demo, <code>canPlayLink()</code>, <code>canPlayMIME()</code>, <code>eqData</code> + <code>waveformData</code> for AAC/H.264 (movieStar) content, missing documentation fixes and more. See <a href="#history">revision history</a> for details.</p>
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv295b-20100323.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.95b.20100323</a></p>
+				<p>Current version: 2.96a.20100520</p>
+				<p><b>Epic update:</b> Experimental HTML5 <code>Audio()</code> via <a href="../#soundmanager-usehtml5audio" title="SoundManager: useHTML5Audio feature">soundManager.useHTML5Audio</a>, iPad and Palm Pre support! Looping in Flash! New non-debug versions of SWFs, build-script-optimized -nodebug version of SM2 (<a href="../getstarted/#basic-inclusion" title="Including SoundManager 2, file size options">down to 9 KB with gzip!</a>) and more. See <a href="#history">revision history</a> for details.</p>
+				
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100520.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100520</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a></p>
 			</div>
 			
@@ -155,11 +156,52 @@
 			  <p>A changelog of sorts.</p>
 
 			  <ul id="revision-list" class="standard">
-				
-				
+
+			   <li class="in">
+			    <h3><b>V2.96a.20100520</b> - HTML5 Edition</h3>
+			
+				<p>Experimental HTML5 support, lots of code shuffling and performance tweaks.</p>
+			
+			    <!--
+			    <p><b>Epic update:</b> Experimental HTML5 <code>Audio()</code> via <a href="../#soundmanager-usehtml5audio" title="SoundManager: useHTML5Audio feature">soundManager.useHTML5Audio</a>, iPad and Palm Pre support! Looping in Flash! New non-debug versions of SWFs, build-script-optimized -nodebug version of SM2 (<a href="../getstarted/#basic-inclusion" title="Including SoundManager 2, file size options">down to 9 KB with gzip!</a>) and more. See <a href="#history">revision history</a> for details.</p>
+			    -->
+			
+			    <ul class="double">
+			
+			     <li class="in">
+			      <p class="compact">API Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New <a href="../#soundmanager-usehtml5audio" title="SoundManager: useHTML5Audio feature">soundManager.useHTML5Audio</a> (disabled by default except for iPad, Palm Pre) - adds experimental HTML5 Audio support, with Flash fallback for MP3/MP4 formats as needed.</li>
+				   <li>Sound looping now works in Flash! eg. <code>mySound.play({loops:3});</code> - for an example + discussion of how to get near-seamless looping, see <a href="http://www.flickr.com/photos/schill/4499319436/" title="SoundManager 2: Seamless Looping MP3s in Flash (Demo)">Seamless Looping MP3s in Flash</a> (demo video) on Flickr.</li>
+				  </ul>
+				 </li>
+			     <li class="in">
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li><code>beginDelayedInit()</code> is always used in lazy loading case (eg. via dynamic script tag/XHR etc.,) as some cases where SM2 won't auto-start eg. document.readyState empty for Firefox 3.5.5 (seen on Win32) with an HTML5 DOCTYPE.</li>
+				   <li>SWF is now 8x8 pixels by default, vs. 6x6 pixels (odd fix for HTML5 Doctype on Firefox 3.6/win32)</li>
+				   <li>Fixed dumb IE undefined ID bug</li>
+			      </ul>
+			     </li>
+			     <li class="in">
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+					<li>soundmanager2.swf and soundmanager2_flash9.swf are now "non-debug" versions; with debugMode enabled, soundmanager2_debug.swf and soundmanager2_flash9_debug.swf are loaded instead.</li>
+					<li>New build script for JS + SWFs, see <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2, file size options">file size table</a>. JS compression now done via Google Closure compiler; new soundmanager-jsmin.js build, debug-enabled but compressed, in addition to build-script-optimized, no-debug, compressed JS (~9 KB with gzip vs. ~90 KB for raw, commented, debug-enabled version.)</li>
+					<li>Null check fix for unavailable eq/waveform data</li>
+					<li>Experimental video (flash 9-only) change: Use stage width/height instead of 0/0 when lacking metadata</li>
+				   	<li>Page player whileloading() calls now being throttled</li>
+				    <li>Better page player click handling for IE 7</li>
+			      </ul>
+			     </li>
+
+			    </ul>
+
+			   </li>
+
 			   <li class="in">
 			    <h3><b>V2.95b.20100323</b></h3>
-			    <p><b>New shiny!</b> <code>useFlashBlock</code>, better handling of time-out/errors (CSS-based SWF repositioning options for unblocking on time-out), "play MP3 button" demo, <code>canPlayLink()</code>, <code>canPlayMIME()</code>, <code>eqData</code> + <code>waveformData</code> for AAC/H.264 (movieStar) content, missing documentation and miscellaneous bug fixes.</p>
+			    <p><code>useFlashBlock</code>, better handling of time-out/errors (CSS-based SWF repositioning options for unblocking on time-out), "play MP3 button" demo, <code>canPlayLink()</code>, <code>canPlayMIME()</code>, <code>eqData</code> + <code>waveformData</code> for AAC/H.264 (movieStar) content, missing documentation and miscellaneous bug fixes.</p>
 
 			    <ul class="double">
 
@@ -170,11 +212,15 @@
 				   <li>playableClass attribute eg. <code>&lt;a href="foo.php" class="inline-playable"&gt;</code>, allowing URLs without .mp3 to be picked up</li>
 				   <li>New <code>soundManager.canPlayLink()</code> + <code>canPlayMIME()</code>, ability to check &lt;a href="foo.php" type="audio/mp3"> for example</li>
 				  </ul>
+				 </li>
+			     <li class="in">
 				  <p class="compact">Bug fixes</p>
 				  <ul class="nested compact flat">
 				   <li><code>soundManager.play()</code> type check fix, instanceof Object vs. typeof x === 'Object' (typo)</li>
 				   <li><code>computeSpectrum()</code> can access waveform and eq (spectrum) data for movieStar (AAC/MP4, netstream-based) objects, too.</li>
 			      </ul>
+				 </li>
+			     <li class="in">
 				  <p class="compact">Miscellaneous</p>
 				  <ul class="nested compact flat">
 				   	<li>Moved old demo code using <code>$()</code> to <code>_id()</code>, <code>_$</code> in <code>soundManager2</code> to <code>_id()</code> to avoid potential jQuery (and other $-based library) collisions</li>
