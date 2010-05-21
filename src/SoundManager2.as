@@ -36,7 +36,7 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "V2.95b.20100323+DEV";
+    var version = "V2.96a.20100520";
     var version_as = "(AS2/Flash 8)";
 
     /*
