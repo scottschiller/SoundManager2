@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.95b.20100323+DEV
+ * V2.96a.20100520
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
@@ -70,7 +70,7 @@ function SoundManager(smURL, smID) {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
     'stream': true,                // allows playing before entire file has loaded (recommended)
     'autoPlay': false,             // enable playing of file as soon as possible (much faster if "stream" is true)
-    'loops': 1,                    // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >1)
+    'loops': 1,                    // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >0)
     'onid3': null,                 // callback function for "ID3 data is added/available"
     'onload': null,                // callback function for "load finished"
     'whileloading': null,          // callback function for "download progress update" (X of Y bytes received)
@@ -108,7 +108,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.95b.20100323+DEV';
+  this.versionNumber = 'V2.96a.20100520';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -179,7 +179,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
-  _is_pre = navigator.userAgent.match(/pre\//i),
+  _is_pre = _ua.match(/pre\//i),
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
   _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
@@ -1662,7 +1662,8 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isSpecial = (navigator.userAgent.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 support currently unknown.)
+    isBadSafari = (_s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/531\.22\.7/i)), // https://bugs.webkit.org/show_bug.cgi?id=32159
+    isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 support currently unknown.)
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
       _html5Only = true; // ignore flash case, however
@@ -1678,6 +1679,12 @@ function SoundManager(smURL, smID) {
         return true;
       } else {
         _s.hasHTML5 = true;
+      }
+      if (isBadSafari) {
+        _s._wD('Note: Buggy HTML5 in this version of Safari, see https://bugs.webkit.org/show_bug.cgi?id=32159 - disabling HTML5',1);
+        _s.useHTML5Audio = false;
+        _s.hasHTML5 = false;
+        return true;
       }
     } else {
       // flash required.
