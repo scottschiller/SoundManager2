@@ -28,7 +28,7 @@ function SoundManager(smURL, smID) {
   this.nullURL = 'null.mp3';         // path to "null" (empty) MP3 file, used to unload sounds (Flash 8 only)
   this.allowPolling = true;          // allow flash to poll for status update (required for whileplaying() events, peak, sound spectrum functions to work.)
   this.useFastPolling = false;       // uses lower flash timer interval for higher callback frequency, best combined with useHighPerformance
-  this.useMovieStar = false;         // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio+video formats (AAC, M4V, FLV, MOV etc.)
+  this.useMovieStar = true;          // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio+video formats (AAC, M4V, FLV, MOV etc.)
   this.bgColor = '#ffffff';          // movie (.swf) background color, '#000000' useful if showing on-screen/full-screen video etc.
   this.useHighPerformance = false;   // position:fixed flash movie can help increase js/flash speed, minimize lag
   this.flashLoadTimeout = 1000;      // msec to wait for flash movie to load before failing (0 = infinity)
@@ -140,8 +140,8 @@ function SoundManager(smURL, smID) {
 
   this.filePattern = null;
   this.filePatterns = {
-    flash8: /\.mp3(\?\.*)?$/i,
-    flash9: /\.mp3(\?\.*)?$/i
+    flash8: /\.mp3(\?.*)?$/i,
+    flash9: /\.mp3(\?.*)?$/i
   };
 
   this.baseMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
@@ -178,7 +178,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = true, _featureCheck, _html5Ready, _html5Only, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5Ready, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
   _is_pre = _ua.match(/pre\//i),
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
   _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
@@ -610,7 +610,7 @@ function SoundManager(smURL, smID) {
     // a status object will be passed to your handler
     /*
     soundManager.onready(function(oStatus) {
-      alert('SM2 init success: '+oStatus.success);
+      console.log('SM2 init success: '+oStatus.success);
     });
     */
     if (oMethod && oMethod instanceof Function) {
@@ -763,6 +763,7 @@ function SoundManager(smURL, smID) {
   this.beginDelayedInit = function() {
     // _s._wD('soundManager.beginDelayedInit()');
     _windowLoaded = true;
+   _dcLoaded();
     setTimeout(_waitForEI, 500);
     setTimeout(_beginInit, 20);
   };
@@ -1074,7 +1075,7 @@ function SoundManager(smURL, smID) {
 
   _setVersionInfo = function() {
     if (_s.flashVersion !== 8 && _s.flashVersion !== 9) {
-      alert(_str('badFV', _s.flashVersion, _defaultFlashVersion));
+      console.log(_str('badFV', _s.flashVersion, _defaultFlashVersion));
       _s.flashVersion = _defaultFlashVersion;
     }
     var isDebug = (_s.debugMode || _s.debugFlash?'_debug.swf':'.swf'); // debug flash movie, if applicable
@@ -1741,7 +1742,8 @@ function SoundManager(smURL, smID) {
         _initComplete();
       }
       return true;
-    }
+    } else {
+}
 
     // flash path
     _initMovie();
@@ -1781,6 +1783,10 @@ function SoundManager(smURL, smID) {
   };
 
   _dcLoaded = function() {
+    if (_didDCLoaded) {
+      return false;
+    }
+    _didDCLoaded = true;
     _initDebug();
     _testHTML5();
     _needsFlash = _featureCheck();
