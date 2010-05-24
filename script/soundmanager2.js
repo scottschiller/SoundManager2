@@ -1061,7 +1061,7 @@ function SoundManager(smURL, smID) {
   _normalizeMovieURL = function(smURL) {
     var urlParams = null;
     if (smURL) {
-      if (smURL.match(/\.swf(\?.*)?$/i)) {
+      if (smURL.match(/\.swf(\?\.*)?$/i)) {
         urlParams = smURL.substr(smURL.toLowerCase().lastIndexOf('.swf?') + 4);
         if (urlParams) {
           return smURL; // assume user knows what they're doing
@@ -1663,8 +1663,8 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isBadSafari = (_s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/531\.22\.7/i)), // https://bugs.webkit.org/show_bug.cgi?id=32159
-    isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 support currently unknown.)
+    isBadSafari = (!window.location.href.toString().match(/usehtml5audio/i) && _s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/531\.22\.7/i)), // https://bugs.webkit.org/show_bug.cgi?id=32159
+    isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 reported to work.)
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
       _html5Only = true; // ignore flash case, however
@@ -2095,6 +2095,7 @@ function SoundManager(smURL, smID) {
     this.stop = function(bAll) {
       if (_t.playState === 1) {
         _t._onbufferchange(0);
+        _t.resetOnPosition(0);
         if (!_t.isHTML5) {
           _t.playState = 0;
         }
@@ -2128,6 +2129,7 @@ function SoundManager(smURL, smID) {
       }
       var offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
       _t._iO.position = offset;
+      _t.resetOnPosition(_t._iO.position);
       if (!_t.isHTML5) {
         _s.o._setPosition(_t.sID, (_s.flashVersion === 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
       } else if (_t.__element) {
@@ -2262,6 +2264,51 @@ function SoundManager(smURL, smID) {
       }
     };
 
+    this.onPosition = function(nPosition, oMethod, oScope) {
+      // allow for ranges, too? eg. (nPosition instanceof Number)
+      _t._onPositionItems.push({
+        position: nPosition,
+        method: oMethod,
+        scope: (oScope||null),
+        fired: false
+      });
+    };
+
+    this.processOnPosition = function() {
+      // sound currently playing?
+      var i, item, j = _t._onPositionItems.length;
+      if (!j || !_t.playState || _t._onPositionFired >= j) {
+        return false;
+      }
+      for (i=j; i--;) {
+        item = _t._onPositionItems[i];
+        if (!item.fired && _t.position >= item.position) {
+          if (item.scope) {
+            item.method.apply(item.scope);
+          } else {
+            item.method();
+          }
+          item.fired = true;
+          _s._onPositionFired++;
+        }
+      }
+    };
+
+    this.resetOnPosition = function(nPosition) {
+      // reset "fired" for items interested in this position
+      var i, item, j = _t._onPositionItems.length;
+      if (!j) {
+        return false;
+      }
+      for (i=j; i--;) {
+        item = _t._onPositionItems[i];
+        if (item.fired && nPosition <= item.position) {
+          item.fired = false;
+          _s._onPositionFired--;
+        }
+      }
+    };
+
     // pseudo-private soundManager reference
 
     this._onTimer = function(bForce) {
@@ -2305,6 +2352,8 @@ function SoundManager(smURL, smID) {
     };
 
     _resetProperties = function(bLoaded) {
+      _t._onPositionItems = [];
+      _t._onPositionFired = 0;
       _t._hasTimer = null;
       _t._added_events = null;
       _t.__element = null;
@@ -2502,6 +2551,7 @@ function SoundManager(smURL, smID) {
         nPosition = 0;
       }
       _t.position = nPosition;
+      _t.processOnPosition();
       if (_s.flashVersion > 8 && !_t.isHTML5) {
         if (_t._iO.usePeakData && typeof oPeakData !== 'undefined' && oPeakData) {
           _t.peakData = {
@@ -2588,6 +2638,7 @@ function SoundManager(smURL, smID) {
       // TODO: calling user-defined onfinish() should happen after setPosition(0)
       // OR: onfinish() and then setPosition(0) is bad.
       _t._onbufferchange(0); // ensure buffer has ended
+      _t.resetOnPosition(0);
       if (_t._iO.onbeforefinishcomplete) {
         _t._iO.onbeforefinishcomplete.apply(_t);
       }
