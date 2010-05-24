@@ -1061,7 +1061,7 @@ function SoundManager(smURL, smID) {
   _normalizeMovieURL = function(smURL) {
     var urlParams = null;
     if (smURL) {
-      if (smURL.match(/\.swf(\?\.*)?$/i)) {
+      if (smURL.match(/\.swf(\?.*)?$/i)) {
         urlParams = smURL.substr(smURL.toLowerCase().lastIndexOf('.swf?') + 4);
         if (urlParams) {
           return smURL; // assume user knows what they're doing
