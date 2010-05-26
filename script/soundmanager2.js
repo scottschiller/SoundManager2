@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.96a.20100520
+ * V2.96a.20100520+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true, regexp: false */
@@ -108,7 +108,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.96a.20100520';
+  this.versionNumber = 'V2.96a.20100520+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -178,8 +178,9 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5Ready, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Ready, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
   _is_pre = _ua.match(/pre\//i),
+  _use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)), // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
   _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
@@ -196,15 +197,15 @@ function SoundManager(smURL, smID) {
     _s.ignoreFlash = true;
   }
 
-  if (_is_pre) {
-    // less-strict canPlayType() checking for Palm Pre.
+  if (_is_pre || _use_maybe) {
+    // less-strict canPlayType() checking option
     _s.html5Test = /^(probably|maybe)$/i;
   }
 
   // Temporary feature: allow force of HTML5 via URL: #sm2-usehtml5audio=0 or 1
   // <d>
   (function(){
-    var a = '#sm2-usehtml5audio=', l = window.location.href.toString(), b = null;
+    var a = '#sm2-usehtml5audio=', l = _wl, b = null;
     if (l.indexOf(a) !== -1) {
       b = (l.substr(l.indexOf(a)+a.length) === '1');
       if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
@@ -267,14 +268,14 @@ function SoundManager(smURL, smID) {
       return _s.sounds[_tO.id];
     }
 
-    if (_html5CanPlay(_tO.url)) {
+    if (_html5OK(_tO)) {
       oSound = make();
       _s._wD('Loading sound '+_tO.id+' from HTML5');
       oSound._setup_html5(_tO);
     } else {
       if (_s.flashVersion > 8 && _s.useMovieStar) {
         if (_tO.isMovieStar === null) {
-          _tO.isMovieStar = (_tO.url.match(_s.netStreamPattern)?true:false);
+          _tO.isMovieStar = (((_tO.type?_tO.type.match(_s.netStreamPattern):false)||_tO.url.match(_s.netStreamPattern))?true:false);
         }
         if (_tO.isMovieStar) {
           _s._wD(_cs + 'using MovieStar handling');
@@ -290,8 +291,7 @@ function SoundManager(smURL, smID) {
         }
       }
       oSound = make();
-      // flash
-      // AS2:
+      // flash AS2
       if (_s.flashVersion === 8) {
         _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1);
       } else {
@@ -348,11 +348,7 @@ function SoundManager(smURL, smID) {
         continue;
       }
     }
-    // conservative option: avoid crash with flash 8
-    // calling destroySound() within a sound onload() might crash firefox, certain flavours of winXP+flash 8??
-    // if (_s.flashVersion !== 8) {
     _s.sounds[sID].unload();
-    // }
     if (!bFromSound) {
       // ignore if being called from SMSound instance
       _s.sounds[sID].destruct();
@@ -770,6 +766,10 @@ function SoundManager(smURL, smID) {
 
   // --- private SM2 internals ---
 
+  _html5OK = function(iO) {
+    return ((iO.type?_html5CanPlay({type:iO.type}):false)||_html5CanPlay(iO.url));
+  };
+
   _html5CanPlay = function(sURL) {
     // try to find MIME, test and return truthiness
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
@@ -1075,7 +1075,7 @@ function SoundManager(smURL, smID) {
 
   _setVersionInfo = function() {
     if (_s.flashVersion !== 8 && _s.flashVersion !== 9) {
-      console.log(_str('badFV', _s.flashVersion, _defaultFlashVersion));
+      _s._wD(_str('badFV', _s.flashVersion, _defaultFlashVersion));
       _s.flashVersion = _defaultFlashVersion;
     }
     var isDebug = (_s.debugMode || _s.debugFlash?'_debug.swf':'.swf'); // debug flash movie, if applicable
@@ -1111,7 +1111,7 @@ function SoundManager(smURL, smID) {
   };
 
   function _initDebug() {
-    if (_s.debugURLParam.test(window.location.href.toString())) {
+    if (_s.debugURLParam.test(_wl)) {
       _s.debugMode = true; // allow force of debug mode via URL
     }
     // <d>
@@ -1352,7 +1352,7 @@ function SoundManager(smURL, smID) {
     }
   };
 
-  if (window.location.href.indexOf('debug=alert') + 1 && _s.debugMode) {
+  if (_wl.indexOf('debug=alert') + 1 && _s.debugMode) {
     _s._wD = function(sText) {alert(sText);};
   }
 
@@ -1663,7 +1663,7 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isBadSafari = (!window.location.href.toString().match(/usehtml5audio/i) && _s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/531\.22\.7/i)), // https://bugs.webkit.org/show_bug.cgi?id=32159
+    isBadSafari = (!_wl.match(/usehtml5audio/i) && _s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/531\.22\.7/i)), // https://bugs.webkit.org/show_bug.cgi?id=32159
     isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 reported to work.)
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
@@ -1943,7 +1943,7 @@ function SoundManager(smURL, smID) {
       _t.loaded = false;
       _t.readyState = 1;
       _t.playState = 0; // (oOptions.autoPlay?1:0); // if autoPlay, assume "playing" is true (no way to detect when it actually starts in Flash unless onPlay is watched?)
-      if (_html5CanPlay(_t._iO.url)) {
+      if (_html5OK(_t._iO)) {
         _s._wD('HTML 5 load: '+_t._iO.url);
         oS = _t._setup_html5(_t._iO);
         // if autoplay..
@@ -2025,7 +2025,7 @@ function SoundManager(smURL, smID) {
       _t._iO = _mergeObjects(oOptions, _t._iO);
       _t._iO = _mergeObjects(_t._iO, _t.options);
       _t.instanceOptions = _t._iO;
-      if (_html5CanPlay(_t._iO.url)) {
+      if (_html5OK(_t._iO)) {
         _t._setup_html5(_t._iO);
         _start_html5_timer();
       }
