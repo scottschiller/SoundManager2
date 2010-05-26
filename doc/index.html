@@ -154,7 +154,7 @@ allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed prop.), '
 useFlashBlock = true;      <span>// better handling of SWF if load fails, let user unblock. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span>
 useHTML5Audio = false;     <span>// <a href="#soundmanager-usehtml5audio">Experimental in-progress</a> feature: Use HTML5 Audio() where supported.</span>
 </span></code></pre>
-			  <p>To modify global SoundManager default paramaters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
+			  <p>To modify global SoundManager default parameters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
 <pre class="block"><code><span>soundManager.debugMode = false;          <span>// disable debug mode</span>
 soundManager.defaultOptions.volume = 33; <span>// set global default volume for all sound objects</span>
