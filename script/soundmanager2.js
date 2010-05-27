@@ -180,16 +180,16 @@ function SoundManager(smURL, smID) {
   var SMSound,
   _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Ready, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
   _is_pre = _ua.match(/pre\//i),
-  _use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)), // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
   _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
-  _overHTTP = (document.location?document.location.protocol.match(/http/i):null),
   _isFocused = (typeof document.hasFocus !== 'undefined'?document.hasFocus():null),
   _tryInitOnFocus = (typeof document.hasFocus === 'undefined' && this.isSafari),
   _okToDisable = !_tryInitOnFocus;
 
-  this.useAltURL = !_overHTTP; // use altURL if not "online"
+  this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
+  this._overHTTP = (document.location?document.location.protocol.match(/http/i):null);
+  this.useAltURL = !this._overHTTP; // use altURL if not "online"
 
   if (_iPadOrPhone || _is_pre) {
     // might as well force it on Apple + Palm, flash support unlikely
@@ -197,7 +197,7 @@ function SoundManager(smURL, smID) {
     _s.ignoreFlash = true;
   }
 
-  if (_is_pre || _use_maybe) {
+  if (_is_pre || this._use_maybe) {
     // less-strict canPlayType() checking option
     _s.html5Test = /^(probably|maybe)$/i;
   }
@@ -1200,7 +1200,7 @@ function SoundManager(smURL, smID) {
 
     // safety check for legacy (change to Flash 9 URL)
     _setVersionInfo();
-    _s.url = _normalizeMovieURL(_overHTTP?remoteURL:localURL);
+    _s.url = _normalizeMovieURL(this._overHTTP?remoteURL:localURL);
     smURL = _s.url;
 
     if (_s.useHighPerformance && _s.useMovieStar && _s.defaultOptions.useVideo === true) {
@@ -1337,7 +1337,7 @@ function SoundManager(smURL, smID) {
     }
 
     _initMsg();
-    _s._wD('soundManager::createMovie(): Trying to load ' + smURL + (!_overHTTP && _s.altURL?' (alternate URL)':''), 1);
+    _s._wD('soundManager::createMovie(): Trying to load ' + smURL + (!this._overHTTP && _s.altURL?' (alternate URL)':''), 1);
 
   };
 
@@ -1464,7 +1464,7 @@ function SoundManager(smURL, smID) {
       p = _s.getMoviePercent();
       if (!_didInit) {
         _s._wD(_sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0?'Loading ' + _s.movieURL + ' may have failed (and/or Flash ' + _s.flashVersion + '+ not present?), ':'') + 'Flash blocked or JS-Flash security error.' + (_s.debugFlash?' ' + _str('checkSWF'):''), 2);
-        if (!_overHTTP && p) {
+        if (!this._overHTTP && p) {
           _wDS('localFail', 2);
           if (!_s.debugFlash) {
             _wDS('tryDebug', 2);
@@ -1474,7 +1474,7 @@ function SoundManager(smURL, smID) {
           // if 0 (not null), probably a 404.
           _s._wD(_str('swf404', _s.url));
         }
-        _debugTS('flashtojs', false, ': Timed out' + (_overHTTP)?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
+        _debugTS('flashtojs', false, ': Timed out' + this._overHTTP?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
       }
       // give up / time-out, depending
       if (!_didInit && _okToDisable) {
