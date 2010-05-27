@@ -69,7 +69,7 @@ var PP_CONFIG = {
               items.push('<span class="'+(s.html5[item]?'true':'false')+(!s.html5[item] && needsFlash?' partial':'')+'" title="'+(s.html5[item]?'Native HTML5 support found':'No HTML5 support found'+(needsFlash?', using Flash fallback':', no Flash support either'))+'">'+item+'</span>');
             }
           }
-          li.innerHTML = 'Your browser\'s <em class="true">HTML5</em> vs. <em class="partial">Flash</em> support (best guess):<b>'+items.join('')+'</b>';
+          li.innerHTML = 'Your browser\'s <em class="true">HTML5</em> vs. <em class="partial">Flash</em> support (best guess):<b>'+items.join('')+'</b>'+(!soundManager._use_maybe?' (Try <a href="#sm2-useHTML5Maybe=1" onclick="window.location.href=this.href;window.location.reload()" title="Try using probably|maybe for HTML5 Audio().canPlayType(), more buggy but may get HTML5 support on Chrome/OS X and other browsers.">less-strict HTML5 checking</a>?)':' (using probably|maybe, less-strict HTML5 checking)');
 	      _id('html5-audio-notes').appendChild(li);
 	      _id('without-html5').style.display = 'inline';
 	    } else {
