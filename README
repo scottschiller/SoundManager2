@@ -1,9 +1,18 @@
-SoundManager 2 makes it easier to play sounds using Javascript.
+SoundManager 2 makes it easier to play audio using JavaScript.
 
-By wrapping and extending the Flash sound API, SoundManager 2 brings solid audio functionality to Javascript.
+By wrapping and extending the Flash and HTML5 Audio APIs, SoundManager 2 brings solid audio functionality to JavaScript.
+
+
+HTML5 Audio() Support! (New, Experimental)
+
+    * 100% Flash-free MP3 + MP4/AAC where supported, compatible with Apple iPad
+    * Fallback to Flash for MP3/MP4 support, as needed
+    * SM2 API is unchanged, transparent; HTML5/flash switching handled internally
+    * HTML5 API support approximates Flash 8 API features, minus ID3, plus buffering
+    * Some other formats (WAV/OGG) supported via HTML5, depending on browser
+    * See soundManager.useHTML5Audio for implementation details.
 
 Basic API Features (Flash 8)
-
     * Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript
     * Events: onload, whileloading, whileplaying, onfinish and more
     * ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)
@@ -24,6 +33,7 @@ General Tech Stuff
 
 A few nifty sites that have implemented SoundManager 2 for driving audio:
 
+    * Last.fm
     * Muxtape
     * SoundCloud / The Cloud Player
     * 8tracks
