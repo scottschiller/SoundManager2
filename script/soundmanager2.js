@@ -177,7 +177,11 @@ function SoundManager(smURL, smID) {
   };
 
   this.hasHTML5 = null; // switch for handling logic
-  this.html5 = {}; // stores canPlayType() results, etc.
+  this.html5 = { // stores canPlayType() results, etc. read-only.
+    // mp3: boolean
+    // mp4: boolean
+    usingFlash: null // set if/when flash fallback is needed
+  }; 
   this.ignoreFlash = false; // used for special cases (eg. iPad/iPhone/palm OS?)
 
   // --- private SM2 internals ---
@@ -1798,7 +1802,8 @@ function SoundManager(smURL, smID) {
     _didDCLoaded = true;
     _initDebug();
     _testHTML5();
-    _needsFlash = _featureCheck();
+    _s.html5.usingFlash = _featureCheck();
+    _needsFlash = _s.html5.usingFlash;
     _didDCLoaded = true;
     if (_s.useHTML5Audio && _s.hasHTML5) {
       if (_html5Ready) {
@@ -2123,7 +2128,6 @@ function SoundManager(smURL, smID) {
     this.start = this.play; // just for convenience
 
     this.stop = function(bAll) {
-_s._wD('playState: '+_t.playState);
       if (_t.playState === 1) {
         _t._onbufferchange(0);
         _t.resetOnPosition(0);
@@ -2159,7 +2163,6 @@ _s._wD('playState: '+_t.playState);
 
     this.setAutoPlay = function(autoPlay) {
       _s._wD('setAutoPlay('+autoPlay+')');
-      // _t.autoPlay = autoPlay;
       _t._iO.autoPlay = autoPlay;
       _s.o._setAutoPlay(_t.sID, autoPlay);
       if (autoPlay) {
