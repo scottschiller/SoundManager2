@@ -52,10 +52,16 @@ package {
     public var didJustBeforeFinish: Boolean;
     public var didFinish: Boolean;
     public var loaded: Boolean;
+    public var connected: Boolean;
+    public var failed: Boolean;
     public var paused: Boolean;
+    public var finished: Boolean;
     public var duration: Number;
+    public var totalBytes: Number;
     public var handledDataError: Boolean = false;
     public var ignoreDataError: Boolean = false;
+    public var autoPlay: Boolean = false;
+    public var pauseOnBufferFull: Boolean = true;
     public var loops: Number = 1;
     public var lastValues: Object = {
       bytes: 0,
@@ -67,9 +73,11 @@ package {
       rightPeak: 0,
       waveformDataArray: null,
       eqDataArray: null,
-      isBuffering: null
+      isBuffering: null,
+      bufferLength: 0
     };
     public var didLoad: Boolean = false;
+    public var useEvents: Boolean = false;
     public var sound: Sound = new Sound();
 
     public var cc: Object;
@@ -78,13 +86,16 @@ package {
     public var st: SoundTransform;
     public var useNetstream: Boolean;
     public var useVideo: Boolean = false;
-    public var bufferTime: Number = -1;
+    public var bufferTime: Number = 3;
+    // public var bufferTime: Number = 0.1;
     public var lastNetStatus: String = null;
+    public var serverUrl: String = null;
+
     public var oVideo: Video = null;
     public var videoWidth: Number = 0;
     public var videoHeight: Number = 0;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideoArg: Boolean = false, netStreamBufferTime: Number = -1) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideoArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -96,44 +107,112 @@ package {
       this.didJustBeforeFinish = false;
       this.didFinish = false; // non-MP3 formats only
       this.loaded = false;
+      this.connected = false;
+      this.failed = false;
+      this.finished = false;
       this.soundChannel = null;
       this.lastNetStatus = null;
       this.useNetstream = useNetstreamArg;
-      if (this.useNetstream) {
-        try {
-          this.cc = new Object();
-          this.nc = new NetConnection();
-          // TODO: security/IO error handling
-          // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
-          // this.nc.addEventListener(IOErrorEvent.IO_ERROR, doIOError);
-          this.nc.connect(null);
-          this.ns = new NetStream(this.nc);
-          this.ns.checkPolicyFile = true;
-          // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
-          if (netStreamBufferTime != -1) {
-            this.ns.bufferTime = netStreamBufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
-          }
-          this.st = new SoundTransform();
-          this.cc.onMetaData = this.metaDataHandler;
-          this.ns.client = this.cc;
-          this.ns.receiveAudio(true);
-          if (useVideoArg) {
-            this.useVideo = true;
-            this.oVideo = new Video();
-            this.ns.receiveVideo(true);
-            this.sm.stage.addEventListener(Event.RESIZE, this.resizeHandler);
-            this.oVideo.smoothing = true; // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Video.html#smoothing
-            this.oVideo.visible = false; // hide until metadata received
-            this.sm.addChild(this.oVideo);
-            this.oVideo.attachNetStream(this.ns);
-            writeDebug('setting video w/h to stage: ' + this.sm.stage.stageWidth + 'x' + this.sm.stage.stageHeight);
-            this.oVideo.width = this.sm.stage.stageWidth;
-            this.oVideo.height = this.sm.stage.stageHeight;
-          }
-        } catch(e: Error) {
-          writeDebug('netStream error: ' + e.toString());
-        }
+      this.serverUrl = serverUrl;
+      this.duration = duration;
+      this.totalBytes = totalBytes;
+      this.useEvents = useEvents;
+      this.useVideo = useVideoArg;
+      if (netStreamBufferTime) {
+        this.bufferTime = netStreamBufferTime;
       }
+      setAutoPlay(autoPlay);
+
+      writeDebug('SoundManager2_SMSound_AS3: Got duration: '+duration+', totalBytes: '+totalBytes+', autoPlay: '+autoPlay);
+
+      if (this.useNetstream) {
+
+        this.cc = new Object();
+        this.nc = new NetConnection();
+
+        // Handle FMS bandwidth check callback.
+        // @see onBWDone
+        // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
+        // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html
+        this.nc.client = this;
+
+        // TODO: security/IO error handling
+        // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
+        nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+
+        if (this.serverUrl != null) {
+          writeDebug('SoundManager2_SMSound_AS3: NetConnection: connecting to server ' + this.serverUrl + '...');
+        }
+        this.nc.connect(serverUrl);
+      } else {
+        this.connected = true;
+      }
+
+    }
+
+    private function netStatusHandler(event:NetStatusEvent):void {
+
+      if (this.useEvents) {
+        writeDebug('netStatusHandler: '+event.info.code);
+      }
+
+      switch (event.info.code) {
+
+        case "NetConnection.Connect.Success":
+          writeDebug('NetConnection: connected');
+          try {
+            this.ns = new NetStream(this.nc);
+            this.ns.checkPolicyFile = true;
+            // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
+            this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
+            this.st = new SoundTransform();
+            this.cc.onMetaData = this.metaDataHandler;
+            this.ns.client = this.cc;
+            this.ns.receiveAudio(true);
+
+            if (this.useVideo) {
+              this.oVideo = new Video();
+              this.ns.receiveVideo(true);
+              this.sm.stage.addEventListener(Event.RESIZE, this.resizeHandler);
+              this.oVideo.smoothing = true; // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Video.html#smoothing
+              this.oVideo.visible = false; // hide until metadata received
+              this.sm.addChild(this.oVideo);
+              this.oVideo.attachNetStream(this.ns);
+              writeDebug('setting video w/h to stage: ' + this.sm.stage.stageWidth + 'x' + this.sm.stage.stageHeight);
+              this.oVideo.width = this.sm.stage.stageWidth;
+              this.oVideo.height = this.sm.stage.stageHeight;
+            }
+            this.connected = true;
+            if (this.useEvents) {
+              writeDebug('firing _onconnect for '+this.sID);
+              ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
+            }
+          } catch(e: Error) {
+            this.failed = true;
+            writeDebug('netStream error: ' + e.toString());
+            ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection failed!');
+          }
+          break;
+
+        case "NetStream.Play.StreamNotFound":
+          this.failed = true;
+          writeDebug("NetConnection: Stream not found!");
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Stream not found!');
+          break;
+
+        case "NetConnection.Connect.Closed":
+          this.failed = true;
+          writeDebug("NetConnection: Connection closed!");
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection closed!');
+          break;
+
+        default:
+          this.failed = true;
+          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'!");
+          ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 0);
+          break;
+      }
+
     }
 
     public function resizeHandler(e: Event) : void {
@@ -186,14 +265,9 @@ package {
       }
       if (!this.loaded) {
         // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
-        if (this.ns.bytesLoaded) {
-          this.lastValues.bytesLoaded = this.ns.bytesLoaded;
-        }
-        if (this.ns.bytesTotal) {
-          this.lastValues.bytes = this.ns.bytesTotal;
-        }
         // TODO: investigate loaded/total values
-        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
+        // ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
+        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, (this.bytesTotal || this.totalBytes), (infoObject.duration || this.duration))
       }
       this.duration = infoObject.duration * 1000;
       // null this out for the duration of this object's existence.
@@ -222,24 +296,48 @@ package {
 
     public function start(nMsecOffset: int, nLoops: int) : void {
       this.sm.currentObject = this; // reference for video, full-screen
+      this.useEvents = true;
       if (this.useNetstream) {
-        writeDebug('start: seeking to ' + nMsecOffset);
+
+        writeDebug("SMSound::start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
+
         this.cc.onMetaData = this.metaDataHandler;
-        this.ns.seek(nMsecOffset);
-        if (!this.didLoad) {
+
+        // Don't seek if we don't have to because it destroys the buffer
+        if (this.lastValues.position != null && this.lastValues.position != nMsecOffset) {
+          // Minimize the buffer so playback starts ASAP
+          this.ns.bufferTime = this.bufferTime;
+          writeDebug('setting buffer to '+this.bufferTime+' secs');
+          this.ns.seek(nMsecOffset);
+        }
+
+        if (this.paused) {
+          writeDebug('start: resuming from paused state');
+          this.ns.resume(); // get the sound going again
+          if (!this.didLoad) {
+            this.didLoad = true;
+          }
+          this.paused = false;
+        } else if (!this.didLoad) {
+          writeDebug('start: !didLoad - playing '+this.sURL);
           this.ns.play(this.sURL);
           this.didLoad = true;
+          this.paused = false;
         } else {
-          this.ns.resume(); // get the sound going again
+          // previously loaded, perhaps stopped/finished. play again?
+          writeDebug('playing again (not paused, didLoad = true)');
+          this.ns.play(this.sURL);
         }
         // this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
+
       } else {
         // writeDebug('start: seeking to '+nMsecOffset+', '+nLoops+(nLoops==1?' loop':' loops'));
         this.soundChannel = this.play(nMsecOffset, nLoops);
         this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
       }
+
     }
 
     private function _onfinish() : void {
@@ -248,6 +346,7 @@ package {
 
     public function loadSound(sURL: String, bStream: Boolean) : void {
       if (this.useNetstream) {
+        this.useEvents = true;
         if (this.didLoad != true) {
           ExternalInterface.call('loadSound(): loading ' + this.sURL);
           this.ns.play(this.sURL);
@@ -267,6 +366,23 @@ package {
       }
     }
 
+    public function setAutoPlay(autoPlay: Boolean) : void {
+      if (!this.serverUrl) {
+        // don't apply to non-RTMP, netstream stuff.
+        this.autoPlay = true;
+        this.pauseOnBufferFull = false;
+      } else {
+        this.autoPlay = autoPlay;
+        if (this.autoPlay) {
+          this.pauseOnBufferFull = false;
+          writeDebug('ignoring pauseOnBufferFull because autoPlay is on');
+        } else if (!this.autoPlay) {
+          this.pauseOnBufferFull = true;
+          writeDebug('pausing on buffer full because autoPlay is off');
+        }
+      }
+    }
+
     public function setVolume(nVolume: Number) : void {
       this.lastValues.volume = nVolume / 100;
       this.applyTransform();
@@ -280,12 +396,31 @@ package {
     public function applyTransform() : void {
       var st: SoundTransform = new SoundTransform(this.lastValues.volume, this.lastValues.pan);
       if (this.useNetstream) {
-        this.ns.soundTransform = st;
+        if (this.ns) {
+          this.ns.soundTransform = st;
+        } else {
+          // writeDebug('applyTransform(): Note: No active netStream');
+        }
       } else if (this.soundChannel) {
         this.soundChannel.soundTransform = st; // new SoundTransform(this.lastValues.volume, this.lastValues.pan);
       }
     }
+    // Handle FMS bandwidth check callback.
+    // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
+    // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html
+    public function onBWDone() : void {
+      // writeDebug('onBWDone: called and ignored');
+    }
 
-  }
+    // NetStream client callback. Invoked when the song is complete.
+    public function onPlayStatus(info:Object):void {
+      writeDebug('onPlayStatus called with '+info);
+      switch(info.code) {
+        case "NetStream.Play.Complete":
+          writeDebug('Song has finished!');
+          break;
+      }
+    }
+ }
 
 }
