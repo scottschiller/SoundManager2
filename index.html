@@ -45,6 +45,10 @@ var PP_CONFIG = {
 	soundManager.debugMode = false;
 	soundManager.url = 'swf/';
 	soundManager.wmode = 'transparent'; // hide initial flash of white on everything except firefox/win32
+	if (navigator.platform.match(/win32/i) && navigator.userAgent.match(/firefox/i)) {
+    // extra-special homepage case (you should never see this), prevent out-of-view SWF load failure WITH high performance AND flashblock AND SWF in a placed element
+      soundManager.useHighPerformance = false;
+    }
 	soundManager.useFastPolling = true;
 
     if (!navigator.userAgent.match(/msie 6/i)) {
