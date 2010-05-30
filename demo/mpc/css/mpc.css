@@ -1,7 +1,39 @@
 /* Demo/example CSS - not needed for general use */
 
 body {
- font:normal 75% verdana,arial,tahoma,"times new roman","sans serif";
+ background:#000;
+ font:normal 75% "helvetica neue",helvetica,verdana,arial,tahoma,"times new roman","sans serif";
+ color:#fff;
+ margin:0px;
+ padding:0px;
+}
+
+#background {
+ position:absolute;
+ left:0px;
+ top:0px;
+ width:100%;
+ height:100%;
+ background:transparent url(http://farm1.static.flickr.com/45/191496680_97cdc5351b_b.jpg) no-repeat 50% 50%;
+}
+
+#site {
+ position:relative;
+ z-index:2;
+ background:rgba(0,0,0,0.5);
+ padding:1em;
+}
+
+#site h1 {
+ margin-top:0px;
+}
+
+#site p {
+ margin:0.5em 0px 0.5em 0px;
+}
+
+#site p:last-child {
+ margin:0px;
 }
 
 .clear {
@@ -10,53 +42,69 @@ body {
  font-size:1px;
  line-height:1px;
  height:1px;
-}
-
-h1, h2 {
- font-size:1.5em;
- letter-spacing:-1px;
- margin:0px;
-}
-
-h2 {
- font-size:1.2em;
- font-weight:normal;
-}
-
-#soundmanagermovie {
- position:absolute;
- left:-999px;
- top:-999px;
+ overflow:hidden;
 }
 
 #mpc {
- width:37em;
- padding:1em;
- border:1px solid #ccc;
- background:#eee;
+ position:absolute;
+ left:50%;
+ top:50%;
+ margin-left:-19em;
+ margin-top:-19em;
+ width:38em;
+ _width:37.3em;
+ border:3px solid #666;
+ border:3px solid rgba(255,255,255,0.25);
+ -moz-border-radius:12px;
+ -webkit-border-radius:12px;
+ border-radius:12px;
+ z-index:2;
+}
+
+#mpc #wrapper {
+ position:relative;
+ background:#333;
+ background:rgba(0,0,0,0.5);
+ padding:0.5em;
+ -moz-border-radius:12px;
+ -webkit-border-radius:12px;
+ border-radius:12px;
 }
 
 #mpc ul {
  margin:0px;
  padding:0px;
+ margin-left:2px;
+ *margin-left:1em;
+ _margin-left:2px;
+ padding:2px 0px 2px 0px;
 }
 
 #mpc ul li {
  position:relative;
  float:left;
  display:inline;
- width:8em;
+ width:7em;
  height:7em;
  margin:0.5em;
  background:#999;
- border:1px solid #333;
- font:normal 1em/1em "lucida console",terminal,system;
- padding:0.5em 0px;
- text-indent:0.5em;
+ border:1px solid rgba(0,0,0,0.75);
+ -moz-border-radius:2px;
+ -webkit-border-radius:2px;
+ border-radius:2px;
+ font:normal 1em/1em "helvetica",verdana,arial,system;
+ padding:0.5em;
  cursor:pointer;
  cursor:hand;
- color:#ccc;
+ color:#eee;
  text-transform:uppercase;
+ font-weight:bold;
+}
+
+#mpc ul li span {
+ text-transform:none;
+ font-weight:normal;
+ color:#ccc;
 }
 
 #mpc ul li.active {
@@ -86,15 +134,31 @@ h2 {
 
 #soundmanager-debug {
  position:absolute;
- left:42em;
- top:1em;
- height:42em;
- *width:38em;
+ right:20px;
+ bottom:20px;
+ height:12em;
+ width:50em;
  overflow:auto;
+ margin-left:1em;
 }
 
 #soundmanager-debug div {
- font:normal 0.8em;
+ font-size:11px;
  font-family: "lucida console",system,terminal,verdana,arial; /* IE doesn't seem to obey short-hand font family here? */
  padding:0px 1em 0.5em 0px;
+}
+
+#mpc-debug,
+.note {
+ color:#999;
+}
+
+#mpc-debug a,
+.note a {
+ color:#6699cc;
+ text-decoration:none;
+}
+
+#isHTML5 {
+ display:none;
 }
