@@ -187,7 +187,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Ready, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
   _is_pre = _ua.match(/pre\//i),
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
   _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
@@ -834,13 +834,7 @@ function SoundManager(smURL, smID) {
     if (!_s.useHTML5Audio || typeof Audio === 'undefined') {
       return false;
     }
-    var a = (typeof Audio !== 'undefined' ? new Audio():null),
-    test_uris = {
-      // attempt to load real audio data, since canPlayType() is so inconsistent cross-browser.
-      mp3: 'data:audio/mpeg;base64,/+MYxAALOAHgCAAAAD////////////v6OGAfB8HwfAgIAgCAYB8HwfB8CAgCAIAgD4Pg+D4OAgCAIP9Xt6vb1CV0qLA0DQND/+MYxA4FcAHcAAAAAISgqCtvV7eqTEFNRTMuOTguNKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq/+MYxDMAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
-      wav: 'data:audio/wave;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAD//w=='
-    },
-    testsQueued = 0, testsDone = 0, base64_results = {}, item, support = {}, aF, i;
+    var a = (typeof Audio !== 'undefined' ? new Audio():null), item, support = {}, aF, i;
 
     function _cp(m) {
       var canPlay, i, j, isOK = false;
@@ -862,71 +856,6 @@ function SoundManager(smURL, smID) {
       }
     }
 
-    function _testBase64(sType, onComplete) {
-      var a, didFire = false;
-      testsQueued++;
-
-      function checkReady() {
-        if (testsDone >= testsQueued && !_html5Ready) {
-          _html5Ready = true;
-          if (_didDCLoaded) {
-            // domready etc. already fired and missed
-            _go();
-          }
-        }
-      }
-
-      if (_isMobile) {
-        // ipad straight up barfs with this, other mobile phones likely do also.
-        testsDone++;
-        onComplete();
-        checkReady();
-        return false;
-      }
-
-      function handler(isOK, e) {
-        if (!didFire) {
-          didFire = true;
-          testsDone++;
-          base64_results[sType] = isOK;
-          onComplete(isOK);
-          checkReady();
-        }
-      }
-
-      if (typeof base64_results[sType] !== 'undefined') {
-        didFire = true;
-        onComplete(base64_results[sType]);
-      } else {
-        // TODO: Ensure that empty constructor (with no URL) is OK everywhere
-        a = new Audio(test_uris[sType]); // '' or 'about:blank' may mean media errors, so don't use this.
-
-        a.addEventListener('canplay', function(e) {
-          handler(true, e);
-          a = null;
-        }, false);
-
-        a.addEventListener('canplaythrough', function(e) {
-          handler(true, e);
-          a = null;
-        }, false);
-
-        a.addEventListener('error', function(e) {
-          // ignore base64: fail, may be a false positive.
-          handler(false, this.error?this.error:e);
-          a = null;
-        }, false);
-
-        a.addEventListener('stalled', function(e) {
-          handler(false, e);
-          a = null;
-        }, false);
-
-        // a.src = test_uris[sType];
-        a.load();
-      }
-    }
-
     // test all registered formats + codecs
     aF = _s.audioFormats;
     for (item in aF) {
@@ -943,25 +872,6 @@ function SoundManager(smURL, smID) {
     support.canPlayType = (a?_cp:null);
 
     _s.html5 = _mergeObjects(_s.html5, support);
-
-    // base64 hackishness, sometimes works
-    // +ve base64 results override previous failures
-
-    if (!_s.html5.mp3) {
-      _testBase64('mp3', function(isOK) {
-        if (isOK) {
-          _s.html5.mp3 = isOK;
-        }
-      });
-    }
-
-    if (!_s.html5.wav) {
-      _testBase64('wav', function(isOK) {
-        if (isOK) {
-          _s.html5.wav = isOK;
-        }
-      });
-    }
 
   };
 
@@ -1805,13 +1715,7 @@ function SoundManager(smURL, smID) {
     _s.html5.usingFlash = _featureCheck();
     _needsFlash = _s.html5.usingFlash;
     _didDCLoaded = true;
-    if (_s.useHTML5Audio && _s.hasHTML5) {
-      if (_html5Ready) {
-        _go();
-      }
-    } else {
-      _go();
-    }
+    _go();
   };
 
   _startTimer = function(oSound) {
