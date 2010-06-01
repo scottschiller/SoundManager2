@@ -1,7 +1,6 @@
 SoundManager 2 makes it easier to play audio using JavaScript.
 
-By wrapping and extending the Flash and HTML5 Audio APIs, SoundManager 2 brings solid audio functionality to JavaScript.
-
+By wrapping and extending the Flash and HTML5 Audio APIs, SoundManager 2 brings solid cross-browser, cross-platform audio functionality to JavaScript.
 
 HTML5 Audio() Support! (New, Experimental)
 
