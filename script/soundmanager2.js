@@ -377,14 +377,14 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].load(oOptions);
+    return _s.sounds[sID].load(oOptions);
   };
 
   this.unload = function(sID) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].unload();
+    return _s.sounds[sID].unload();
   };
 
   this.play = function(sID, oOptions) {
@@ -407,7 +407,7 @@ function SoundManager(smURL, smID) {
         return false;
       }
     }
-    _s.sounds[sID].play(oOptions);
+    return _s.sounds[sID].play(oOptions);
   };
 
   this.start = this.play; // just for convenience
@@ -416,7 +416,7 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].setPosition(nMsecOffset);
+    return _s.sounds[sID].setPosition(nMsecOffset);
   };
 
   this.stop = function(sID) {
@@ -424,7 +424,7 @@ function SoundManager(smURL, smID) {
       return false;
     }
     _s._wD('soundManager.stop(' + sID + ')', 1);
-    _s.sounds[sID].stop();
+    return _s.sounds[sID].stop();
   };
 
   this.stopAll = function() {
@@ -440,7 +440,7 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].pause();
+    return _s.sounds[sID].pause();
   };
 
   this.pauseAll = function() {
@@ -453,7 +453,7 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].resume();
+    return _s.sounds[sID].resume();
   };
 
   this.resumeAll = function() {
@@ -466,21 +466,21 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].togglePause();
+    return _s.sounds[sID].togglePause();
   };
 
   this.setPan = function(sID, nPan) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].setPan(nPan);
+    return _s.sounds[sID].setPan(nPan);
   };
 
   this.setVolume = function(sID, nVol) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].setVolume(nVol);
+    return _s.sounds[sID].setVolume(nVol);
   };
 
   this.mute = function(sID) {
@@ -500,7 +500,7 @@ function SoundManager(smURL, smID) {
         return false;
       }
       _s._wD(fN + 'Muting "' + sID + '"');
-      _s.sounds[sID].mute();
+      return _s.sounds[sID].mute();
     }
   };
 
@@ -524,7 +524,7 @@ function SoundManager(smURL, smID) {
         return false;
       }
       _s._wD(fN + 'Unmuting "' + sID + '"');
-      _s.sounds[sID].unmute();
+      return _s.sounds[sID].unmute();
     }
   };
 
@@ -536,7 +536,7 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-    _s.sounds[sID].toggleMute();
+    return _s.sounds[sID].toggleMute();
   };
 
   this.getMemoryUse = function() {
@@ -1855,7 +1855,7 @@ function SoundManager(smURL, smID) {
       _s._wD('soundManager.load(): ' + _t._iO.url, 1);
       if (_t._iO.url === _t.url && _t.readyState !== 0 && _t.readyState !== 2) {
         _wDS('onURL', 1);
-        return false;
+        return _t;
       }
       _t.url = _t._iO.url;
       _t._lastURL = _t._iO.url;
@@ -1890,6 +1890,7 @@ function SoundManager(smURL, smID) {
           _s.disable();
         }
       }
+      return _t;
     };
 
     this.unload = function() {
@@ -1921,6 +1922,7 @@ function SoundManager(smURL, smID) {
         // reset load/status flags
         _resetProperties();
       }
+      return _t;
     };
 
     this.destruct = function() {
@@ -1955,7 +1957,7 @@ function SoundManager(smURL, smID) {
         if (!_t.connected) {
           _s._wD(fN+' Netstream not connected yet - setting autoPlay');
           _t.setAutoPlay(true);
-          return false;
+          return _t;
         }
       }
       if (_html5OK(_t._iO)) {
@@ -1966,7 +1968,7 @@ function SoundManager(smURL, smID) {
         allowMulti = _t._iO.multiShot;
         if (!allowMulti) {
           _s._wD(fN + '"' + _t.sID + '" already playing (one-shot)', 1);
-          return false;
+          return _t;
         } else {
           _s._wD(fN + '"' + _t.sID + '" already playing (multi-shot)', 1);
           if (_t.isHTML5) {
@@ -1993,7 +1995,7 @@ function SoundManager(smURL, smID) {
           // _t.load(_t._iO); // moved into flash-only block
         } else if (_t.readyState === 2) {
           _s._wD(fN + 'Could not load "' + _t.sID + '" - exiting', 2);
-          return false;
+          return _t;
         } else {
           _s._wD(fN + '"' + _t.sID + '" is loading - attempting to play..', 1);
         }
@@ -2027,6 +2029,7 @@ function SoundManager(smURL, smID) {
           _t._setup_html5().play();
         }
       }
+      return _t;
     };
 
     this.start = this.play; // just for convenience
@@ -2063,6 +2066,7 @@ function SoundManager(smURL, smID) {
         _t._iO = {};
         // _t.instanceOptions = _t._iO;
       }
+      return _t;
     };
 
     this.setAutoPlay = function(autoPlay) {
@@ -2108,12 +2112,13 @@ function SoundManager(smURL, smID) {
           }
         }
       }
+      return _t;
     };
 
     this.pause = function(bCallFlash) {
       // if (_t.paused || _t.playState === 0) {
       if (_t.paused || (_t.playState === 0 && _t.readyState !== 1)) { // TODO: Verify vs. old
-        return false;
+        return _t;
       }
       _s._wD('SMSound.pause()');
       _t.paused = true;
@@ -2128,11 +2133,12 @@ function SoundManager(smURL, smID) {
       if (_t._iO.onpause) {
         _t._iO.onpause.apply(_t);
       }
+      return _t;
     };
 
     this.resume = function() {
       if (!_t.paused || _t.playState === 0) {
-        return false;
+        return _t;
       }
       _s._wD('SMSound.resume()');
       _t.paused = false;
@@ -2146,6 +2152,7 @@ function SoundManager(smURL, smID) {
       if (_t._iO.onresume) {
         _t._iO.onresume.apply(_t);
       }
+      return _t;
     };
 
     this.togglePause = function() {
@@ -2154,13 +2161,14 @@ function SoundManager(smURL, smID) {
         _t.play({
           position: (_fV === 9 && !_t.isHTML5 ? _t.position:_t.position / 1000)
         });
-        return false;
+        return _t;
       }
       if (_t.paused) {
         _t.resume();
       } else {
         _t.pause();
       }
+      return _t;
     };
 
     this.setPan = function(nPan, bInstanceOnly) {
@@ -2179,6 +2187,7 @@ function SoundManager(smURL, smID) {
       if (!bInstanceOnly) {
         _t.pan = nPan;
       }
+      return _t;
     };
 
     this.setVolume = function(nVol, bInstanceOnly) {
@@ -2197,6 +2206,7 @@ function SoundManager(smURL, smID) {
       if (!bInstanceOnly) {
         _t.volume = nVol;
       }
+      return _t;
     };
 
     this.mute = function() {
@@ -2206,6 +2216,7 @@ function SoundManager(smURL, smID) {
       } else if (_t.__element) {
         _t.__element.muted = true;
       }
+      return _t;
     };
 
     this.unmute = function() {
@@ -2216,14 +2227,11 @@ function SoundManager(smURL, smID) {
       } else if (_t.__element) {
         _t.__element.muted = false;
       }
+      return _t;
     };
 
     this.toggleMute = function() {
-      if (_t.muted) {
-        _t.unmute();
-      } else {
-        _t.mute();
-      }
+      return (_t.muted?_t.unmute():_t.mute());
     };
 
     this.onPosition = function(nPosition, oMethod, oScope) {
@@ -2234,6 +2242,7 @@ function SoundManager(smURL, smID) {
         scope: (oScope||null),
         fired: false
       });
+      return _t;
     };
 
     this.processOnPosition = function() {
@@ -2714,7 +2723,6 @@ function SoundManager(smURL, smID) {
     };
 
   }; // SMSound()
-
 
 
   // register a few event handlers
