@@ -617,8 +617,6 @@ function SoundManager(smURL, smID) {
   };
 
   this.onready = function(oMethod, oScope) {
-    // queue a callback, with optional scope
-    // a status object will be passed to your handler
     /*
     soundManager.onready(function(oStatus) {
       console.log('SM2 init success: '+oStatus.success);
@@ -1447,12 +1445,12 @@ function SoundManager(smURL, smID) {
         _s.oMC.className = _getSWFCSS() + ' ' + _s.swfCSS.swfDefault + ' ' + (p === null?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
         _s._wD(name+': '+_str('fbTimeout')+(p?' ('+_str('fbLoaded')+')':''));
       }
+      _s.didFlashBlock = true;
       _processOnReady(true); // fire onready(), complain lightly
       // onerror?
       if (_s.onerror instanceof Function) {
         _s.onerror.apply(window);
       }
-      _s.didFlashBlock = true;
     } else {
       // SM2 loaded OK (or recovered)
       if (_s.didFlashBlock) {
