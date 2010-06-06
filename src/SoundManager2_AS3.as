@@ -45,7 +45,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.96a.20100520+DEV";
+    public var version:String = "V2.96a.20100606";
     public var version_as:String = "(AS3/Flash 9)";
 
     /*
@@ -847,11 +847,15 @@ package {
         try {
           // s.ns.close();
           s.useEvents = true;
-          this.addNetstreamEvents(s);
-          ExternalInterface.call(baseJSObject + "['" + s.sID + "']._whileloading", s.ns.bytesLoaded, s.ns.bytesTotal || s.totalBytes, int(s.duration || 0));
-          s.ns.play(sURL);
-          if (!bAutoPlay) {
-            s.ns.pause();
+          if (s.ns) {
+            this.addNetstreamEvents(s);
+            ExternalInterface.call(baseJSObject + "['" + s.sID + "']._whileloading", s.ns.bytesLoaded, s.ns.bytesTotal || s.totalBytes, int(s.duration || 0));
+            s.ns.play(sURL);
+            if (!bAutoPlay) {
+              s.ns.pause();
+            }
+          } else {
+            writeDebug('_load(): Note: No netStream found.'+(!s.connected?' (Not connected yet.)':''));
           }
         } catch(e: Error) {
           writeDebug('_load(): error: ' + e.toString());
@@ -1018,9 +1022,7 @@ package {
         SoundMixer.stopAll();
       } else {
         var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
-writeDebug('stop: '+sID);
         if (!s) return void;
-writeDebug(s.useNetstream +'/'+ s.ns);
         if (s.useNetstream && s.ns) {
           s.ns.pause();
           if (s.oVideo) {
@@ -1064,8 +1066,10 @@ writeDebug(s.useNetstream +'/'+ s.ns);
         s.paused = true;
         // writeDebug('_pause(): position: '+s.lastValues.position);
         if (s.useNetstream) {
-          s.lastValues.position = s.ns.time;
-          s.ns.pause();
+          if (s.ns) {
+            s.lastValues.position = s.ns.time;
+            s.ns.pause();
+          }
         } else {
           if (s.soundChannel) {
             s.lastValues.position = s.soundChannel.position;

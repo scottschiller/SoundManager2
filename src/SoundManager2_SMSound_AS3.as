@@ -82,7 +82,7 @@ package {
 
     public var cc: Object;
     public var nc: NetConnection;
-    public var ns: NetStream;
+    public var ns: NetStream = null;
     public var st: SoundTransform;
     public var useNetstream: Boolean;
     public var useVideo: Boolean = false;
