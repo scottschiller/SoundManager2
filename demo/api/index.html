@@ -302,7 +302,7 @@ soundManager.play('<span>aRimSound</span>');</code></pre>
  <p>This will crate and play a new sound, using the "onfinish" handler to create and play a second, new sound.</p>
  <p>It is recommended to create sound objects first, to simplify troubleshooting.</p>
 
-<h2 id="looping-conventional">Demo 4c: Looping a sound (conventional)</h2>
+<h2 id="looping-conventional">Demo 4c: Looping a sound (conventional, onfinish()-based)</h2>
 <pre id="demo4c" class="block"><code>var s = soundManager.createSound({
   id:'<span>hhCymbal</span>',
   url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
@@ -317,9 +317,9 @@ s.play({
 </code></pre>
 
 <button onclick="return doEval(document.getElementById('demo4c').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
-<p>Note that there are issues with seamlessly-looping sounds, it is nearly impossible with Flash 8/9 at this point. You can try to get creative with <i>onbeforefinish</i> and timing, but it is difficult and unreliable.</p>
+<p>Note that there are issues with seamlessly-looping sounds, it is "close, but not perfect" with Flash 8/9 at this point.</p>
 
-<h2 id="looping">Demo 4d: Looping a sound (Flash 9 method)</h2>
+<h2 id="looping">Demo 4d: Looping a sound ("loops" parameter method)</h2>
 <pre id="demo4d" class="block"><code>var s = soundManager.createSound({
   id:'<span>hhCymbal</span>',
   url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
@@ -331,7 +331,37 @@ s.play({
 </code></pre>
 
 <button onclick="return doEval(document.getElementById('demo4d').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
-<p>Looping is possible within Flash 9. For tighter looping, see See <a href="http://www.flickr.com/photos/schill/4499319436/" title="Seamless looping MP3 sounds in Flash">Seamless Looping MP3 in Flash</a> for further details.</p>
+<p>Looping is possible as shown above using Flash 9. <b>With flash 8, the sound must be preloaded before looping can begin</b> - eg. <code>autoLoad: true, onload: function() { this.play{loops:3} }</code>. For tighter looping, see See <a href="http://www.flickr.com/photos/schill/4499319436/" title="Seamless looping MP3 sounds in Flash">Seamless Looping MP3 in Flash</a> for further details.</p>
+
+
+<h2 id="onposition">Demo 4e: Sound timing notifications using onposition()</h2>
+<pre id="demo4e" class="block"><code>var s = soundManager.getSoundById('<span>aCymbalSound</span>'); <span><span>// existing sound object</span></span>
+
+<span><span>// register some listeners (only do this once, they will work for subsequent plays)</span></span>
+
+if (typeof addedListeners === '<span>undefined</span>') {
+  addedListeners = true;
+
+  s.onposition(<span>500</span>, function(eventPosition) { <span><span>// fire at 0.5 seconds</span></span>
+    soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
+  });
+
+  s.onposition(<span>1000</span>, function(eventPosition) {<span><span>// fire at 1 second</span></span>
+    soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
+  });
+}
+
+s.play({
+  whileplaying:function() {
+    <span><span>// demo only: show sound position while playing, for context</span></span>
+    soundManager._writeDebug('position = ' + this.position);
+  }
+});
+</code></pre>
+
+<button onclick="return doEval(document.getElementById('demo4e').innerHTML);return false">Do this</button>
+<p>onposition() allows you to add an event listener for a given time (in miliseconds, watching the position property); the event fires when that time has been reached while a sound is playing.</p>
+<p>Note that for multiShot cases, the listeners will only fire for the original (first) shot because its position is the only one that is tracked within Flash.</p>
  
 <h2>Demo 5a: Set sound parameters, then play</h2>
 <pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>'); <span><span>// predefined/preloaded sound</span></span>
