@@ -181,8 +181,6 @@ body #sm2-container embed {
 	    <li><a href="demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
 		<li><a href="demo/page-player/">Muxtape-style UI</a></li>
 		<li><a href="demo/360-player/">360&deg; Player UI</a></li>
-		<li><a href="demo/video/">MPEG4 Video Player</a></li>
-		<li><a href="demo/video/basic.html" class="norewrite">Basic Video Template</a></li>
 	    <li><a href="demo/mpc/">Drum Machine (MPC)</a></li>
 		<li><a href="demo/animation/">DOM/Animation Demos</a></li>
 		<li><a href="demo/flashblock/">FlashBlock Handling</a></li>
@@ -337,7 +335,7 @@ body #sm2-container embed {
 		
 			<h4 style="clear:left;margin-top:0.5em">HTML5 Audio() Support! <em style="color:#666">(New, Experimental)</em></h4>
 			<ul id="html5-audio-notes" class="standard">
-			 <li>100% Flash-free MP3 + MP4/AAC where supported, Apple iPad&trade;-compatible</li>
+			 <li>100% Flash-free MP3 + MP4/AAC where supported, works on iPad + iPhone OS 4</li>
 			 <li>Fallback to Flash for MP3/MP4 support, as needed</li>
 			 <li>SM2 API is unchanged, transparent; HTML5/flash switching handled internally</li>
              <li>HTML5 API support approximates Flash 8 API features, minus ID3, plus buffering</li>
@@ -362,7 +360,8 @@ body #sm2-container embed {
 			</div>
 
 			<ul class="standard">
-			 <li>MPEG-4 (HE-AAC/H.264) audio and (experimental) full-screen video support</li>
+			 <li>RTMP / Flash Media Server streaming support (new, experimental) - see <a href="doc/#smsound-serverurl" title="SMSound.serverURL parameter">serverURL</a> for details</li>
+			 <li>MPEG-4 (AAC, HE-AAC, H.264) audio support</li>
 			 <li>"MultiShot" play (layered/chorusing effects)</li>
 			 <li>Waveform/frequency spectrum data</li>
 			 <li>Peak (L/R channel volume) data</li>
