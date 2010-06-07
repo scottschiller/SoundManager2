@@ -17,8 +17,8 @@ Basic API Features (Flash 8)
     * ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)
 
 Shiny Flash 9 Features
-
-    * Full-screen MPEG-4 (HE-AAC/H.264) audio (and experimental video) support
+    * RTMP / Flash Media Server streaming support (new, experimental)
+    * MPEG-4 (AAC, HE-AAC, H.264) audio support
     * "MultiShot" play (layered/chorusing effects)
     * Waveform/frequency spectrum data
     * Peak (L/R channel volume) data
