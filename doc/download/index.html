@@ -128,10 +128,10 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.96a.20100520</p>
-				<p><b>Epic update:</b> Experimental HTML5 <code>Audio()</code> via <a href="../#soundmanager-usehtml5audio" title="SoundManager: useHTML5Audio feature">soundManager.useHTML5Audio</a>, iPad and Palm Pre support! Looping in Flash! New non-debug versions of SWFs, build-script-optimized -nodebug version of SM2 (<a href="../getstarted/#basic-inclusion" title="Including SoundManager 2, file size options">down to 9 KB with gzip!</a>) and more. See <a href="#history">revision history</a> for details.</p>
+				<p>Current version: 2.96a.20100606</p>
+				<p><b>HTML5 update, new RTMP feature</b>: Experimental Flash Media Server support, <code>onposition()</code> event listener, SMSound <code>type</code> option and code cleanup. JS core file size (<a href="../getstarted/#basic-inclusion" title="Including SoundManager 2, file size options">down to 9 KB with gzip!</a>) and more. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100520.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100520</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100606.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100606</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a></p>
 			</div>
 			
@@ -155,8 +155,46 @@
 
 			  <ul id="revision-list" class="standard">
 
+
 			   <li class="in">
-			    <h3><b>V2.96a.20100520</b> - HTML5 Edition</h3>
+			    <h3><b>V2.96a.20100606</b> - RTMP (Flash Media Server) Support, HTML5 Updates</h3>
+			
+				<p>HTML5 update, new RTMP feature: Experimental Flash Media Server support, <code>onposition()</code> event listener, SMSound <code>type</code> option and code cleanup.</p>
+			
+			    <ul class="double">
+			
+			     <li class="in">
+			      <p class="compact">API Updates</p>
+			      <ul class="nested compact flat">
+				   <li>New experimental <a href="../#smsound-serverurl" title="SMSound serverURL property">RTMP support</a> via kjvarga's fork at <a href="http://github.com/kjvarga/SoundManager2/">http://github.com/kjvarga/SoundManager2/</a> while maintaining existing NetStream-based behaviour for non-RTMP MPEG4 audio, etc. Uses new <code>serverUrl</code> parameter for FMS (I used Red5 for dev/testing,) eg. <code>soundManager.createSound({id:'rtmpTest',serverUrl:'rtmp://localhost/oflaDemo',url:'oh-alberta.mp3'}).play();</code></li>
+				   <li>New SMSound option for createSound(), load(), play(): '<a href="../#smsound-type" title="SMSound type option">type</a>', for specifying MIME type alongside URL to help with detecting playability. eg. 
+<code>soundManager.createSound({id:'foo', url:'/player.php?stream=1', type:'audio/mp3'}).play();</code> and so on. Hat tip: <a href="http://sylvinus.org">sylvinus.org</a></li>
+                   <li>New SMSound event: <a href="../#smsound-onposition" title="SMSound onposition() event">onposition()</a>, for attaching listeners to specific times within a sound.</li>
+				  </ul>
+				 </li>
+			     <li class="in">
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li>Flash sound unload/destroy ActionScript "could not close stream" exception/warning (finally?) fixed.</li>
+				   <li>Sound looping updated for Flash 8, working (albeit with a quirk - requires preloading.)</li>
+				  </ul>
+			     </li>
+			     <li class="in">
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>Removed Base64 HTML5 Audio() tests, redundant as numerous MIME (audio/mpeg, audio/mp3 etc.) checks seem to cover it.</li>
+				   <li>Updated MPC (drum machine) demo from 2006-era design, modernizing the CSS a bit.</li>
+				   <li><code>nullURL = 'about:blank'</code> tweak for unloading (flash 8.) May have finally fixed that dumb stream closing error on unload/destroy.</li>
+				   <li>set <code>soundManager.didFlashBlock</code> *before* firing <code>onready()</code>/<code>onerror()</code> listeners</li>
+			      </ul>
+			     </li>
+
+			    </ul>
+
+			   </li>
+
+			   <li class="in">
+			    <h3><b>V2.96a.20100520</b> - HTML5 Edition (<a href="../../download/soundmanagerv295b-20100520.zip">Download archived version</a>)</h3>
 			
 				<p>Experimental HTML5 support, lots of code shuffling and performance tweaks.</p>
 			
