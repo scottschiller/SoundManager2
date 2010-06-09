@@ -224,10 +224,10 @@
 </exec>
 
 <exec executable="/bin/sh">
- <arg line='-c "cp src/*.as src/soundmanager2_flash_xdomain/nodebug"'/>
+ <arg line='-c "cp src/soundmanager2_flash_nodebug/*.as src/soundmanager2_flash_xdomain/nodebug"'/>
 </exec>
 
-<!-- no-debug, cross-domain .AS... -->
+<!-- cross-domain .AS (regular, debug version)... -->
 
 <exec executable="/bin/sh">
  <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting = false;/var allow_xdomain_scripting = true;/g;p;}&#39; src/SoundManager2.as &gt; src/soundmanager2_flash_xdomain/SoundManager2.as"'/>
@@ -235,6 +235,16 @@
 
 <exec executable="/bin/sh">
  <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting:Boolean = false;/var allow_xdomain_scripting:Boolean = true;/g;p;}&#39; src/SoundManager2_AS3.as &gt; src/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
+</exec>
+
+<!-- -nodebug cross-domain -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting = false;/var allow_xdomain_scripting = true;/g;p;}&#39; src/soundmanager2_flash_nodebug/SoundManager2.as &gt; src/soundmanager2_flash_xdomain/nodebug/SoundManager2.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting:Boolean = false;/var allow_xdomain_scripting:Boolean = true;/g;p;}&#39; src/soundmanager2_flash_nodebug/SoundManager2_AS3.as &gt; src/soundmanager2_flash_xdomain/nodebug/SoundManager2_AS3.as"'/>
 </exec>
 
 <echo>Building no-debug SWFs...</echo>
@@ -293,7 +303,7 @@
 <exec executable="/bin/sh">
  <arg line='-c "cd src; zip -r ../swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain"'/>
 </exec>
-
+ 
 <!-- remove temporary build directories -->
 <exec executable="/bin/sh">
  <arg line='-c "rm -r src/soundmanager2_flash_xdomain"'/>
@@ -302,6 +312,7 @@
 <exec executable="/bin/sh">
  <arg line='-c "rm -r src/soundmanager2_flash_nodebug"'/>
 </exec>
+
 
 </target>
 
