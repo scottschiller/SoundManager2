@@ -82,6 +82,16 @@ class SoundManager2 {
     Stage.scaleMode = 'noScale';
     Stage.align = 'TL';
 
+    // context menu item with version info
+
+    var doNothing = function() {}
+
+    var sm2Menu:ContextMenu = new ContextMenu();
+    var sm2MenuItem:ContextMenuItem = new ContextMenuItem('SoundManager ' + version + ' ' + version_as, doNothing);
+    sm2MenuItem.enabled = false;
+    sm2Menu.customItems.push(sm2MenuItem);
+    _root.menu = sm2Menu;
+
     var writeDebug = function (s) {
       // <d>
       if (!debugEnabled) return false;

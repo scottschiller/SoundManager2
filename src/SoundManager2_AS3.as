@@ -36,6 +36,8 @@ package {
   import flash.text.TextField;
   import flash.text.TextFormat;
   import flash.text.TextFieldAutoSize;
+  import flash.ui.ContextMenu;
+  import flash.ui.ContextMenuItem;
   import flash.utils.setInterval;
   import flash.utils.clearInterval;
   import flash.utils.Dictionary;
@@ -107,6 +109,14 @@ package {
       // </d>
 
       flashDebug('SM2 SWF ' + version + ' ' + version_as);
+
+      // context menu item with version info
+
+      var sm2Menu:ContextMenu = new ContextMenu();
+      var sm2MenuItem:ContextMenuItem = new ContextMenuItem('SoundManager ' + version + ' ' + version_as);
+      sm2MenuItem.enabled = false;
+      sm2Menu.customItems.push(sm2MenuItem);
+      contextMenu = sm2Menu;
 
       if (ExternalInterface.available) {
         flashDebug('ExternalInterface available');
