@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.96a.20100606
+ * V2.96a.20100606+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true, regexp: false */
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.96a.20100606';
+  this.versionNumber = 'V2.96a.20100606+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -799,7 +799,7 @@ function SoundManager(smURL, smID) {
       _html5Ext = new RegExp('\\.('+_html5Ext.join('|')+')','i');
     }
     mime = (typeof sURL.type !== 'undefined'?sURL.type:null);
-    fileExt = (typeof sURL === 'string'?sURL.match(_html5Ext):null); // TODO: Strip URL queries, etc.
+    fileExt = (typeof sURL === 'string'?sURL.toLowerCase().match(_html5Ext):null); // TODO: Strip URL queries, etc.
     if (!fileExt || !fileExt.length) {
       if (!mime) {
         return false;
