@@ -1588,7 +1588,7 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isBadSafari = (!_wl.match(/usehtml5audio/i) && _s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/531\.22\.7/i)), // https://bugs.webkit.org/show_bug.cgi?id=32159
+    isBadSafari = (!_wl.match(/usehtml5audio/i) && _s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/(531\.22\.7|533\.16)/i)), // Safari 4.0.5 (531.22.7) and 5.0 (533.16) have buggy/broken HTML5 audio on Snow Leopard. :/ https://bugs.webkit.org/show_bug.cgi?id=32159
     isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 reported to work.)
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
@@ -1607,7 +1607,7 @@ function SoundManager(smURL, smID) {
         _s.hasHTML5 = true;
       }
       if (isBadSafari) {
-        _s._wD('Note: Buggy HTML5 in this version of Safari, see https://bugs.webkit.org/show_bug.cgi?id=32159 - disabling HTML5',1);
+        _s._wD('SoundManager::Note: Buggy HTML5 Audio in this specific browser + OS, see https://bugs.webkit.org/show_bug.cgi?id=32159 - disabling HTML5',1);
         _s.useHTML5Audio = false;
         _s.hasHTML5 = false;
         return true;
