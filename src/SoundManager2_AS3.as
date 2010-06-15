@@ -195,7 +195,9 @@ package {
 
     public function _setAutoPlay(sID:String, autoPlay:Boolean) : void {
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
-      s.setAutoPlay(autoPlay);
+      if (s) {
+        s.setAutoPlay(autoPlay);
+      }
     }
 
     public function fullscreenHandler(e: FullScreenEvent) : void {
