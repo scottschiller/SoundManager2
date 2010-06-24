@@ -128,10 +128,10 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.96a.20100606</p>
-				<p><b>HTML5 update, new RTMP feature</b>: Experimental Flash Media Server support, <code>onposition()</code> event listener, SMSound <code>type</code> option and code cleanup. JS core file size (<a href="../getstarted/#basic-inclusion" title="Including SoundManager 2, file size options">down to 9 KB with gzip!</a>) and more. See <a href="#history">revision history</a> for details.</p>
+				<p>Current version: 2.96a.20100624</p>
+				<p>Disabling HTML5 Audio for Safari 5 on Snow Leopard only, as it is broken similar to Safari 4.x (also on Snow Leopard only.) Also, version info in SWFs and fixed X-domain SWF build. Homepage demos this behaviour and overrides. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100606.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100606</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100624.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100624</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a></p>
 			</div>
 			
@@ -155,9 +155,33 @@
 
 			  <ul id="revision-list" class="standard">
 
+			   <li class="in">
+			    <h3><b>V2.96a.20100624</b> - Safari 5/Snow Leopard 10.6.3/10.6.4 HTML5 Audio() issue, X-domain SWF build fixes</h3>
+			
+				<p>Disabling HTML5 Audio for Safari 5 on Snow Leopard 10.6.3 + 10.6.4 (current release) only, as it is broken similar to Safari 4.x (also on Snow Leopard only.) Related bug: <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c14">#32519</a>. Also, version info in SWFs and fixed X-domain SWF build.</p>
+			
+			    <ul class="double">
+			
+			     <li class="in">
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li>HTML5 Audio() still broken in Safari 5 on Snow Leopard (10.6.3, 10.6.4) - disabling for now, falling back to Flash as with Safari 4.x on Snow Leopard. Include <code>sm2-ignorebadua</code> in URL to ignore this check and verify broken behaviour, etc.</li>
+				   <li>Fixed X-domain SWF builds to actually work cross-domain.</li>
+				  </ul>
+			     </li>
+			     <li class="in">
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>Added version info string to SWFs in Flash right-click / context menu, helpful when troubleshooting SWFs.</li>
+			      </ul>
+			     </li>
+
+			    </ul>
+
+			   </li>
 
 			   <li class="in">
-			    <h3><b>V2.96a.20100606</b> - RTMP (Flash Media Server) Support, HTML5 Updates</h3>
+			    <h3><b>V2.96a.20100606</b> - RTMP (Flash Media Server) Support, HTML5 Updates (<a href="../../download/soundmanagerv295b-20100606.zip">Download archived version</a>)</h3>
 			
 				<p>HTML5 update, new RTMP feature: Experimental Flash Media Server support, <code>onposition()</code> event listener, SMSound <code>type</code> option and code cleanup.</p>
 			
