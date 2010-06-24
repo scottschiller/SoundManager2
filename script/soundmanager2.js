@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.96a.20100606+DEV
+ * V2.96a.20100624
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true, regexp: false */
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.96a.20100606+DEV';
+  this.versionNumber = 'V2.96a.20100624';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -1588,7 +1588,7 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isBadSafari = (!_wl.match(/usehtml5audio/i) && _s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/(531\.22\.7|533\.16)/i)), // Safari 4.0.5 (531.22.7) and 5.0 (533.16) have buggy/broken HTML5 audio on Snow Leopard. :/ https://bugs.webkit.org/show_bug.cgi?id=32159
+    isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _s.isSafari && _ua.match(/OS X 10_6_3/i) && _ua.match(/(531\.22\.7|533\.16)/i)), // Safari 4.0.5 (531.22.7) and 5.0 (533.16) have buggy/broken HTML5 audio on Snow Leopard. :/ https://bugs.webkit.org/show_bug.cgi?id=32159
     isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 is broken (OS 4 reported to work.)
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
@@ -2073,7 +2073,7 @@ function SoundManager(smURL, smID) {
     };
 
     this.setAutoPlay = function(autoPlay) {
-      _s._wD('setAutoPlay('+autoPlay+')');
+      // _s._wD('setAutoPlay('+autoPlay+')');
       _t._iO.autoPlay = autoPlay;
       _s.o._setAutoPlay(_t.sID, autoPlay);
       if (autoPlay) {
