@@ -411,7 +411,7 @@ if (soundManager.canPlayURL(sURL)) {
 				  <dl id="soundmanager-createsound" class="f-block f-createsound s-autoplay">
 
 				   <dt style="margin-top:2em"><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
-				   <dd title="object:options">Creates a sound with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance.</dd>
+				   <dd title="object:options">Creates a sound with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. Requires <code>id</code> and <code>url</code> at a minimum.</dd>
 				   <dd>
 				    Example:
 <pre class="block"><code>soundManager.createSound({<span>
@@ -432,6 +432,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 				   <p>(Note: Code formatting is stylistic, not necessarily recommended.) See <a href="#object-literal-format" title="SoundManager 2 API Info: Sound Properties Object" onclick="resetFilter()">Object Literal Format</a>.</p>
 				   </dd>
+				   <dd>If <code>createSound</code> is called with the ID of an existing sound, that sound object will be returned "as-is". Any other <code>createSound</code> options passed (eg., <code>url</code> or <code>volume</code>, etc.) will be ignored.</dd>
 
 				  </dl>
 
