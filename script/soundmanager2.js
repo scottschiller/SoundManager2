@@ -749,7 +749,7 @@ function SoundManager(smURL, smID) {
     _appendSuccess = false;
     _disabled = false;
     _s.swfLoaded = false;
-    _s.soundIDs = {};
+    _s.soundIDs = [];
     _s.sounds = [];
     _s.o = null;
     for (i = _onready.length; i--;) {
