@@ -580,15 +580,17 @@ package {
         }
 
         // Increase the size of the buffer
-        if (e.info.code == "NetStream.Buffer.Full") {
-          if (oSound.ns.bufferTime == oSound.bufferTime) {
-            oSound.ns.bufferTime = 15;
-            writeDebug('increasing buffer to 15 secs');
-          }/* else if (oSound.ns.bufferTime == 15) {
-                      oSound.ns.bufferTime = 30;
-                      writeDebug('increasing buffer to 30 secs');
-                    }*/
-        }
+        // We are experiencing false starts which seem to be caused by the double
+        // buffering.  Commenting out.
+        //if (e.info.code == "NetStream.Buffer.Full") {
+        //  if (oSound.ns.bufferTime == oSound.bufferTime) {
+        //    oSound.ns.bufferTime = 15;
+        //    writeDebug('increasing buffer to 15 secs');
+        //  }/* else if (oSound.ns.bufferTime == 15) {
+        //              oSound.ns.bufferTime = 30;
+        //              writeDebug('increasing buffer to 30 secs');
+        //            }*/
+        //}
 
         var isNetstreamBuffering: Boolean = (e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Play.Start");
         // assume buffering when we start playing, eg. initial load.
