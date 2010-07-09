@@ -192,7 +192,7 @@ package {
 
         case "NetStream.Play.StreamNotFound":
           this.failed = true;
-          writeDebug("NetConnection: Stream not found!");
+          writeDebug("NetConnection: Stream not found! Description: " + event.info.description);
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Stream not found!');
           break;
 
@@ -201,7 +201,7 @@ package {
         // streams protected by expiring tokens, I don't think that will work.
         case "NetConnection.Connect.Closed":
           this.failed = true;
-          writeDebug("NetConnection: Connection closed!");
+          writeDebug("NetConnection: Connection closed! Description: " + event.info.description);
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection closed!');
           break;
 
@@ -211,7 +211,7 @@ package {
         // connection is lost.
         case "NetConnection.Connect.Failed":
           this.failed = true;
-          writeDebug("NetConnection: Connection failed! Lost internet connection? Try again...");
+          writeDebug("NetConnection: Connection failed! Lost internet connection? Try again... Description: " + event.info.description);
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection failed!');
           break;
 
@@ -231,7 +231,7 @@ package {
         // Consider everything else a failure...
         default:
           this.failed = true;
-          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'!");
+          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'! Description: " + event.info.description);
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure");
           break;
       }
