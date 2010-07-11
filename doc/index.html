@@ -366,10 +366,10 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 				   <dl id="soundmanager-canplaylink" class="f-block f-canplaylink" style="margin-top:2em">
 				   <dt><span>canPlay:boolean</span> canPlayLink(<span>&lt;a&gt;:DOM element</span>)</dt>
-				   <dd>Normalized method which checks <code>canPlayMIME()</code> and <code>canPlayURL()</code> as needed to estimate the playability of an HTML link.</dd>
+				   <dd>Normalized method which checks <code>canPlayMIME()</code> and <code>canPlayURL()</code> as needed to estimate the playability of an HTML link; this means both the <code>href</code> and <code>type</code> attributes, if provided, are checked for matching file extension and/or MIME type patterns.</dd>
 				   <dd>Example:
 <pre class="block"><code><span><span>/* example links:
-  &lt;a id="song1" href="/music/player.php?songID=1" type="audio/m4a"&gt;play song 1&lt;/a&gt; <span>// type match</span>
+  &lt;a id="song1" href="/music/player.php?songID=1" type="audio/mp3"&gt;play song 1&lt;/a&gt; <span>// type match</span>
   &lt;a id="song2" href="song2.mp3"&gt;play song 2&lt;/a&gt; <span>// URL match</span>
 */</span></span>
 var aLink = document.getElementById('<span>mySong</span>');
