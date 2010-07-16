@@ -1585,6 +1585,14 @@ if (_s.debugMode) {
         _t.resume();
       } else {
         _t.playState = 1;
+
+        // NetStreams will pause on buffer full...we need to indicate that the song
+        // is no longer paused.  No need to tell Flash just yet, because our
+        // call to start() will take care of that.
+        if (_t.paused) {
+          _t.paused = false;
+        }
+
         if (!_t.instanceCount) {
           _t.instanceCount++;
         }
