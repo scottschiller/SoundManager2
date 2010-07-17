@@ -1162,7 +1162,7 @@ function SoundManager(smURL, smID) {
       pluginspage: 'http://www.macromedia.com/go/getflashplayer',
       type: 'application/x-shockwave-flash',
       wmode: _s.wmode,
-      allowfullscreen: (_s.allowFullScreen?'true':'false')
+      allowFullScreen: (_s.allowFullScreen?'true':'false')
     };
 
     if (_s.debugFlash) {
@@ -2000,12 +2000,13 @@ function SoundManager(smURL, smID) {
       } else {
         _s._wD(fN + '"' + _t.sID + '"');
       }
-      if (_t.paused) {
+      if (_t.paused && _t.position !== null) { // https://gist.github.com/37b17df75cc4d7a90bf6
         _s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
       } else {
         _s._wD(fN+'"'+ _t.sID+'" is starting to play');
         _t.playState = 1;
+        _t.paused = false; // https://gist.github.com/859638f341b25669b587
         if (!_t.instanceCount || (_fV > 8 && !_t.isHTML5)) {
           _t.instanceCount++;
         }
