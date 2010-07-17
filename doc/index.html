@@ -687,7 +687,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   <dt><span>object:SMSound</span> onposition(<span>msecOffset:integer, callback:function, [scope]</span>)</dt>
 				   <dd>Registers an event listener, fired when a sound reaches or passes a certain position while playing. Position being "listened" for is passed back to event handler. Will also fire if a sound is "rewound" (eg. via <code>setPosition()</code> to an earlier point) and the given position is reached again. Listeners will be removed if a sound is unloaded. An optional scope can be passed as well.</dd>
 				   <dd>Note that for <code>multiShot</code> cases, only the first play instance's <code>position</code> is tracked in Flash; therefore, subsequent "shots" will not have onposition() events being fired.</dd>
-				   <dd>Example: <code>mySound.onposition(3000, function(eventPosition){<span>console.log(this.sID+' reached '+eventPosition);</code></dd>
+				   <dd>Example: <code>mySound.onposition(3000, function(eventPosition){<span>console.log(this.sID+' reached '+eventPosition</span>});</code></dd>
 				   </dl>
 
 				   <dl id="smsound-pause" class="f-block s-pause s-paused">
@@ -1190,7 +1190,7 @@ for (prop in this.id3) {
 <pre class="small block"><code>soundManager.defaultOptions = {<span>
   autoLoad: false,       <span>// enable automatic loading (otherwise .load() will call with .play())</span>
   autoPlay: false,       <span>// enable playing of file ASAP (much faster if "stream" is true)</span>
-  loops: 1,              <span>// number of times to play the sound. Related: <a href="http://www.flickr.com/photos/schill/4499319436/" title="Seamless Looping MP3s in Flash (demo)">Seamless Looping</a>.</span>
+  loops: 1,              <span>// number of times to play the sound. Related: <a href="demo/api/#looping">looping</a> (API demo)</span>
   multiShot: true,       <span>// let sounds "restart" or "chorus" when played multiple times..</span>
   multiShotEvents: false,<span>// allow events (onfinish()) to fire for each shot, if supported.</span>
   onid3: null,           <span>// callback function for "ID3 data is added/available"</span>
