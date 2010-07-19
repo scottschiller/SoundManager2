@@ -359,7 +359,11 @@ function SoundManager(smURL, smID) {
     // conservative option: avoid crash with flash 8
     // calling destroySound() within a sound onload() might crash firefox, certain flavours of winXP+flash 8??
     // if (_s.flashVersion != 8) {
+
+    // Disable all callbacks while the sound is being destroyed
+    _s.sounds[sID]._iO = {};
     _s.sounds[sID].unload();
+
     // }
     if (!bFromSound) {
       // ignore if being called from SMSound instance
