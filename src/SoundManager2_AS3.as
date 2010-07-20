@@ -1054,7 +1054,9 @@ package {
       writeDebug('start: ' + nMsecOffset+(nLoops?', loops: '+nLoops:''));
       s.lastValues.paused = false; // reset pause if applicable
       s.lastValues.loops = (nLoops || 1);
-      s.lastValues.position = nMsecOffset;
+      if (!s.useNetstream) {
+        s.lastValues.position = nMsecOffset;
+      }
       s.handledDataError = false; // reset this flag
       try {
         s.start(nMsecOffset, nLoops);
