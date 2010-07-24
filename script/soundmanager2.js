@@ -1221,6 +1221,9 @@ function SoundManager(smURL, smID) {
             };
           }
         }
+        if (_ua.match(/webkit/i)) {
+          s.zIndex = 10000; // soundcloud-reported render/crash fix, safari 5
+        }
         x = null;
         if (!_s.debugFlash) {
           for (x in s) {
