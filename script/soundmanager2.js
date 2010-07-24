@@ -1748,7 +1748,19 @@ if (_s.debugMode) {
         _t.bytesLoaded = nBytesLoaded;
         _t.bytesTotal = nBytesTotal;
         _t.duration = Math.floor(nDuration);
-        _t.durationEstimate = parseInt((_t.bytesTotal / _t.bytesLoaded) * _t.duration, 10);
+
+        if (_t._iO.duration) {
+
+          // Use the duration provided in the sound options rather than trying to
+          // estimate it.  The duration is the larger of the current position or
+          // stated duration.
+          _t.durationEstimate = (_t.duration > _t._iO.duration) ? _t.duration : _t._iO.duration;
+
+        } else {
+
+          _t.durationEstimate = parseInt((_t.bytesTotal / _t.bytesLoaded) * _t.duration, 10);
+        }
+
         if (_t.durationEstimate === undefined) {
           // reported bug?
           _t.durationEstimate = _t.duration;
