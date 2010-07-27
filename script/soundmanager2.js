@@ -75,7 +75,8 @@ function SoundManager(smURL, smID) {
   this.movieStarOptions = {    // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9+movieStar mode is enabled
     'onmetadata': null,      // callback for when video width/height etc. are received
     'useVideo': false,       // if loading movieStar content, whether to show video
-    'bufferTime': null       // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try up to 3 seconds)
+    'bufferTime': null,      // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try up to 3 seconds)
+    'bufferTimes': null      // array of buffer sizes to use.  As the buffer is filled up the size is increased.
   };
 
   // jslint global declarations
@@ -301,7 +302,7 @@ function SoundManager(smURL, smID) {
       }
     } else {
       var sound = _s.sounds[_tO.id];
-      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes, _tO.autoPlay);
+      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes, _tO.autoPlay, _tO.bufferTimes);
       if (!_tO.serverUrl) {
         // We are connected immediately
         sound.connected = true;

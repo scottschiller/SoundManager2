@@ -86,7 +86,8 @@ package {
     public var st: SoundTransform;
     public var useNetstream: Boolean;
     public var useVideo: Boolean = false;
-    public var bufferTime: Number = 0.1;
+    public var bufferTime: Number = 0.1;   // an integer
+    public var bufferTimes: Array;         // an array of integers (for specifying multiple buffers)
     public var lastNetStatus: String = null;
     public var serverUrl: String = null;
 
@@ -97,7 +98,7 @@ package {
     public var CONNECT_TIME: Number;
     public var PLAY_TIME: Number;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false, bufferTimes: Array = null) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -119,9 +120,17 @@ package {
       this.duration = duration;
       this.totalBytes = totalBytes;
       this.useVideo = useVideo;
+
+      // Use bufferTimes variable instead of bufferTime
       if (netStreamBufferTime != -1) {
         this.bufferTime = netStreamBufferTime;
       }
+      if (bufferTimes !== null) {
+        this.bufferTimes = bufferTimes;
+      } else {
+        this.bufferTimes = [this.bufferTime];
+      }
+
       setAutoPlay(autoPlay);
 
       this.START_TIME = getTimer();
@@ -162,7 +171,7 @@ package {
             this.ns = new NetStream(this.nc);
             this.ns.checkPolicyFile = true;
             // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
-            this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
+            this.ns.bufferTime = getStartBuffer(); // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
             this.st = new SoundTransform();
             this.cc.onMetaData = this.metaDataHandler;
             this.ns.client = this.cc;
@@ -234,6 +243,40 @@ package {
           writeDebug("NetConnection: got unhandled code '" + event.info.code + "'! Description: " + event.info.description);
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure");
           break;
+      }
+    }
+
+    // Set the buffer size on the current NetSream instance to <tt>buffer</tt> secs
+    // Only set the buffer if it's different to the current buffer.
+    public function setBuffer(buffer: int) : void {
+      if (buffer != this.ns.bufferTime) {
+        this.ns.bufferTime = buffer;
+        writeDebug('set buffer to '+this.ns.bufferTime+' secs');
+      }
+    }
+
+    // Return the size of the starting buffer.
+    public function getStartBuffer() : int {
+      return this.bufferTimes[0];
+    }
+
+    // Return the size of the next buffer, given the size of the current buffer.
+    // If there are no more buffers, returns the current buffer size.
+    public function getNextBuffer(current_buffer: int) : int {
+
+      var idx: int = bufferTimes.indexOf(current_buffer);
+      if (idx == -1) {
+
+        // Couldn't find the buffer, start from the start buffer size
+        return getStartBuffer();
+
+      } else if (idx + 1 >= bufferTimes.length) {
+
+        // Last (or only) buffer, keep the current buffer
+        return current_buffer;
+
+      } else {
+        return this.bufferTimes[idx+1];
       }
     }
 
@@ -323,8 +366,7 @@ package {
         if (this.lastValues.position != null && this.lastValues.position != nMsecOffset) {
 
           // Minimize the buffer so playback starts ASAP
-          this.ns.bufferTime = this.bufferTime;
-          writeDebug('setting buffer to '+this.bufferTime+' secs');
+          this.setBuffer(this.getStartBuffer());
 
           this.ns.seek(nMsecOffset);
         }

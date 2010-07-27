@@ -579,45 +579,49 @@ package {
           writeDebug('Pausing song because buffer is now full.');
         }
 
-        // Increase the size of the buffer
-        // We are experiencing false starts which seem to be caused by the double
-        // buffering.  Commenting out.
-        //if (e.info.code == "NetStream.Buffer.Full") {
-        //  if (oSound.ns.bufferTime == oSound.bufferTime) {
-        //    oSound.ns.bufferTime = 15;
-        //    writeDebug('increasing buffer to 15 secs');
-        //  }/* else if (oSound.ns.bufferTime == 15) {
-        //              oSound.ns.bufferTime = 30;
-        //              writeDebug('increasing buffer to 30 secs');
-        //            }*/
-        //}
+        // The buffer is full.  Increase its size if possible.
+        // Double buffering has not been shown to cause false starts, so this is safe.
+        if (e.info.code == "NetStream.Buffer.Full") {
+
+          var next_buffer: int = oSound.getNextBuffer(oSound.ns.bufferTime);
+          if (next_buffer != oSound.ns.bufferTime) {
+            oSound.setBuffer(next_buffer);
+          }
+        }
 
         var isNetstreamBuffering: Boolean = (e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Play.Start");
-        // assume buffering when we start playing, eg. initial load.
         if (isNetstreamBuffering != oSound.lastValues.isBuffering) {
+
+          // Assume buffering when we start playing, eg. initial load.
           oSound.lastValues.isBuffering = isNetstreamBuffering;
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onbufferchange", oSound.lastValues.isBuffering ? 1 : 0);
         }
-        // We can detect the end of the stream when Play.Stop is called followed by Buffer.Empty.
-        // However, if you pause and let the whole song buffer, Buffer.Flush is called followed by
-        // Buffer.Empty, so handle that case too.
+
         if (e.info.code == "NetStream.Buffer.Empty" && (oSound.lastNetStatus == 'NetStream.Play.Stop' || oSound.lastNetStatus == 'NetStream.Buffer.Flush')) {
+
+          // We can detect the end of the stream when Play.Stop is called followed by Buffer.Empty.
+          // However, if you pause and let the whole song buffer, Buffer.Flush is called followed by
+          // Buffer.Empty, so handle that case too.
           //writeDebug('Buffer empty and last net status was Play.Stop or Buffer.Flush.  This must be the end!');
           oSound.didJustBeforeFinish = false; // reset
           oSound.finished = true;
           writeDebug('calling onfinish for sound '+oSound.sID);
           checkProgress();
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
-        } else if (e.info.code == "NetStream.Buffer.Empty" && oSound.ns.bufferTime != oSound.bufferTime) {
-          oSound.ns.bufferTime = oSound.bufferTime;
-          writeDebug('setting buffer to '+oSound.ns.bufferTime+' secs');
+
+        } else if (e.info.code == "NetStream.Buffer.Empty") {
+
+          // The buffer is empty.  Start from the smallest buffer again.
+          oSound.setBuffer(oSound.getStartBuffer());
         }
 
-      // Recover from failures
+
       } else if (e.info.code == "NetConnection.Connect.Closed"
           || e.info.code == "NetStream.Failed"
           || e.info.code == "NetStream.Play.FileStructureInvalid"
           || e.info.code == "NetStream.Play.StreamNotFound") {
+
+        // Recover from failures
         if (oSound.failed) {
           writeDebug('ignoring, already reported failure.');
         } else {
@@ -625,6 +629,8 @@ package {
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfailure");
         }
       }
+
+      // Remember the last NetStatus event
       oSound.lastNetStatus = e.info.code;
     }
 
@@ -662,17 +668,20 @@ package {
       if (s.lastValues) {
         s.lastValues.position = nSecOffset; // s.soundChannel.position;
       }
+
       if (s.useNetstream) {
+
         // Minimize the buffer so playback starts ASAP
-        s.ns.bufferTime = s.bufferTime;
-        writeDebug('setting buffer to '+s.ns.bufferTime+' secs');
+        s.setBuffer(s.getStartBuffer());
 
         nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
         writeDebug('setPosition: ' + nSecOffset);
         s.ns.seek(nSecOffset);
 
         checkProgress(); // force UI update
+
       } else {
+
         if (s.soundChannel) {
           s.soundChannel.stop();
         }
@@ -715,11 +724,12 @@ package {
         ns.useNetstream = s.useNetstream;
         ns.useVideo = s.useVideo;
         ns.bufferTime = s.bufferTime;
+        ns.bufferTimes = s.bufferTimes;
         ns.serverUrl = s.serverUrl;
         ns.duration = s.duration;
         ns.totalBytes = s.totalBytes;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes, bAutoPlay);
+        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes, bAutoPlay, ns.bufferTimes);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -817,17 +827,18 @@ package {
       ns.useNetstream = s.useNetstream;
       ns.useVideo = s.useVideo;
       ns.bufferTime = s.bufferTime;
+      ns.bufferTimes = s.bufferTimes;
       ns.serverUrl = s.serverUrl;
       ns.duration = s.duration;
       ns.totalBytes = s.totalBytes;
       ns.autoPlay = s.autoPlay;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes, ns.autoPlay);
+      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.serverUrl, ns.duration, ns.totalBytes, ns.autoPlay, ns.bufferTimes);
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String, duration:Number, totalBytes:Number, autoPlay:Boolean) : void {
-      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, totalBytes, autoPlay);
+    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, serverUrl:String, duration:Number, totalBytes:Number, autoPlay:Boolean, bufferTimes:Array) : void {
+      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, totalBytes, autoPlay, bufferTimes);
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
       this.currentObject = s;
