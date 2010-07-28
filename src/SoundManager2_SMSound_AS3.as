@@ -94,11 +94,12 @@ package {
     public var oVideo: Video = null;
     public var videoWidth: Number = 0;
     public var videoHeight: Number = 0;
-    public var START_TIME: Number;
-    public var CONNECT_TIME: Number;
-    public var PLAY_TIME: Number;
+    public var start_time: Number;
+    public var connect_time: Number;
+    public var play_time: Number;
+    public var recordStats: Boolean = false;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false, bufferTimes: Array = null) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -120,6 +121,7 @@ package {
       this.duration = duration;
       this.totalBytes = totalBytes;
       this.useVideo = useVideo;
+      this.recordStats = recordStats;
 
       // Use bufferTimes variable instead of bufferTime
       if (netStreamBufferTime != -1) {
@@ -133,7 +135,9 @@ package {
 
       setAutoPlay(autoPlay);
 
-      this.START_TIME = getTimer();
+      if (recordStats) {
+        this.start_time = getTimer();
+      }
       writeDebug('in SoundManager2_SMSound_AS3, got duration '+duration+' and totalBytes '+totalBytes+' autoPlay: '+autoPlay);
 
       if (this.useNetstream) {
@@ -157,7 +161,7 @@ package {
         }
         this.nc.connect(serverUrl);
       } else {
-        this.CONNECT_TIME = this.START_TIME;
+        this.connect_time = this.start_time;
         this.connected = true;
       }
     }
@@ -189,29 +193,34 @@ package {
               this.oVideo.height = this.sm.stage.stageHeight;
             }
             this.connected = true;
-            this.CONNECT_TIME = getTimer();
-            writeDebug('connected in '+ Math.round(this.CONNECT_TIME - this.START_TIME) + ' ms');
+            if (recordStats) {
+              this.recordConnectTime();
+            }
+
             ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
           } catch(e: Error) {
             this.failed = true;
             writeDebug('netStream error: ' + e.toString());
-            ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection failed!');
+            ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection failed!', event.info.level, event.info.code);
           }
           break;
 
         case "NetStream.Play.StreamNotFound":
           this.failed = true;
           writeDebug("NetConnection: Stream not found! Description: " + event.info.description);
-          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Stream not found!');
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Stream not found!', event.info.level, event.info.code);
           break;
 
         // This is triggered when the sound loses the connection with the server.  In some cases
         // one could just try to reconnect to the server and resume playback.  However for
         // streams protected by expiring tokens, I don't think that will work.
+        //
+        // Flash says that this is not an error code, but a status code...should this call the
+        // onFailure handler?
         case "NetConnection.Connect.Closed":
           this.failed = true;
           writeDebug("NetConnection: Connection closed! Description: " + event.info.description);
-          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection closed!');
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection closed!', event.info.level, event.info.code);
           break;
 
         // Couldn't establish a connection with the server. Attempts to connect to the server
@@ -221,7 +230,7 @@ package {
         case "NetConnection.Connect.Failed":
           this.failed = true;
           writeDebug("NetConnection: Connection failed! Lost internet connection? Try again... Description: " + event.info.description);
-          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection failed!');
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection failed!', event.info.level, event.info.code);
           break;
 
         // A change has occurred to the network status.  This could mean that the network
@@ -241,7 +250,7 @@ package {
         default:
           this.failed = true;
           writeDebug("NetConnection: got unhandled code '" + event.info.code + "'! Description: " + event.info.description);
-          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure");
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", '', event.info.level, event.info.code);
           break;
       }
     }
@@ -442,6 +451,25 @@ package {
       } else if (this.soundChannel) {
         this.soundChannel.soundTransform = st; // new SoundTransform(this.lastValues.volume, this.lastValues.pan);
       }
+    }
+
+    public function recordPlayTime() : void {
+      this.play_time = Math.round(getTimer() - (this.start_time + this.connect_time));
+      writeDebug('Play took '+ this.play_time + ' ms');
+
+      // We must now have both stats, call the onstats callback
+      ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onstats", {
+        play_time:    this.play_time,
+        connect_time: this.connect_time
+      });
+
+      // Stop tracking any stats for this object
+      this.recordStats = false;
+    }
+
+    public function recordConnectTime() : void {
+      this.connect_time = Math.round(getTimer() - this.start_time);
+      writeDebug('Connect took '+ this.connect_time + ' ms');
     }
 
     // Handle FMS bandwidth check callback.

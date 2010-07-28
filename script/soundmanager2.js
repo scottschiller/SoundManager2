@@ -33,7 +33,8 @@ function SoundManager(smURL, smID) {
   this.allowFullScreen = true;     // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.onfailure = undefined;
-
+  this.ondebuglog = undefined;     // callback that is called with each log message, regardless of whether debugging is on/off
+  
   this.defaultOptions = {
     'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
     'stream': true,                // allows playing before entire file has loaded (recommended)
@@ -69,7 +70,8 @@ function SoundManager(smURL, smID) {
     'ondataerror': null,           // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
     'serverUrl': null,             // FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
     'duration': null,              // Duration of the song in milli-seconds
-    'totalBytes': null             // Byte size of the song
+    'totalBytes': null,            // Byte size of the song
+    'onstats': null                // callback for when connection & play times have been measured
   };
 
   this.movieStarOptions = {    // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9+movieStar mode is enabled
@@ -302,7 +304,8 @@ function SoundManager(smURL, smID) {
       }
     } else {
       var sound = _s.sounds[_tO.id];
-      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes, _tO.autoPlay, _tO.bufferTimes);
+      var recordStats = _tO.onstats ? true : false;
+      _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.serverUrl, _tO.duration, _tO.totalBytes, _tO.autoPlay, _tO.bufferTimes, recordStats);
       if (!_tO.serverUrl) {
         // We are connected immediately
         sound.connected = true;
@@ -921,6 +924,13 @@ if (_s.debugMode) {
   };
 
   this._writeDebug = function(sText, sType, bTimestamp) { // aliased to this._wD
+    
+    // If the debug log callback is set, always call it, regardless of whether
+    // debugging is on or off
+    if (_s.ondebuglog) {
+      _s.ondebuglog(sText, sType, bTimestamp);
+    }
+    
     if (!_s.debugMode) {
       return false;
     }
@@ -1914,16 +1924,22 @@ if (_s.debugMode) {
     // Only fire the onfailure callback once because after one failure
     // we often get another.  At this point we just recreate failed
     // sounds rather than trying to reconnect.
-    this._onfailure = function(msg) {
+    this._onfailure = function(msg, level, code) {
       _t.failures = _t.failures + 1;
       _s._wD('SMSound._onfailure(): "'+_t.sID+'" count '+_t.failures);
       if (_t._iO.onfailure && _t.failures == 1) {
-        _t._iO.onfailure(_t, msg);
+        _t._iO.onfailure(_t, msg, level, code);
       } else {
         _s._wD('SMSound._onfailure(): ignoring');
       }
     };
 
+    this._onstats = function(stats) {
+      if (_t._iO.onstats) {
+        _t._iO.onstats(_t, stats);
+      }
+    };
+    
     this._onfinish = function() {
       // sound has finished playing
       // TODO: calling user-defined onfinish() should happen after setPosition(0)
