@@ -1224,6 +1224,12 @@ function SoundManager(smURL, smID) {
         if (_ua.match(/webkit/i)) {
           s.zIndex = 10000; // soundcloud-reported render/crash fix, safari 5
         }
+        // mobile (particularly Android) check
+        if (_ua.match(/android/i)) {
+          s.position = 'absolute';
+          s.left = '0px';
+          s.top = '0px';
+        }
         x = null;
         if (!_s.debugFlash) {
           for (x in s) {
