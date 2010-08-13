@@ -39,10 +39,17 @@ package {
     public var version:String = "2.95b.20100101";
     public var version_as:String = "(AS3/Flash 9)";
 
-    // Cross-domain security exception stuffs
-    // HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
-    // See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
-    //Security.allowDomain("*");
+    /*
+    *  Cross-domain security options
+    *  HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
+    *  // allow_xdomain_scripting = true;
+    *  // xdomain = "foo.com";
+    *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
+    *  When loading from HTTPS, use System.security.allowInsecureDomain();
+    *  See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
+    */
+    public var allow_xdomain_scripting:Boolean = false;
+    public var xdomain:String = "*";
 
     // externalInterface references (for Javascript callbacks)
     public var baseJSController:String = "soundManager";
@@ -69,6 +76,11 @@ package {
     public var caughtFatal: Boolean = false;
 
     public function SoundManager2_AS3() {
+
+      if (allow_xdomain_scripting && xdomain) {
+        Security.allowDomain(xdomain);
+        version_as += ' - cross-domain enabled';
+      }
 
       this.setDefaultStageScale();
 
