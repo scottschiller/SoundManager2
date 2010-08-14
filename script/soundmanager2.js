@@ -185,7 +185,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount, _initComplete, _mergeObjects, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5,
   _is_pre = _ua.match(/pre\//i),
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
   _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
@@ -1096,6 +1096,58 @@ function SoundManager(smURL, smID) {
     // </d>
   }
 
+  _mobileFlash = (function(){
+
+    var oM = null;
+
+    function resetPosition() {
+      if (oM) {
+        oM.left = oM.top = '-9999px';
+      }
+    }
+
+    function reposition() {
+      oM.left = window.scrollX+'px';
+      oM.top = window.scrollY+'px';
+    }
+
+    function setReposition(bOn) {
+      _s._wD('mobileFlash::flash on-screen hack: '+(bOn?'ON':'OFF'));
+      var f = window[(bOn?'add':'remove')+'EventListener'];
+      f('resize', reposition, false);
+      f('scroll', reposition, false);
+    }
+
+    function check(inDoc) {
+      // mobile (particularly Android) check
+      oM = _s.oMC.style;
+      if (_ua.match(/android/i)) {
+        if (inDoc) {
+          if (_s.flashLoadTimeout) {
+            _s._wD('Resetting flashLoadTimeout = 0 (infinite) for off-screen, mobile flash case');
+            _s.flashLoadTimeout = 0;
+          }
+          return false;
+        }
+        _s._wD('mobileFlash:: enabling onscreen hax');
+        oM.position = 'absolute';
+        oM.left = oM.top = '0px';
+        setReposition(true);
+        _s.onready(function(){
+          _s._wD('onready()::disabling reposition');
+          setReposition(false); // detach
+          resetPosition(); // restore when OK/timed out
+        });
+        reposition(); // do eet, now!
+      }
+    }
+
+    return {
+      check: check
+    };
+
+  }());
+
   _createMovie = function(smID, smURL) {
 
     var specialCase = null,
@@ -1222,14 +1274,9 @@ function SoundManager(smURL, smID) {
           }
         }
         if (_ua.match(/webkit/i)) {
-          s.zIndex = 10000; // soundcloud-reported render/crash fix, safari 5
+          _s.oMC.style.zIndex = 10000; // soundcloud-reported render/crash fix, safari 5
         }
-        // mobile (particularly Android) check
-        if (_ua.match(/android/i)) {
-          s.position = 'absolute';
-          s.left = '0px';
-          s.top = '0px';
-        }
+
         x = null;
         if (!_s.debugFlash) {
           for (x in s) {
@@ -1252,6 +1299,8 @@ function SoundManager(smURL, smID) {
         } catch(e) {
           throw new Error(_str('appXHTML'));
         }
+        _mobileFlash.check();
+
       } else {
         // it's already in the document.
         sClass = _s.oMC.className;
@@ -1263,6 +1312,8 @@ function SoundManager(smURL, smID) {
           oEl.innerHTML = movieHTML;
         }
         _appendSuccess = true;
+        _mobileFlash.check(true);
+
       }
     }
 
