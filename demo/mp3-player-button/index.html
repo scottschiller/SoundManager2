@@ -111,21 +111,21 @@ pre code {
  <h3>Inline text, with "play" button</h3>
 
  <p>Example code (link with a <b>sm2_button</b> CSS class):</p>
-<pre>&lt;p&gt; Spare change <code>&lt;a href="/path/to/coins.mp3" title="Play 'coins'" class="sm2_button"&gt;coins.mp3&lt;/a&gt;</code> &lt;/p&gt;</pre>
+<pre>&lt;p&gt; Spare change <code>&lt;a href="/path/to/coins.mp3" title="Play &amp;quot;coins&amp;quot;" class="sm2_button"&gt;coins.mp3&lt;/a&gt;</code> &lt;/p&gt;</pre>
  <p>Renders as:</p>
 <div>
- <p>Spare change <a href="../../demo/_mp3/coins.mp3" class="sm2_button" title="Play 'coins'">coins.mp3</a></p>
+ <p>Spare change <a href="../../demo/_mp3/coins.mp3" class="sm2_button" title="Play &quot;coins&quot;">coins.mp3</a></p>
  <p class="note">Note that the text inside the link is hidden and replaced with an image, but should be descriptive - or at least should say something generic, like "play".</p>
 </div>
  <h3>Basic MP3 play button, no text</h3>
 
  <p>Code:</p>
 
- <pre><code>&lt;a href="../jsAMP-preview/audio/office_lobby.mp3" title="Play 'Office Lobby'" class="sm2_button"&gt;Office Lobby&lt;/a&gt;</code></pre>
+ <pre><code>&lt;a href="../jsAMP-preview/audio/office_lobby.mp3" title="Play &amp;quot;Office Lobby&amp;quot;" class="sm2_button"&gt;Office Lobby&lt;/a&gt;</code></pre>
 
  <p>Renders as:</p>
  <p>
-	<a href="../jsAMP-preview/audio/office_lobby.mp3" title="Play 'Office Lobby'" class="sm2_button">Office Lobby</a>
+	<a href="../jsAMP-preview/audio/office_lobby.mp3" title="Play &quot;Office Lobby&quot;" class="sm2_button">Office Lobby</a>
  </p>
  <h2>How It Works</h2>
 
@@ -136,9 +136,9 @@ pre code {
  <p>CSS classes are dynamically applied as follows:</p>
 
  <ul>
-  <li><a href="#" class="sm2_button" title="'Click to play' state">Default: class="sm2_button"</a> Default: class="sm2_button"</li>
-  <li><a href="#" class="sm2_button sm2_playing" title="'Click to pause' state">Playing: class="sm2_button sm2_playing"</a> Playing: class="sm2_button sm2_playing"</li>
-  <li><a href="#" class="sm2_button sm2_paused" title="'Click to resume' state">Paused: class="sm2_button sm2_paused"</a> Paused: class="sm2_button sm2_paused"</li>
+  <li><a href="#" class="sm2_button" title="&quot;Click to play&quot; state">Default: class="sm2_button"</a> Default: class="sm2_button"</li>
+  <li><a href="#" class="sm2_button sm2_playing" title="&quot;Click to pause&quot; state">Playing: class="sm2_button sm2_playing"</a> Playing: class="sm2_button sm2_playing"</li>
+  <li><a href="#" class="sm2_button sm2_paused" title="&quot;Click to resume&quot; state">Paused: class="sm2_button sm2_paused"</a> Paused: class="sm2_button sm2_paused"</li>
  </ul>
 
  <h3>Basic CSS</h3>

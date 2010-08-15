@@ -50,8 +50,13 @@ h5 {
 }
 
 .c2 h5 {
- border-bottom:1px solid #CCCCCC;
+ border-bottom:1px solid #ccc;
  padding-bottom:0.25em;
+}
+
+body.home h4 {
+	border-bottom: 1px solid #e9e9e9;
+	padding-bottom: 0.33em;
 }
 
 em em {
@@ -1422,10 +1427,9 @@ body.home #sm2-container.swf_unblocked {
  position:relative;
  float:right;
  display:inline;
- margin-left:1em;
- padding-left:16px;
+ background: #fff; /* hide borders behind this box */
+ padding-left:32px;
  padding-right:16px;
- margin-right:1em;
  margin-top:-1em;
  width:21.25em;
  /* hide from IE 6 */
