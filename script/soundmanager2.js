@@ -92,6 +92,7 @@ function SoundManager(smURL, smID) {
   this.movieURL = null;
   this.url = null;
   this.altURL = null;
+  this.fullURL = null; // if specified, gives the full URL to the SWF file and is not modified in any way
   this.swfLoaded = false;
   this.enabled = false;
   this.o = null;
@@ -725,7 +726,9 @@ function SoundManager(smURL, smID) {
 
     // safety check for legacy (change to Flash 9 URL)
     _s._setVersionInfo();
-    _s.url = _s._normalizeMovieURL(_s._overHTTP?remoteURL:localURL);
+    
+    // Allow specifying the full URL to the SWF using <tt>fullURL</tt>
+    _s.url = _s.fullURL ? _s.fullURL : _s._normalizeMovieURL(_s._overHTTP?remoteURL:localURL);
     smURL = _s.url;
 
     if (_s.useHighPerformance && _s.useMovieStar && _s.defaultOptions.useVideo === true) {
