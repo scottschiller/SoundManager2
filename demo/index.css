@@ -7,7 +7,7 @@ body {
 
 h1,
 h2.special {
- letter-spacing:-0.035em;
+ letter-spacing:-0.025em;
 }
 
 h1, h2, h3, h4 {
@@ -57,6 +57,7 @@ h5 {
 body.home h4 {
 	border-bottom: 1px solid #e9e9e9;
 	padding-bottom: 0.33em;
+	margin-bottom: 0.75em;
 }
 
 em em {
@@ -1111,51 +1112,6 @@ a.cta-more:hover {
  color:#3399cc;
 }
 
-#favtape:hover {
- background:#ff0066;
- border-color:#ff0066;
- color:#fff;
-}
-
-#soundcloud {
- width:83px;
- height:58px;
- display:inline-block;
- display:-moz-inline-box;
- overflow:hidden;
- background:transparent url(../demo/_image/soundcloud-thecloudplayer-logo.png) no-repeat 0px -59px;
- margin-right:3px;
-}
-
-#soundcloud span {
- position:absolute;
- text-indent:-9999em;
-}
-
-#soundcloud:hover {
- background-position:0px 0px;
-}
-
-#lastfm {
- position:relative;
- display:block;
- width:80px;
- height:28px;
- margin:1em 0px 0px 0px;
- padding:0px;
- overflow:hidden;
- background:transparent url(../demo/_image/lastfm.png) no-repeat 0px -28px;
-}
-
-#lastfm span {
- position:absolute;
- text-indent:-9999em;
-}
-
-#lastfm:hover {
- background-position:0px 0px;
-}
-
 li.html5support span {
  padding:0px 5px;
  display:inline-block;
@@ -1206,14 +1162,16 @@ li.html5support em.true {
 a.feature,
 .c2 .feature-hot {
  display:block;
- background:#9999aa;
- padding:0.25em 0.5em;
- margin:-0.25em 0px 0px -0.5em;
+ background:#3399ff;
+ padding:0.3em 0.5em;
+ margin:-0.3em 0px 0px -0.5em;
  color:#fff;
  font-weight:bold;
  border:3px solid #ccc;
+ border:3px solid rgba(255,255,255,0.66);
  -moz-border-radius:8px;
- -khtml-border-radius:8px;
+ -webkit-border-radius:8px;
+ border-radius:8px;
  line-height:1em;
  text-decoration:none;
  font-size:small;
@@ -1251,11 +1209,17 @@ a.feature:hover {
  padding:0px;
 }
 
-/*
-.inthewild {
- text-align:center;
+h4 .scratched-out {
+	text-decoration:line-through;
+	color:#999;
+	/*
+	font-size:xx-small;
+	*/
+	font-size:0.9em;
+	margin-top:-0.75em;
+	-webkit-transform:rotate(-15deg);
+	-moz-transform:rotate(-15deg);
 }
-*/
 
 .inthewild {
  margin-top:1em;
@@ -1279,7 +1243,76 @@ a.feature:hover {
  vertical-align:middle;
 }
 
+.inthewild a {
+ display:inline-block;
+ display:-moz-inline-box;
+ overflow:hidden;
+ margin:1em 1em 0.5em 1em;
+ padding:0px;
+}
+
+.inthewild a:first-child {
+ margin-left:0.5em;
+}
+
+.inthewild a span {
+ position:absolute;
+ text-indent:-9999em;
+}
+
+#favtape:hover {
+ background:#ff0066;
+ border-color:#ff0066;
+ color:#fff;
+}
+
+#soundcloud {
+ width:83px;
+ height:58px;
+ background:transparent url(../demo/_image/soundcloud-thecloudplayer-logo.png) no-repeat 0px -59px;
+ margin-right:3px;
+}
+
+#soundcloud:hover {
+ background-position:0px 0px;
+}
+
+#lastfm {
+ width:80px;
+ height:28px;
+ background:transparent url(../demo/_image/lastfm.png) no-repeat 0px -28px;
+}
+
+#lastfm:hover {
+ background-position:0px 0px;
+}
+
+#mixcrate {
+ width:80px;
+ height:16px;
+ background:transparent url(../demo/_image/mixcrate.png) no-repeat 0px 0px;
+}
+
+#mixcrate:hover {
+ background-position:0px -16px;
+}
+
+#opera {
+ width:79px;
+ height:32px;
+ background:transparent url(../demo/_image/opera.png) no-repeat 0px 0px;
+}
+
+#opera:hover {
+ background-position:0px -32px;
+}
+
 /* homepage-specific demo shiz */
+
+.sidenote {
+ font-size:x-small;
+ opacity:0.75;
+}
 
 ul.playlist {
  font-size:xx-small;
@@ -1384,6 +1417,7 @@ ul.graphic li a.sm2_link {
 .c2 ul.playlist li a {
  margin:0px;
  padding:0px;
+ letter-spacing: -0.02em;
 }
 
 /* Flash positioning and flashblock / clicktoflash handling */

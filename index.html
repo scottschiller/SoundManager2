@@ -297,17 +297,17 @@ body #sm2-container embed {
 			 </div>
 			</div>
 
-			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Muxtape-style UI <span style="font-size:x-small">(+HTML5 tests)</span><span class="l"></span><span class="r"></span><a href="demo/page-player/" title="Muxtape-style UI demo (+HTML5 audio tests)" class="cta-more">More &raquo;</a></h3>
+			<h3 class="wedge" style="border-bottom:none;margin-top:0px">Muxtape-style UI <span class="sidenote">(+HTML5 tests)</span><span class="l"></span><span class="r"></span><a href="demo/page-player/" title="Muxtape-style UI demo (+HTML5 audio tests)" class="cta-more">More &raquo;</a></h3>
 			<div class="demo-block">
 				<ul class="playlist" style="margin-top:0.5em">
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20060826 - Armstrong.mp3" class="button-exclude inline-exclude threesixty-exclude">Armstrong Beat</a></li>
 				 <li><a href="http://freshly-ground.com/data/audio/mpc/20090119 - Untitled Groove.mp3" class="button-exclude inline-exclude threesixty-exclude">Untitled Groove</a></li>
-				 <li><a href="http://freshly-ground.com/data/audio/sm2/quail-64kbps-he-aac-from-itunes-renamed-from-mp4.aac" title="48 kbps MPEG4 High-Efficiency AAC test sound: BC Quail" class="button-exclude inline-exclude threesixty-exclude">BC Quail <span style="font-size:0.8em">(HE-AAC)</span></a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/sm2/quail-64kbps-he-aac-from-itunes-renamed-from-mp4.aac" title="48 kbps MPEG4 High-Efficiency AAC test sound: BC Quail" class="button-exclude inline-exclude threesixty-exclude">BC Quail <span class="sidenote">(HE-AAC)</span></a></li>
 				</ul>
-				<h4 style="margin:0.25em 0px 0px 0px;padding:0.5em 0px 0.5em 0.75em;font-size:0.9em;border:1px solid #eee;border-left:none;border-right:none;font-weight:normal;color:#666;border-top:none">HTML5 Audio()-only tests</h4>
+				<h4 style="margin:0.25em 0px 0px 0px;padding:0.5em 0px 0.5em 0.75em;font-size:0.9em;letter-spacing:0.01em;border:1px solid #eee;border-left:none;border-right:none;font-weight:normal;color:#333;border-top:none">HTML5 Audio()-only tests</h4>
 				<ul id="muxtape-html5" class="playlist" style="margin-top:0.5em">
-				 <li><a href="http://freshly-ground.com/data/audio/sm2/20060924%20-%20Ghosts%20&%20Goblins%20Reconstructed.ogg" title="OGG sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">Ghosts + Goblins Reconstructed (OGG)</a></li>
-				 <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" title="WAV sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">A corked beer bottle (WAV)</a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/sm2/20060924%20-%20Ghosts%20&%20Goblins%20Reconstructed.ogg" title="OGG sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">Ghosts+Goblins Reconstructed <span class="sidenote">(OGG)</span></a></li>
+				 <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" title="WAV sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">A corked beer bottle <span class="sidenote">(WAV)</span></a></li>
 				</ul>
 				<p class="note" style="margin-top:3px;margin-bottom:0px;margin-left:0.8em">More: <a href="demo/api/" title="SoundManager 2 API examples">API</a> | <a href="demo/page-player/" title="SoundManager 2 &quot;Page Player&quot; Muxtape-style UI demo">Muxtape UI</a> | <a href="demo/play-mp3-links/" title="SoundManager 2 &quot;Play MP3 Links&quot; demo" class="exclude">Play MP3 links</a></p>
 
@@ -322,23 +322,14 @@ body #sm2-container embed {
 			</div>
 
 		    </div>
-
-			<h4>As Heard On <span style="text-decoration:line-through;color:#999;font-size:xx-small">TV</span> The Internets</h4>
-			<p class="tight compact">A few nifty sites that have implemented SoundManager 2 for driving audio:</p>
-			<div class="inthewild">
-			 <a href="http://muxtape.com/" title="Muxtape" style="padding:0px;margin-left:7px"><img src="demo/_image/muxtape-logo.png" alt="Muxtape logo" /></a>
-			 <a id="soundcloud" href="http://thecloudplayer.com/" title="Soundcloud / The Cloud Player"><span>SoundCloud / The Cloud Player</span></a>
-			 <a href="http://8tracks.com/" title="8tracks" style="background:#fff;margin:0px;padding:0px"><img src="demo/_image/8tracks-logo.png" alt="8tracks logo" /></a>
-			 <a id="lastfm" href="http://www.last.fm/" title="last.fm"><span>last.fm</span></a>
-			</div>
 			
 		</div>
 		
-			<h4 style="clear:left;margin-top:0.5em">HTML5 Audio() Support <em style="color:#666">(Beta-ish)</em></h4>
+			<h4 style="clear:left;margin-top:0.5em">HTML5 Audio() Support <span style="color:#888">(Beta-ish)</span></h4>
 			<ul id="html5-audio-notes" class="standard">
 			 <li>100% Flash-free MP3 + MP4/AAC where supported. Works on iPad, iPhone iOS 4</li>
 			 <li>Fallback to Flash for MP3/MP4 support, as needed</li>
-			 <li>SM2 API is unchanged, transparent; HTML5/flash switching handled internally</li>
+			 <li>SM2 API is unchanged, transparent; HTML5/Flash switching handled internally</li>
              <li>HTML5 API support approximates Flash 8 API features, minus ID3, plus buffering</li>
 			 <li>Some other formats (WAV/OGG) supported via HTML5, depending on browser</li>
 			 <li>See <a href="doc/#soundmanager-usehtml5audio" title="soundManager.useHTML5Audio HTML5 Audio() support feature documentation">soundManager<wbr>.useHTML5Audio</a> for implementation details</li>
@@ -353,7 +344,7 @@ body #sm2-container embed {
 
 			<h4>Shiny Flash 9-only Features</h4>
 
-			<div style="float:right;display:inline;margin:0px 1.5em 0px 0px;text-align:center;font-size:x-small;white-space:nowrap;padding:0px 0px 0px 1em">
+			<div style="float:right;display:inline;margin:0px;text-align:center;font-size:x-small;white-space:nowrap">
 			 <a href="demo/360-player/canvas-visualization.html" title="JavaScript + Canvas MP3 visualization demo" style="border:none;margin:0px;padding:0px"><img id="demo-360" src="demo/_image/360ui-screenshot3.png" alt="" style="margin:0px;padding:0px;border:none" /></a>
 			 <div><a href="demo/360-player/canvas-visualization.html" title="JavaScript + Canvas MP3 visualization demo">360&deg; UI + waveform/spectrum</a></div>
 			 <div class="note" style="margin-top:0px">Beta-ish, somewhat experimental demo</div>
@@ -375,6 +366,18 @@ body #sm2-container embed {
 			 <li>console.log()-style <a href="doc/technotes/#debug-output" title="SoundManager 2 debug output">debug output</a> and <a href="doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool">troubleshooting tools</a></li>
 			 <li>Community-based <a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2" title="discussion/support for SoundManager 2 on Get Satisfaction">discussion/support</a></li>
 			</ul>
+			
+		<h4>As Heard On <span class="scratched-out">TV</span> The Internets</h4>
+		<p class="tight compact">A few nifty places SoundManager 2 has been seen in use on the Wild World Web:</p>
+		<div class="inthewild">
+		 <a href="http://muxtape.com/" title="Muxtape"><img src="demo/_image/muxtape-logo.png" alt="Muxtape logo" /></a>
+		 <a id="soundcloud" href="http://thecloudplayer.com/" title="Soundcloud / The Cloud Player"><span>SoundCloud / The Cloud Player</span></a>
+		 <a href="http://8tracks.com/" title="8tracks" style="background:#fff"><img src="demo/_image/8tracks-logo.png" alt="8tracks logo" /></a>
+		 <a id="lastfm" href="http://www.last.fm/" title="last.fm"><span>last.fm</span></a>
+		 <a id="opera" href="http://www.opera.com/" title="Opera Software ASA (Media Player component)"><span>Opera Software ASA</span></a>
+		 <a id="discogs" href="http://www.discogs.com/" title="Discogs"><img src="demo/_image/discogs.gif" alt="Discogs logo" /></a>
+		 <a id="mixcrate" href="http://www.mixcrate.com/" title="Mixcrate"><span>Mixcrate</span></a>
+		</div>
 
 		<h4>Download!</h4>
 		<p style="margin-top:1.5em"><a href="doc/download/" class="feature">Get SoundManager 2</a></p>
