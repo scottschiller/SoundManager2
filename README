@@ -1,10 +1,8 @@
-SoundManager 2 makes it easier to play audio using JavaScript.
+By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reliable cross-platform audio to JavaScript. 
 
-By wrapping and extending the Flash and HTML5 Audio APIs, SoundManager 2 brings solid cross-browser, cross-platform audio functionality to JavaScript.
+HTML5 Audio() Support (Beta-ish)
 
-HTML5 Audio() Support! (New, Experimental)
-
-    * 100% Flash-free MP3 + MP4/AAC where supported, compatible with Apple iPad
+    * 100% Flash-free MP3 + MP4/AAC where supported, compatible with Apple iPad 3.2, iPhone/iOS 4
     * Fallback to Flash for MP3/MP4 support, as needed
     * SM2 API is unchanged, transparent; HTML5/flash switching handled internally
     * HTML5 API support approximates Flash 8 API features, minus ID3, plus buffering
