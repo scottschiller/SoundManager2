@@ -128,10 +128,10 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.96a.20100624</p>
-				<p>Disabling HTML5 Audio for Safari 5 on Snow Leopard only, as it is broken similar to Safari 4.x (also on Snow Leopard only.) Also, version info in SWFs and fixed X-domain SWF build. Homepage demos this behaviour and overrides. See <a href="#history">revision history</a> for details.</p>
+				<p>Current version: 2.96a.20100822</p>
+				<p>SoundManager 2's HTML5 <code>Audio()</code> support now considered to be beta-worthy. iPhone/iPad will now play a sequence of sounds, user interaction only required to start first one. Flash on-screen positioning tweak for Android devices that run Flash. Safari 5.0.1 on Snow Leopard still has buggy HTML5 audio implementation, and is disabled by default; known Apple bug. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100624.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100624</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100822.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100822</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a></p>
 			</div>
 			
@@ -156,7 +156,41 @@
 			  <ul id="revision-list" class="standard">
 
 			   <li class="in">
-			    <h3><b>V2.96a.20100624</b> - Safari 5/Snow Leopard 10.6.3/10.6.4 HTML5 Audio() issue, X-domain SWF build fixes</h3>
+			    <h3><b>V2.96a.20100822</b> - HTML5 audio support no longer alpha, Safari 5.0.1/SL HTML5 audio issues continue, iPad/iPhone "play through", Flash tweak for Android</h3>
+				<p><code>useHTML5Audio</code> feature now considered beta-worthy, though disabled by default to be safe (with the exception of iPhone + iPad.) iPhone/iPad will now play a sequence of sounds, user interaction only required to start first one. Flash on-screen positioning tweak for Android devices that run Flash. Safari 5.0.1 on Snow Leopard exhibits same buggy HTML5 audio issue, disabled by default; Apple have been notified. IE 9 "Platform Preview 4" has <code>&lt;audio&gt;</code> but no <code>Audio()</code> support (yet?) See <a href="https://connect.microsoft.com/IE/feedback/details/586311/audio-but-no-audio-support">bug #586311</a> (may require connect.microsoft.com / Windows Live ID, login first etc.)</p>
+				
+			    <ul class="double">
+			
+			     <li class="in">
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li>HTML5 <code>Audio()</code> still broken in Safari 5.0.1 on Snow Leopard (10.6.3, 10.6.4), where sounds intermittently fail to load and play. Apple are aware of the regression. Related bug: <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c14">#32519</a>. Include <code>sm2-ignorebadua</code> in URL on SM2 pages to ignore this check and verify broken behaviour, etc.</li>
+				   <li>Tweaks for experimental RTMP feature re: handling of paused state, tracking of position and <code>onfinish()</code> firing early.</li>
+				   <li>Bumped SWF z-index to 5000 for Safari 5, SoundCloud-reported bug-and-fix for Safari 5-specific bad redraw issues, and occasional crash case referencing WebCore::RenderLayer::paintLayer</li>
+				  </ul>
+			     </li>
+			     <li class="in">
+				  <p class="compact">API Updates</p>
+				  <ul class="nested compact flat">
+				   <li>iPhone/iOS 4 and iPad can now play a sequence of sounds (once the user starts sound initially), provided <code>onfinish()</code> is used to create/play the next sound. Example: Muxtape-style UI on homepage will play through list without further interaction once a user plays something in the list.</li>
+				  </ul>
+				 </li>
+			     <li class="in">
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>Special case for getting SM2 working more reliably on HTC Android + Flash 10.1, where flash does not load until on-screen (ie., in view.) If off-screen, Flash is repositioned at left/top 0px in order to load (including scroll/resize if needed), then events released and movie is repositioned off-screen. If movie is in the DOM already eg. as in <code>useFlashBlock</code> cases, <code>flashLoadTimeout</code> is set to 0 to allow infinite wait (eg., SM2 will not timeout with an error, and will simply load when the flash is scrolled into view.)</li>
+				   <li>Documentation: Clarified <code>createSound()</code> behaviour if an existing sound ID is given (returns sound object "as-is", ignores any options passed.)</li>
+				   <li>Page-player demo updated to use <code>canPlayLink()</code> instead of <code>canPlayURL</code>, more flexible link/type handling.</li>
+				   <li>Homepage and documentation UI/layout and language tweaks, a few new "as seen on the internets" icons etc.</li>
+			      </ul>
+			     </li>
+
+			    </ul>
+
+			   </li>
+
+			   <li class="in">
+			    <h3><b>V2.96a.20100624</b> - Safari 5/Snow Leopard 10.6.3/10.6.4 HTML5 Audio() issue, X-domain SWF build fixes (<a href="../../download/soundmanagerv296a-20100624.zip">Download archived version</a>)</h3>
 			
 				<p>Disabling HTML5 Audio for Safari 5 on Snow Leopard 10.6.3 + 10.6.4 (current release) only, as it is broken similar to Safari 4.x (also on Snow Leopard only.) Related bug: <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c14">#32519</a>. Also, version info in SWFs and fixed X-domain SWF build.</p>
 			

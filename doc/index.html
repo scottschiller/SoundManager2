@@ -316,9 +316,10 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 				
 			<h5>Known HTML5 Audio bugs/limitations/annoyances</h5>
 
-			<p>As of the August, 2010 release of SM2:</p>
+			<p>As of the August, 2010 release of SM2 (V2.96a.20100822):</p>
 			<ul>
 			 <li>Safari 5.0.1 (533.17.18) on Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour. Apple are aware of the regression, which began with Safari 4.0 on Snow Leopard (perhaps with the new QuickTime.) See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</li>
+			 <li>iPad/iPhone iOS4 will now play a sequence of sounds if using <code>onfinish()</code> to create/start the next (eg., the Muxtape-style playlist on the SM2 homepage will play through once the user starts it.) In any event, user interaction is always required to start the first sound.</li>
 		    </ul>
 			
 			<p>As of the June, 2010 release of SM2 (V2.96a.20100624):</p>
