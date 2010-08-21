@@ -2681,11 +2681,11 @@ function SoundManager(smURL, smID) {
 
     // Only fire the onfailure callback once because after one failure we often get another.
     // At this point we just recreate failed sounds rather than trying to reconnect.
-    this._onfailure = function(msg) {
+    this._onfailure = function(msg, level, code) {
       _t.failures++;
       _s._wD('SMSound._onfailure(): "'+_t.sID+'" count '+_t.failures);
       if (_t._iO.onfailure && _t.failures === 1) {
-        _t._iO.onfailure(_t, msg);
+        _t._iO.onfailure(_t, msg, level, code);
       } else {
         _s._wD('SMSound._onfailure(): ignoring');
       }

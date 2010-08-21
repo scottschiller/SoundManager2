@@ -63,13 +63,13 @@ package {
     public var ignoreDataError: Boolean = false;
     public var autoPlay: Boolean = false;
     public var pauseOnBufferFull: Boolean = true;
-
+    public var loops: Number = 1;
     public var lastValues: Object = {
       bytes: 0,
       position: 0,
       volume: 100,
       pan: 0,
-      nLoops: 1,
+      loops: 1,
       leftPeak: 0,
       rightPeak: 0,
       waveformDataArray: null,
@@ -78,16 +78,17 @@ package {
       bufferLength: 0
     };
     public var didLoad: Boolean = false;
+    public var useEvents: Boolean = false;
     public var sound: Sound = new Sound();
 
     public var cc: Object;
     public var nc: NetConnection;
-    public var ns: NetStream;
+    public var ns: NetStream = null;
     public var st: SoundTransform;
     public var useNetstream: Boolean;
     public var useVideo: Boolean = false;
-    public var bufferTime: Number = 0.1;   // an integer
     public var bufferTimes: Array;         // an array of integers (for specifying multiple buffers)
+    public var bufferTime: Number = 3;
     public var lastNetStatus: String = null;
     public var serverUrl: String = null;
 
@@ -99,7 +100,7 @@ package {
     public var play_time: Number;
     public var recordStats: Boolean = false;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideo: Boolean = false, netStreamBufferTime: Number = -1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideoArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -120,27 +121,27 @@ package {
       this.serverUrl = serverUrl;
       this.duration = duration;
       this.totalBytes = totalBytes;
-      this.useVideo = useVideo;
       this.recordStats = recordStats;
-
-      // Use bufferTimes variable instead of bufferTime
-      if (netStreamBufferTime != -1) {
+      this.useEvents = useEvents;
+      this.useVideo = useVideoArg;
+      if (netStreamBufferTime) {
         this.bufferTime = netStreamBufferTime;
       }
+      // Use bufferTimes instead of bufferTime
       if (bufferTimes !== null) {
         this.bufferTimes = bufferTimes;
       } else {
         this.bufferTimes = [this.bufferTime];
       }
-
       setAutoPlay(autoPlay);
 
       if (recordStats) {
         this.start_time = getTimer();
       }
-      writeDebug('in SoundManager2_SMSound_AS3, got duration '+duration+' and totalBytes '+totalBytes+' autoPlay: '+autoPlay);
+      writeDebug('SoundManager2_SMSound_AS3: Got duration: '+duration+', totalBytes: '+totalBytes+', autoPlay: '+autoPlay);
 
       if (this.useNetstream) {
+
         this.cc = new Object();
         this.nc = new NetConnection();
 
@@ -152,24 +153,28 @@ package {
 
         // TODO: security/IO error handling
         // this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);
-        // this.nc.addEventListener(IOErrorEvent.IO_ERROR, doIOError);
         nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 
-        writeDebug('Got server URL: '+ this.serverUrl);
         if (this.serverUrl != null) {
-          writeDebug('NetConnection: connecting to server ' + this.serverUrl + '...');
+          writeDebug('SoundManager2_SMSound_AS3: NetConnection: connecting to server ' + this.serverUrl + '...');
         }
         this.nc.connect(serverUrl);
       } else {
         this.connect_time = this.start_time;
         this.connected = true;
       }
+
     }
 
     private function netStatusHandler(event:NetStatusEvent):void {
-      switch (event.info.code) {
-        case "NetConnection.Connect.Success":
 
+      if (this.useEvents) {
+        writeDebug('netStatusHandler: '+event.info.code);
+      }
+
+      switch (event.info.code) {
+
+        case "NetConnection.Connect.Success":
           writeDebug('NetConnection: connected');
           try {
             this.ns = new NetStream(this.nc);
@@ -180,6 +185,7 @@ package {
             this.cc.onMetaData = this.metaDataHandler;
             this.ns.client = this.cc;
             this.ns.receiveAudio(true);
+
             if (this.useVideo) {
               this.oVideo = new Video();
               this.ns.receiveVideo(true);
@@ -196,8 +202,10 @@ package {
             if (recordStats) {
               this.recordConnectTime();
             }
-
-            ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
+            if (this.useEvents) {
+              writeDebug('firing _onconnect for '+this.sID);
+              ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
+            }
           } catch(e: Error) {
             this.failed = true;
             writeDebug('netStream error: ' + e.toString());
@@ -207,8 +215,8 @@ package {
 
         case "NetStream.Play.StreamNotFound":
           this.failed = true;
-          writeDebug("NetConnection: Stream not found! Description: " + event.info.description);
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Stream not found!', event.info.level, event.info.code);
+          writeDebug("NetConnection: Stream not found!");
           break;
 
         // This is triggered when the sound loses the connection with the server.  In some cases
@@ -219,8 +227,8 @@ package {
         // onFailure handler?
         case "NetConnection.Connect.Closed":
           this.failed = true;
-          writeDebug("NetConnection: Connection closed! Description: " + event.info.description);
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Connection closed!', event.info.level, event.info.code);
+          writeDebug("NetConnection: Connection closed!");
           break;
 
         // Couldn't establish a connection with the server. Attempts to connect to the server
@@ -296,8 +304,8 @@ package {
       this.oVideo.height = this.sm.stage.stageHeight;
     }
 
-    public function writeDebug(s: String, bTimestamp: Boolean = false) : Boolean { //DO_NOT_DELETE
-      return this.sm.writeDebug(s, bTimestamp); // defined in main SM object       //DO_NOT_DELETE
+    public function writeDebug (s: String, bTimestamp: Boolean = false) : Boolean {
+      return this.sm.writeDebug (s, bTimestamp); // defined in main SM object
     }
 
     public function doNetStatus(e: NetStatusEvent) : void {
@@ -306,18 +314,18 @@ package {
 
     public function metaDataHandler(infoObject: Object) : void {
       /*
-    var data:String = new String();
-    for (var prop:* in infoObject) {
-    data += prop+': '+infoObject[prop]+' ';
-    }
-    ExternalInterface.call('soundManager._writeDebug','Metadata: '+data);
-    */
+	  var data:String = new String();
+	  for (var prop:* in infoObject) {
+		data += prop+': '+infoObject[prop]+' ';
+	  }
+	  ExternalInterface.call('soundManager._writeDebug','Metadata: '+data);
+	  */
       if (this.oVideo) {
         // set dimensions accordingly
         if (!infoObject.width && !infoObject.height) {
-          writeDebug('No width/height specified');
-          infoObject.width = 0;
-          infoObject.height = 0;
+          writeDebug('No width/height specified, using stage dimensions');
+          infoObject.width = this.sm.stage.width;
+          infoObject.height = this.sm.stage.height;
         }
         writeDebug('video dimensions: ' + infoObject.width + 'x' + infoObject.height + ' (w/h)');
         this.videoWidth = infoObject.width;
@@ -338,7 +346,10 @@ package {
         this.oVideo.visible = true; // show ze video!
       }
       if (!this.loaded) {
-        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, (this.bytesTotal || this.totalBytes), (infoObject.duration || this.duration));
+        // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
+        // TODO: investigate loaded/total values
+        // ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
+        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, (this.bytesTotal || this.totalBytes), (infoObject.duration || this.duration))
       }
       this.duration = infoObject.duration * 1000;
       // null this out for the duration of this object's existence.
@@ -367,8 +378,11 @@ package {
 
     public function start(nMsecOffset: int, nLoops: int) : void {
       this.sm.currentObject = this; // reference for video, full-screen
+      this.useEvents = true;
       if (this.useNetstream) {
-        writeDebug("Called start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
+
+        writeDebug("SMSound::start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
+
         this.cc.onMetaData = this.metaDataHandler;
 
         // Don't seek if we don't have to because it destroys the buffer
@@ -378,24 +392,36 @@ package {
           this.setBuffer(this.getStartBuffer());
 
           this.ns.seek(nMsecOffset);
+          this.lastValues.position = nMsecOffset; // https://gist.github.com/1de8a3113cf33d0cff67
         }
 
         if (this.paused) {
+          writeDebug('start: resuming from paused state');
           this.ns.resume(); // get the sound going again
-          if (!this.didLoad) this.didLoad = true;
+          if (!this.didLoad) {
+            this.didLoad = true;
+          }
           this.paused = false;
         } else if (!this.didLoad) {
+          writeDebug('start: !didLoad - playing '+this.sURL);
           this.ns.play(this.sURL);
           this.didLoad = true;
           this.paused = false;
+        } else {
+          // previously loaded, perhaps stopped/finished. play again?
+          writeDebug('playing again (not paused, didLoad = true)');
+          this.ns.play(this.sURL);
         }
         // this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
+
       } else {
+        // writeDebug('start: seeking to '+nMsecOffset+', '+nLoops+(nLoops==1?' loop':' loops'));
         this.soundChannel = this.play(nMsecOffset, nLoops);
         this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
       }
+
     }
 
     private function _onfinish() : void {
@@ -404,6 +430,7 @@ package {
 
     public function loadSound(sURL: String, bStream: Boolean) : void {
       if (this.useNetstream) {
+        this.useEvents = true;
         if (this.didLoad != true) {
           ExternalInterface.call('loadSound(): loading ' + this.sURL);
           this.ns.play(this.sURL);
@@ -424,13 +451,19 @@ package {
     }
 
     public function setAutoPlay(autoPlay: Boolean) : void {
-      this.autoPlay = autoPlay;
-      if (this.autoPlay) {
+      if (!this.serverUrl) {
+        // don't apply to non-RTMP, netstream stuff.
+        this.autoPlay = true;
         this.pauseOnBufferFull = false;
-        writeDebug('cancelling pauseOnBufferFull because autoPlay is on');
-      } else if (!this.autoPlay) {
-        this.pauseOnBufferFull = true;
-        writeDebug('pausing on buffer full because autoPlay is off');
+      } else {
+        this.autoPlay = autoPlay;
+        if (this.autoPlay) {
+          this.pauseOnBufferFull = false;
+          writeDebug('ignoring pauseOnBufferFull because autoPlay is on');
+        } else if (!this.autoPlay) {
+          this.pauseOnBufferFull = true;
+          writeDebug('pausing on buffer full because autoPlay is off');
+        }
       }
     }
 
@@ -447,7 +480,11 @@ package {
     public function applyTransform() : void {
       var st: SoundTransform = new SoundTransform(this.lastValues.volume, this.lastValues.pan);
       if (this.useNetstream) {
-        this.ns.soundTransform = st;
+        if (this.ns) {
+          this.ns.soundTransform = st;
+        } else {
+          // writeDebug('applyTransform(): Note: No active netStream');
+        }
       } else if (this.soundChannel) {
         this.soundChannel.soundTransform = st; // new SoundTransform(this.lastValues.volume, this.lastValues.pan);
       }
@@ -475,11 +512,11 @@ package {
     // Handle FMS bandwidth check callback.
     // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
     // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html
-    public function onBWDone():void{
-      //writeDebug('onBWDone: called and ignored');
+    public function onBWDone() : void {
+      // writeDebug('onBWDone: called and ignored');
     }
 
-    // NetStream client callback.  Invoked when the song is complete
+    // NetStream client callback. Invoked when the song is complete.
     public function onPlayStatus(info:Object):void {
       writeDebug('onPlayStatus called with '+info);
       switch(info.code) {
@@ -488,5 +525,6 @@ package {
           break;
       }
     }
-  }
+ }
+
 }
