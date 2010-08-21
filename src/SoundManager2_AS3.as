@@ -640,7 +640,7 @@ package {
 
     public function doNetStatus(oSound: SoundManager2_SMSound_AS3, e: NetStatusEvent) : void {
       // this will eventually let us know what is going on.. is the stream loading, empty, full, stopped?
-      oSound.lastNetStatus = e.info.code;
+      // oSound.lastNetStatus = e.info.code;
 
       if (e.info.code != "NetStream.Buffer.Full" && e.info.code != "NetStream.Buffer.Empty" && e.info.code != "NetStream.Seek.Notify") {
         writeDebug('netStatusEvent: ' + e.info.code);
@@ -649,7 +649,8 @@ package {
       // When streaming, Stop is called when buffering stops, not when the stream is actually finished.
       // @see http://www.actionscript.org/forums/archive/index.php3/t-159194.html
 
-      if (e.info.code == "NetStream.Play.Stop") { // && !oSound.didFinish && oSound.loaded == true && nD == nP
+      if (!oSound.serverUrl && e.info.code == "NetStream.Play.Stop") { // && !oSound.didFinish && oSound.loaded == true && nD == nP
+
         writeDebug('NetStream.Play.Stop');
         // if (!oSound.useNetstream) {
         // finished playing
@@ -661,9 +662,12 @@ package {
         ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
         // and exit full-screen mode, too?
         stage.displayState = StageDisplayState.NORMAL;
+
       } else if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
+
         writeDebug('NetStream load error: '+e.info.code);
         this.onLoadError(oSound);
+
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
 
         // RTMP case..
@@ -725,6 +729,7 @@ package {
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfailure");
         }
       }
+
       oSound.lastNetStatus = e.info.code;
 
     }
