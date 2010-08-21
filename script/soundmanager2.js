@@ -910,7 +910,9 @@ function SoundManager(smURL, smID) {
     badFV: 'soundManager.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.',
     as2loop: 'Note: Setting stream:false so looping can work (flash 8 limitation)',
     noNSLoop: 'Note: Looping not implemented for MovieStar formats',
-    needfl9: 'Note: Switching to flash 9, required for MP4 formats.'
+    needfl9: 'Note: Switching to flash 9, required for MP4 formats.',
+    mfTimeout: 'Setting flashLoadTimeout = 0 (infinite) for off-screen, mobile flash case',
+    mfOn: 'mobileFlash::enabling on-screen flash repositioning'
   };
 
   _id = function(sID) {
@@ -1119,26 +1121,25 @@ function SoundManager(smURL, smID) {
     }
 
     function check(inDoc) {
-      // mobile (particularly Android) check
+      // mobile flash (Android for starters) check
       oM = _s.oMC.style;
       if (_ua.match(/android/i)) {
         if (inDoc) {
           if (_s.flashLoadTimeout) {
-            _s._wD('Resetting flashLoadTimeout = 0 (infinite) for off-screen, mobile flash case');
+            _s._wDS('mfTimeout');
             _s.flashLoadTimeout = 0;
           }
           return false;
         }
-        _s._wD('mobileFlash:: enabling onscreen hax');
+        _s._wD('mfOn');
         oM.position = 'absolute';
         oM.left = oM.top = '0px';
         setReposition(true);
         _s.onready(function(){
-          _s._wD('onready()::disabling reposition');
           setReposition(false); // detach
           resetPosition(); // restore when OK/timed out
         });
-        reposition(); // do eet, now!
+        reposition();
       }
     }
 
@@ -1186,9 +1187,6 @@ function SoundManager(smURL, smID) {
     }
 
     _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
-
-    // TODO: revisit
-    // if (_s.wmode !== null && _s.flashLoadTimeout !== 0 && (!_s.useHighPerformance || _s.debugFlash) && !_s.isIE && navigator.platform.match(/win32/i)) {
 
     if (_s.wmode !== null && !_s.isIE && !_s.useHighPerformance && navigator.platform.match(/win32/i)) {
       _s.specialWmodeCase = true;
