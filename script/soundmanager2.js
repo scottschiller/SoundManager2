@@ -313,7 +313,7 @@ function SoundManager(smURL, smID) {
       if (_fV === 8) {
         _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1);
       } else {
-        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.totalBytes||null, _tO.autoPlay, true);
+        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.totalBytes||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false);
         if (!_tO.serverURL) {
           // We are connected immediately
           oSound.connected = true;
@@ -1936,7 +1936,7 @@ function SoundManager(smURL, smID) {
       _s._wD('soundManager.load(): ' + _t._iO.url, 1);
       if (_t._iO.url === _t.url && _t.readyState !== 0 && _t.readyState !== 2) {
         _wDS('onURL', 1);
-        return _t;
+        //return _t;
       }
       _t._lastURL = _t.url;
       _t.loaded = false;
