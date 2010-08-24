@@ -2082,6 +2082,7 @@ function SoundManager(smURL, smID) {
       } else {
         _s._wD(fN + '"' + _t.sID + '"');
       }
+      console.log('KJV in play, got instanceCount '+_t.instanceCount);
       if (_t.paused && _t.position !== null) { // https://gist.github.com/37b17df75cc4d7a90bf6
         _s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
@@ -2091,6 +2092,7 @@ function SoundManager(smURL, smID) {
         _t.paused = false; // https://gist.github.com/859638f341b25669b587
         if (!_t.instanceCount || (_fV > 8 && !_t.isHTML5)) {
           _t.instanceCount++;
+          console.log('KJV in play, incrementing instanceCount to '+_t.instanceCount);
         }
         _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
         _t._iO = _loopFix(_t._iO);
@@ -2142,6 +2144,7 @@ function SoundManager(smURL, smID) {
             _t.unload();
           }
         }
+        console.log('KJV in stop, reset instanceCount to 0');
         _t.instanceCount = 0;
         _t._iO = {};
         // _t.instanceOptions = _t._iO;
@@ -2150,7 +2153,7 @@ function SoundManager(smURL, smID) {
     };
 
     this.setAutoPlay = function(autoPlay) {
-      // _s._wD('setAutoPlay('+autoPlay+')');
+      _s._wD('sound '+_t.sID+' turned autoplay ' + (autoPlay ? 'on' : 'off'));
       _t._iO.autoPlay = autoPlay;
       _s.o._setAutoPlay(_t.sID, autoPlay);
       if (autoPlay) {
@@ -2158,6 +2161,7 @@ function SoundManager(smURL, smID) {
         // KJV TODO: verify that this works with RTMP streams
         if (!_t.instanceCount && _t.readyState == 1) {
           _t.instanceCount++;
+          _s._wD('sound '+_t.sID+' incremented instance count to '+_t.instanceCount);
         }
       }
     };
@@ -2724,6 +2728,8 @@ function SoundManager(smURL, smID) {
       // sound has finished playing
       // TODO: calling user-defined onfinish() should happen after setPosition(0)
       // OR: onfinish() and then setPosition(0) is bad.
+      //console.log(_t.instanceCount);
+      _s._wD('SMSound._onfinish(): "' + _t.sID + '" got instanceCount '+_t.instanceCount);
       _t._onbufferchange(0); // ensure buffer has ended
       _t.resetOnPosition(0);
       if (_t._iO.onbeforefinishcomplete) {
@@ -2734,6 +2740,7 @@ function SoundManager(smURL, smID) {
       _t.didJustBeforeFinish = false;
       if (_t.instanceCount) {
         _t.instanceCount--;
+        console.log('KJV in onfinish, decrementing instanceCount to '+_t.instanceCount);
         if (!_t.instanceCount) {
           // reset instance options
           // _t.setPosition(0);
