@@ -644,6 +644,25 @@ package {
       // this will eventually let us know what is going on.. is the stream loading, empty, full, stopped?
       oSound.lastNetStatus = e.info.code;
 
+      // Recover from failures
+      if (e.info.code == "NetConnection.Connect.Closed"
+          || e.info.code == "NetStream.Failed"
+          || e.info.code == "NetStream.Play.FileStructureInvalid"
+          || e.info.code == "NetStream.Play.StreamNotFound") {
+
+        // KJV Ignore if the sound has already failed.  We treat these as failures,
+        // but should we rather call this.onLoadError()?
+        if (!oSound.failed) {
+          writeDebug('netStatusEvent: ' + e.info.code);
+          oSound.failed = true;
+          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfailure", '', e.info.level, e.info.code);
+        }
+
+        // Remember the last NetStatus event
+        oSound.lastNetStatus = e.info.code;
+        return;
+      }
+
       writeDebug('netStatusEvent: ' + e.info.code);  // KJV we like to see all events
       //if (e.info.code != "NetStream.Buffer.Full" && e.info.code != "NetStream.Buffer.Empty" && e.info.code != "NetStream.Seek.Notify") {
       //  writeDebug('netStatusEvent: ' + e.info.code);
@@ -651,22 +670,21 @@ package {
 
       // When streaming, Stop is called when buffering stops, not when the stream is actually finished.
       // @see http://www.actionscript.org/forums/archive/index.php3/t-159194.html
+      if (e.info.code == "NetStream.Play.Stop") {
 
-      if (e.info.code == "NetStream.Play.Stop") { // && !oSound.didFinish && oSound.loaded == true && nD == nP
-        writeDebug('NetStream.Play.Stop');
-        // if (!oSound.useNetstream) {
-        // finished playing
-        // oSound.didFinish = true; // will be reset via JS callback
-        oSound.didJustBeforeFinish = false; // reset
-        writeDebug('calling onfinish for a sound');
-        // reset the sound? Move back to position 0?
-        checkProgress();
-        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
-        // and exit full-screen mode, too?
-        stage.displayState = StageDisplayState.NORMAL;
-      } else if (e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.FileStructureInvalid" || e.info.code == "NetStream.Play.StreamNotFound") {
-        writeDebug('NetStream load error: '+e.info.code);
-        this.onLoadError(oSound);
+        writeDebug('NetStream.Play.Stop - oSound.useNetstream='+oSound.useNetstream);
+        if (!oSound.useNetstream) {
+          // finished playing
+          // oSound.didFinish = true; // will be reset via JS callback
+          oSound.didJustBeforeFinish = false; // reset
+          writeDebug('calling onfinish for a sound');
+          // reset the sound? Move back to position 0?
+          checkProgress();
+          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
+          // and exit full-screen mode, too?
+          stage.displayState = StageDisplayState.NORMAL;
+        }
+
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
 
         // First time buffer has filled.  Print debugging output.
@@ -720,18 +738,6 @@ package {
 
           // The buffer is empty.  Start from the smallest buffer again.
           oSound.setBuffer(oSound.getStartBuffer());
-        }
-
-      // Recover from failures
-      } else if (e.info.code == "NetConnection.Connect.Closed"
-          || e.info.code == "NetStream.Failed"
-          || e.info.code == "NetStream.Play.FileStructureInvalid"
-          || e.info.code == "NetStream.Play.StreamNotFound") {
-        if (oSound.failed) {
-          writeDebug('doNetStatus: ignoring, already reported failure.');
-        } else {
-          oSound.failed = true;
-          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfailure", '', e.info.level, e.info.code);
         }
       }
 
