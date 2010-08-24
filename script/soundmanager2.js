@@ -2154,8 +2154,9 @@ function SoundManager(smURL, smID) {
       _t._iO.autoPlay = autoPlay;
       _s.o._setAutoPlay(_t.sID, autoPlay);
       if (autoPlay) {
-        // _t.playState = 1; // ?
-        if (!_t.instanceCount) {
+        // KJV Only increment the instanceCount if the sound isn't loaded
+        // KJV TODO: verify that this works with RTMP streams
+        if (!_t.instanceCount && _t.readyState == 1) {
           _t.instanceCount++;
         }
       }
