@@ -36,7 +36,7 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "V2.96a.20100822";
+    var version = "V2.96a.20100822+DEV";
     var version_as = "(AS2/Flash 8)";
 
     /*
@@ -92,14 +92,14 @@ class SoundManager2 {
     sm2Menu.customItems.push(sm2MenuItem);
     _root.menu = sm2Menu;
 
-    var writeDebug = function (s) {
+    var writeDebug = function(s) {
       // <d>
       if (!debugEnabled) return false;
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s);
       // </d>
     }
 
-    var flashDebug = function (messageText) {
+    var flashDebug = function(messageText) {
      // <d>
       _messages.push(messageText);
       if (!flashDebugEnabled) {
@@ -130,7 +130,7 @@ class SoundManager2 {
       // </d>
     }
 
-    var _externalInterfaceTest = function (isFirstCall) {
+    var _externalInterfaceTest = function(isFirstCall) {
       var sandboxType = System.security['sandboxType'];
       try {
         if (isFirstCall) {
@@ -160,13 +160,13 @@ class SoundManager2 {
       return true; // to verify that a call from JS to here, works. (eg. JS receives "true", thus OK.)
     }
 
-    var _disableDebug = function () {
+    var _disableDebug = function() {
       // prevent future debug calls from Flash going to client (maybe improve performance)
       writeDebug('_disableDebug()');
       debugEnabled = false;
     }
 
-    var checkProgress = function () {
+    var checkProgress = function() {
       var bL = 0;
       var bT = 0;
       var nD = 0;
@@ -195,14 +195,14 @@ class SoundManager2 {
       }
     }
 
-    var onLoad = function (bSuccess) {
+    var onLoad = function(bSuccess) {
       checkProgress(); // ensure progress stats are up-to-date
       // force duration update (doesn't seem to be always accurate)
       ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.getBytesLoaded(), this.getBytesTotal(), this.duration);
       ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onload", this.duration > 0 ? 1 : 0); // bSuccess doesn't always seem to work, so check MP3 duration instead.
     }
 
-    var onID3 = function () {
+    var onID3 = function() {
       // --- NOTE: BUGGY? ---
       // --------------------
       // TODO: Investigate holes in ID3 parsing - for some reason, Album will be populated with Date if empty and date is provided. (?)
@@ -222,15 +222,15 @@ class SoundManager2 {
       soundObjects[this.sID].onID3 = null;
     }
 
-    var registerOnComplete = function (sID) {
-      soundObjects[sID].onSoundComplete = function () {
+    var registerOnComplete = function(sID) {
+      soundObjects[sID].onSoundComplete = function() {
         checkProgress();
         this.didJustBeforeFinish = false; // reset
         ExternalInterface.call(baseJSObject + "['" + sID + "']._onfinish");
       }
     }
 
-    var _setPosition = function (sID, nSecOffset, isPaused) {
+    var _setPosition = function(sID, nSecOffset, isPaused) {
       var s = soundObjects[sID];
       // writeDebug('_setPosition()');
       s.lastValues.position = s.position;
@@ -242,7 +242,7 @@ class SoundManager2 {
       if (isPaused) s.stop();
     }
 
-    var _load = function (sID, sURL, bStream, bAutoPlay) {
+    var _load = function(sID, sURL, bStream, bAutoPlay) {
       // writeDebug('_load(): '+sID+', '+sURL+', '+bStream+', '+bAutoPlay);
       if (typeof bAutoPlay == 'undefined') bAutoPlay = false;
       if (typeof bStream == 'undefined') bStream = true;
@@ -263,7 +263,7 @@ class SoundManager2 {
       registerOnComplete(sID);
     }
 
-    var _unload = function (sID, sURL) {
+    var _unload = function(sID, sURL) {
       // effectively "stop" loading by loading a tiny MP3
       // writeDebug('_unload()');
       var s = soundObjects[sID];
@@ -275,9 +275,12 @@ class SoundManager2 {
       s.didJustBeforeFinish = false;
     }
 
-    var _createSound = function (sID, justBeforeFinishOffset, loops) {
-      soundObjects[sID] = new Sound();
-      var s = soundObjects[sID];
+    var _createSound = function(sID, justBeforeFinishOffset, loops) {
+      var s = new Sound();
+      if (!soundObjects[sID]) {
+        sounds.push(sID);
+      }
+      soundObjects[sID] = s;
       s.setVolume(100);
       s.didJustBeforeFinish = false;
       s.sID = sID;
@@ -289,24 +292,23 @@ class SoundManager2 {
         position: 0,
         nLoops: loops||1
       };
-      sounds.push(sID);
     }
 
-    var _destroySound = function (sID) {
+    var _destroySound = function(sID) {
       // for the power of garbage collection! .. er, Greyskull!
       var s = (soundObjects[sID] || null);
       if (!s) return false;
       for (var i = 0; i < sounds.length; i++) {
-        if (sounds[i] == s) {
+        if (sounds[i] == sID) {
           sounds.splice(i, 1);
-          continue;
+          break;
         }
       }
       s = null;
       delete soundObjects[sID];
     }
 
-    var _stop = function (sID, bStopAll) {
+    var _stop = function(sID, bStopAll) {
       // stop this particular instance (or "all", based on parameter)
       if (bStopAll) {
         _root.stop();
@@ -317,7 +319,7 @@ class SoundManager2 {
       }
     }
 
-    var _start = function (sID, nLoops, nMsecOffset) {
+    var _start = function(sID, nLoops, nMsecOffset) {
       // writeDebug('_start: ' + sID + ', loops: ' + nLoops + ', nMsecOffset: ' + nMsecOffset);
       registerOnComplete();
       var s = soundObjects[sID];
@@ -326,7 +328,7 @@ class SoundManager2 {
       s.start(nMsecOffset, nLoops);
     }
 
-    var _pause = function (sID) {
+    var _pause = function(sID) {
       // writeDebug('_pause()');
       var s = soundObjects[sID];
       if (!s.paused) {
@@ -343,15 +345,15 @@ class SoundManager2 {
       }
     }
 
-    var _setPan = function (sID, nPan) {
+    var _setPan = function(sID, nPan) {
       soundObjects[sID].setPan(nPan);
     }
 
-    var _setVolume = function (sID, nVol) {
+    var _setVolume = function(sID, nVol) {
       soundObjects[sID].setVolume(nVol);
     }
 
-    var _setPolling = function (bPolling) {
+    var _setPolling = function(bPolling) {
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
         writeDebug('Enabling polling, ' + timerInterval + ' ms interval');
@@ -364,7 +366,7 @@ class SoundManager2 {
     }
 
     // XML handler stuff
-    var parseXML = function (oXML) {
+    var parseXML = function(oXML) {
       var xmlRoot = oXML.firstChild;
       var xmlAttr = xmlRoot.attributes;
       var oOptions = {};
@@ -379,7 +381,7 @@ class SoundManager2 {
       }
     }
 
-    var xmlOnloadHandler = function (ok) {
+    var xmlOnloadHandler = function(ok) {
       if (ok) {
         writeDebug("XML loaded");
         parseXML(this);
@@ -389,7 +391,7 @@ class SoundManager2 {
     }
 
     // ---
-    var _loadFromXML = function (sXmlUrl) {
+    var _loadFromXML = function(sXmlUrl) {
       writeDebug("_loadFromXML(" + sXmlUrl + ")");
       // ExternalInterface.call(baseJSController+"._writeDebug","_loadFromXML("+sXmlUrl+")");
       // var oXmlHandler = new XMLHandler(sXmlUrl);
@@ -400,7 +402,7 @@ class SoundManager2 {
       oXML.load(sXmlUrl);
     }
 
-    var _init = function () {
+    var _init = function() {
 
       // OK now stuff should be available
       try {

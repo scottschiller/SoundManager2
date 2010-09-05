@@ -47,7 +47,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.96a.20100822";
+    public var version:String = "V2.96a.20100822+DEV";
     public var version_as:String = "(AS3/Flash 9)";
 
     /*
@@ -147,7 +147,7 @@ package {
 
       // call after delay, to be safe (ensure callbacks are registered by the time JS is called below)
       var timer: Timer = new Timer(20, 0);
-      timer.addEventListener(TimerEvent.TIMER, function () : void {
+      timer.addEventListener(TimerEvent.TIMER, function() : void {
         timer.reset();
         _externalInterfaceTest(true);
         // timer.reset();
@@ -258,7 +258,6 @@ package {
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
       // </d>
       return true;
-
     }
 
     public function _externalInterfaceTest(isFirstCall: Boolean) : Boolean {
@@ -329,6 +328,9 @@ package {
       var newEQData: Boolean = false;
       var areSoundsInaccessible: Boolean = SoundMixer.areSoundsInaccessible();
       var isPlaying: Boolean = true; // special case for NetStream when ending
+      var hasNew:Boolean = false;
+      var hasNewLoaded:Boolean = false;
+
       for (var i: int = 0, j: int = sounds.length; i < j; i++) {
         oSound = soundObjects[sounds[i]];
         sMethod = baseJSObject + "['" + sounds[i] + "']._whileloading";
@@ -337,9 +339,6 @@ package {
           // various cases for ignoring
           continue; // if sounds are destructed within event handlers while this loop is running, may be null
         }
-
-        var hasNew:Boolean = false;
-        var hasNewLoaded:Boolean = false;
 
         if (oSound.useNetstream) {
 
@@ -453,8 +452,11 @@ package {
         var newDataError:Boolean = false;
         var dataErrors:Array = [];
 
+        // special case: Netstream may try to fire whileplaying() after finishing. check that stop hasn't fired.
+        isPlaying = (oSound.didLoad && !oSound.paused && (!oSound.useNetstream || (oSound.useNetstream && oSound.lastNetStatus != "NetStream.Play.Stop"))); // don't update if stream has ended
+
         // raw waveform + EQ spectrum data
-        if (oSoundChannel || oSound.useNetstream) {
+        if (isPlaying && oSoundChannel || oSound.useNetstream) {
           if (oSound.useWaveformData) {
             if (areSoundsInaccessible == false) {
               try {
@@ -512,9 +514,6 @@ package {
             var errors:String = dataErrors.join('<br>\n');
             ExternalInterface.call(sMethod, 'data unavailable: ' + errors);
         }
-
-        // special case: Netstream may try to fire whileplaying() after finishing. check that stop hasn't fired.
-        isPlaying = (!oSound.useNetstream || (oSound.useNetstream && oSound.lastNetStatus != "NetStream.Play.Stop")); // don't update if stream has ended
 
         if (typeof nP != 'undefined' && hasNew && isPlaying) { // and IF VIDEO, is still playing?
 
@@ -600,7 +599,7 @@ package {
     public function registerOnComplete(sID:String) : void {
       var oSound: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (oSound && oSound.soundChannel) {
-        oSound.soundChannel.addEventListener(Event.SOUND_COMPLETE, function () : void {
+        oSound.soundChannel.addEventListener(Event.SOUND_COMPLETE, function() : void {
           if (oSound) {
             oSound.didJustBeforeFinish = false; // reset
             checkProgress();
@@ -735,26 +734,26 @@ package {
     }
 
     public function addNetstreamEvents(oSound: SoundManager2_SMSound_AS3) : void {
-      oSound.ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, function (e: AsyncErrorEvent) : void {
+      oSound.ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, function(e: AsyncErrorEvent) : void {
         doAsyncError(oSound, e)
       });
-      oSound.ns.addEventListener(NetStatusEvent.NET_STATUS, function (e: NetStatusEvent) : void {
+      oSound.ns.addEventListener(NetStatusEvent.NET_STATUS, function(e: NetStatusEvent) : void {
         doNetStatus(oSound, e)
       });
-      oSound.ns.addEventListener(IOErrorEvent.IO_ERROR, function (e: IOErrorEvent) : void {
+      oSound.ns.addEventListener(IOErrorEvent.IO_ERROR, function(e: IOErrorEvent) : void {
         doIOError(oSound, e)
       });
     }
 
     public function removeNetstreamEvents(oSound: SoundManager2_SMSound_AS3) : void {
       // for the record, I'm sure this is completely wrong. ;)
-      oSound.ns.removeEventListener(AsyncErrorEvent.ASYNC_ERROR, function (e: AsyncErrorEvent) : void {
+      oSound.ns.removeEventListener(AsyncErrorEvent.ASYNC_ERROR, function(e: AsyncErrorEvent) : void {
         doAsyncError(oSound, e)
       });
-      oSound.ns.removeEventListener(NetStatusEvent.NET_STATUS, function (e: NetStatusEvent) : void {
+      oSound.ns.removeEventListener(NetStatusEvent.NET_STATUS, function(e: NetStatusEvent) : void {
         doNetStatus(oSound, e)
       });
-      oSound.ns.removeEventListener(IOErrorEvent.IO_ERROR, function (e: IOErrorEvent) : void {
+      oSound.ns.removeEventListener(IOErrorEvent.IO_ERROR, function(e: IOErrorEvent) : void {
         doIOError(oSound, e)
       });
     }
@@ -879,7 +878,7 @@ package {
         }
       } else {
         try {
-          s.addEventListener(IOErrorEvent.IO_ERROR, function (e: IOErrorEvent) : void {
+          s.addEventListener(IOErrorEvent.IO_ERROR, function(e: IOErrorEvent) : void {
             doIOError(s, e)
           });
           s.loadSound(sURL, bStream);
@@ -893,7 +892,7 @@ package {
     }
 
     public function _unload(sID:String) : void {
-      var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      var s: SoundManager2_SMSound_AS3 = (soundObjects[sID] || null);
       if (!s) return void;
       var sURL:String = s.sURL; // save existing sound URL for object recreation
       try {
@@ -956,11 +955,12 @@ package {
     }
 
     public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, totalBytes:Number, autoPlay:Boolean, useEvents:Boolean) : void {
-      soundObjects[sID] = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, totalBytes, autoPlay, useEvents);
-      var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
-      if (!s) return void;
+      var s: SoundManager2_SMSound_AS3 = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, totalBytes, autoPlay, useEvents);
+      if (!soundObjects[sID]) {
+        sounds.push(sID);
+      }
+      soundObjects[sID] = s;
       this.currentObject = s;
-      // s.setVolume(100);
       s.didJustBeforeFinish = false;
       s.sID = sID;
       s.sURL = sURL;
@@ -975,8 +975,6 @@ package {
         rightPeak: 0,
         bufferLength: 0
       };
-      if (! (sID in sounds)) sounds.push(sID);
-      // sounds.push(sID);
     }
 
     public function _destroySound(sID:String) : void {
@@ -985,9 +983,9 @@ package {
       if (!s) return void;
       // try to unload the sound
       for (var i: int = 0, j: int = sounds.length; i < j; i++) {
-        if (sounds[i] == s) {
+        if (sounds[i] == sID) {
           sounds.splice(i, 1);
-          continue;
+          break;
         }
       }
       if (s.soundChannel) {
@@ -1127,7 +1125,7 @@ package {
         var nTimerInterval: uint = (bUseHighPerformanceTimer ? timerIntervalHighPerformance : timerInterval);
         writeDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
         timer = new Timer(nTimerInterval, 0);
-        timer.addEventListener(TimerEvent.TIMER, function () : void {
+        timer.addEventListener(TimerEvent.TIMER, function() : void {
           checkProgress();
         }); // direct reference eg. checkProgress doesn't work? .. odd.
         timer.start();

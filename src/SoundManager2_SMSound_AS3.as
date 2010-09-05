@@ -272,7 +272,7 @@ package {
       this.duration = infoObject.duration * 1000;
       // null this out for the duration of this object's existence.
       // it may be called multiple times.
-      this.cc.onMetaData = function (infoObject: Object) : void {}
+      this.cc.onMetaData = function(infoObject: Object) : void {}
 
     }
 

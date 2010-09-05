@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.96a.20100822
+ * V2.96a.20100822+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true, regexp: false */
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.96a.20100822';
+  this.versionNumber = 'V2.96a.20100822+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -350,23 +350,27 @@ function SoundManager(smURL, smID) {
     return _s.createSound(oOptions);
   };
 
-  this.destroySound = function(sID, bFromSound) {
+  this.destroySound = function(sID, _bFromSound) {
     // explicitly destroy a sound before normal page unload, etc.
     if (!_idCheck(sID)) {
       return false;
     }
-    for (var i = 0; i < _s.soundIDs.length; i++) {
+    var oS = _s.sounds[sID], i;
+    oS.stop();
+    oS.unload();
+    for (i = 0; i < _s.soundIDs.length; i++) {
       if (_s.soundIDs[i] === sID) {
         _s.soundIDs.splice(i, 1);
-        continue;
+        break;
       }
     }
-    _s.sounds[sID].unload();
-    if (!bFromSound) {
+    if (!_bFromSound) {
       // ignore if being called from SMSound instance
-      _s.sounds[sID].destruct();
+      oS.destruct(true);
     }
+    oS = null;
     delete _s.sounds[sID];
+    return true;
   };
 
   this.destroyVideo = this.destroySound;
@@ -1981,7 +1985,7 @@ function SoundManager(smURL, smID) {
       return _t;
     };
 
-    this.destruct = function() {
+    this.destruct = function(_bFromSM) {
       _s._wD('SMSound.destruct(): "' + _t.sID + '"');
       if (!_t.isHTML5) {
         // kill sound within Flash
@@ -1999,7 +2003,9 @@ function SoundManager(smURL, smID) {
           // delete _t._audio;
         }
       }
-      _s.destroySound(_t.sID, true); // ensure deletion from controller
+      if (!_bFromSM) {
+        _s.destroySound(_t.sID, true); // ensure deletion from controller
+      }
     };
 
     this.play = function(oOptions) {
