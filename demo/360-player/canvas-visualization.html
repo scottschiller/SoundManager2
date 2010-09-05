@@ -51,7 +51,9 @@ if (threeSixtyPlayer.config.usePeakData) {
 }
 
 // favicon is expensive CPU-wise, but can be used.
-threeSixtyPlayer.config.useFavIcon = true;
+if (window.location.href.match(/hifi/i)) {
+  threeSixtyPlayer.config.useFavIcon = true;
+}
 
 </script>
 

@@ -61,21 +61,24 @@
 
 a.sm2_button {
  position:relative;
- display:inline-block; /* If you worry old browser bugs, Firefox 2 might not like this and may need -moz-inline-box instead. :D */
+ display:inline-block; /* If you worry about old browser bugs, Firefox 2 might not like this and may need -moz-inline-box instead. :D */
  width:18px;
- height:16px;
+ height:18px;
  text-indent:-9999px; /* don't show link text */
  overflow:hidden; /* don't draw inner link text */
  vertical-align:middle;
  /* and, a bit of round-ness for the cool browsers. */
  -moz-border-radius:6px;
  -webkit-border-radius:6px;
- -opera-border-radius:6px;
+ -o-border-radius:6px;
  border-radius:6px;
  margin-top:-1px; /* vertical align tweak */
  /* safari 3.1+ fun (/W3 working draft extension, TBD.) */
  -webkit-transition-property: hover;
- -webkit-transition: background-color 0.15s ease-in-out;
+ -webkit-transition: all 0.2s ease-in-out;
+ -moz-transition: all 0.2s ease-in-out 0s; /* firefox 4 (couldn't sort out -moz-transform vs. MozTransform, so, "all" for now) */
+  -o-transition-property: background-color; /* opera 10.5 */
+  -o-transition-duration: 0.15s;
 }
 
 a.sm2_button:focus {
@@ -97,6 +100,12 @@ a.sm2_button:hover,
 a.sm2_button.sm2_playing,
 a.sm2_button.sm2_playing:hover {
  background-color:#cc3333;
+}
+
+a.sm2_button.sm2_playing,
+a.sm2_button.sm2_playing:hover {
+ -moz-transform:rotate(90deg);
+ -webkit-transform:rotate(90deg);
 }
 
 a.sm2_button.sm2_paused,

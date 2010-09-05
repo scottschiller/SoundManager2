@@ -792,7 +792,15 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 					
 				  <h3>Sound Object Events</h3>
 
-				  <p class="in">Like native javascript objects, each SoundManager <code>SMSound</code> (sound instance) object can fire a number of events including <code>onload</code> and others. Functions can be assigned eg. <code>mySound.onload = function() {...}</code> and will be called as needed, and are scoped to the relevant sound object. Specifically, the <code>this</code> keyword will point to the sound object on which the event fired such that its properties can easily be accessed - eg. within an <code>SMSound</code> event handler, <code>this.sID</code> will give the sound ID.</p>
+				  <p class="in">Like native javascript objects, each SoundManager <code>SMSound</code> (sound instance) object can fire a number of <code>onload</code>-like events. Handlers cannot be "directly" assigned (eg. someSound.onload), but can be passed as option parameters to several sound methods.</p>
+				  <div>
+<pre class="block"><code>soundManager.play('<span>mySound</span>',{
+  onfinish: function() {
+    alert('<span>The sound </span>'+this.sID+' <span>finished playing.</span>');
+  }
+});</code></pre>
+				  </div>
+				  <p>Event handlers are scoped to the relevant sound object, so the <code>this</code> keyword will point to the sound object on which the event fired such that its properties can easily be accessed - eg. within an <code>SMSound</code> event handler, <code>this.sID</code> will give the sound ID.</p>
 
 				  </div>
 

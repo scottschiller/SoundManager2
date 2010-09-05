@@ -1066,6 +1066,22 @@ a.cta {
  zoom:1;
 }
 
+/* redefine for simple mp3 button demo */
+.c2 a.sm2_button {
+ -moz-border-radius:6px;
+ -webkit-border-radius:6px;
+ -o-border-radius:6px;
+ border-radius:6px;
+}
+
+.c2 a.sm2_button.type-2 {
+ -moz-border-radius:9px;
+ -webkit-border-radius:9px;
+ -o-border-radius:9px;
+ border-radius:9px;
+}
+
+
 .c2 a {
  margin-left:-0.2em;
  margin-right:-0.2em;
@@ -1394,9 +1410,10 @@ ul.graphic li a.sm2_link {
 }
 
 ul.graphic li a {
- background:#ddd url(../demo/play-mp3-links/image/icon_play.png) no-repeat 0px 50%;
+ background:#ddd url(../demo/play-mp3-links/image/icon_play.png) no-repeat 3px 50%;
  _background-image:url(../demo/play-mp3-links/image/icon_play.gif);
 }
+
 
 ul.graphic li a:hover,
 ul.graphic li a.sm2_paused:hover,

@@ -891,11 +891,14 @@ var Metadata = function(oSound) {
     // set up graph box stuffs
     var sb = self.getElementsByClassName('spectrum-box','div',document.documentElement)[0];
     if (sm.flashVersion >= 9) {
-      self.addClass(self.getElementsByClassName('playlist','ul',document.documentElement)[0],self.cssBase);
+      var lists = self.getElementsByClassName('playlist','ul',document.documentElement);
+      for (var i=lists.length; i--;) {
+        self.addClass(lists[i],self.cssBase);
+      }
       var sbC = sb.getElementsByTagName('div')[0];
       var oF = document.createDocumentFragment();
       var oClone = null;
-      for (var i=256; i--;) {
+      for (i=256; i--;) {
         oClone = sbC.cloneNode(false);
         oClone.style.left = (i)+'px';
         oF.appendChild(oClone);
