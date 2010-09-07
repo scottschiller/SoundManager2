@@ -319,6 +319,7 @@ package {
       var bT: int = 0;
       var nD: int = 0;
       var nP: int = 0;
+      var bufferLength: int = 0;
       var lP:Number = 0;
       var rP:Number = 0;
       var isBuffering:Object = null;
@@ -345,10 +346,12 @@ package {
         if (oSound.useNetstream) {
 
           // video stream
+          bufferLength = oSound.ns.bufferLength;
           bL = oSound.ns.bytesLoaded;
           bT = oSound.ns.bytesTotal || oSound.totalBytes;
           nD = int(oSound.duration || 0); // can sometimes be null with short MP3s? Wack.
           nP = oSound.ns.time * 1000;
+          //writeDebug('ns: loaded paused time duration bytesloaded bufferLength: '+oSound.loaded+', '+oSound.paused+', '+(oSound.ns.time*1000)+', '+oSound.duration+', '+oSound.ns.bytesLoaded+', '+oSound.ns.bufferLength);
           if (nP != oSound.lastValues.position) {
             oSound.lastValues.position = nP;
             hasNew = true;
@@ -365,6 +368,10 @@ package {
             oSound.lastValues.bytes = bT;
             hasNew = true;
           }
+          if (bufferLength != oSound.lastValues.bufferLength) {
+            oSound.lastValues.bufferLength = bufferLength;
+            hasNew = true;
+          }
           if (oSound.loaded != true && nD > 0 && bL == bT) {
             // non-MP3 has loaded
             // writeDebug('ns: time/duration, bytesloaded/total: '+nP+'/'+nD+', '+bL+'/'+bT);
@@ -377,13 +384,7 @@ package {
             }
           } else if (oSound.loaded != true && hasNew) {
             // writeDebug('whileloading() loaded/total/duration: '+bL+', '+bT+', '+nD);
-            ExternalInterface.call(sMethod, bL, bT, nD); // _whileloading()
-          } else if (!oSound.loaded && bL == 0 && bT && oSound.ns.bufferLength != oSound.lastValues.bufferLength) {
-            // TODO: Verify if this merge is correct with above logic.
-            // KJV For our RTMP streams bytesLoaded is always 0!
-            // writeDebug('updating position with bufferLength ' + oSound.ns.bufferLength);
-            oSound.lastValues.bufferLength = oSound.ns.bufferLength;
-            ExternalInterface.call(sMethod, bL, bT, nD, oSound.ns.bufferLength);
+            ExternalInterface.call(sMethod, bL, bT, nD, bufferLength); // _whileloading()
           }
 
         } else {
@@ -726,13 +727,18 @@ package {
         // We can detect the end of the stream when Play.Stop is called followed by Buffer.Empty.
         // However, if you pause and let the whole song buffer, Buffer.Flush is called followed by
         // Buffer.Empty, so handle that case too.
+        //
+        // Ignore this event if we are more than 5 seconds from the end of the song.
         if (e.info.code == "NetStream.Buffer.Empty" && (oSound.lastNetStatus == 'NetStream.Play.Stop' || oSound.lastNetStatus == 'NetStream.Buffer.Flush')) {
-          //writeDebug('Buffer empty and last net status was Play.Stop or Buffer.Flush.  This must be the end!');
-          oSound.didJustBeforeFinish = false; // reset
-          oSound.finished = true;
-          writeDebug('calling onfinish for sound '+oSound.sID);
-          checkProgress();
-          ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
+          if (oSound.duration && (oSound.ns.time * 1000) < (oSound.duration - 5000)) {
+            writeDebug('Ignoring Buffer.Empty because this is too early to be the end of the stream! (time: '+(oSound.ns.time*1000)+', duration: '+oSound.duration+')');
+          } else {
+            oSound.didJustBeforeFinish = false; // reset
+            oSound.finished = true;
+            writeDebug('calling onfinish for sound '+oSound.sID);
+            checkProgress();
+            ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfinish");
+          }
 
         } else if (e.info.code == "NetStream.Buffer.Empty") {
 
