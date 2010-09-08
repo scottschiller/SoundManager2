@@ -1158,8 +1158,10 @@ function SoundManager(smURL, smID) {
     var specialCase = null,
     remoteURL = (smURL?smURL:_s.url),
     localURL = (_s.altURL?_s.altURL:remoteURL),
-    oEmbed, oMovie, oTarget, tmp, movieHTML, oEl, extraClass, s, x, sClass, side = '100%';
+    oEmbed, oMovie, oTarget, tmp, movieHTML, oEl, extraClass, s, x, sClass, side = '100%', isRTL = null, html = document.getElementsByTagName('html')[0];
+    isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
+
     if (_didAppend && _appendSuccess) {
       return false; // ignore if already succeeded
     }
@@ -1167,6 +1169,7 @@ function SoundManager(smURL, smID) {
     function _initMsg() {
       _s._wD('-- SoundManager 2 ' + _s.version + (!_html5Only && _s.useHTML5Audio?(_s.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
     }
+
     if (_html5Only) {
       _setVersionInfo();
       _initMsg();
@@ -1273,6 +1276,9 @@ function SoundManager(smURL, smID) {
               top: '-9999px',
               left: '-9999px'
             };
+            if (isRTL) {
+              s.left = Math.abs(parseInt(s.left))+'px';
+            }
           }
         }
         if (_ua.match(/webkit/i)) {
