@@ -1277,7 +1277,7 @@ function SoundManager(smURL, smID) {
               left: '-9999px'
             };
             if (isRTL) {
-              s.left = Math.abs(parseInt(s.left))+'px';
+              s.left = Math.abs(parseInt(s.left,10))+'px';
             }
           }
         }
