@@ -729,7 +729,7 @@ package {
         // Ignore this event if we are more than 5 seconds from the end of the song.
         if (e.info.code == "NetStream.Buffer.Empty" && (oSound.lastNetStatus == 'NetStream.Play.Stop' || oSound.lastNetStatus == 'NetStream.Buffer.Flush')) {
           if (oSound.duration && (oSound.ns.time * 1000) < (oSound.duration - 5000)) {
-            writeDebug('Ignoring Buffer.Empty because this is too early to be the end of the stream! (time: '+(oSound.ns.time*1000)+', duration: '+oSound.duration+')');
+            writeDebug('Ignoring Buffer.Empty because this is too early to be the end of the stream! (sID: '+oSound.sID+', time: '+(oSound.ns.time*1000)+', duration: '+oSound.duration+')');
           } else {
             oSound.didJustBeforeFinish = false; // reset
             oSound.finished = true;
