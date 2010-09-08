@@ -2721,8 +2721,8 @@ function SoundManager(smURL, smID) {
             _s._wD('SMSound._onfinish(): "' + _t.sID + '"');
             _t._iO.onfinish.apply(_t);
           } else if (_t.isHTML5) {
-            // assume safe to unload, etc.
-            _t.unload();
+            // unload, *maybe* only if mobile and/or being conservative about RAM/resources
+            // _t.unload();
           }
         }
       }
