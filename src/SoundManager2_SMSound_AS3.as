@@ -1,4 +1,4 @@
-﻿/*
+/*
    SoundManager 2: Javascript Sound for the Web
    ----------------------------------------------
    http://schillmania.com/projects/soundmanager2/

@@ -641,6 +641,7 @@ package {
     }
 
     public function doNetStatus(oSound: SoundManager2_SMSound_AS3, e: NetStatusEvent) : void {
+      writeDebug('netStatusEvent: ' + e.info.code);
 
       // this will eventually let us know what is going on.. is the stream loading, empty, full, stopped?
       oSound.lastNetStatus = e.info.code;
@@ -658,9 +659,6 @@ package {
           oSound.failed = true;
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onfailure", '', e.info.level, e.info.code);
         }
-
-        // Remember the last NetStatus event
-        oSound.lastNetStatus = e.info.code;
         return;
       }
 
