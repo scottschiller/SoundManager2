@@ -1984,7 +1984,6 @@ function SoundManager(smURL, smID) {
           if (_fV === 8) {
             _s.o._unload(_t.sID, _s.nullURL);
           } else {
-            _t.setAutoPlay(false); // ?
             _s.o._unload(_t.sID);
           }
         } else {
