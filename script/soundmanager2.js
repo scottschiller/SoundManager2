@@ -2089,7 +2089,7 @@ function SoundManager(smURL, smID) {
         _s._wD(fN+'"'+ _t.sID+'" is starting to play');
         _t.playState = 1;
         _t.paused = false; // https://gist.github.com/859638f341b25669b587
-        if (!_t.instanceCount || (_fV > 8 && !_t.isHTML5)) {
+        if (!_t.instanceCount || (_fV > 8 && !_t.isHTML5 && !_t.getAutoPlay())) {
           _t.instanceCount++;
           console.log('KJV in play, incrementing instanceCount to '+_t.instanceCount);
         }
@@ -2163,6 +2163,10 @@ function SoundManager(smURL, smID) {
           _s._wD('sound '+_t.sID+' incremented instance count to '+_t.instanceCount);
         }
       }
+    };
+
+    this.getAutoPlay = function() {
+      return _t._iO.autoPlay;
     };
 
     this.setPosition = function(nMsecOffset, bNoDebug) {
