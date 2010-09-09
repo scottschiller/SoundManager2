@@ -647,8 +647,7 @@ package {
       oSound.lastNetStatus = e.info.code;
 
       // Recover from failures
-      if (e.info.code == "NetConnection.Connect.Closed"
-          || e.info.code == "NetStream.Failed"
+      if (e.info.code == "NetStream.Failed"
           || e.info.code == "NetStream.Play.FileStructureInvalid"
           || e.info.code == "NetStream.Play.StreamNotFound") {
 
@@ -773,7 +772,7 @@ package {
       oSound.ns.removeEventListener(IOErrorEvent.IO_ERROR, function (e: IOErrorEvent) : void {
         doIOError(oSound, e)
       });
-      // KJV Stop listening for events when destroying a sound
+      // KJV Stop listening for NetConnection events on the sound
       oSound.nc.removeEventListener(NetStatusEvent.NET_STATUS, oSound.netStatusHandler);
     }
 
@@ -1021,7 +1020,6 @@ package {
         // s.nc.client = null;
         try {
           this.removeNetstreamEvents(s);
-          // s.nc.removeEventListener(NetStatusEvent.NET_STATUS, s.doNetStatus);
         } catch(e: Error) {
           writeDebug('_destroySound(): Events already removed from netStream/netConnection?');
         }
