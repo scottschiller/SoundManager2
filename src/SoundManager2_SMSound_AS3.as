@@ -308,10 +308,6 @@ package {
       return this.sm.writeDebug (s, bTimestamp); // defined in main SM object
     }
 
-    public function doNetStatus(e: NetStatusEvent) : void {
-      writeDebug('netStatusEvent: ' + e.info.code);
-    }
-
     public function metaDataHandler(infoObject: Object) : void {
       /*
 	  var data:String = new String();

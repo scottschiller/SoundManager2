@@ -749,6 +749,7 @@ package {
       oSound.lastNetStatus = e.info.code;
     }
 
+    // KJV The sound adds some of its own netstatus handlers so we don't need to do it here.
     public function addNetstreamEvents(oSound: SoundManager2_SMSound_AS3) : void {
       oSound.ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, function (e: AsyncErrorEvent) : void {
         doAsyncError(oSound, e)
@@ -772,6 +773,8 @@ package {
       oSound.ns.removeEventListener(IOErrorEvent.IO_ERROR, function (e: IOErrorEvent) : void {
         doIOError(oSound, e)
       });
+      // KJV Stop listening for events when destroying a sound
+      oSound.nc.removeEventListener(NetStatusEvent.NET_STATUS, oSound.netStatusHandler);
     }
 
     public function _setPosition(sID:String, nSecOffset:Number, isPaused: Boolean) : void {
