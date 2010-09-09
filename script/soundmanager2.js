@@ -2650,9 +2650,6 @@ function SoundManager(smURL, smID) {
       _t.connected = bSuccess;
       if (bSuccess) {
         _t.failures = 0;
-        if (_t._iO.autoLoad || _t._iO.autoPlay) {
-          _t.load(_t._iO);
-        }
         if (_t._iO.autoPlay) {
           _t.play();
         }
