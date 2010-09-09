@@ -1,0 +1,345 @@
+<?xml version="1.0"?>
+
+<!--
+
+	SoundManager 2 buildfile (Ant)
+
+	WARNING: This is probably the worst build.xml file ever made. Don't say I didn't warn you. ;)
+
+	Never having made one of these before, I took the dumbest, "it just works" approach to string replacement,
+	creating numerous temporary files and making assumptions about paths. This could be massively improved on.
+
+	This is tested on OS X and uses Google's closure compiler, MTASC to build the Flash 8 stuff, and mxmlc (Adobe Flex Open Source SDK) for the Flash 9 versions.
+	Perl, zip and sed are also used for file munging purposes.
+
+    USAGE
+
+    run "ant" from the soundmanager2 root directory (ie., where this build.xml file is.)
+
+	RELATED DOWNLOADS
+
+	http://code.google.com/closure/compiler/
+	http://www.mtasc.org/
+	http://opensource.adobe.com/wiki/display/flexsdk/Flex+SDK
+
+	WHAT IS AUTOMATED
+
+	* Build of soundmanager-jsmin.js from soundmanager2.js (google closure compiler compression)
+	* Build of soundmanager-nodebug.js and soundmanager-nodebug-jsmin.js (above, plus stripping out <d>-annotated sections</d> of debug functionality, eg. writeDebug() and debug strings etc.)
+	* Build of AS2/AS3 SWFs from .AS source, plus debug-enabled versions. Additionally, cross-domain-enabled versions are made and placed into a zip file.
+
+	MAKING THIS SUCK LESS (TODO)
+
+	* Get rid of temporary files made from numerous sed calls
+	* Split up actions (ie., option to do only JS, only SWFs etc. vs. full build)
+	* Error handling - exit build if anything fails along the way
+
+-->
+
+<project name="SoundManager 2" default="build" basedir=".">
+
+<target name="build">
+
+<echo>Compressing minified JS...</echo>
+
+<!--
+<exec executable="/bin/sh">
+ <arg line='-c "java -jar ~/yuicompressor-2.4.2.jar script/soundmanager2.js -o script/soundmanager2-jsmin.js"'/>
+</exec>
+-->
+
+<!-- Google Closure Compiler -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js script/soundmanager2.js --js_output_file script/soundmanager2-jsmin.js"'/>
+</exec>
+
+<echo>Making no-debug JS...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "mkdir tmp"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/this.debugMode = true;/this.debugMode = false;/g;p;}&#39; script/soundmanager2.js &gt; tmp/sm2-nodebug-temp.js"'/>
+</exec>
+
+<!-- strings {} -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/_strings = {[^}]*}/_strings = {}/g;p;}&#39; tmp/sm2-nodebug-temp.js &gt; tmp/sm2-nodebug-temp2.js"'/>
+</exec>
+
+<!-- _s._wD() / _wDS() -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/_s._wD(/\/\/_s._wD(/g;p;}&#39; tmp/sm2-nodebug-temp2.js &gt; tmp/sm2-nodebug-temp3.js"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/_wDS(/\/\/_wDS(/g;p;}&#39; tmp/sm2-nodebug-temp3.js &gt; tmp/sm2-nodebug-temp4.js"'/>
+</exec>
+
+<!-- _debugTS() -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/_debugTS(/\/\/_debugTS(/g;p;}&#39; tmp/sm2-nodebug-temp4.js &gt; tmp/sm2-nodebug-temp5.js"'/>
+</exec>
+
+<!-- <d> and </d> -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;d&gt;/\/\*/g;p;}&#39; tmp/sm2-nodebug-temp5.js &gt; tmp/sm2-nodebug-temp6.js"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;\/d&gt;/\*\//g;p;}&#39; tmp/sm2-nodebug-temp6.js &gt; tmp/sm2-nodebug-temp7.js"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "cp tmp/sm2-nodebug-temp7.js script/soundmanager2-nodebug.js"'/>
+</exec>
+
+<echo>Compressing no-debug JS...</echo>
+
+<!--
+<echo>[YUICompressor]</echo>
+<exec executable="/bin/sh">
+ <arg line='-c "java -jar ~/yuicompressor-2.4.2.jar sm2-nodebug-temp7.js -o script/soundmanager2-nodebug-yuicompressor.js"'/>
+</exec>
+-->
+
+<exec executable="/bin/sh">
+ <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js tmp/sm2-nodebug-temp7.js --js_output_file script/soundmanager2-nodebug-jsmin.js"'/>
+</exec>
+
+<!-- show size -->
+
+<echo>soundmanager2.js sizes (full, -jsmin, -nodebug, -nodebug-jsmin):</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "perl -e &#39;printf &#34;%d&#34; ,(stat(shift))[7]; &#39; script/soundmanager2.js"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "perl -e &#39;printf &#34;%d&#34; ,(stat(shift))[7]; &#39; script/soundmanager2-jsmin.js"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "perl -e &#39;printf &#34;%d&#34; ,(stat(shift))[7]; &#39; script/soundmanager2-nodebug.js"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "perl -e &#39;printf &#34;%dn&#34; ,(stat(shift))[7]; &#39; script/soundmanager2-nodebug-jsmin.js"'/>
+</exec>
+
+<echo>Building debug version, Flash 8/AS2...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/mtasc/mtasc -swf swf/soundmanager2_debug.swf -main -header 16:16:30 src/SoundManager2.as -version 8"'/>
+</exec>
+
+<echo>Building debug version, Flash 9/AS3...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -use-network=false -optimize=true -o swf/soundmanager2_flash9_debug.swf -file-specs src/SoundManager2_AS3.as"'/>
+</exec>
+
+<echo>Building debug version, Flash 10/AS3...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -target-player=10.0.0 -use-network=false -optimize=true -o swf/soundmanager2_flash10_debug.swf -file-specs src/SoundManager2_AS3.as"'/>
+</exec>
+
+<echo>Making no-debug .AS...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "mkdir src/soundmanager2_flash_nodebug"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "cp src/*.as src/soundmanager2_flash_nodebug"'/>
+</exec>
+
+<!-- flash 8 debug -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var debugEnabled = true;/var debugEnabled = false;/g;p;}&#39; src/SoundManager2.as &gt; tmp/SoundManager2-temp1.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/writeDebug(/\/\/ flashDebug(/g;p;}&#39; tmp/SoundManager2-temp1.as &gt; tmp/SoundManager2-temp2.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;d&gt;/\/\*/g;p;}&#39; tmp/SoundManager2-temp2.as &gt; tmp/SoundManager2-temp3.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;\/d&gt;/\*\//g;p;}&#39; tmp/SoundManager2-temp3.as &gt; tmp/SoundManager2-temp4.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/writeDebug(/\/\/ writeDebug(/g;p;}&#39; tmp/SoundManager2-temp4.as &gt; src/soundmanager2_flash_nodebug/SoundManager2.as"'/>
+</exec>
+
+<!-- flash 9 debug: SoundManager2 -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/public var debugEnabled: Boolean = true;/public var debugEnabled: Boolean = false;/g;p;}&#39; src/SoundManager2_AS3.as &gt; tmp/SoundManager2_AS3-temp1.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/flashDebug(/\/\/ flashDebug(/g;p;}&#39; tmp/SoundManager2_AS3-temp1.as &gt; tmp/SoundManager2_AS3-temp2.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;d&gt;/\/\*/g;p;}&#39; tmp/SoundManager2_AS3-temp2.as &gt; tmp/SoundManager2_AS3-temp3.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;\/d&gt;/\*\//g;p;}&#39; tmp/SoundManager2_AS3-temp3.as &gt; tmp/SoundManager2_AS3-temp4.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/writeDebug(/\/\/ writeDebug(/g;p;}&#39; tmp/SoundManager2_AS3-temp4.as &gt; src/soundmanager2_flash_nodebug/SoundManager2_AS3.as"'/>
+</exec>
+
+<!-- flash 9 debug: SMSound -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/flashDebug(/\/\/ flashDebug(/g;p;}&#39; src/SoundManager2_SMSound_AS3.as &gt; tmp/SoundManager2_SMSound_AS3-temp1.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/writeDebug(/\/\/ writeDebug(/g;p;}&#39; tmp/SoundManager2_SMSound_AS3-temp1.as &gt; tmp/SoundManager2_SMSound_AS3-temp2.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;d&gt;/\/\*/g;p;}&#39; tmp/SoundManager2_SMSound_AS3-temp2.as &gt; tmp/SoundManager2_SMSound_AS3-temp3.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\/ &lt;\/d&gt;/\*\//g;p;}&#39; tmp/SoundManager2_SMSound_AS3-temp3.as &gt; src/soundmanager2_flash_nodebug/SoundManager2_SMSound_AS3.as"'/>
+</exec>
+
+<echo>Making cross-domain .AS..</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "mkdir src/soundmanager2_flash_xdomain"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "mkdir src/soundmanager2_flash_xdomain/nodebug"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "cp src/*.as src/soundmanager2_flash_xdomain"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "cp src/soundmanager2_flash_nodebug/*.as src/soundmanager2_flash_xdomain/nodebug"'/>
+</exec>
+
+<!-- cross-domain .AS (regular, debug version)... -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting = false;/var allow_xdomain_scripting = true;/g;p;}&#39; src/SoundManager2.as &gt; src/soundmanager2_flash_xdomain/SoundManager2.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting:Boolean = false;/var allow_xdomain_scripting:Boolean = true;/g;p;}&#39; src/SoundManager2_AS3.as &gt; src/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
+</exec>
+
+<!-- -nodebug cross-domain -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting = false;/var allow_xdomain_scripting = true;/g;p;}&#39; src/soundmanager2_flash_nodebug/SoundManager2.as &gt; src/soundmanager2_flash_xdomain/nodebug/SoundManager2.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/var allow_xdomain_scripting:Boolean = false;/var allow_xdomain_scripting:Boolean = true;/g;p;}&#39; src/soundmanager2_flash_nodebug/SoundManager2_AS3.as &gt; src/soundmanager2_flash_xdomain/nodebug/SoundManager2_AS3.as"'/>
+</exec>
+
+<echo>Building no-debug SWFs...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/mtasc/mtasc -swf swf/soundmanager2.swf -main -header 16:16:30 src/soundmanager2_flash_nodebug/SoundManager2.as -version 8"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -use-network=false -optimize=true -o swf/soundmanager2_flash9.swf -file-specs src/soundmanager2_flash_nodebug/SoundManager2_AS3.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -target-player=10.0.0 -use-network=false -optimize=true -o swf/soundmanager2_flash10.swf -file-specs src/soundmanager2_flash_nodebug/SoundManager2_AS3.as"'/>
+</exec>
+
+<echo>Building debug cross-domain SWFs...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/mtasc/mtasc -swf src/soundmanager2_flash_xdomain/soundmanager2_debug.swf -main -header 16:16:30 src/soundmanager2_flash_xdomain/SoundManager2.as -version 8"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -use-network=false -optimize=true -o src/soundmanager2_flash_xdomain/soundmanager2_flash9_debug.swf -file-specs src/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -target-player=10.0.0 -use-network=false -optimize=true -o src/soundmanager2_flash_xdomain/soundmanager2_flash10_debug.swf -file-specs src/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
+</exec>
+
+<echo>Building no-debug cross-domain SWFs...</echo>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/mtasc/mtasc -swf src/soundmanager2_flash_xdomain/soundmanager2.swf -main -header 16:16:30 src/soundmanager2_flash_xdomain/nodebug/SoundManager2.as -version 8"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -use-network=false -optimize=true -o src/soundmanager2_flash_xdomain/soundmanager2_flash9.swf -file-specs src/soundmanager2_flash_xdomain/nodebug/SoundManager2_AS3.as"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -target-player=10.0.0 -use-network=false -optimize=true -o src/soundmanager2_flash_xdomain/soundmanager2_flash10.swf -file-specs src/soundmanager2_flash_xdomain/nodebug/SoundManager2_AS3.as"'/>
+</exec>
+
+<!-- remove temporary file(s) -->
+<exec executable="/bin/sh">
+ <arg line='-c "rm -r tmp"'/>
+</exec>
+
+<!-- remove nodebug temporaries -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "rm -r src/soundmanager2_flash_xdomain/nodebug"'/>
+</exec>
+
+<!-- remove x-domain source -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "rm src/soundmanager2_flash_xdomain/*.as"'/>
+</exec>
+
+<!-- remove existing .zip, if found -->
+<exec executable="/bin/sh">
+ <arg line='-c "if [ -f swf/soundmanager2_flash_xdomain.zip ]; then rm swf/soundmanager2_flash_xdomain.zip; fi"'/>
+</exec>
+
+<!-- do the zip thing, FROM WITHIN THE SRC/ PATH -->
+<exec executable="/bin/sh">
+ <arg line='-c "cd src; zip -r ../swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain"'/>
+</exec>
+
+<!-- remove temporary build directories -->
+<exec executable="/bin/sh">
+ <arg line='-c "rm -r src/soundmanager2_flash_xdomain"'/>
+</exec>
+
+<exec executable="/bin/sh">
+ <arg line='-c "rm -r src/soundmanager2_flash_nodebug"'/>
+</exec>
+
+
+</target>
+
+</project>
