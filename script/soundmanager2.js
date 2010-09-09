@@ -1957,10 +1957,12 @@ function SoundManager(smURL, smID) {
             _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1);
           } else {
             _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1); // ,(_tO.whileloading?true:false)
-            if (_t._iO.isMovieStar && _t._iO.autoLoad && !_t._iO.autoPlay) {
-              // special case: MPEG4 content must start playing to load, then pause to prevent playing.
-              _t.pause();
-            }
+            // This is preventing streams from playing because it calls resume() but
+            // the sound hasn't played yet.
+            // if (_t._iO.isMovieStar && _t._iO.autoLoad && !_t._iO.autoPlay) {
+            //   // special case: MPEG4 content must start playing to load, then pause to prevent playing.
+            //   _t.pause();
+            // }
           }
         } catch(e) {
           _wDS('smError', 2);
