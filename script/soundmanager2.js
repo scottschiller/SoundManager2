@@ -2167,7 +2167,7 @@ function SoundManager(smURL, smID) {
     };
     
     this.setPosition = function(nMsecOffset, bNoDebug) {
-      if (typeof nMsecOffset === 'undefined') {
+      if (nMsecOffset === undefined) {
         nMsecOffset = 0;
       }
       var offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
@@ -2175,6 +2175,11 @@ function SoundManager(smURL, smID) {
       _t.resetOnPosition(_t._iO.position);
       if (!_t.isHTML5) {
         _s.o._setPosition(_t.sID, (_fV === 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
+        
+        // KJV We want our sounds to play on seek
+        if (_t.paused) {
+          _t.resume();
+        }
       } else if (_a) {
         _s._wD('setPosition(): setting position to '+(_t._iO.position / 1000));
         if (_t.playState) {
@@ -2201,7 +2206,6 @@ function SoundManager(smURL, smID) {
     };
 
     this.pause = function(bCallFlash) {
-      // if (_t.paused || _t.playState === 0) {
       if (_t.paused || (_t.playState === 0 && _t.readyState !== 1)) { // TODO: Verify vs. old
         return _t;
       }
@@ -2222,7 +2226,11 @@ function SoundManager(smURL, smID) {
     };
 
     this.resume = function() {
-      if (!_t.paused || _t.playState === 0) {
+      // KJV Removed added condition: || _t.playState === 0
+      // When auto-loaded streams pause on buffer full they have a playState of 0.
+      // We need to make sure that the playState is set to 1 when these streams
+      // "resume".
+      if (!_t.paused) {
         return _t;
       }
       _s._wD('SMSound.resume()');
@@ -2652,9 +2660,6 @@ function SoundManager(smURL, smID) {
       _t.connected = bSuccess;
       if (bSuccess) {
         _t.failures = 0;
-        // if (_t._iO.autoPlay || _t.options.autoLoad) {
-        //   _t.play();
-        // }
         if (_t._iO.onconnect) {
           _t._iO.onconnect.apply(_t,[bSuccess]);
         }
