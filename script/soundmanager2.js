@@ -313,7 +313,7 @@ function SoundManager(smURL, smID) {
       if (_fV === 8) {
         _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1);
       } else {
-        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.totalBytes||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false);
+        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.totalBytes||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false, _tO.autoLoad ? true : false);
         if (!_tO.serverURL) {
           // We are connected immediately
           oSound.connected = true;
@@ -1956,13 +1956,7 @@ function SoundManager(smURL, smID) {
           if (_fV === 8) {
             _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1);
           } else {
-            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1); // ,(_tO.whileloading?true:false)
-            // This is preventing streams from playing because it calls resume() but
-            // the sound hasn't played yet.
-            // if (_t._iO.isMovieStar && _t._iO.autoLoad && !_t._iO.autoPlay) {
-            //   // special case: MPEG4 content must start playing to load, then pause to prevent playing.
-            //   _t.pause();
-            // }
+            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1, _t._iO.autoLoad?true:false);
           }
         } catch(e) {
           _wDS('smError', 2);
@@ -2084,7 +2078,7 @@ function SoundManager(smURL, smID) {
         _s._wD(fN + '"' + _t.sID + '"');
       }
       console.log('KJV in play, got instanceCount '+_t.instanceCount);
-      if (_t.paused && _t.position !== null) { // https://gist.github.com/37b17df75cc4d7a90bf6
+      if (_t.paused && _t.position && _t.position > 0) { // https://gist.github.com/37b17df75cc4d7a90bf6
         _s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
       } else {
@@ -2103,10 +2097,11 @@ function SoundManager(smURL, smID) {
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
         if (!_t.isHTML5) {
-          if (_fV === 9 && _t._iO.serverURL) {
-            // autoPlay for RTMP case
-            _t.setAutoPlay(true);
-          }
+          // KJV We don't need this
+          // if (_fV === 9 && _t._iO.serverURL) {
+          //   // autoPlay for RTMP case
+          //   _t.setAutoPlay(true);
+          // }
           _s.o._start(_t.sID, _t._iO.loops || 1, (_fV === 9?_t.position:_t.position / 1000));
         } else {
           _start_html5_timer();
@@ -2170,7 +2165,7 @@ function SoundManager(smURL, smID) {
     this.getAutoPlay = function() {
       return _t._iO.autoPlay;
     };
-
+    
     this.setPosition = function(nMsecOffset, bNoDebug) {
       if (typeof nMsecOffset === 'undefined') {
         nMsecOffset = 0;
@@ -2553,6 +2548,7 @@ function SoundManager(smURL, smID) {
     // --- "private" methods called by Flash ---
 
     this._whileloading = function(nBytesLoaded, nBytesTotal, nDuration, nBufferLength) {
+      _t.bufferLength = nBufferLength;
       _t.bytesLoaded = nBytesLoaded;
       _t.bytesTotal = nBytesTotal;
       _t.duration = Math.floor(nDuration);
@@ -2572,7 +2568,7 @@ function SoundManager(smURL, smID) {
           _t.durationEstimate = _t.duration;
         }
         _t.bufferLength = nBufferLength;
-        if ((_t._iO.isMovieStar || _t.readyState !== 3) && _t._iO.whileloading) {
+        if (_t.readyState !== 3 && _t._iO.whileloading) {
           _t._iO.whileloading.apply(_t);
         }
       } else {
@@ -2643,7 +2639,7 @@ function SoundManager(smURL, smID) {
         }
 
         if ((_t.loaded || (!_t.loaded && _t._iO.isMovieStar)) && _t._iO.onbeforefinish && _t._iO.onbeforefinishtime && !_t.didBeforeFinish && _t.duration - _t.position <= _t._iO.onbeforefinishtime) {
-          _s._wD('duration-position &lt;= onbeforefinishtime: ' + _t.duration + ' - ' + _t.position + ' &lt= ' + _t._iO.onbeforefinishtime + ' (' + (_t.duration - _t.position) + ')');
+          //_s._wD('duration-position &lt;= onbeforefinishtime: ' + _t.duration + ' - ' + _t.position + ' &lt= ' + _t._iO.onbeforefinishtime + ' (' + (_t.duration - _t.position) + ')');
           _t._onbeforefinish();
         }
       }
@@ -2656,9 +2652,9 @@ function SoundManager(smURL, smID) {
       _t.connected = bSuccess;
       if (bSuccess) {
         _t.failures = 0;
-        if (_t._iO.autoPlay) {
-          _t.play();
-        }
+        // if (_t._iO.autoPlay || _t.options.autoLoad) {
+        //   _t.play();
+        // }
         if (_t._iO.onconnect) {
           _t._iO.onconnect.apply(_t,[bSuccess]);
         }
