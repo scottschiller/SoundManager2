@@ -540,21 +540,15 @@ package {
 
     public function doNetStatus(e: NetStatusEvent) : void {
 
-      // this will eventually let us know what is going on.. is the stream loading, empty, full, stopped?
-      this.lastNetStatus = e.info.code;
-
-      // Recover from failures
+      // Handle failures
       if (e.info.code == "NetStream.Failed"
           || e.info.code == "NetStream.Play.FileStructureInvalid"
           || e.info.code == "NetStream.Play.StreamNotFound") {
 
-        // KJV Ignore if the sound has already failed.  We treat these as failures,
-        // but should we rather call this.onLoadError()?
-        if (!this.failed) {
-          writeDebug('netStatusEvent: ' + e.info.code);
-          this.failed = true;
-          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", '', e.info.level, e.info.code);
-        }
+        this.lastNetStatus = e.info.code;
+        writeDebug('netStatusEvent: ' + e.info.code);
+        this.failed = true;
+        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", '', e.info.level, e.info.code);
         return;
       }
 
@@ -564,7 +558,6 @@ package {
       // @see http://www.actionscript.org/forums/archive/index.php3/t-159194.html
       if (e.info.code == "NetStream.Play.Stop") {
 
-        writeDebug('NetStream.Play.Stop - oSound.useNetstream='+this.useNetstream);
         if (!this.useNetstream) {
           // finished playing
           // this.didFinish = true; // will be reset via JS callback
@@ -594,7 +587,7 @@ package {
 
           // Call pause in JS.  This will call back to us to pause again, but
           // that should be harmless.
-          writeDebug('Pausing song because buffer is now full.');
+          writeDebug('Pausing song because buffer is full');
           ExternalInterface.call(baseJSObject + "['" + this.sID + "'].pause", false);
         }
 
