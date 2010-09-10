@@ -1111,12 +1111,16 @@ package {
     }
 
     public function _setPan(sID:String, nPan:Number) : void {
-      soundObjects[sID].setPan(nPan);
+      if (soundObjects[sID]) {
+        soundObjects[sID].setPan(nPan);
+      }
     }
 
     public function _setVolume(sID:String, nVol:Number) : void {
       // writeDebug('_setVolume: '+nVol);
-      soundObjects[sID].setVolume(nVol);
+      if (soundObjects[sID]) {
+        soundObjects[sID].setVolume(nVol);
+      }
     }
 
     public function _setPolling(bPolling: Boolean = false, bUseHighPerformanceTimer: Boolean = false) : void {
