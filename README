@@ -10,11 +10,13 @@ HTML5 Audio() Support (Beta-ish)
     * See soundManager.useHTML5Audio for implementation details.
 
 Basic API Features (Flash 8)
+
     * Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript
     * Events: onload, whileloading, whileplaying, onfinish and more
     * ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)
 
 Shiny Flash 9 Features
+
     * RTMP / Flash Media Server streaming support (new, experimental)
     * MPEG-4 (AAC, HE-AAC, H.264) audio support
     * "MultiShot" play (layered/chorusing effects)
@@ -30,10 +32,13 @@ General Tech Stuff
 
 A few nifty sites that have implemented SoundManager 2 for driving audio:
 
-    * Last.fm
     * Muxtape
     * SoundCloud / The Cloud Player
     * 8tracks
+    * Last.fm
+    * Opera (media player component)
+    * Discogs
+    * Mixcrate
 
 Project home, documentation, live demos etc.:
 http://www.schillmania.com/projects/soundmanager2/
