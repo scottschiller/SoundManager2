@@ -1936,7 +1936,7 @@ function SoundManager(smURL, smID) {
       _s._wD('soundManager.load(): ' + _t._iO.url, 1);
       if (_t._iO.url === _t.url && _t.readyState !== 0 && _t.readyState !== 2) {
         _wDS('onURL', 1);
-        //return _t;
+        return _t;
       }
       _t._lastURL = _t.url;
       _t.loaded = false;
