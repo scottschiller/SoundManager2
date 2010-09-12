@@ -134,8 +134,6 @@ function SoundManager(smURL, smID) {
   this.soundIDs = [];
   this.muted = false;
   this.isFullScreen = false; // set later by flash 9+
-  this.isIE = (navigator.userAgent.match(/MSIE/i));
-  this.isSafari = (navigator.userAgent.match(/safari/i));
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
   this.specialWmodeCase = false;
@@ -189,9 +187,11 @@ function SoundManager(smURL, smID) {
   _is_pre = _ua.match(/pre\//i),
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
   _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
+  _isIE = (_ua.match(/MSIE/i)),
+  _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
   _isFocused = (typeof document.hasFocus !== 'undefined'?document.hasFocus():null),
-  _tryInitOnFocus = (typeof document.hasFocus === 'undefined' && this.isSafari),
+  _tryInitOnFocus = (typeof document.hasFocus === 'undefined' && _isSafari),
   _okToDisable = !_tryInitOnFocus;
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
@@ -230,7 +230,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.getMovie = function(smID) {
-    return _s.isIE?window[smID]:(_s.isSafari?_id(smID) || document[smID]:_id(smID));
+    return _isIE?window[smID]:(_isSafari?_id(smID) || document[smID]:_id(smID));
   };
 
   this.loadFromXML = function(sXmlUrl) {
@@ -733,7 +733,7 @@ function SoundManager(smURL, smID) {
     }
     // trash ze flash
     try {
-      if (_s.isIE) {
+      if (_isIE) {
         _oRemovedHTML = _s.o.innerHTML;
       }
       _oRemoved = _s.o.parentNode.removeChild(_s.o);
@@ -1195,7 +1195,7 @@ function SoundManager(smURL, smID) {
 
     _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
 
-    if (_s.wmode !== null && !_s.isIE && !_s.useHighPerformance && navigator.platform.match(/win32/i)) {
+    if (_s.wmode !== null && !_isIE && !_s.useHighPerformance && navigator.platform.match(/win32/i)) {
       _s.specialWmodeCase = true;
       // extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
       // does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
@@ -1230,7 +1230,7 @@ function SoundManager(smURL, smID) {
       delete oEmbed.wmode; // don't write empty attribute
     }
 
-    if (_s.isIE) {
+    if (_isIE) {
       // IE is "special".
       oMovie = document.createElement('div');
       movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" /><param name="allowFullScreen" value="' + oEmbed.allowFullScreen + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '<!-- --></object>';
@@ -1294,11 +1294,11 @@ function SoundManager(smURL, smID) {
           }
         }
         try {
-          if (!_s.isIE) {
+          if (!_isIE) {
             _s.oMC.appendChild(oMovie);
           }
           oTarget.appendChild(_s.oMC);
-          if (_s.isIE) {
+          if (_isIE) {
             oEl = _s.oMC.appendChild(document.createElement('div'));
             oEl.className = 'sm2-object-box';
             oEl.innerHTML = movieHTML;
@@ -1314,7 +1314,7 @@ function SoundManager(smURL, smID) {
         sClass = _s.oMC.className;
         _s.oMC.className = (sClass?sClass+' ':_s.swfCSS.swfDefault) + (extraClass?' '+extraClass:'');
         _s.oMC.appendChild(oMovie);
-        if (_s.isIE) {
+        if (_isIE) {
           oEl = _s.oMC.appendChild(document.createElement('div'));
           oEl.className = 'sm2-object-box';
           oEl.innerHTML = movieHTML;
@@ -1412,7 +1412,7 @@ function SoundManager(smURL, smID) {
         _createMovie(_s.id, _s.url);
       } else {
         // try to re-append removed movie after reboot()
-        if (!_s.isIE) {
+        if (!_isIE) {
           _s.oMC.appendChild(_oRemoved);
         } else {
           _s.oMC.innerHTML = _oRemovedHTML;
@@ -1656,7 +1656,7 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _s.isSafari && _ua.match(/OS X 10_6_(3|4)/i) && _ua.match(/(531\.22\.7|533\.16|533\.17\.8)/i)), // Safari 4.0.5 (531.22.7), 5.0 (533.16), and 5.1 (533.17.8) have buggy/broken HTML5 audio on Snow Leopard. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
+    isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_(3|4)/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
     isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (iPad) + iOS4 works.
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
@@ -1832,7 +1832,7 @@ function SoundManager(smURL, smID) {
     _debugTS('flashtojs', true);
     _s.swfLoaded = true;
     _tryInitOnFocus = false;
-    if (_s.isIE) {
+    if (_isIE) {
       // IE needs a timeout OR delay until window.onload - may need TODO: investigating
       setTimeout(_init, 100);
     } else {
