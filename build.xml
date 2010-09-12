@@ -48,17 +48,22 @@
 </exec>
 -->
 
-<!-- Google Closure Compiler -->
-
-<exec executable="/bin/sh">
- <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js script/soundmanager2.js --js_output_file script/soundmanager2-jsmin.js"'/>
-</exec>
-
-<echo>Making no-debug JS...</echo>
-
 <exec executable="/bin/sh">
  <arg line='-c "mkdir tmp"'/>
 </exec>
+
+<!-- Google Closure Compiler -->
+
+<exec executable="/bin/sh">
+ <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js script/soundmanager2.js --js_output_file tmp/soundmanager2-jsmin-temp.js"'/>
+</exec>
+
+<!-- Retain license comment through further closure compiler minification -->
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\*/\/\*\* \@license/g;p;}&#39; tmp/soundmanager2-jsmin-temp.js &gt; script/soundmanager2-jsmin.js"'/>
+</exec>
+
+<echo>Making no-debug JS...</echo>
 
 <exec executable="/bin/sh">
  <arg line='-c "sed -n &#39;1h;1!H;${;g;s/this.debugMode = true;/this.debugMode = false;/g;p;}&#39; script/soundmanager2.js &gt; tmp/sm2-nodebug-temp.js"'/>
@@ -106,7 +111,12 @@
 -->
 
 <exec executable="/bin/sh">
- <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js tmp/sm2-nodebug-temp7.js --js_output_file script/soundmanager2-nodebug-jsmin.js"'/>
+ <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js tmp/sm2-nodebug-temp7.js --js_output_file tmp/soundmanager2-nodebug-jsmin.js"'/>
+</exec>
+
+<!-- Retain license comment through further closure compiler minification -->
+<exec executable="/bin/sh">
+ <arg line='-c "sed -n &#39;1h;1!H;${;g;s/\/\*/\/\*\* \@license/g;p;}&#39; tmp/soundmanager2-nodebug-jsmin.js &gt; script/soundmanager2-nodebug-jsmin.js"'/>
 </exec>
 
 <!-- show size -->
