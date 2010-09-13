@@ -209,9 +209,6 @@ package {
               writeDebug('firing _onconnect for '+this.sID);
               ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onconnect", 1);
             }
-            if (this.autoLoad || this.autoPlay) {
-              this.ns.play(this.sURL);
-            }
 
           } catch(e: Error) {
             this.failed = true;

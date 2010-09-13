@@ -2021,15 +2021,21 @@ function SoundManager(smURL, smID) {
       _s.destroySound(_t.sID, true); // ensure deletion from controller
     };
 
-    this.play = function(oOptions) {
+    /**
+     * Set update_play_state to false to prevent the playState from being
+     * set and the UI from being updated.
+     *
+     * This is only needed when starting streams auto-loading. They
+     * have to be played and then paused when the buffer is full.
+     */
+    this.play = function(oOptions, update_play_state) {
       var fN = 'SMSound.play(): ', allowMulti;
-      if (!oOptions) {
-        oOptions = {};
-      }
+      update_play_state = update_play_state === undefined ? true : update_play_state;
+      if (!oOptions) { oOptions = {}; }
       _t._iO = _mergeObjects(oOptions, _t._iO);
       _t._iO = _mergeObjects(_t._iO, _t.options);
       _t.instanceOptions = _t._iO;
-
+      
       if (_t._iO.serverURL) {
         if (!_t.connected) {
           if (!_t.getAutoPlay()) {
@@ -2039,11 +2045,13 @@ function SoundManager(smURL, smID) {
           return _t;
         }
       }
+      
       if (_html5OK(_t._iO)) {
         _t._setup_html5(_t._iO);
         _start_html5_timer();
       }
-      if (_t.playState === 1) {
+      // KJV paused sounds have playState 1.  We want these sounds to play.
+      if (_t.playState === 1 && !_t.paused) {
         allowMulti = _t._iO.multiShot;
         if (!allowMulti) {
           _s._wD(fN + '"' + _t.sID + '" already playing (one-shot)', 1);
@@ -2094,7 +2102,7 @@ function SoundManager(smURL, smID) {
         }
         _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
         _t._iO = _loopFix(_t._iO);
-        if (_t._iO.onplay) {
+        if (_t._iO.onplay && update_play_state) {
           _t._iO.onplay.apply(_t);
         }
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
@@ -2658,6 +2666,9 @@ function SoundManager(smURL, smID) {
       _t.connected = bSuccess;
       if (bSuccess) {
         _t.failures = 0;
+        if (_t.options.autoLoad || _t.getAutoPlay()) {
+          _t.play(undefined, _t.getAutoPlay()); // only update the play state if auto playing
+        }        
         if (_t._iO.onconnect) {
           _t._iO.onconnect.apply(_t,[bSuccess]);
         }
