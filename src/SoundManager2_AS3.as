@@ -961,6 +961,8 @@ package {
           if (s.ns) {
             s.lastValues.position = s.ns.time;
             s.ns.pause();
+          } else if (s.autoPlay) {
+            s.setAutoPlay(false);
           }
         } else {
           if (s.soundChannel) {
