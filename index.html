@@ -5,7 +5,6 @@
 <title>SoundManager 2: JavaScript Sound For The Web</title>
 <meta name="description" content="Play sound from JavaScript including MP3, MPEG-4 and HTML5-supported audio formats with SoundManager 2, a cross-browser/platform sound API. BSD licensed." />
 <meta name="keywords" content="javascript sound, html5 audio, html5 sound, javascript audio, javascript play mp3, javascript sound control, mp3, mp4, mpeg4, aac, Scott Schiller, Schill, Schillmania" />
-<meta name="robots" content="all" />
 <meta name="author" content="Scott Schiller" />
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller" />
 <meta name="language" content="en-us" />
@@ -80,10 +79,9 @@ var PP_CONFIG = {
 	      _id('without-html5').style.display = 'none';
 		}
 		var _ua = navigator.userAgent;
-		if (!window.location.toString().match(/sm2\-ignorebadua/i) && soundManager.isSafari && _ua.match(/OS X 10_6_(3|4)/i) && _ua.match(/(531\.22\.7|533\.16|533\.17\.8)/i)) {
-		  // on Snow Leopard (only?), certain versions of Safari have buggy HTML5 audio.
+		if (!window.location.toString().match(/sm2\-ignorebadua/i) && _ua.match(/safari/i) && !_ua.match(/chrome/i) && _ua.match(/OS X 10_6_(3|4)/i)) { // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
 		  var complaint = document.createElement('li');
-		  complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled due to bugs on Safari 4.0.5, 5.0 and 5.1 with OS X 10.6.3/4. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.) Try <a href="?sm2-ignorebadua">HTML5 anyway?</a> ("water drop" MP3 playback will intermittently fail.)';
+		  complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled for this browser due to load/play failures in Safari 4 + 5 on Snow Leopard 10.6.3/4, caused by bugs in QuickTime X and/or underlying frameworks. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)<br>Try <a href="?sm2-ignorebadua">HTML5 anyway?</a> ("water drop" MP3 playback will intermittently fail.)';
 		  _id('html5-audio-notes').appendChild(complaint);
 		}
 	    // check inline player / HTML 5 bits
