@@ -2097,11 +2097,6 @@ function SoundManager(smURL, smID) {
         _t.setVolume(_t._iO.volume, true); // restrict volume to instance options only
         _t.setPan(_t._iO.pan, true);
         if (!_t.isHTML5) {
-          // KJV We don't need this
-          // if (_fV === 9 && _t._iO.serverURL) {
-          //   // autoPlay for RTMP case
-          //   _t.setAutoPlay(true);
-          // }
           _s.o._start(_t.sID, _t._iO.loops || 1, (_fV === 9?_t.position:_t.position / 1000));
         } else {
           _start_html5_timer();
