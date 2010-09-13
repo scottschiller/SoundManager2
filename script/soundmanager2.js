@@ -1941,7 +1941,7 @@ function SoundManager(smURL, smID) {
       _t._lastURL = _t.url;
       _t.loaded = false;
       _t.readyState = 1;
-      _t.playState = 0; // (oOptions.autoPlay?1:0); // if autoPlay, assume "playing" is true (no way to detect when it actually starts in Flash unless onPlay is watched?)
+      _t.playState = 0;
       if (_html5OK(_t._iO)) {
         _s._wD('HTML 5 load: '+_t._iO.url);
         oS = _t._setup_html5(_t._iO);
@@ -2029,10 +2029,13 @@ function SoundManager(smURL, smID) {
       _t._iO = _mergeObjects(oOptions, _t._iO);
       _t._iO = _mergeObjects(_t._iO, _t.options);
       _t.instanceOptions = _t._iO;
+
       if (_t._iO.serverURL) {
         if (!_t.connected) {
-          _s._wD(fN+' Netstream not connected yet - setting autoPlay');
-          _t.setAutoPlay(true);
+          if (!_t.getAutoPlay()) {
+            _s._wD(fN+' Netstream not connected yet - setting autoPlay');
+            _t.setAutoPlay(true);
+          }
           return _t;
         }
       }
