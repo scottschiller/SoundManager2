@@ -303,23 +303,6 @@
  <arg line='-c "/Applications/flexsdk/bin/mxmlc -target-player=10.0.0 -use-network=false -optimize=true -o swf/soundmanager2_flash_xdomain/soundmanager2_flash10.swf -file-specs tmp/soundmanager2_flash_xdomain/nodebug/SoundManager2_AS3.as"'/>
 </exec>
 
-<!-- remove temporary file(s) -->
-<exec executable="/bin/sh">
- <arg line='-c "rm -r tmp"'/>
-</exec>
-
-<!-- remove nodebug temporaries -->
-
-<exec executable="/bin/sh">
- <arg line='-c "rm -r tmp/soundmanager2_flash_xdomain/nodebug"'/>
-</exec>
-
-<!-- remove x-domain source -->
-
-<exec executable="/bin/sh">
- <arg line='-c "rm tmp/soundmanager2_flash_xdomain/*.as"'/>
-</exec>
-
 <!-- remove existing .zip, if found -->
 <exec executable="/bin/sh">
  <arg line='-c "if [ -f swf/soundmanager2_flash_xdomain.zip ]; then rm swf/soundmanager2_flash_xdomain.zip; fi"'/>
@@ -327,18 +310,13 @@
 
 <!-- do the zip thing, FROM WITHIN THE SRC/ PATH -->
 <exec executable="/bin/sh">
- <arg line='-c "cd src; zip -r ../swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain"'/>
+ <arg line='-c "cd tmp; zip -r ../swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain"'/>
 </exec>
 
-<!-- remove temporary build directories -->
+<!-- remove temporary file(s) -->
 <exec executable="/bin/sh">
- <arg line='-c "rm -r tmp/soundmanager2_flash_xdomain"'/>
+ <arg line='-c "rm -r tmp"'/>
 </exec>
-
-<exec executable="/bin/sh">
- <arg line='-c "rm -r tmp/soundmanager2_flash_nodebug"'/>
-</exec>
-
 
 </target>
 
