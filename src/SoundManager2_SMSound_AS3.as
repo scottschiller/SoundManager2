@@ -643,9 +643,16 @@ package {
       // for the record, I'm sure this is completely wrong. ;)
       ns.removeEventListener(AsyncErrorEvent.ASYNC_ERROR, doAsyncError);
       ns.removeEventListener(NetStatusEvent.NET_STATUS, doNetStatus);
+      ns.addEventListener(NetStatusEvent.NET_STATUS, dummyNetStatusHandler);
       ns.removeEventListener(IOErrorEvent.IO_ERROR, doIOError);
       // KJV Stop listening for NetConnection events on the sound
       nc.removeEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+    }
+
+    // Prevents possible 'Unhandled NetStatusEvent' condition if a sound is being
+    // destroyed and interacted with at the same time.
+    public function dummyNetStatusHandler(e: NetStatusEvent) : void {
+      // Don't do anything
     }
   }
 }
