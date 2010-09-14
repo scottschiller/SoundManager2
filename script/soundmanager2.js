@@ -2088,7 +2088,6 @@ function SoundManager(smURL, smID) {
       } else {
         _s._wD(fN + '"' + _t.sID + '"');
       }
-      console.log('KJV in play, got instanceCount '+_t.instanceCount);
       if (_t.paused && _t.position && _t.position > 0) { // https://gist.github.com/37b17df75cc4d7a90bf6
         _s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
@@ -2098,7 +2097,6 @@ function SoundManager(smURL, smID) {
         _t.paused = false; // https://gist.github.com/859638f341b25669b587
         if (!_t.instanceCount || (_fV > 8 && !_t.isHTML5 && !_t.getAutoPlay())) {
           _t.instanceCount++;
-          console.log('KJV in play, incrementing instanceCount to '+_t.instanceCount);
         }
         _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
         _t._iO = _loopFix(_t._iO);
@@ -2146,7 +2144,6 @@ function SoundManager(smURL, smID) {
             _t.unload();
           }
         }
-        console.log('KJV in stop, reset instanceCount to 0');
         _t.instanceCount = 0;
         _t._iO = {};
         // _t.instanceOptions = _t._iO;
@@ -2753,7 +2750,6 @@ function SoundManager(smURL, smID) {
       _t.didJustBeforeFinish = false;
       if (_t.instanceCount) {
         _t.instanceCount--;
-        console.log('KJV in onfinish, decrementing instanceCount to '+_t.instanceCount);
         if (!_t.instanceCount) {
           // reset instance options
           // _t.setPosition(0);
