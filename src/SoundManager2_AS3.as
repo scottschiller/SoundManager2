@@ -344,6 +344,8 @@ package {
         var hasNewLoaded:Boolean = false;
 
         if (oSound.useNetstream) {
+          // Don't do anything if there is no NetStream object yet
+          if (!oSound.ns) { continue; }
 
           // video stream
           bufferLength = oSound.ns.bufferLength;
