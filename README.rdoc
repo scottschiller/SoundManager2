@@ -1,55 +1,40 @@
 = SoundManager 2
 
-SoundManager 2 makes it easier to play sounds using Javascript.
+SoundManager 2 makes it easier to play audio using JavaScript.
 
-By wrapping and extending the Flash sound API, SoundManager 2 brings solid audio functionality to Javascript.
+By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reliable cross-platform audio to JavaScript.
+
+== About
+
+This SM2 fork contains the SoundManager2 implementation that is used on http://www.kazaa.com.
+
+We added RTMP support to SM2 which is now part of the SM2 (experimental) branch as of V2.96a.20100606.
+
+Downloads: http://www.schillmania.com/projects/soundmanager2/doc/download/
+
+For more background on the addition of RTMP check out  http://getsatisfaction.com/schillmania/topics/soundmanager_doesnt_support_rtmp
+
+Our old branch of development has been moved to http://github.com/kjvarga/SoundManager2/tree/pre_merge.
 
 == Changes
 
-This version adds support for streaming using RTMP (and its variants) from a Flash Media Server (or similar).  Our company has a requirement to stream over RTMPe so I have implemented changes to support this goal, while making things generic enough for others to use as well.  This should work for FMS/FMIS/etc, and all RTMP* protocols, but YMMV.
+In addition to the documented SM2 options, we have added the following.
 
-Having delved deeply into the code implementing these changes I would recommend FlowPlayer for RTMP.  The code looks excellent and very modular.  SoundManager2 is a great product but the code makes extending its features rather difficult.
+New options to SM2:
 
-If your FMS server supports a <tt>getStreamLength</tt> call you can use that to get the length of the music stream. However, this isn't being used at the moment because our FMS server mis-reports stream lengths.
-
-To use these features you must:
-
-* Use the Flash 9 <tt>soundmanager2_flash9.swf</tt>
-* Enable the global <tt>useMovieStar</tt> option
-* Pass <tt>isMovieStar = true</tt> in your options to <tt>createSound</tt>
-* Pass a value for <tt>serverUrl</tt> in your options to <tt>createSound</tt>.  This will be the URL for the FMS server.
-* Use the <tt>soundmanager2.js</tt> JavaScript file.  I've also generated a no-debug version <tt>soundmanager2-nodebug.js</tt>.
+* <tt>ondebuglog</tt> callback called with every debugging message.  Useful if you need to programatically have access to the debug logs.  We use this in our automated reporting of stream failures for QA.
+* <tt>fullURL</tt> specifies the full URL to the SWF file, bypassing any and all SWF path building.  This is useful when you need to include a cache-busting string in the URL, which is otherwise not possible.
 
 New options to createSound:
 
-* <tt>serverUrl</tt> URL for the FMS server
-* <tt>onconnect</tt> callback called when the connection to the server is made
-* <tt>totalBytes</tt> total size of the file in bytes
-* <tt>duration</tt> duration of the song in seconds
-* <tt>onfailure</tt> duration of the song in seconds
+* <tt>bufferTimes</tt> optional array of buffer times for double/multiple-buffering.  Just specify an array of incrementing buffer sizes (in seconds) e.g. [0.5, 2, 8] for a half-second, then 2 second, then 8 second buffer.  Buffers increment when full and reset to the smallest buffer when empty, or when starting to play an unbuffered portion of the stream.
+* <tt>onstats</tt> callback called with statistics including how long it took to connect to the server, and how long it took to play (useful for QA).
 
-=== Example
-
-    soundManager.flashVersion = 9;
-    soundManager.useMovieStar = true;
-
-    var options = {
-      id: 1234,
-      url: 'mp3:01_Shes_Like_The_Wind',
-      serverUrl: 'rtmpe://your.fms.server/path/to/song/directory/',
-      isMovieStar: true,
-      autoPlay: true,
-      autoLoad: true,
-      onconnect: self.onConnect,
-      whileplaying: self.updateSongPosition,
-      onfinish: self.onFinish,
-      onbeforefinish: self.queueNextSong,
-      onplay: self.showPlayingAndResetPlayStatRecorded,
-      onpause: self.showPaused,
-      onresume: self.showPlaying,
-      whileloading: self.showLoadingProgress,
-    };
-    return self.sm.createSound(options);
+Our FMS server has some peculiarities that we have to deal with:
+* bytesLoaded is always 0 for a streaming sound
+* NetStream.Play.Stop is sent when it shouldn't
+* We cannot get the stream length using a typical <tt>getStreamLength</tt> call
+* We cannot get bandwidth information
 
 == Debugging
 
@@ -57,39 +42,16 @@ New options to createSound:
 
     soundManager.debugFlash = true;
 
-2. Generate a debug version of the SWF
-
-    make-flash9-debug.sh
-
+2. Use a debug version of the SWF e.g. soundmanager2_flash9_debug.swf
 3. Open the Flash IDE.  Open the SM2 source code files. Start a remote debugging session.
-4. Refresh the application in the browser (make sure caching is off)
+4. Refresh the application in the browser (make sure caching is off).
 5. The SWF should connect to Flash and allow you to step through the source.
 
-== Basic API Features (Flash 8)
+If it doesn't:
+1. Make sure that the Flash version you have installed supports debugging
+2. Make sure that the Flash debugger application is using the same version of Flash.
 
-    * Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript
-    * Events: onload, whileloading, whileplaying, onfinish and more
-    * ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)
-
-== Shiny Flash 9 Features
-
-    * Full-screen MPEG-4 video (HE-AAC/H.264) and audio support
-    * "MultiShot" play (layered/chorusing effects)
-    * Waveform/frequency spectrum data
-    * Peak (L/R channel volume) data
-    * Audio buffering state/event handling
-
-== General Tech Stuff
-
-    * Full API Documentation with examples and notes
-    * console.log()-style debug output and troubleshooting tools
-    * Community-based discussion/support
-
-== A few nifty sites that have implemented SoundManager 2 for driving audio:
-
-    * Muxtape
-    * SoundCloud / The Cloud Player
-    * 8tracks
+== SM2
 
 Project home, documentation, live demos etc.:
 http://www.schillmania.com/projects/soundmanager2/
