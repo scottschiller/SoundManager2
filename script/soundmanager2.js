@@ -2665,13 +2665,14 @@ function SoundManager(smURL, smID) {
       _s._wD(fN+'"'+_t.sID+'"'+(bSuccess?' connected.':' failed to connect? - '+_t.url), (bSuccess?1:2));
       _t.connected = bSuccess;
       if (bSuccess) {
-        _t.failures = 0;
-        if (_t.options.autoLoad || _t.getAutoPlay()) {
-          _t.play(undefined, _t.getAutoPlay()); // only update the play state if auto playing
-        }        
+        _t.failures = 0;    
         if (_t._iO.onconnect) {
           _t._iO.onconnect.apply(_t,[bSuccess]);
         }
+        // Don't play if the sound is being destroyed
+        if (_idCheck(_t.sID) && (_t.options.autoLoad || _t.getAutoPlay())) {
+          _t.play(undefined, _t.getAutoPlay()); // only update the play state if auto playing
+        }        
       }
     };
 
