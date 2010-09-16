@@ -515,7 +515,7 @@ package {
             ExternalInterface.call(sMethod, 'data unavailable: ' + errors);
         }
 
-        if (typeof nP != 'undefined' && hasNew && isPlaying) { // and IF VIDEO, is still playing?
+        if (typeof nP != 'undefined' && hasNew) { // && isPlaying - removed to allow updates while paused, eg. from setPosition() calls
 
           // oSound.lastValues.position = nP;
           sMethod = baseJSObject + "['" + sounds[i] + "']._whileplaying";
