@@ -22,11 +22,13 @@ function ThreeSixtyPlayer() {
   var self = this;
   var pl = this;
   var sm = soundManager; // soundManager instance
-  var isIE = (navigator.userAgent.match(/msie/i));
-  var isOpera = (navigator.userAgent.match(/opera/i));
-  var isSafari = (navigator.userAgent.match(/safari/i));
-  var isChrome = (navigator.userAgent.match(/chrome/i));
-  var isFirefox = (navigator.userAgent.match(/firefox/i));
+  var uA = navigator.userAgent;
+  var isIE = (uA.match(/msie/i));
+  var isOpera = (uA.match(/opera/i));
+  var isSafari = (uA.match(/safari/i));
+  var isChrome = (uA.match(/chrome/i));
+  var isFirefox = (uA.match(/firefox/i));
+  var isTouchDevice = (uA.match(/ipad|iphone/i));
   this.excludeClass = 'threesixty-exclude'; // CSS class for ignoring MP3 links
 
   this.links = [];
@@ -233,6 +235,9 @@ function ThreeSixtyPlayer() {
   this.getMouseXY = function(e) {
     // http://www.quirksmode.org/js/events_properties.html
     e = e?e:event;
+    if (isTouchDevice && e.touches) {
+      e = e.touches[0];
+    }
     if (e.pageX || e.pageY) {
 	  return [e.pageX,e.pageY];
     } else if (e.clientX || e.clientY) {
@@ -531,15 +536,19 @@ function ThreeSixtyPlayer() {
   this.buttonMouseDown = function(e) {
 	// user might decide to drag from here
 	// watch for mouse move
-	document.onmousemove = function(e) {
-	  // should be boundary-checked, really (eg. move 3px first?)
-	  self.mouseDown(e);
-	}
+        if (!isTouchDevice) {
+	  document.onmousemove = function(e) {
+	    // should be boundary-checked, really (eg. move 3px first?)
+	    self.mouseDown(e);
+	  }
+        } else {
+          self.addEventHandler(document,'touchmove',self.mouseDown);
+        }
 	self.stopEvent(e);
 	return false;
   }
 
-  this.mouseDown = function(e) { 
+  this.mouseDown = function(e) {
     if (!self.lastSound) {
 	  self.stopEvent(e);
       return false;	
@@ -552,8 +561,14 @@ function ThreeSixtyPlayer() {
     oData.pauseCount = (self.lastSound.paused?1:0);
     // self.lastSound.pause();
     self.mmh(e?e:event);
-    document.onmousemove = self.mmh;
-    document.onmouseup = self.mouseUp;
+    if (isTouchDevice) {
+      self.removeEventHandler(document,'touchmove',self.mouseDown);
+      self.addEventHandler(document,'touchmove',self.mmh);
+      self.addEventHandler(document,'touchend',self.mouseUp);
+    } else {
+      document.onmousemove = self.mmh;
+      document.onmouseup = self.mouseUp;
+    }
     self.stopEvent(e);
     return false;
   }
@@ -564,8 +579,13 @@ function ThreeSixtyPlayer() {
     if (oData.pauseCount == 0) {
       self.lastSound.resume();
     }
-    document.onmousemove = null;
-    document.onmouseup = null;
+    if (!isTouchDevice) {
+      document.onmousemove = null;
+      document.onmouseup = null;
+    } else {
+      self.removeEventHandler(document,'touchmove',self.mmh);
+      self.removeEventHandler(document,'touchend',self.mouseUP);
+    }
   }
 
   var fullCircle = 360;
@@ -953,10 +973,14 @@ this.updatePlaying = function() {
         }
         oCover = self.getElementsByClassName('sm2-cover','div',oLinks[i].parentNode)[0];
         var oBtn = oLinks[i].parentNode.getElementsByTagName('img')[0];
-		var oBtn = oLinks[i].parentNode.getElementsByTagName('img')[0]
+	var oBtn = oLinks[i].parentNode.getElementsByTagName('img')[0]
         self.addEventHandler(oBtn,'click',self.buttonClick);
-		self.addEventHandler(oCover,'mousedown',self.mouseDown);
-	    oCanvasCTX = oCanvas.getContext('2d');
+        if (!isTouchDevice) {
+	  self.addEventHandler(oCover,'mousedown',self.mouseDown);
+        } else {
+	  self.addEventHandler(oCover,'touchstart',self.mouseDown);
+        }
+	oCanvasCTX = oCanvas.getContext('2d');
         oCanvasCTX.translate(self.config.circleRadius,self.config.circleRadius);
         oCanvasCTX.rotate(self.deg2rad(-90)); // compensate for arc starting at EAST // http://stackoverflow.com/questions/319267/tutorial-for-html-canvass-arc-function
       }
