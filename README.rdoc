@@ -1,0 +1,95 @@
+By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reliable cross-platform audio to JavaScript. 
+
+HTML5 Audio() Support (Beta-ish)
+
+    * 100% Flash-free MP3 + MP4/AAC where supported, compatible with Apple iPad 3.2, iPhone/iOS 4
+    * Fallback to Flash for MP3/MP4 support, as needed
+    * SM2 API is unchanged, transparent; HTML5/flash switching handled internally
+    * HTML5 API support approximates Flash 8 API features, minus ID3, plus buffering
+    * Some other formats (WAV/OGG) supported via HTML5, depending on browser
+    * See soundManager.useHTML5Audio for implementation details.
+
+Basic API Features (Flash 8)
+
+    * Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript
+    * Events: onload, whileloading, whileplaying, onfinish and more
+    * ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)
+
+Shiny Flash 9 Features
+
+    * RTMP / Flash Media Server streaming support (new, experimental)
+    * MPEG-4 (AAC, HE-AAC, H.264) audio support
+    * "MultiShot" play (layered/chorusing effects)
+    * Waveform/frequency spectrum data
+    * Peak (L/R channel volume) data
+    * Audio buffering state/event handling
+
+General Tech Stuff
+
+    * Full API Documentation with examples and notes
+    * console.log()-style debug output and troubleshooting tools
+    * Community-based discussion/support
+
+A few nifty sites that have implemented SoundManager 2 for driving audio:
+
+    * Muxtape
+    * SoundCloud / The Cloud Player
+    * 8tracks
+    * Last.fm
+    * Opera (media player component)
+    * Discogs
+    * Mixcrate
+
+Project home, documentation, live demos etc.:
+http://www.schillmania.com/projects/soundmanager2/
+
+== Merged fork ( kjvarga: http://github.com/kjvarga/SoundManager2/ )
+
+This SM2 fork contains the SoundManager2 implementation that is used on http://www.kazaa.com.
+
+We added RTMP support to SM2 which is now part of the SM2 (experimental) branch as of V2.96a.20100606.
+
+Downloads: http://www.schillmania.com/projects/soundmanager2/doc/download/
+
+For more background on the addition of RTMP check out  http://getsatisfaction.com/schillmania/topics/soundmanager_doesnt_support_rtmp
+
+Our old branch of development has been moved to http://github.com/kjvarga/SoundManager2/tree/pre_merge.
+
+== Changes
+
+In addition to the documented SM2 options, we have added the following.
+
+New options to SM2:
+
+* <tt>ondebuglog</tt> callback called with every debugging message.  Useful if you need to programatically have access to the debug logs.  We use this in our automated reporting of stream failures for QA.
+
+New options to createSound:
+
+* <tt>bufferTimes</tt> optional array of buffer times for double/multiple-buffering.  Just specify an array of incrementing buffer sizes (in seconds) e.g. [0.5, 2, 8] for a half-second, then 2 second, then 8 second buffer.  Buffers increment when full and reset to the smallest buffer when empty, or when starting to play an unbuffered portion of the stream.
+* <tt>onstats</tt> callback called with statistics including how long it took to connect to the server, and how long it took to play (useful for QA).
+
+Our FMS server has some peculiarities that we have to deal with:
+* bytesLoaded is always 0 for a streaming sound
+* NetStream.Play.Stop is sent when it shouldn't
+* We cannot get the stream length using a typical <tt>getStreamLength</tt> call
+* We cannot get bandwidth information
+
+== Debugging
+
+1. Set
+
+    soundManager.debugFlash = true;
+
+2. Use a debug version of the SWF e.g. soundmanager2_flash9_debug.swf
+3. Open the Flash IDE.  Open the SM2 source code files. Start a remote debugging session.
+4. Refresh the application in the browser (make sure caching is off).
+5. The SWF should connect to Flash and allow you to step through the source.
+
+If it doesn't:
+1. Make sure that the Flash version you have installed supports debugging
+2. Make sure that the Flash debugger application is using the same version of Flash.
+
+== SM2
+
+Project home, documentation, live demos etc.:
+http://www.schillmania.com/projects/soundmanager2/

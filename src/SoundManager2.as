@@ -100,7 +100,7 @@ class SoundManager2 {
     }
 
     var flashDebug = function(messageText) {
-     // <d>
+      // <d>
       _messages.push(messageText);
       if (!flashDebugEnabled) {
         return false;
@@ -112,7 +112,6 @@ class SoundManager2 {
       // 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
       var w = Stage.width?Stage.width:320;
       var h = Stage.height?Stage.height:240;
-
       if (!_messageObj) {
         _messageObj = _root.createTextField("_messageObj", 0, 0, 0, w, h);
         _messageObj.x = 0;
