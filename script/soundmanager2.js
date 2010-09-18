@@ -2690,7 +2690,7 @@ function SoundManager(smURL, smID) {
       _t.loaded = nSuccess;
       _t.readyState = nSuccess?3:2;
       if (_t._iO.onload) {
-        _t._iO.onload.apply(_t);
+        _t._iO.onload.apply(_t, [nSuccess]);
       }
     };
 
