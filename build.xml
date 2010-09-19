@@ -66,10 +66,6 @@
 <echo>Making no-debug JS...</echo>
 
 <exec executable="/bin/sh">
- <arg line='-c "mkdir tmp"'/>
-</exec>
-
-<exec executable="/bin/sh">
  <arg line='-c "sed -n &#39;1h;1!H;${;g;s/this.debugMode = true;/this.debugMode = false;/g;p;}&#39; script/soundmanager2.js &gt; tmp/sm2-nodebug-temp.js"'/>
 </exec>
 
