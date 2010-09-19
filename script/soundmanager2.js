@@ -1849,7 +1849,7 @@ function SoundManager(smURL, smID) {
 
   this._onfullscreenchange = function(bFullScreen) {
     _s._wD('onfullscreenchange(): ' + bFullScreen);
-    _s.isFullScreen = (bFullScreen === 1?true:false);
+    _s.isFullScreen = (bFullScreen === 1);
     if (!_s.isFullScreen) {
       // attempt to restore window focus after leaving full-screen
       try {
@@ -2490,7 +2490,7 @@ function SoundManager(smURL, smID) {
         if (_a) {
           _t._onbufferchange(0);
           _t._whileloading(_t.bytesTotal, _t.bytesTotal, _get_html5_duration());
-          _t._onload(1);
+          _t._onload(true);
         }
       }, false);
 
@@ -2518,7 +2518,7 @@ function SoundManager(smURL, smID) {
         if (_a) {
           _s._wD('HTML5::error: '+_a.error.code);
           // call load with error state?
-          _t._onload(0);
+          _t._onload(false);
         }
       }, false);
 
@@ -2674,11 +2674,10 @@ function SoundManager(smURL, smID) {
     };
 
     this._onload = function(nSuccess) {
-      var fN = 'SMSound._onload(): ';
-      nSuccess = (nSuccess === 1?true:false);
-      _s._wD(fN + '"' + _t.sID + '"' + (nSuccess?' loaded.':' failed to load? - ' + _t.url), (nSuccess?1:2));
+      var fN = 'SMSound._onload(): ', loadOK = (nSuccess === 1);
+      _s._wD(fN + '"' + _t.sID + '"' + (loadOK?' loaded.':' failed to load? - ' + _t.url), (loadOK?1:2));
       // <d>
-      if (!nSuccess && !_t.isHTML5) {
+      if (!loadOK && !_t.isHTML5) {
         if (_s.sandbox.noRemote === true) {
           _s._wD(fN + _str('noNet'), 1);
         }
@@ -2687,10 +2686,10 @@ function SoundManager(smURL, smID) {
         }
       }
       // </d>
-      _t.loaded = nSuccess;
-      _t.readyState = nSuccess?3:2;
+      _t.loaded = loadOK;
+      _t.readyState = loadOK?3:2;
       if (_t._iO.onload) {
-        _t._iO.onload.apply(_t, [nSuccess]);
+        _t._iO.onload.apply(_t, [loadOK]);
       }
     };
 
@@ -2803,7 +2802,7 @@ function SoundManager(smURL, smID) {
         // _s._wD(fN + ': Note: buffering already = '+nIsBuffering);
         return false;
       }
-      _t.isBuffering = (nIsBuffering === 1?true:false);
+      _t.isBuffering = (nIsBuffering === 1);
       if (_t._iO.onbufferchange) {
         _s._wD(fN + ': ' + nIsBuffering);
         _t._iO.onbufferchange.apply(_t);
