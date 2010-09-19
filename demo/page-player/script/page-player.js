@@ -19,9 +19,11 @@ function PagePlayer(oConfigOverride) {
   var pl = this;
   var sm = soundManager; // soundManager instance
   // sniffing for favicon stuff/IE workarounds
-  var isIE = navigator.userAgent.match(/msie/i);
-  var isOpera = navigator.userAgent.match(/opera/i);
-  var isFirefox = navigator.userAgent.match(/firefox/i);
+  var uA = navigator.userAgent;
+  var isIE = uA.match(/msie/i);
+  var isOpera = uA.match(/opera/i);
+  var isFirefox = uA.match(/firefox/i);
+  var isTouchDevice = (uA.match(/ipad|iphone/i));
 
   this.config = {
     flashVersion: 8,        // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
@@ -456,8 +458,10 @@ var count = 0;
   this.handleClick = function(e) {
     // a sound (or something) was clicked - determine what and handle appropriately
     if (e.button == 2) {
-      if (!pl.config.allowRightClick) pl.stopEvent(e);
-      return (pl.config.allowRightClick); // ignore right-clicks
+      if (!pl.config.allowRightClick) {
+        pl.stopEvent(e);
+      }
+      return pl.config.allowRightClick; // ignore right-clicks
     }
     var o = self.getTheDamnTarget(e);
     if (!o) {
@@ -561,6 +565,9 @@ var count = 0;
   
   this.handleMouseDown = function(e) {
     // a sound link was clicked
+    if (isTouchDevice && e.touches) {
+      e = e.touches[0];
+    }
     if (e.button == 2) {
       if (!pl.config.allowRightClick) pl.stopEvent(e);
       return (pl.config.allowRightClick); // ignore right-clicks
@@ -573,13 +580,20 @@ var count = 0;
     self.dragActive = true;
     self.lastSound.pause();
     self.setPosition(e);
-    self.addEventHandler(document,'mousemove',self.handleMouseMove);
+    if (!isTouchDevice) {
+      self.addEventHandler(document,'mousemove',self.handleMouseMove);
+    } else {
+      self.addEventHandler(document,'touchmove',self.handleMouseMove);
+    }
     self.addClass(self.lastSound._data.oControls,'dragging');
     self.stopEvent(e);
     return false;
   }
   
   this.handleMouseMove = function(e) {
+    if (isTouchDevice && e.touches) {
+      e = e.touches[0];
+    }
     // set position accordingly
     if (self.dragActive) {
       if (self.config.useThrottling) {
@@ -599,13 +613,18 @@ var count = 0;
     } else {
       self.stopDrag();
     }
-	return false;
+    e.stopPropagation = true;
+    return false;
   }
   
   this.stopDrag = function(e) {
     if (self.dragActive) {
       self.removeClass(self.lastSound._data.oControls,'dragging');
-      self.removeEventHandler(document,'mousemove',self.handleMouseMove);
+      if (!isTouchDevice) {
+        self.removeEventHandler(document,'mousemove',self.handleMouseMove);
+      } else {
+        self.removeEventHandler(document,'touchmove',self.handleMouseMove);
+      }
       // self.removeEventHandler(document,'mouseup',self.stopDrag);
       if (!pl.hasClass(self.lastSound._data.oLI,self.css.sPaused)) {
         self.lastSound.resume();
@@ -770,9 +789,14 @@ var count = 0;
       oTiming.innerHTML = '';
       oTiming.id = '';
       self.addEventHandler(document,'click',self.handleClick);
-      self.addEventHandler(document,'mousedown',self.handleMouseDown);
-      self.addEventHandler(document,'mouseup',self.stopDrag);
-      self.addEventHandler(window,'unload',function(){}); // force page reload when returning here via back button (Opera tries to remember old state, etc.)
+      if (!isTouchDevice) {
+        self.addEventHandler(document,'mousedown',self.handleMouseDown);
+        self.addEventHandler(document,'mouseup',self.stopDrag);
+      } else {
+        self.addEventHandler(document,'touchstart',self.handleMouseDown);
+        self.addEventHandler(document,'touchend',self.stopDrag);
+      }
+      // self.addEventHandler(window,'unload',function(){}); // force page reload when returning here via back button (Opera tries to remember old state, etc.)
     }
     sm._writeDebug('pagePlayer.init(): Found '+foundItems+' relevant items.');
     if (self.config.autoStart) {
