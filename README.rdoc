@@ -1,6 +1,8 @@
+== SoundManager 2: JavaScript Sound for the Web
+
 By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reliable cross-platform audio to JavaScript. 
 
-HTML5 Audio() Support (Beta-ish)
+== HTML5 Audio() Support (Beta-ish)
 
     * 100% Flash-free MP3 + MP4/AAC where supported, compatible with Apple iPad 3.2, iPhone/iOS 4
     * Fallback to Flash for MP3/MP4 support, as needed
@@ -9,13 +11,13 @@ HTML5 Audio() Support (Beta-ish)
     * Some other formats (WAV/OGG) supported via HTML5, depending on browser
     * See soundManager.useHTML5Audio for implementation details.
 
-Basic API Features (Flash 8)
+== Basic API Features (Flash 8)
 
     * Load, stop, play, pause, mute, seek, pan and volume control of sounds from Javascript
     * Events: onload, whileloading, whileplaying, onfinish and more
     * ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)
 
-Shiny Flash 9 Features
+== Shiny Flash 9 Features
 
     * RTMP / Flash Media Server streaming support (new, experimental)
     * MPEG-4 (AAC, HE-AAC, H.264) audio support
@@ -24,13 +26,15 @@ Shiny Flash 9 Features
     * Peak (L/R channel volume) data
     * Audio buffering state/event handling
 
-General Tech Stuff
+== General Tech Stuff
 
     * Full API Documentation with examples and notes
     * console.log()-style debug output and troubleshooting tools
     * Community-based discussion/support
 
-A few nifty sites that have implemented SoundManager 2 for driving audio:
+== As heard on The Internets
+
+A few nifty sites that have implemented SM2 for driving audio:
 
     * Muxtape
     * SoundCloud / The Cloud Player
@@ -40,8 +44,10 @@ A few nifty sites that have implemented SoundManager 2 for driving audio:
     * Discogs
     * Mixcrate
 
-Project home, documentation, live demos etc.:
+== Project home, documentation, live demos etc.:
+
 http://www.schillmania.com/projects/soundmanager2/
+
 
 == Merged fork ( kjvarga: http://github.com/kjvarga/SoundManager2/ )
 
