@@ -107,8 +107,6 @@ function PagePlayer(oConfigOverride) {
     typeof(attachEvent)=='undefined'?o.removeEventListener(evtName,evtHandler,false):o.detachEvent('on'+evtName,evtHandler);
   }
 
-var count = 0;
-
   this.hasClass = function(o,cStr) {
     return (typeof(o.className)!='undefined'?new RegExp('(^|\\s)'+cStr+'(\\s|$)').test(o.className):false);
   }
@@ -289,39 +287,39 @@ var count = 0;
 
     onload: function() {
       if (!this.loaded) {
-		var oTemp = this._data.oLI.getElementsByTagName('a')[0];
-		var oString = oTemp.innerHTML;
-		var oThis = this;
-		oTemp.innerHTML = oString+' <span style="font-size:0.5em"> | Load failed, d\'oh! '+(sm.sandbox.noRemote?' Possible cause: Flash sandbox is denying remote URL access.':(sm.sandbox.noLocal?'Flash denying local filesystem access':'404?'))+'</span>';
-		setTimeout(function(){
-		  oTemp.innerHTML = oString;
-		  // pl.events.finish.apply(oThis); // load next
-		},5000);
-	  } else {
+        var oTemp = this._data.oLI.getElementsByTagName('a')[0];
+        var oString = oTemp.innerHTML;
+        var oThis = this;
+        oTemp.innerHTML = oString+' <span style="font-size:0.5em"> | Load failed, d\'oh! '+(sm.sandbox.noRemote?' Possible cause: Flash sandbox is denying remote URL access.':(sm.sandbox.noLocal?'Flash denying local filesystem access':'404?'))+'</span>';
+        setTimeout(function(){
+          oTemp.innerHTML = oString;
+          // pl.events.finish.apply(oThis); // load next
+        },5000);
+      } else {
         if (this._data.metadata) {
           this._data.metadata.refresh();
         }
       }
     },
 
-	metadata: function() {
-	  // video-only stuff
-	  sm._wD('video metadata: '+this.width+'x'+this.height);
+    metadata: function() {
+      // video-only stuff
+      sm._wD('video metadata: '+this.width+'x'+this.height);
       // set the SWF dimensions to match
-	  sm.oMC.style.width = this.width+'px';	
-	  sm.oMC.style.height = this.height+'px';
-	},
+      sm.oMC.style.width = this.width+'px';
+      sm.oMC.style.height = this.height+'px';
+    },
 
     whileplaying: function() {
       var d = null;
       if (pl.dragActive || !pl.config.useThrottling) {
         self.updateTime.apply(this);
-  	    if (sm.flashVersion >= 9) {
+        if (sm.flashVersion >= 9) {
           if (pl.config.usePeakData && this.instanceOptions.usePeakData) self.updatePeaks.apply(this);
-	      if (pl.config.useWaveformData && this.instanceOptions.useWaveformData || pl.config.useEQData && this.instanceOptions.useEQData) {
-	        self.updateGraph.apply(this);
-	      }
-	    }
+          if (pl.config.useWaveformData && this.instanceOptions.useWaveformData || pl.config.useEQData && this.instanceOptions.useEQData) {
+            self.updateGraph.apply(this);
+          }
+        }
         if (this._data.metadata) {
           d = new Date();
           if (d && d-self.lastWPExec>500) {
@@ -334,13 +332,13 @@ var count = 0;
         d = new Date();
         if (d-self.lastWPExec>30) {
           self.updateTime.apply(this);
-	      if (sm.flashVersion >= 9) {
+          if (sm.flashVersion >= 9) {
             if (pl.config.usePeakData && this.instanceOptions.usePeakData) {
-	          self.updatePeaks.apply(this);
-	        }
-	        if (pl.config.useWaveformData && this.instanceOptions.useWaveformData || pl.config.useEQData && this.instanceOptions.useEQData) {
-		      self.updateGraph.apply(this);
-		}
+              self.updatePeaks.apply(this);
+            }
+            if (pl.config.useWaveformData && this.instanceOptions.useWaveformData || pl.config.useEQData && this.instanceOptions.useEQData) {
+              self.updateGraph.apply(this);
+            }
           }
           if (this._data.metadata) self.refreshMetadata(this);
           this._data.oPosition.style.width = (((this.position/self.getDurationEstimate(this))*100)+'%');
@@ -348,37 +346,37 @@ var count = 0;
         }
       }
     }
-	
+
   } // events{}
 
   var _head = document.getElementsByTagName('head')[0];
 
   this.setPageIcon = function(sDataURL) {
-	if (!self.config.useFavIcon || !self.config.usePeakData || !sDataURL) {
-		return false;
-	}
+    if (!self.config.useFavIcon || !self.config.usePeakData || !sDataURL) {
+      return false;
+    }
     var link = document.getElementById('sm2-favicon');
     if (link) {
-	  _head.removeChild(link);
-	  link = null;
+      _head.removeChild(link);
+      link = null;
     }
     if (!link) {
-	  link = document.createElement('link');
-	  link.id = 'sm2-favicon';
-	  link.rel = 'shortcut icon';
-	  link.type = 'image/png';
-	  link.href = sDataURL;
+      link = document.createElement('link');
+      link.id = 'sm2-favicon';
+      link.rel = 'shortcut icon';
+      link.type = 'image/png';
+      link.href = sDataURL;
       document.getElementsByTagName('head')[0].appendChild(link);
     }
   }
 
   this.resetPageIcon = function() {
-	if (!self.config.useFavIcon) {
-		return false;
-	}
+    if (!self.config.useFavIcon) {
+      return false;
+    }
     var link = document.getElementById('favicon');
     if (link) {
-	  link.href = '/favicon.ico';
+      link.href = '/favicon.ico';
     }
   }
 
@@ -387,10 +385,10 @@ var count = 0;
     var oSpan = o.getElementsByTagName('span');
     oSpan[0].style.marginTop = (13-(Math.floor(15*this.peakData.left))+'px');
     oSpan[1].style.marginTop = (13-(Math.floor(15*this.peakData.right))+'px');
-	// highly experimental
+    // highly experimental
     if (self.config.flashVersion > 8 && self.config.useFavIcon && self.config.usePeakData) {
       self.setPageIcon(self.vuMeterData[parseInt(16*this.peakData.left)][parseInt(16*this.peakData.right)]);
-	}
+    }
   }
   
   this.updateGraph = function() {
@@ -403,7 +401,7 @@ var count = 0;
         sbC[255-i].style.marginTop = (1+scale+Math.ceil(this.waveformData.left[i]*-scale))+'px';
       }
     } else {
-	  // eq spectrum
+      // eq spectrum
       var offset = 9;
       for (var i=255; i--;) {
         sbC[255-i].style.marginTop = ((offset*2)-1+Math.ceil(this.eqData[i]*-offset))+'px';
@@ -483,84 +481,84 @@ var count = 0;
     if (!o.href || (!sm.canPlayLink(o) && !self.hasClass(o,'playable')) || self.hasClass(o,'exclude')) {
       // do nothing, don't return anything.
     } else {
-	  // we have something we're interested in.
-	    var soundURL = o.href;
-	    var thisSound = self.getSoundByObject(o);
-	    if (thisSound) {
-	      // sound already exists
-	      self.setPageTitle(thisSound._data.originalTitle);
-	      if (thisSound == self.lastSound) {
-	        // ..and was playing (or paused) and isn't in an error state
-			if (thisSound.readyState != 2) {
-			  if (thisSound.playState != 1) {
-				// not yet playing
-				thisSound.play();
-			  } else {
-	            thisSound.togglePause();
-	          }
-			} else {
-			  sm._writeDebug('Warning: sound failed to load (security restrictions, 404 or bad format)',2);
-			}
-	      } else {
-	        // ..different sound
-	        if (self.lastSound) self.stopSound(self.lastSound);
-	        thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
-	        thisSound.togglePause(); // start playing current
-	      }
-	    } else {
-	      // create sound
-	      thisSound = sm.createSound({
-	        id:'pagePlayerMP3Sound'+(self.soundCount++),
-	        url:decodeURI(soundURL),
-	        onplay:self.events.play,
-	        onstop:self.events.stop,
-	        onpause:self.events.pause,
-	        onresume:self.events.resume,
-	        onfinish:self.events.finish,
-	        whileloading:self.events.whileloading,
-	        whileplaying:self.events.whileplaying,
-	        onmetadata:self.events.metadata,
-	        onload:self.events.onload
-	      });
-	      // append control template
-	      var oControls = self.oControls.cloneNode(true);
-	      o.parentNode.appendChild(oControls);
-	      o.parentNode.appendChild(document.getElementById('spectrum-container'));
-	      self.soundsByObject[o.rel] = thisSound;
-	      // tack on some custom data
-	      thisSound._data = {
-	        oLink: o, // DOM reference within SM2 object event handlers
-	        oLI: o.parentNode,
-	        oControls: self.getElementsByClassName('controls','div',o.parentNode)[0],
-	        oStatus: self.getElementsByClassName('statusbar','div',o.parentNode)[0],
-	        oLoading: self.getElementsByClassName('loading','div',o.parentNode)[0],
-	        oPosition: self.getElementsByClassName('position','div',o.parentNode)[0],
-	        oTimingBox: self.getElementsByClassName('timing','div',o.parentNode)[0],
-	        oTiming: self.getElementsByClassName('timing','div',o.parentNode)[0].getElementsByTagName('div')[0],
-	        oPeak: self.getElementsByClassName('peak','div',o.parentNode)[0],
-	        oGraph: self.getElementsByClassName('spectrum-box','div',o.parentNode)[0],
-	        nIndex: self.getSoundIndex(o),
-	        className: self.css.sPlaying,
-	        originalTitle: o.innerHTML,
-	        metadata: null
-	      };
-	      thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
-	      // "Metadata"
-	      if (thisSound._data.oLI.getElementsByTagName('ul').length) {
-	        thisSound._data.metadata = new Metadata(thisSound);
-	      }
-	      // set initial timer stuff (before loading)
-	      var str = self.strings['timing'].replace('%s1',self.config.emptyTime);
-	      str = str.replace('%s2',self.config.emptyTime);
-	      thisSound._data.oTiming.innerHTML = str;
-	      self.sounds.push(thisSound);
-	      if (self.lastSound) self.stopSound(self.lastSound);
-	      self.resetGraph.apply(thisSound);
-	      thisSound.play();
-	    }
-	    self.lastSound = thisSound; // reference for next call
-	    return self.stopEvent(e);
-	 }
+      // we have something we're interested in.
+      var soundURL = o.href;
+      var thisSound = self.getSoundByObject(o);
+      if (thisSound) {
+        // sound already exists
+        self.setPageTitle(thisSound._data.originalTitle);
+        if (thisSound == self.lastSound) {
+          // ..and was playing (or paused) and isn't in an error state
+          if (thisSound.readyState != 2) {
+            if (thisSound.playState != 1) {
+              // not yet playing
+              thisSound.play();
+            } else {
+              thisSound.togglePause();
+            }
+          } else {
+            sm._writeDebug('Warning: sound failed to load (security restrictions, 404 or bad format)',2);
+          }
+        } else {
+          // ..different sound
+          if (self.lastSound) self.stopSound(self.lastSound);
+            thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
+            thisSound.togglePause(); // start playing current
+          }
+        } else {
+          // create sound
+          thisSound = sm.createSound({
+            id:'pagePlayerMP3Sound'+(self.soundCount++),
+            url:decodeURI(soundURL),
+            onplay:self.events.play,
+            onstop:self.events.stop,
+            onpause:self.events.pause,
+            onresume:self.events.resume,
+            onfinish:self.events.finish,
+            whileloading:self.events.whileloading,
+            whileplaying:self.events.whileplaying,
+            onmetadata:self.events.metadata,
+            onload:self.events.onload
+          });
+          // append control template
+          var oControls = self.oControls.cloneNode(true);
+          o.parentNode.appendChild(oControls);
+          o.parentNode.appendChild(document.getElementById('spectrum-container'));
+          self.soundsByObject[o.rel] = thisSound;
+          // tack on some custom data
+          thisSound._data = {
+            oLink: o, // DOM reference within SM2 object event handlers
+            oLI: o.parentNode,
+            oControls: self.getElementsByClassName('controls','div',o.parentNode)[0],
+            oStatus: self.getElementsByClassName('statusbar','div',o.parentNode)[0],
+            oLoading: self.getElementsByClassName('loading','div',o.parentNode)[0],
+            oPosition: self.getElementsByClassName('position','div',o.parentNode)[0],
+            oTimingBox: self.getElementsByClassName('timing','div',o.parentNode)[0],
+            oTiming: self.getElementsByClassName('timing','div',o.parentNode)[0].getElementsByTagName('div')[0],
+            oPeak: self.getElementsByClassName('peak','div',o.parentNode)[0],
+            oGraph: self.getElementsByClassName('spectrum-box','div',o.parentNode)[0],
+            nIndex: self.getSoundIndex(o),
+            className: self.css.sPlaying,
+            originalTitle: o.innerHTML,
+            metadata: null
+          };
+          thisSound._data.oTimingBox.appendChild(document.getElementById('spectrum-container'));
+          // "Metadata"
+          if (thisSound._data.oLI.getElementsByTagName('ul').length) {
+            thisSound._data.metadata = new Metadata(thisSound);
+          }
+          // set initial timer stuff (before loading)
+          var str = self.strings['timing'].replace('%s1',self.config.emptyTime);
+          str = str.replace('%s2',self.config.emptyTime);
+          thisSound._data.oTiming.innerHTML = str;
+          self.sounds.push(thisSound);
+          if (self.lastSound) self.stopSound(self.lastSound);
+          self.resetGraph.apply(thisSound);
+          thisSound.play();
+        }
+        self.lastSound = thisSound; // reference for next call
+        return self.stopEvent(e);
+     }
   }
   
   this.handleMouseDown = function(e) {
@@ -679,7 +677,7 @@ var count = 0;
 
   this.getDurationEstimate = function(oSound) {
     if (oSound.instanceOptions.isMovieStar) {
-	  return (oSound.duration);
+      return (oSound.duration);
     } else {
       return (!oSound._data.metadata || !oSound._data.metadata.data.givenDuration?(oSound.durationEstimate||0):oSound._data.metadata.data.givenDuration);
     }
@@ -688,49 +686,49 @@ var count = 0;
   this.createVUData = function() {
     var i=0;
     var j=0;
-	var canvas = vuDataCanvas.getContext('2d');
-	var vuGrad = canvas.createLinearGradient(0, 16, 0, 0);
-	vuGrad.addColorStop(0,'rgb(0,192,0)');
-	vuGrad.addColorStop(0.30,'rgb(0,255,0)');
-	vuGrad.addColorStop(0.625,'rgb(255,255,0)');
-	vuGrad.addColorStop(0.85,'rgb(255,0,0)');
-	var bgGrad = canvas.createLinearGradient(0, 16, 0, 0);
-	var outline = 'rgba(0,0,0,0.2)';
-	bgGrad.addColorStop(0,outline);
-	bgGrad.addColorStop(1,'rgba(0,0,0,0.5)');
+    var canvas = vuDataCanvas.getContext('2d');
+    var vuGrad = canvas.createLinearGradient(0, 16, 0, 0);
+    vuGrad.addColorStop(0,'rgb(0,192,0)');
+    vuGrad.addColorStop(0.30,'rgb(0,255,0)');
+    vuGrad.addColorStop(0.625,'rgb(255,255,0)');
+    vuGrad.addColorStop(0.85,'rgb(255,0,0)');
+    var bgGrad = canvas.createLinearGradient(0, 16, 0, 0);
+    var outline = 'rgba(0,0,0,0.2)';
+    bgGrad.addColorStop(0,outline);
+    bgGrad.addColorStop(1,'rgba(0,0,0,0.5)');
     for (i=0; i<16; i++) {
       self.vuMeterData[i] = [];
     }
     for (var i=0; i<16; i++) {
       for (j=0; j<16; j++) {
-	    // reset/erase canvas
-		vuDataCanvas.setAttribute('width',16);
-		vuDataCanvas.setAttribute('height',16);
-		// draw new stuffs
-	    canvas.fillStyle = bgGrad;
- 		canvas.fillRect(0,0,7,15);
- 		canvas.fillRect(8,0,7,15);
-		/*
-		// shadow
-		canvas.fillStyle = 'rgba(0,0,0,0.1)';
-	    canvas.fillRect(1,15-i,7,17-(17-i));
-	    canvas.fillRect(9,15-j,7,17-(17-j));
-		*/
+        // reset/erase canvas
+        vuDataCanvas.setAttribute('width',16);
+        vuDataCanvas.setAttribute('height',16);
+        // draw new stuffs
+        canvas.fillStyle = bgGrad;
+        canvas.fillRect(0,0,7,15);
+        canvas.fillRect(8,0,7,15);
+        /*
+        // shadow
+        canvas.fillStyle = 'rgba(0,0,0,0.1)';
+        canvas.fillRect(1,15-i,7,17-(17-i));
+        canvas.fillRect(9,15-j,7,17-(17-j));
+        */
         canvas.fillStyle = vuGrad;
         canvas.fillRect(0,15-i,7,16-(16-i));
         canvas.fillRect(8,15-j,7,16-(16-j));
-		// and now, clear out some bits.
-		canvas.clearRect(0,3,16,1);
-		canvas.clearRect(0,7,16,1);
-		canvas.clearRect(0,11,16,1);
+        // and now, clear out some bits.
+        canvas.clearRect(0,3,16,1);
+        canvas.clearRect(0,7,16,1);
+        canvas.clearRect(0,11,16,1);
         self.vuMeterData[i][j] = vuDataCanvas.toDataURL('image/png');
-		// for debugging VU images
-		/*
-		var o = document.createElement('img');
-		o.style.marginRight = '5px'; 
-		o.src = self.vuMeterData[i][j];
-		document.documentElement.appendChild(o);
-		*/
+        // for debugging VU images
+        /*
+        var o = document.createElement('img');
+        o.style.marginRight = '5px'; 
+        o.src = self.vuMeterData[i][j];
+        document.documentElement.appendChild(o);
+        */
       }
     }
   };
@@ -738,36 +736,36 @@ var count = 0;
   var vuDataCanvas = null;
 
   this.testCanvas = function() {
-	// canvas + toDataURL();
+    // canvas + toDataURL();
     var c = document.createElement('canvas');
-	var ctx = null;
+    var ctx = null;
     if (!c || typeof c.getContext == 'undefined') {
-	  return null;
+      return null;
     }
     ctx = c.getContext('2d');
-	if (!ctx || typeof c.toDataURL != 'function') {
-		return null;
-	}
-	// just in case..
-	try {
-		var ok = c.toDataURL('image/png');
-	} catch(e) {
-	  // no canvas or no toDataURL()
-	  return null;	
-	}
-	// assume we're all good.
-	return c;
+    if (!ctx || typeof c.toDataURL != 'function') {
+        return null;
+    }
+    // just in case..
+    try {
+        var ok = c.toDataURL('image/png');
+    } catch(e) {
+      // no canvas or no toDataURL()
+      return null;
+    }
+    // assume we're all good.
+    return c;
   }
 
   if (this.config.useFavIcon) {
-	vuDataCanvas = self.testCanvas();
-	if (vuDataCanvas && (isFirefox || isOpera)) {
+    vuDataCanvas = self.testCanvas();
+    if (vuDataCanvas && (isFirefox || isOpera)) {
       // these browsers support dynamically-updating the favicon
-	  self.createVUData();
-	} else {
-	  // browser doesn't support doing this
-	  this.config.useFavIcon = false;
-	}
+      self.createVUData();
+    } else {
+      // browser doesn't support doing this
+      this.config.useFavIcon = false;
+    }
   }
 
   this.init = function() {
