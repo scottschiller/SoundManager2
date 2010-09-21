@@ -3033,26 +3033,39 @@ function SoundManager(smURL, smID) {
       if (nMsecOffset === undefined) {
         nMsecOffset = 0;
       }
-      var offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
-      _t._iO.position = offset;
-      _t.resetOnPosition(_t._iO.position);
+      // KJV Use the duration from the instance options, if we don't have a track duration yet.
+      // Auto-loading streams with a starting position in their options will start playing
+      // as soon as they connect.  In the start() call we set the position on the stream,
+      // but because the stream hasn't played _t.duration won't have been set (that is
+      // done in whileloading()).  So if we don't have a duration yet, use the duration
+      // from the instance options, if available.
+      var offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration || _t._iO.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
+      _t.position = offset;
+      _t.resetOnPosition(_t.position);
       if (!_t.isHTML5) {
-        _s.o._setPosition(_t.sID, (_fV === 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
+        var position = _fV === 9 ? _t.position : _t.position / 1000;
         
-        // KJV We want our sounds to play on seek
-        if (_t.paused) {
-          _t.resume();
+        // KJV We want our sounds to play on seek.  A progressive download that
+        // is loaded has paused = false so resume() does nothing and the sound
+        // doesn't play.  Handle that case here.
+        if (_t.playState === 0) {
+          _t.play({ position: position });
+        } else {
+          _s.o._setPosition(_t.sID, position, (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
+          if (_t.paused) {
+            _t.resume();
+          }
         }
       } else if (_a) {
-        _s._wD('setPosition(): setting position to '+(_t._iO.position / 1000));
+        _s._wD('setPosition(): setting position to '+(_t.position / 1000));
         if (_t.playState) {
           // DOM/JS errors/exceptions to watch out for:
           // if seek is beyond (loaded?) position, "DOM exception 11"
           // "INDEX_SIZE_ERR": DOM exception 1
           try {
-            _a.currentTime = _t._iO.position / 1000;
+            _a.currentTime = _t.position / 1000;
           } catch(e) {
-            _s._wD('setPosition('+_t._iO.position+'): WARN: Caught exception: '+e.message, 2);
+            _s._wD('setPosition('+_t.position+'): WARN: Caught exception: '+e.message, 2);
           }
         } else {
           _s._wD('HTML 5 warning: cannot set position while playState == 0 (not playing)',2);
