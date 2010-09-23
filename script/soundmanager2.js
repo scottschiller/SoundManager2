@@ -2832,10 +2832,7 @@ function SoundManager(smURL, smID) {
       // Flash 8/AS2 can't "close" a stream - fake it by loading an empty MP3
       // Flash 9/AS3: Close stream, preventing further load
       if (_t.readyState !== 0) {
-        _s._wD('SMSound.unload(): "' + _t.sID + '"');
-        if (_t.readyState !== 2) { // reset if not error
-          _t.setPosition(0, true); // reset current sound positioning
-        }
+        // _s._wD('SMSound.unload(): "' + _t.sID + '"');
         if (!_t.isHTML5) {
           if (_fV === 8) {
             _s.o._unload(_t.sID, _s.nullURL);
