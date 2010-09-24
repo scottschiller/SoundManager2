@@ -3295,7 +3295,8 @@ function SoundManager(smURL, smID) {
       _t.bytesLoaded = null;
       _t.bytesTotal = null;
       _t.position = null;
-      _t.duration = null;
+      // Use the duration from the instance options
+      _t.duration = _t._iO.duration || null;
       _t.durationEstimate = null;
       _t.failures = 0;
       _t.loaded = false;
