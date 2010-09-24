@@ -545,6 +545,7 @@ function SoundManager(smURL, smID) {
     }
     _initComplete(bNoDisable); // fire "complete", despite fail
     _removeEvt(_win, 'load', _initUserOnload);
+    return true;
   };
 
   this.canPlayMIME = function(sMIME) {
@@ -2420,6 +2421,7 @@ function SoundManager(smURL, smID) {
     _waitingForEI = false;
     setTimeout(_waitForEI, 500);
     cleanup();
+    return true;
   };
 
   _initComplete = function(bNoDisable) {
