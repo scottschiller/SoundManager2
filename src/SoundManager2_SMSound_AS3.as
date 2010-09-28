@@ -58,7 +58,6 @@ package {
     public var paused: Boolean;
     public var finished: Boolean;
     public var duration: Number;
-    public var totalBytes: Number;
     public var handledDataError: Boolean = false;
     public var ignoreDataError: Boolean = false;
     public var autoPlay: Boolean = false;
@@ -102,7 +101,7 @@ package {
     public var play_time: Number;
     public var recordStats: Boolean = false;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideoArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, totalBytes: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false, autoLoad: Boolean = false) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideoArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false, autoLoad: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -122,7 +121,6 @@ package {
       this.useNetstream = useNetstreamArg;
       this.serverUrl = serverUrl;
       this.duration = duration;
-      this.totalBytes = totalBytes;
       this.recordStats = recordStats;
       this.useEvents = useEvents;
       this.useVideo = useVideoArg;
@@ -142,7 +140,7 @@ package {
         this.start_time = getTimer();
       }
 
-      writeDebug('SoundManager2_SMSound_AS3: Got duration: '+duration+', totalBytes: '+totalBytes+', autoPlay: '+autoPlay);
+      writeDebug('SoundManager2_SMSound_AS3: Got duration: '+duration+', autoPlay: '+autoPlay);
 
       if (this.useNetstream) {
 
@@ -346,7 +344,7 @@ package {
         // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
         // TODO: investigate loaded/total values
         // ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
-        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, (this.bytesTotal || this.totalBytes), (infoObject.duration || this.duration))
+        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, (infoObject.duration || this.duration))
       }
       this.duration = infoObject.duration * 1000;
       // null this out for the duration of this object's existence.
