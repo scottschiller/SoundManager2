@@ -13,11 +13,7 @@
 package {
 
   import flash.display.Sprite;
-  import flash.display.StageAlign;
-  import flash.display.StageDisplayState;
-  import flash.display.StageScaleMode;
   import flash.events.Event;
-  import flash.events.FullScreenEvent;
   import flash.events.IOErrorEvent;
   import flash.events.MouseEvent;
   import flash.events.SecurityErrorEvent;
@@ -25,7 +21,6 @@ package {
   import flash.events.NetStatusEvent;
   import flash.events.TimerEvent;
   import flash.external.ExternalInterface; // woo
-  import flash.geom.Rectangle;
   import flash.media.Sound;
   import flash.media.SoundChannel;
   import flash.media.SoundMixer;
@@ -76,7 +71,6 @@ package {
     public var debugEnabled: Boolean = true; // Flash debug output enabled by default, disabled by JS call
     public var flashDebugEnabled: Boolean = false; // Flash internal debug output (write to visible SWF in browser)
     public var loaded: Boolean = false;
-    public var isFullScreen: Boolean = false;
     public var currentObject: SoundManager2_SMSound_AS3 = null;
     public var paramList:Object = null;
     public var messages:Array = [];
@@ -91,8 +85,6 @@ package {
         Security.allowDomain(xdomain);
         version_as += ' - cross-domain enabled';
       }
-
-      this.setDefaultStageScale();
 
       this.paramList = this.root.loaderInfo.parameters;
 
@@ -156,10 +148,6 @@ package {
       timer.start();
       // delayed, see above
       // _externalInterfaceTest(true);
-      this.stage.addEventListener(MouseEvent.DOUBLE_CLICK, toggleFullScreen);
-      this.stage.doubleClickEnabled = true;
-      this.stage.addEventListener(FullScreenEvent.FULL_SCREEN, fullscreenHandler);
-
     } // SoundManager2()
 
     public function flashDebug (txt:String) : void {
@@ -200,57 +188,8 @@ package {
       }
     }
 
-    public function fullscreenHandler(e: FullScreenEvent) : void {
-      writeDebug('fullscreenHandler(): ' + e.toString());
-      if (e.fullScreen == true) {
-        this.isFullScreen = true;
-      } else {
-        // user left full-screen
-        this.isFullScreen = false;
-      }
-      ExternalInterface.call(baseJSController + "['_onfullscreenchange']", e.fullScreen == true ? 1 : 0);
-    }
-
-    public function toggleFullScreen(e: MouseEvent) : void {
-      writeDebug('SoundManager2_AS3.toggleFullScreen()');
-      if (this.currentObject && this.currentObject.useVideo) {
-        if (this.currentObject.videoWidth == 0) {
-          writeDebug('toggleFullScreen(): video width is 0 (metadata missing/not loaded yet?) Trying stage width/height');
-          this.currentObject.videoWidth = this.stage.width;
-          this.currentObject.videoHeight = this.stage.height;
-        }
-        try {
-          stage.scaleMode = StageScaleMode.NO_SCALE;
-          stage.align = StageAlign.TOP_LEFT;
-          stage.fullScreenSourceRect = new Rectangle(0, 0, this.currentObject.videoWidth, this.currentObject.videoHeight);
-          stage.displayState = StageDisplayState.FULL_SCREEN;
-        } catch(e: Error) {
-          // write debug message?
-          writeDebug('Unable to switch to full-screen. ' + e.toString());
-        }
-      } else {
-        writeDebug('toggleFullScreen(): No active video to show?');
-      }
-    }
-
-    public function setDefaultStageScale() : void {
-      stage.scaleMode = StageScaleMode.NO_SCALE;
-      stage.align = StageAlign.TOP_LEFT;
-    }
-
     // methods
     // -----------------------------------
-    public function _exitFullScreen() : void {
-      try {
-        stage.displayState = StageDisplayState.NORMAL;
-        this.setDefaultStageScale();
-        this.isFullScreen = false;
-        ExternalInterface.call(baseJSController + "._onfullscreenchange", 0);
-      } catch(e: Error) {
-        // oh well
-        writeDebug('exitFullScreen error: ' + e.toString());
-      }
-    }
 
     public function writeDebug (s:String, bTimestamp: Boolean = false) : Boolean {
       if (!debugEnabled) return false;
@@ -348,7 +287,7 @@ package {
             continue;
           }
 
-          // video stream
+          // stream
           bufferLength = oSound.ns.bufferLength;
           bL = oSound.ns.bytesLoaded;
           bT = oSound.ns.bytesTotal;
@@ -637,12 +576,6 @@ package {
       if (!s) return void;
       // writeDebug('_setPosition()');
 
-      // don't allow seek past loaded duration. (Will stop + fail.)
-      if (s.useVideo && nSecOffset > s.duration*1000) {
-        writeDebug('setPosition: Cannot seek past current duration of '+s.duration+', using this value');
-        nSecOffset = s.duration*1000;
-      }
-
       // stop current channel, start new one.
       if (s.lastValues) {
         s.lastValues.position = nSecOffset; // s.soundChannel.position;
@@ -653,7 +586,6 @@ package {
         writeDebug('setPosition: setting buffer to '+s.ns.bufferTime+' secs');
 
         nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
-        // writeDebug('setPosition: ' + nSecOffset/(!s.useVideo?1000:1));
         writeDebug('setPosition: ' + nSecOffset);
         s.ns.seek(nSecOffset);
         checkProgress(); // force UI update
@@ -703,7 +635,6 @@ package {
         ns.useWaveformData = s.useWaveformData;
         ns.useEQData = s.useEQData;
         ns.useNetstream = s.useNetstream;
-        ns.useVideo = s.useVideo;
         ns.bufferTime = s.bufferTime;
         ns.bufferTimes = s.bufferTimes;
         ns.serverUrl = s.serverUrl;
@@ -711,7 +642,7 @@ package {
         ns.recordStats = s.recordStats;
         ns.useEvents = true;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, bAutoPlay, ns.useEvents, ns.bufferTimes, ns.recordStats, bAutoLoad);
+        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, bAutoPlay, ns.useEvents, ns.bufferTimes, ns.recordStats, bAutoLoad);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -804,11 +735,6 @@ package {
           // oh well
           writeDebug('_unload(): caught exception during netConnection/netStream close');
         }
-        if (s.useVideo) {
-          writeDebug('_unload(): clearing video');
-          s.oVideo.clear();
-          // s.oVideo = null;
-        }
       }
       var ns:Object = new Object();
       ns.sID = s.sID;
@@ -818,7 +744,6 @@ package {
       ns.useWaveformData = s.useWaveformData;
       ns.useEQData = s.useEQData;
       ns.useNetstream = s.useNetstream;
-      ns.useVideo = s.useVideo;
       ns.bufferTime = s.bufferTime;
       ns.bufferTimes = s.bufferTimes;
       ns.serverUrl = s.serverUrl;
@@ -827,13 +752,13 @@ package {
       ns.recordStats = s.recordStats;
       ns.autoLoad = s.autoLoad;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.useVideo, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, ns.autoPlay, false, ns.bufferTimes, ns.recordStats, ns.autoLoad); // false: don't allow events just yet
+      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, ns.autoPlay, false, ns.bufferTimes, ns.recordStats, ns.autoLoad); // false: don't allow events just yet
       soundObjects[sID].connected = true; // fake it?
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, useVideo: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, autoPlay:Boolean, useEvents:Boolean, bufferTimes:Array, recordStats:Boolean, autoLoad:Boolean) : void {
-      var s: SoundManager2_SMSound_AS3 = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, useVideo, bufferTime, serverUrl, duration, autoPlay, useEvents, bufferTimes, recordStats, autoLoad);
+    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, autoPlay:Boolean, useEvents:Boolean, bufferTimes:Array, recordStats:Boolean, autoLoad:Boolean) : void {
+      var s: SoundManager2_SMSound_AS3 = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, bufferTime, serverUrl, duration, autoPlay, useEvents, bufferTimes, recordStats, autoLoad);
       if (!soundObjects[sID]) {
         sounds.push(sID);
       }
@@ -869,7 +794,6 @@ package {
       if (s.soundChannel) {
         s.soundChannel.stop();
       }
-      this.stage.removeEventListener(Event.RESIZE, s.resizeHandler);
       // if is a movie, remove that as well.
       if (s.useNetstream) {
         // s.nc.client = null;
@@ -878,13 +802,6 @@ package {
           // s.nc.removeEventListener(NetStatusEvent.NET_STATUS, s.doNetStatus);
         } catch(e: Error) {
           writeDebug('_destroySound(): Events already removed from netStream/netConnection?');
-        }
-        if (s.useVideo) {
-          try {
-            this.removeChild(s.oVideo);
-          } catch(e: Error) {
-            writeDebug('_destoySound(): could not remove video?');
-          }
         }
         if (s.didLoad) {
           // TODO: figure out if stream is still open first, can't close an already-closed stream.
@@ -918,9 +835,6 @@ package {
         if (!s) return void;
         if (s.useNetstream && s.ns) {
           s.ns.pause();
-          if (s.oVideo) {
-            s.oVideo.visible = false;
-          }
         } else if (s.soundChannel) {
           s.soundChannel.stop();
         }

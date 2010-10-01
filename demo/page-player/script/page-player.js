@@ -8,7 +8,7 @@
   unordered list of MP3 links becomes a playlist
 
   Flash 9 "MovieStar" edition supports MPEG4
-  audio and video as well.
+  audio as well.
 
   Requires SoundManager 2 Javascript API.
 
@@ -78,7 +78,6 @@ function PagePlayer(oConfigOverride) {
   sm.flashVersion = this.config.flashVersion;
   if (sm.flashVersion >= 9) {
     sm.useMovieStar = this.config.useMovieStar; // enable playing FLV, MP4 etc.
-    sm.movieStarOptions.useVideo = this.config.useVideo;
     sm.defaultOptions.usePeakData = this.config.usePeakData;
     sm.defaultOptions.useWaveformData = this.config.useWaveformData;
     sm.defaultOptions.useEQData = this.config.useEQData;
@@ -300,14 +299,6 @@ function PagePlayer(oConfigOverride) {
           this._data.metadata.refresh();
         }
       }
-    },
-
-    metadata: function() {
-      // video-only stuff
-      sm._wD('video metadata: '+this.width+'x'+this.height);
-      // set the SWF dimensions to match
-      sm.oMC.style.width = this.width+'px';
-      sm.oMC.style.height = this.height+'px';
     },
 
     whileplaying: function() {

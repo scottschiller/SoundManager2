@@ -14,17 +14,11 @@ package {
 
   import flash.external.*;
   import flash.events.*;
-  import flash.display.Sprite;
-  import flash.display.StageDisplayState;
-  import flash.display.StageScaleMode;
-  import flash.display.StageAlign;
-  import flash.geom.Rectangle;
   import flash.media.Sound;
   import flash.media.SoundChannel;
   import flash.media.SoundLoaderContext;
   import flash.media.SoundTransform;
   import flash.media.SoundMixer;
-  import flash.media.Video;
   import flash.net.URLRequest;
   import flash.utils.ByteArray;
   import flash.utils.getTimer;
@@ -86,22 +80,17 @@ package {
     public var ns: NetStream = null;
     public var st: SoundTransform;
     public var useNetstream: Boolean;
-    public var useVideo: Boolean = false;
     public var bufferTime: Number = 3; // previously 0.1
     public var bufferTimes: Array;     // an array of integers (for specifying multiple buffers)
     public var lastNetStatus: String = null;
     public var serverUrl: String = null;
-
-    public var oVideo: Video = null;
-    public var videoWidth: Number = 0;
-    public var videoHeight: Number = 0;
 
     public var start_time: Number;
     public var connect_time: Number;
     public var play_time: Number;
     public var recordStats: Boolean = false;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, useVideoArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false, autoLoad: Boolean = false) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false, autoLoad: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -123,7 +112,6 @@ package {
       this.duration = duration;
       this.recordStats = recordStats;
       this.useEvents = useEvents;
-      this.useVideo = useVideoArg;
       this.autoLoad = autoLoad;
       if (netStreamBufferTime) {
         this.bufferTime = netStreamBufferTime;
@@ -189,18 +177,6 @@ package {
             this.ns.receiveAudio(true);
             this.addNetstreamEvents();
 
-            if (this.useVideo) {
-              this.oVideo = new Video();
-              this.ns.receiveVideo(true);
-              this.sm.stage.addEventListener(Event.RESIZE, this.resizeHandler);
-              this.oVideo.smoothing = true; // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/Video.html#smoothing
-              this.oVideo.visible = false; // hide until metadata received
-              this.sm.addChild(this.oVideo);
-              this.oVideo.attachNetStream(this.ns);
-              writeDebug('setting video w/h to stage: ' + this.sm.stage.stageWidth + 'x' + this.sm.stage.stageHeight);
-              this.oVideo.width = this.sm.stage.stageWidth;
-              this.oVideo.height = this.sm.stage.stageHeight;
-            }
             this.connected = true;
             if (recordStats) {
               this.recordConnectTime();
@@ -296,13 +272,6 @@ package {
       }
    }
 
-    public function resizeHandler(e: Event) : void {
-      // scale video to stage dimensions
-      // probably less performant than using native flash scaling, but that doesn't quite seem to work. I'm probably missing something simple.
-      this.oVideo.width = this.sm.stage.stageWidth;
-      this.oVideo.height = this.sm.stage.stageHeight;
-    }
-
     public function writeDebug (s: String, bTimestamp: Boolean = false) : Boolean {
       return this.sm.writeDebug (s, bTimestamp); // defined in main SM object
     }
@@ -315,31 +284,6 @@ package {
 	  }
 	  ExternalInterface.call('soundManager._writeDebug','Metadata: '+data);
 	  */
-      if (this.oVideo) {
-        // set dimensions accordingly
-        if (!infoObject.width && !infoObject.height) {
-          writeDebug('No width/height specified, using stage dimensions');
-          infoObject.width = this.sm.stage.width;
-          infoObject.height = this.sm.stage.height;
-        }
-        writeDebug('video dimensions: ' + infoObject.width + 'x' + infoObject.height + ' (w/h)');
-        this.videoWidth = infoObject.width;
-        this.videoHeight = infoObject.height;
-        // implement a subset of metadata to pass over EI bridge
-        // some formats have extra stuff, eg. "aacaot", "avcprofile"
-        // http://livedocs.adobe.com/flash/9.0/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00000267.html
-        var oMeta: Object = new Object();
-        var item: Object = null;
-        for (item in infoObject) {
-          // exclude seekpoints for now, presumed not useful and overly large.
-          if (item != 'seekpoints') {
-            oMeta[item] = infoObject[item];
-          }
-        }
-        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onmetadata", oMeta);
-        writeDebug('showing video for ' + this.sID);
-        this.oVideo.visible = true; // show ze video!
-      }
       if (!this.loaded) {
         // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
         // TODO: investigate loaded/total values
@@ -372,7 +316,6 @@ package {
     }
 
     public function start(nMsecOffset: int, nLoops: int) : void {
-      this.sm.currentObject = this; // reference for video, full-screen
       this.useEvents = true;
       if (this.useNetstream) {
 
@@ -555,8 +498,6 @@ package {
           // reset the sound? Move back to position 0?
           this.sm.checkProgress();
           ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfinish");
-          // and exit full-screen mode, too?
-          this.sm.stage.displayState = StageDisplayState.NORMAL;
         }
 
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {

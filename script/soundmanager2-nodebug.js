@@ -28,12 +28,11 @@ function SoundManager(smURL, smID) {
   this.nullURL = 'about:blank';      // path to "null" (empty) MP3 file, used to unload sounds (Flash 8 only)
   this.allowPolling = true;          // allow flash to poll for status update (required for whileplaying() events, peak, sound spectrum functions to work.)
   this.useFastPolling = false;       // uses lower flash timer interval for higher callback frequency, best combined with useHighPerformance
-  this.useMovieStar = true;          // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio+video formats (AAC, M4V, FLV, MOV etc.)
-  this.bgColor = '#ffffff';          // movie (.swf) background color, '#000000' useful if showing on-screen/full-screen video etc.
+  this.useMovieStar = true;          // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio formats (AAC, M4V, FLV, MOV etc.)
+  this.bgColor = '#ffffff';          // movie (.swf) background color, eg. '#000000'
   this.useHighPerformance = false;   // position:fixed flash movie can help increase js/flash speed, minimize lag
   this.flashLoadTimeout = 1000;      // msec to wait for flash movie to load before failing (0 = infinity)
   this.wmode = null;                 // mode to render the flash movie in - null, transparent, opaque (last two allow layering of HTML on top)
-  this.allowFullScreen = true;       // enter full-screen (via double-click on movie) for flash 9+ video
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = false;        // Beta feature: Use HTML 5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
@@ -92,7 +91,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.flash9Options = {      // flash 9-only options, merged into defaultOptions if flash 9 is being used
-    'isMovieStar': null,      // "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
+    'isMovieStar': null,      // "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
     'usePeakData': false,     // enable left/right channel peak (level) data
     'useWaveformData': false, // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
     'useEQData': false,       // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
@@ -101,9 +100,7 @@ function SoundManager(smURL, smID) {
     'onstats': null           // callback for when connection & play times have been measured
   };
 
-  this.movieStarOptions = { // flash 9.0r115+ MPEG4 audio/video options, merged into defaultOptions if flash 9+movieStar mode is enabled
-    'onmetadata': null,     // callback for when video width/height etc. are received
-    'useVideo': false,      // if loading movieStar content, whether to show video
+  this.movieStarOptions = { // flash 9.0r115+ MPEG4 audio options, merged into defaultOptions if flash 9+movieStar mode is enabled
     'bufferTime': 3,        // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try increasing.)
     'serverURL': null,      // rtmp: FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
     'onconnect': null,      // rtmp: callback for connection to flash media server
@@ -134,7 +131,6 @@ function SoundManager(smURL, smID) {
   this.sounds = {};
   this.soundIDs = [];
   this.muted = false;
-  this.isFullScreen = false; // set later by flash 9+
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
   this.specialWmodeCase = false;
@@ -161,6 +157,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.sandbox = {
+    /*
     'type': null,
     'types': {
       'remote': 'remote (domain-based) rules',
@@ -171,10 +168,11 @@ function SoundManager(smURL, smID) {
     'description': null,
     'noRemote': null,
     'noLocal': null
+    */
   };
 
   this.hasHTML5 = null; // switch for handling logic
-  this.html5 = { // stores canPlayType() results, etc. read-only.
+  this.html5 = { // stores canPlayType() results, etc. treat as read-only.
     // mp3: boolean
     // mp4: boolean
     usingFlash: null // set if/when flash fallback is needed
@@ -302,7 +300,7 @@ function SoundManager(smURL, smID) {
       if (_fV === 8) {
         _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1);
       } else {
-        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.useVideo:false), (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false, _tO.autoLoad ? true : false);
+        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false, _tO.autoLoad ? true : false);
         if (!_tO.serverURL) {
           // We are connected immediately
           oSound.connected = true;
@@ -329,27 +327,6 @@ function SoundManager(smURL, smID) {
     return oSound;
   };
 
-  this.createVideo = function(oOptions) {
-    var fN = 'soundManager.createVideo(): ';
-    if (arguments.length === 2) {
-      oOptions = {
-        'id': arguments[0],
-        'url': arguments[1]
-      };
-    }
-    if (_fV >= 9) {
-      oOptions.isMovieStar = true;
-      oOptions.useVideo = true;
-    } else {
-      //_s._wD(fN + _str('f9Vid'), 2);
-      return false;
-    }
-    if (!_s.useMovieStar) {
-      //_s._wD(fN + _str('noMS'), 2);
-    }
-    return _s.createSound(oOptions);
-  };
-
   this.destroySound = function(sID, _bFromSound) {
     // explicitly destroy a sound before normal page unload, etc.
     if (!_idCheck(sID)) {
@@ -373,8 +350,6 @@ function SoundManager(smURL, smID) {
     delete _s.sounds[sID];
     return true;
   };
-
-  this.destroyVideo = this.destroySound;
 
   this.load = function(sID, oOptions) {
     if (!_idCheck(sID)) {
@@ -869,7 +844,6 @@ function SoundManager(smURL, smID) {
     waitForever: _sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
     needFunction: _sm + '.onready(): Function object expected',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
-    fl9Vid: 'flash 9 required for video. Exiting.',
     noMS: 'MovieStar mode not enabled. Exiting.',
     currentObj: '--- ' + _sm + '._debug(): Current sound objects ---',
     waitEI: _sm + '::initMovie(): Waiting for ExternalInterface call from Flash..',
@@ -1208,11 +1182,6 @@ function SoundManager(smURL, smID) {
     _s.url = _normalizeMovieURL(this._overHTTP?remoteURL:localURL);
     smURL = _s.url;
 
-    if (_s.useHighPerformance && _s.useMovieStar && _s.defaultOptions.useVideo === true) {
-      specialCase = 'soundManager note: disabling highPerformance, not applicable with movieStar mode+useVideo';
-      _s.useHighPerformance = false;
-    }
-
     _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
 
     if (_s.wmode !== null && !_isIE && !_s.useHighPerformance && navigator.platform.match(/win32/i)) {
@@ -1221,10 +1190,6 @@ function SoundManager(smURL, smID) {
       // does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
       //_wDS('spcWmode');
       _s.wmode = null;
-    }
-
-    if (_fV === 8) {
-      _s.allowFullScreen = false;
     }
 
     oEmbed = {
@@ -1238,8 +1203,7 @@ function SoundManager(smURL, smID) {
       bgcolor: _s.bgColor,
       pluginspage: 'http://www.macromedia.com/go/getflashplayer',
       type: 'application/x-shockwave-flash',
-      wmode: _s.wmode,
-      allowFullScreen: (_s.allowFullScreen?'true':'false')
+      wmode: _s.wmode
     };
 
     if (_s.debugFlash) {
@@ -1253,7 +1217,7 @@ function SoundManager(smURL, smID) {
     if (_isIE) {
       // IE is "special".
       oMovie = document.createElement('div');
-      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" /><param name="allowFullScreen" value="' + oEmbed.allowFullScreen + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '<!-- --></object>';
+      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '<!-- --></object>';
     } else {
       oMovie = document.createElement('embed');
       for (tmp in oEmbed) {
@@ -1823,6 +1787,7 @@ function SoundManager(smURL, smID) {
   // "private" methods called by Flash
 
   this._setSandboxType = function(sandboxType) {
+    /*
     var sb = _s.sandbox;
     sb.type = sandboxType;
     sb.description = sb.types[(typeof sb.types[sandboxType] !== 'undefined'?sandboxType:'unknown')];
@@ -1838,6 +1803,7 @@ function SoundManager(smURL, smID) {
       sb.noRemote = false;
       sb.noLocal = false;
     }
+    */
   };
 
   this._externalInterfaceOK = function(flashDate) {
@@ -1857,20 +1823,6 @@ function SoundManager(smURL, smID) {
       setTimeout(_init, 100);
     } else {
       _init();
-    }
-  };
-
-  this._onfullscreenchange = function(bFullScreen) {
-    //_s._wD('onfullscreenchange(): ' + bFullScreen);
-    _s.isFullScreen = (bFullScreen === 1);
-    if (!_s.isFullScreen) {
-      // attempt to restore window focus after leaving full-screen
-      try {
-        window.focus();
-        //_s._wD('window.focus()');
-      } catch(e) {
-        // oh well
-      }
     }
   };
 
@@ -2746,27 +2698,6 @@ function SoundManager(smURL, smID) {
           }
         }
       }
-    };
-
-    this._onmetadata = function(oMetaData) {
-      // movieStar mode only
-      var fN = 'SMSound.onmetadata()';
-      //_s._wD(fN);
-      // contains a subset of metadata. Note files may have custom data.
-      // http://livedocs.adobe.com/flash/9.0/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00000267.html
-      if (!oMetaData.width && !oMetaData.height) {
-        //_wDS('noWH');
-        oMetaData.width = 320;
-        oMetaData.height = 240;
-      }
-      _t.metadata = oMetaData; // potentially-large object from flash
-      _t.width = oMetaData.width;
-      _t.height = oMetaData.height;
-      if (_t._iO.onmetadata) {
-        //_s._wD(fN + ': "' + _t.sID + '"');
-        _t._iO.onmetadata.apply(_t);
-      }
-      //_s._wD(fN + ' complete');
     };
 
     this._onbufferchange = function(nIsBuffering) {

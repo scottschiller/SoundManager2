@@ -136,7 +136,7 @@
 
 			  <h4 id="basic-inclusion">Including SoundManager</h4>
 
-			  <p>A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds. In the best case, SM2 can shrink down to 9 KB over the wire - a mere 10% of the original code size!</p>
+			  <p>SM2 can be as small as 10 KB over the wire, depending on what version you use. A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds.</p>
 			
 			  <table id="sm2-filesizes" cellpadding="0" cellspacing="0">
 
@@ -150,7 +150,7 @@
 			   <tr>
 				 <td>
 				  <p>Original, formatted debug-enabled version with comments. Passes <a href="http://jslint.com" title="jslint, the JavaScript code quality tool.">jslint</a>.</p>
-				  <pre>&lt;script type="text/javascript" src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
+				  <pre>&lt;script src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Development, testing, debugging</td>
 				 <td class="nw">93 KB</td>
@@ -160,7 +160,7 @@
 			   <tr>
 				 <td>
 				  <p>Compressed (Google Closure-munged, no comments or whitespace), debug-enabled version</p>
-				  <pre>&lt;script type="text/javascript" src="<span>soundmanager2-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
+				  <pre>&lt;script src="<span>soundmanager2-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Production, with an option for debugging (eg. via #debug=1)</td>
 				 <td class="nw">42 KB</td>
@@ -170,7 +170,7 @@
 			   <tr>
 				 <td>
 				  <p>Build-script optimized, compressed, no-debug version</p>
-				  <pre>&lt;script type="text/javascript" src="<span>soundmanager2-nodebug-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
+				  <pre>&lt;script src="<span>soundmanager2-nodebug-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Performance + bandwidth-optimized, no debug option</td>
 				 <td class="nw">30 KB</td>

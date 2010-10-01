@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>SoundManager 2: Documentation</title>
-<meta name="description" content="API documentation for SoundManager 2, a Javascript MP3 audio and MPEG-4 video API. BSD licensed." />
+<meta name="description" content="API documentation for SoundManager 2, a JavaScript-based MP3 and MP4 audio API. BSD licensed." />
 <meta name="keywords" content="javascript sound, javascript audio, documentation, api documentation, soundmanager 2" />
 <meta name="robots" content="all" />
 <meta name="author" content="Scott Schiller" />
@@ -129,7 +129,7 @@
 			
 		  <h3>SoundManager Properties</h3>
 			
-		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-nullurl f-usemoviestar f-allowfullscreen f-allowscriptaccess">
+		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-nullurl f-usemoviestar f-allowscriptaccess">
 
 		  <p class="in">SoundManager has properties which configure debug mode, flash movie path and other behaviours. At minimum, the <code>soundManager.url</code> property must be assigned a path used to look for the necessary flash movie.</p>
 
@@ -142,12 +142,11 @@ flashVersion = 8;        <span>// version of flash to require, either 8 or 9. So
 nullURL = 'about:blank'; <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span>
 url = '/path/to/swfs/';  <span>// path (directory) where SM2 .SWF files will be found.</span>
 useConsole = true;       <span>// use firebug/safari console.log()-type debug console if available</span>
-useMovieStar = true;     <span>// enable <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+</a> MPEG4 audio + <em>experimental</em> video support</span>
+useMovieStar = true;     <span>// enable <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+</a> MPEG4 audio support</span>
 useFastPolling = false;  <span>// fast timer=higher callback frequency, combine w/useHighPerformance</span>
 useHighPerformance = false;<span>// position:fixed flash movie for faster JS/flash callbacks</span>
 waitForWindowLoad = false; <span>// always delay soundManager.onload() until after window.onload()</span>
 wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HTML on top of flash)</span>
-allowFullScreen = true;    <span>// enter full-screen (via double-click on movie) for flash 9+ video</span>
 allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed prop.), 'always' or 'sameDomain'</span>
 useFlashBlock = true;      <span>// better handling of SWF if load fails, let user unblock. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span>
 useHTML5Audio = false;     <span>// <a href="#soundmanager-usehtml5audio">beta feature</a>: Use HTML5 Audio() where supported.</span>
@@ -210,7 +209,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		    <p>New Flash 9-only features:</p>
 
 		    <ul>
-		     <li class="in">MPEG-4 (HE-AAC/H.264) video and audio support</li>
+		     <li class="in">MPEG-4 (HE-AAC/H.264) audio support</li>
 		     <li class="in">True "multi-shot" sound behaviour. <code>play()</code> can be called multiple times, giving a layered, "chorus" effect. Sound will also fire <code>onfinish()</code> multiple times. (Previous behaviour did not layer sounds, but would re-play a single instance.)</li>
 		     <li class="in"><code>waveformData</code> array: 256 waveform data values available while playing sound</li>
 		     <li class="in"><code>eqData</code> array: 256 EQ spectrum data values available while playing sound</li>
@@ -238,7 +237,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			<p>Perhaps intuitively, Flash is given higher priority when positioned within the viewable area of the browser, at least 6px in height (oddly), fully-opaque, visible and displayed on the screen. By default, <code class="in">soundManager.useHighPerformance</code> is enabled and should noticeably reduce JS/flash lag and increase the frequency of callbacks such as <code class="in">whileplaying()</code> in some circumstances.</p>
 			<p><code class="in">soundManager.useHighPerformance = true;</code></p>
 			<p>This has made a noticeable impact in responsiveness on Mac OS X, and Safari on Windows; animation lag is practically non-existent (see <a href="../demo/animation-2b/" title="SoundManager JS + DOM + sound demo 2b" style="display:inline" onclick="checkDomain(this)">demo</a>). Because setting wmode=transparent and fixed position has been reported to cause some issues, the feature is disabled by default.</p>
-			<p>To be least-obtrusive, SM2 attempts to set position:fixed, and uses bottom/left:0px to stay within view (though using wmode=transparent where possible, to be hidden from view.) It occupies an 8x8px square. If you wish to position the movie yourself or show it inline, perhaps for playing video, have a DIV element with the ID of <code class="in">sm2-container</code> present in the DOM for SM2 to reference and it will write the movie there without positioning.</p>
+			<p>To be least-obtrusive, SM2 attempts to set position:fixed, and uses bottom/left:0px to stay within view (though using wmode=transparent where possible, to be hidden from view.) It occupies an 8x8px square. If you wish to position the movie yourself or show it inline, have a DIV element with the ID of <code class="in">sm2-container</code> present in the DOM for SM2 to reference and it will write the movie there without positioning.</p>
 		  </div>
 		
 		  <div class="f-block f-useflashblock">
@@ -348,12 +347,6 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			<p>It appears that non-IE browsers on Windows will not load SWF content "below the fold" (out of scrollable view) when wmode is set to anything other than null (window). This will break SM2 as it expects Flash to load within a reasonably short amount of time - so SM2 by default will reset wmode for this case. If you wish to force retention of your <code>wmode</code>, set <code>soundManager.flashTimeout = 0</code> which will ensure that if the content is below the fold, SM2 will not time out waiting for it to load.</p>
 			<p>Additionally, <code>soundManager.specialWmodeCase</code> will be set to <code>true</code> if wmode has been reset due to this special condition.</p>
 		  </div>
-		
-		   <div class="f-block f-allowfullscreen f-isfullscreen">
-		    <h4 id="soundmanager-allowfullscreen">soundManager.allowFullScreen</h4>
-		    <p class="in">With <code>allowFullScreen</code> enabled, Flash 9+ (MovieStar) video can be displayed at full-screen size. Currently the movie must be double-clicked to trigger full-screen mode. When full-screen is entered and left, <code>soundManager.isFullScreen</code> is updated to reflect the state.</p>
-		   </div>
-
 
 	</div>
 	
@@ -449,41 +442,17 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 				  </dl>
 
-				   <dl id="soundmanager-createsound-overloaded" class="f-block f-createsound">
-				    <dt><span>object:SMSound </span>createSound(<span>id:string,url:string</span>) - overloaded method</dt>
-				    <dd title="id:string,url:string">Creates a sound with the specified ID and URL (simple two-parameter method.)</dd>
-				    <dd>Example: <code>soundManager.createSound('<span>mySound</span>','<span>/audio/mysoundfile.mp3</span>');</code></dd>
-				   </dl>
-
-				  <dl id="soundmanager-createvideo" class="f-block f-createvideo">
-				   <dt class="flash9" title="Requires Flash 9.0r115+"><span>object:SMSound </span>createVideo(<span>object:options</span>)</dt>
-				   <dd title="object:options">Creates a video with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance which supports video.</dd>
-				   <dd>Functionally identical to <code class="in">createSound()</code>, only with video parameters enabled. Flash 9.0r115+ required, SM2 "movieStar" mode and useVideo parameters must be enabled.</dd>
-				   <dd>Example:
-<pre class="block"><code>soundManager.createVideo({<span>
- id: 'myVideo', <span>// required</span>
- url: '/video/mymovie.mp4', <span>// required</span>
- <span>// optional sound parameters here, see <a href="#sound-properties" title="SoundManager 2 API Info: Sound Properties Object" onclick="resetFilter()">Sound Properties</a> for full list</span>
- volume: 50,
- autoPlay: true,
- onmetadata: handleMetaData, <span>// special video-only event handler (width/height info, etc.)</span>
- whileloading: videoIsLoading <span>// remember to omit comma on the last item</span>
-</span>});</code></pre>
-	   </dd>
-
-	  </dl>
+	   <dl id="soundmanager-createsound-overloaded" class="f-block f-createsound">
+	    <dt><span>object:SMSound </span>createSound(<span>id:string,url:string</span>) - overloaded method</dt>
+	    <dd title="id:string,url:string">Creates a sound with the specified ID and URL (simple two-parameter method.)</dd>
+	    <dd>Example: <code>soundManager.createSound('<span>mySound</span>','<span>/audio/mysoundfile.mp3</span>');</code></dd>
+	   </dl>
 
 	   <dl id="soundmanager-destroysound" class="f-block f-destroysound">
 	   <dt>destroySound(<span>id:string</span>)</dt>
 	   <dd title="id:string">Stops, unloads and destroys a sound specified by ID.</dd>
 	   <dd>Example: <code>soundManager.destroySound('<span>mySound</span>');</code></dd>
 	   <dd>SMSound equivalent example: <code>mySound.destruct();</code></dd>
-	   </dl>
-
-	   <dl id="soundmanager-destroyvideo" class="f-block f-destroyvideo">
-	   <dt class="flash9" title="Requires Flash 9.0r115+">destroyVideo(<span>id:string</span>)</dt>
-	   <dd title="id:string">Stops, unloads and destroys a video specified by ID.</dd>
-	   <dd>Example: <code>soundManager.destroyVideo('<span>myVideo</span>');</code></dd>
 	   </dl>
 
 	   <dl id="soundmanager-mute" class="f-block f-mute">
@@ -1201,7 +1170,7 @@ for (prop in this.id3) {
 				
 				<div class="c2">
 					
-					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-pan s-volume s-ismoviestar s-onmetadata s-usevideo s-flash9options s-moviestaroptions s-buffertime s-serverurl s-onconnect">
+					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-pan s-volume s-ismoviestar s-flash9options s-moviestaroptions s-buffertime s-serverurl s-onconnect">
 
 					  <h3 id="sound-properties">SoundManager Global Sound Object Defaults</h3>
 
@@ -1235,7 +1204,7 @@ for (prop in this.id3) {
   whileplaying: null,   <span>// callback during play (position update)</span>
 
   <span>// *** merged soundManager.flash9Options, as applicable ***</span>
-  isMovieStar: null,    <span>// "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
+  isMovieStar: null,    <span>// "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
   usePeakData: false,   <span>// enable left/right channel peak (level) data</span>
   useWaveformData:false,<span>// enable sound spectrum (raw waveform data) - Note: May be CPU-intensive, UI redraw/layout etc.</span>
   useEQData: false,     <span>// enable sound EQ (frequency spectrum data) - Note: CPU potential also.</span>
@@ -1243,8 +1212,6 @@ for (prop in this.id3) {
   ondataerror: null     <span>// callback for waveform/eq data access error (flash playing audio in other tabs/domains)</span>
 
   <span>// *** merged soundManager.movieStarOptions, as applicable ***</span>
-  onmetadata: null,     <span>// callback for when video width/height etc. are received</span>
-  useVideo: false,      <span>// if loading movieStar content, whether to show video</span>
   bufferTime: null,     <span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
   serverURL: null,      <span>// rtmp: flash media server to connect to, required for RTMP</span>
   onconnect: null       <span>// rtmp: callback for connection to flash media server</span>
@@ -1266,7 +1233,7 @@ for (prop in this.id3) {
 
 					  </div>
 					
-					  <div class="f-block f-defaultoptions f-flash9options f-moviestaroptions s-ismoviestar s-usepeakdata s-usewaveformdata s-useeqdata s-usevideo">
+					  <div class="f-block f-defaultoptions f-flash9options f-moviestaroptions s-ismoviestar s-usepeakdata s-usewaveformdata s-useeqdata">
 
 					  <h3 id="sound-properties-flash9" title="Flash 9-only" class="flash9">Sound Properties Object: Version-specific Options (Merging)</h3>
 
@@ -1275,7 +1242,7 @@ for (prop in this.id3) {
 					  <p><code class="in">soundManager.flash9Options</code> and <code class="in">soundManager.movieStarOptions</code> are both defined as separate objects, and if supported according to <code class="in">flashVersion</code> and <code class="in">defaultOptions</code> parameters, are merged "without nesting" into <code class="in">soundManager.defaultOptions</code>.</p>
 
 <pre class="small block"><code>soundManager.flash9Options = {<span>
-  isMovieStar: null,      <span>// "MovieStar" MPEG4 audio/video mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
+  isMovieStar: null,      <span>// "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
   usePeakData: false,     <span>// enable left/right channel peak (level) data</span>
   useWaveformData: false, <span>// enable sound spectrum (raw waveform data) - WARNING: May set CPUs on fire.</span>
   useEQData: false,       <span>// enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.</span>
@@ -1283,8 +1250,6 @@ for (prop in this.id3) {
   ondataerror: null	  <span>// callback for waveform/eq data access error (flash playing audio in other tabs/domains)</span>
 </span>}
 soundManager.movieStarOptions = {<span>
-  onmetadata: null, <span>// callback for when video width/height etc. are received</span>
-  useVideo: false,  <span>// if loading movieStar content, whether to show video</span>
   bufferTime: null  <span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
 </span>}
 <span><span>// if applicable, these options are merged into soundManager.defaultOptions at SM2 init.
@@ -1508,7 +1473,6 @@ soundManager.movieStarOptions = {<span>
 	<ul>
 
 	 <li>allowPolling</li>
-	 <li class="flash9" title="Flash 9.0.r115+ only">allowFullScreen</li>
 	 <li>allowScriptAccess</li>
      <li><a href="#soundmanager-alturl">altURL</a></li>
 	 <li>consoleOnly</li>
@@ -1519,7 +1483,6 @@ soundManager.movieStarOptions = {<span>
      <li><a href="#soundmanager-features">features</a></li>
      <li><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
      <li><a href="#soundmanager-flashversion">flashVersion</a></li>
-     <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-allowfullscreen">isFullScreen</a></li>
      <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
 	 <li>nullURL</li>
 	 <li><a href="#soundmanager-url">url</a></li>
@@ -1540,9 +1503,7 @@ soundManager.movieStarOptions = {<span>
 	 <li class="recent"><a href="#soundmanager-canplaymime" title="Recently-added feature">canPlayMIME()</a></li>
      <li><a href="#soundmanager-canplayurl">canPlayURL()</a></li>
      <li><a href="#soundmanager-createsound">createSound()</a></li>
-	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-createvideo">createVideo()</a></li>
      <li><a href="#soundmanager-destroysound">destroySound()</a></li>
-	 <li class="flash9" title="Flash 9.0.r115+ only"><a href="#soundmanager-destroyvideo">destroyVideo()</a></li>
 	 <li class="flash9" title="Flash 9.0+ only"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
      <li><a href="#soundmanager-getsoundbyid">getSoundById()</a></li>
      <li><a href="#soundmanager-load">load()</a></li>
@@ -1601,7 +1562,6 @@ soundManager.movieStarOptions = {<span>
      <li>stream</li>
      <li title="New feature" class="new"><a href="#smsound-type">type</a></li>
      <li><a href="#smsound-url">url</a></li>
-     <li title="Flash 9.0r115+ only" class="flash9">useVideo</li>
      <li>volume</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-waveformdata">waveformData</a></li>
     </ul>
