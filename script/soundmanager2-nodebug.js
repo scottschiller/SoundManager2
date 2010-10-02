@@ -1470,8 +1470,8 @@ function SoundManager(smURL, smID) {
         }
       }
       if (_t.playState === 1) {
-        // special case/hack: ensure buffering is false if loading from cache
-        if (!_t.isHTML5 && _t.isBuffering) {
+        // special case/hack: ensure buffering is false if loading from cache (and not yet started)
+        if (!_t.isHTML5 && _s.flashVersion === 8 && !_t.position && _t.isBuffering) {
           _t._onbufferchange(0);
         }
         if (_t._iO.whileplaying) {
