@@ -59,11 +59,13 @@ window.onload = function() {
       // SM2 script has loaded
       soundManager.url = '../../swf/';
       soundManager.onready(function() {
-        soundManager.createSound({
-          id:'foo',
-          url:'../_mp3/mouseover.mp3'
-        }).play();
-        msg(soundManager.supported()?'started OK':'Error/unsupported');
+        if (soundManager.supported()) {
+          soundManager.createSound({
+            id:'foo',
+            url:'../_mp3/mouseover.mp3'
+          }).play();
+          msg(soundManager.supported()?'started OK':'Error/unsupported');
+        }
       });
       soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
     });
@@ -91,11 +93,13 @@ window.onload = function() {
       <span>// SM2 script has loaded</span>
       soundManager.url = '../../swf/';
       soundManager.onready(function() {
-        soundManager.createSound({
-          id:'foo',
-          url:'../_mp3/mouseover.mp3'
-        }).play();
-        <span>// soundManager.supported()?'started OK':'Error/unsupported';</span>
+        if (soundManager.supported()) {
+          soundManager.createSound({
+            id:'foo',
+            url:'../_mp3/mouseover.mp3'
+          }).play();
+          <span>// soundManager.supported()?'started OK':'Error/unsupported';</span>
+        }
       });
       soundManager.beginDelayedInit(); <span>// ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable</span>
     });
