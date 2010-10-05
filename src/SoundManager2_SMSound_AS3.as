@@ -324,12 +324,10 @@ package {
         this.cc.onMetaData = this.metaDataHandler;
 
         // Don't seek if we don't have to because it destroys the buffer
-        if (this.lastValues.position != null && this.lastValues.position != nMsecOffset) {
+        var set_position:Boolean = this.lastValues.position != null && this.lastValues.position != nMsecOffset;
+        if (set_position) {
           // Minimize the buffer so playback starts ASAP
           this.setBuffer(this.getStartBuffer());
-          // writeDebug('setting buffer to '+this.bufferTime+' secs');
-          this.ns.seek(nMsecOffset);
-          this.lastValues.position = nMsecOffset; // https://gist.github.com/1de8a3113cf33d0cff67
         }
 
         if (this.paused) {
@@ -349,6 +347,16 @@ package {
           writeDebug('playing again (not paused, didLoad = true)');
           this.ns.play(this.sURL);
         }
+
+        // KJV seek after calling play otherwise some streams get a NetStream.Seek.Failed
+        // Should only apply to the !didLoad case, but do it for all for simplicity.
+        // nMsecOffset is in milliseconds for streams but in seconds for progressive
+        // download.
+        if (set_position) {
+          this.ns.seek(this.serverUrl ? nMsecOffset / 1000 : nMsecOffset);
+          this.lastValues.position = nMsecOffset; // https://gist.github.com/1de8a3113cf33d0cff67
+        }
+
         // this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
 
@@ -584,7 +592,5 @@ package {
     public function dummyNetStatusHandler(e: NetStatusEvent) : void {
       // Don't do anything
     }
-
   }
-
 }

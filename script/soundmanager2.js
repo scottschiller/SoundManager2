@@ -825,9 +825,11 @@ function SoundManager(smURL, smID) {
       // Flash 9/AS3: Close stream, preventing further load
       if (_t.readyState !== 0) {
         _s._wD('SMSound.unload(): "' + _t.sID + '"');
+/*
         if (_t.readyState !== 2) { // reset if not error
           _t.setPosition(0, true); // reset current sound positioning
         }
+*/
         if (!_t.isHTML5) {
           if (_fV === 8) {
             _s.o._unload(_t.sID, _s.nullURL);
@@ -1025,30 +1027,33 @@ function SoundManager(smURL, smID) {
       if (typeof nMsecOffset === 'undefined') {
         nMsecOffset = 0;
       }
-      var offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
-      _t._iO.position = offset;
-      _t.resetOnPosition(_t._iO.position);
+      var position, offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration || _t._iO.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
+      _t.position = offset;
+      _t.resetOnPosition(_t.position);
       if (!_t.isHTML5) {
-        _s.o._setPosition(_t.sID, (_fV === 9?_t._iO.position:_t._iO.position / 1000), (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
+        position = (_fV === 9 ? _t.position : _t.position / 1000);
+        if (_t.playState === 0) {
+          _t.play({position: position});
+        } else {
+          _s.o._setPosition(_t.sID, position, (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
+          _t._onTimer(true); // force update
+          if (_t._iO.useMovieStar) {
+            _t.resume();
+          }
+        }
       } else if (_a) {
-        _s._wD('setPosition(): setting position to '+(_t._iO.position / 1000));
+        _s._wD('setPosition(): setting position to '+(_t.position / 1000));
         if (_t.playState) {
           // DOM/JS errors/exceptions to watch out for:
           // if seek is beyond (loaded?) position, "DOM exception 11"
           // "INDEX_SIZE_ERR": DOM exception 1
           try {
-            _a.currentTime = _t._iO.position / 1000;
+            _a.currentTime = _t.position / 1000;
           } catch(e) {
-            _s._wD('setPosition('+_t._iO.position+'): WARN: Caught exception: '+e.message, 2);
+            _s._wD('setPosition('+_t.position+'): WARN: Caught exception: '+e.message, 2);
           }
         } else {
           _s._wD('HTML 5 warning: cannot set position while playState == 0 (not playing)',2);
-        }
-        if (_t.paused) { // if paused, refresh UI right away
-          _t._onTimer(true); // force update
-          if (_t._iO.useMovieStar) {
-            _t.resume();
-          }
         }
       }
       return _t;
@@ -1261,7 +1266,7 @@ function SoundManager(smURL, smID) {
       _t.bytesLoaded = null;
       _t.bytesTotal = null;
       _t.position = null;
-      _t.duration = null;
+      _t.duration = (_t._iO && _t._iO.duration?_t._iO.duration:null);
       _t.durationEstimate = null;
       _t.failures = 0;
       _t.loaded = false;
