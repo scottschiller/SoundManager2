@@ -183,10 +183,9 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _addEvt, _removeEvt, _slice = Array.prototype.slice,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _addEvt, _removeEvt, _slice = Array.prototype.slice,
   _is_pre = _ua.match(/pre\//i),
   _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
-  _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
   _isIE = (_ua.match(/MSIE/i)),
   _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
@@ -245,8 +244,9 @@ function SoundManager(smURL, smID) {
   this.createSound = function(oOptions) {
     var _cs = 'soundManager.createSound(): ',
     thisOptions = null, oSound = null, _tO = null;
-    if (!_didInit) {
-      throw _complain(_cs + _str('notReady'), arguments.callee.caller);
+    if (!_didInit || !_s.supported()) {
+      _complain(_cs + _str(!_didInit?'notReady':'notOK'));
+      return false;
     }
     if (arguments.length === 2) {
       // function overloading in JS! :) ..assume simple createSound(id,url) use case
@@ -368,8 +368,9 @@ function SoundManager(smURL, smID) {
 
   this.play = function(sID, oOptions) {
     var fN = 'soundManager.play(): ';
-    if (!_didInit) {
-      throw _complain(fN + _str('notReady'), arguments.callee.caller);
+    if (!_didInit || !_s.supported()) {
+      _complain(fN + _str(!_didInit?'notReady':'notOK'));
+      return false;
     }
     if (!_idCheck(sID)) {
       if (!(oOptions instanceof Object)) {
@@ -590,6 +591,8 @@ function SoundManager(smURL, smID) {
     return result;
   };
 
+  _idCheck = this.getSoundById;
+
   this.onready = function(oMethod, oScope) {
     if (oMethod && oMethod instanceof Function) {
       if (_didInit) {
@@ -720,8 +723,8 @@ function SoundManager(smURL, smID) {
     // _s._wD('soundManager.beginDelayedInit()');
     _windowLoaded = true;
    _dcLoaded();
-    setTimeout(_waitForEI, 500);
     setTimeout(_beginInit, 20);
+    setTimeout(_waitForEI, 500);
   };
 
   // --- SMSound (sound object) instance ---
@@ -1117,9 +1120,7 @@ function SoundManager(smURL, smID) {
       }
       if (!_t.isHTML5) {
         _s.o._setPan(_t.sID, nPan);
-      } else {
-        // no HTML 5 pan?
-      }
+      } // else { no HTML5 pan? }
       _t._iO.pan = nPan;
       if (!bInstanceOnly) {
         _t.pan = nPan;
@@ -1619,6 +1620,69 @@ function SoundManager(smURL, smID) {
 
   // --- private SM2 internals ---
 
+  _getDocument = function() {
+    return (_doc.body?_doc.body:(_doc._docElement?_doc.documentElement:_doc.getElementsByTagName('div')[0]));
+  };
+
+  _id = function(sID) {
+    return _doc.getElementById(sID);
+  };
+
+  _mixin = function(oMain, oAdd) {
+    // non-destructive merge
+    var o1 = {}, i, o2, o;
+    for (i in oMain) { // clone c1
+      if (oMain.hasOwnProperty(i)) {
+        o1[i] = oMain[i];
+      }
+    }
+    o2 = (typeof oAdd === 'undefined'?_s.defaultOptions:oAdd);
+    for (o in o2) {
+      if (o2.hasOwnProperty(o) && typeof o1[o] === 'undefined') {
+        o1[o] = o2[o];
+      }
+    }
+    return o1;
+  };
+
+  (function() {
+    var old = (_win.attachEvent),
+    evt = {
+      add: (old?'attachEvent':'addEventListener'),
+      remove: (old?'detachEvent':'removeEventListener')
+    };
+
+    function getArgs(oArgs) {
+      var args = _slice.call(oArgs), len = args.length;
+      if (old) {
+        args[1] = 'on' + args[1]; // prefix
+        if (len > 3) {
+          args.pop(); // no capture
+        }
+      } else if (len === 3) {
+        args.push(false);
+      }
+      return args;
+    }
+
+    function apply(args, sType) {
+      var oFunc = args.shift()[evt[sType]];
+      if (old) {
+        oFunc(args[0], args[1]);
+      } else {
+        oFunc.apply(this, args);
+      }
+    }
+
+    _addEvt = function() {
+      apply(getArgs(arguments), 'add');
+    };
+
+    _removeEvt = function() {
+      apply(getArgs(arguments), 'remove');
+    };
+  }());
+
   _html5OK = function(iO) {
     return ((iO.type?_html5CanPlay({type:iO.type}):false)||_html5CanPlay(iO.url));
   };
@@ -1712,7 +1776,8 @@ function SoundManager(smURL, smID) {
 
   _strings = {
     // <d>
-    notReady: 'Not loaded yet - wait for soundManager.onload() before calling sound-related methods',
+    notReady: 'Not loaded yet - wait for soundManager.onload()/onready()',
+    notOK: 'Audio support is not available.',
     appXHTML: _sm + '::createMovie(): appendChild/innerHTML set failed. May be app/xhtml+xml DOM-related.',
     spcWmode: _sm + '::createMovie(): Removing wmode, preventing win32 below-the-fold SWF loading issue',
     swf404: _sm + ': Verify that %s is a valid path.',
@@ -1756,10 +1821,6 @@ function SoundManager(smURL, smID) {
     // </d>
   };
 
-  _id = function(sID) {
-    return _doc.getElementById(sID);
-  };
-
   _str = function() { // o [,items to replace]
     // <d>
     var args = _slice.call(arguments), // real array, please
@@ -1783,18 +1844,12 @@ function SoundManager(smURL, smID) {
     return sOpt;
   };
 
-  _complain = function(sMsg, oCaller) {
-    // Try to create meaningful custom errors, w/stack trace to the "offending" line
-    var sPre = 'Error: ', errorDesc;
-    if (!oCaller) {
-      return new Error(sPre + sMsg);
+  _complain = function(sMsg) {
+    if (typeof console !== 'undefined' && typeof console.warn !== 'undefined') {
+      console.warn(sMsg);
+    } else {
+      _s._wD(sMsg);
     }
-    if (typeof console !== 'undefined' && typeof console.trace !== 'undefined') {
-      console.trace();
-    }
-    errorDesc = sPre + sMsg + '. \nCaller: ' + oCaller.toString();
-    // See JS error/debug/console output for real error source, stack trace / message detail where possible
-    return new Error(errorDesc);
   };
 
   _doNothing = function() {
@@ -1867,10 +1922,6 @@ function SoundManager(smURL, smID) {
     _s.features.peakData = _s.features.waveformData = _s.features.eqData = (_fV > 8);
   };
 
-  _getDocument = function() {
-    return (_doc.body?_doc.body:(_doc._docElement?_doc.documentElement:_doc.getElementsByTagName('div')[0]));
-  };
-
   _setPolling = function(bPolling, bHighPerformance) {
     if (!_s.o || !_s.allowPolling) {
       return false;
@@ -1878,51 +1929,16 @@ function SoundManager(smURL, smID) {
     _s.o._setPolling(bPolling, bHighPerformance);
   };
 
-  (function() {
-    var old = (_win.attachEvent),
-    evt = {
-      add: (old?'attachEvent':'addEventListener'),
-      remove: (old?'detachEvent':'removeEventListener')
-    };
-
-    function getArgs(oArgs) {
-      var args = _slice.call(oArgs), len = args.length;
-      if (old) {
-        args[1] = 'on' + args[1]; // prefix
-        if (len > 3) {
-          args.pop(); // no capture
-        }
-      } else if (len === 3) {
-        args.push(false);
-      }
-      return args;
-    }
-
-    function apply(args, sType) {
-      var oFunc = args.shift()[evt[sType]];
-      if (old) {
-        oFunc(args[0], args[1]);
-      } else {
-        oFunc.apply(this, args);
-      }
-    }
-
-    _addEvt = function() {
-      apply(getArgs(arguments), 'add');
-    };
-
-    _removeEvt = function() {
-      apply(getArgs(arguments), 'remove');
-    };
-  }());
-
   function _initDebug() {
     if (_s.debugURLParam.test(_wl)) {
       _s.debugMode = true; // allow force of debug mode via URL
     }
     // <d>
+    if (_id(_s.debugID)) {
+      return false;
+    }
     var oD, oDebug, oTarget, oToggle, tmp;
-    if (_s.debugMode) {
+    if (_s.debugMode && !_id(_s.debugID) && ((!_hasConsole || !_s.useConsole) || (_s.useConsole && _hasConsole && !_s.consoleOnly))) {
       oD = _doc.createElement('div');
       oD.id = _s.debugID + '-toggle';
       oToggle = {
@@ -1952,8 +1968,6 @@ function SoundManager(smURL, smID) {
           oD.style[tmp] = oToggle[tmp];
         }
       }
-    }
-    if (_s.debugMode && !_id(_s.debugID) && ((!_hasConsole || !_s.useConsole) || (_s.useConsole && _hasConsole && !_s.consoleOnly))) {
       oDebug = _doc.createElement('div');
       oDebug.id = _s.debugID;
       oDebug.style.display = (_s.debugMode?'block':'none');
@@ -1968,7 +1982,6 @@ function SoundManager(smURL, smID) {
       }
     }
     oTarget = null;
-    _initDebug = function(){};
     // </d>
   }
 
@@ -2028,7 +2041,7 @@ function SoundManager(smURL, smID) {
     var specialCase = null,
     remoteURL = (smURL?smURL:_s.url),
     localURL = (_s.altURL?_s.altURL:remoteURL),
-    oEmbed, oMovie, oTarget, tmp, movieHTML, oEl, extraClass, s, x, sClass, side = '100%', isRTL = null, html = _doc.getElementsByTagName('html')[0];
+    oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(), s, x, sClass, side = '100%', isRTL = null, html = _doc.getElementsByTagName('html')[0];
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
 
@@ -2104,8 +2117,6 @@ function SoundManager(smURL, smID) {
     }
 
     _initDebug();
-    extraClass = _getSWFCSS();
-    oTarget = _getDocument();
 
     if (oTarget) {
       _s.oMC = _id(_s.movieID)?_id(_s.movieID):_doc.createElement('div');
@@ -2188,67 +2199,6 @@ function SoundManager(smURL, smID) {
 
   };
 
-  _idCheck = this.getSoundById;
-
-  // <d>
-  _wDS = function(o, errorLevel) {
-    if (!o) {
-      return '';
-    } else {
-      return _s._wD(_str(o), errorLevel);
-    }
-  };
-
-  if (_wl.indexOf('debug=alert') + 1 && _s.debugMode) {
-    _s._wD = function(sText) {alert(sText);};
-  }
-
-  _toggleDebug = function() {
-    var o = _id(_s.debugID),
-    oT = _id(_s.debugID + '-toggle');
-    if (!o) {
-      return false;
-    }
-    if (_debugOpen) {
-      // minimize
-      oT.innerHTML = '+';
-      o.style.display = 'none';
-    } else {
-      oT.innerHTML = '-';
-      o.style.display = 'block';
-    }
-    _debugOpen = !_debugOpen;
-  };
-
-  _debugTS = function(sEventType, bSuccess, sMessage) {
-    // troubleshooter debug hooks
-    if (typeof sm2Debugger !== 'undefined') {
-      try {
-        sm2Debugger.handleEvent(sEventType, bSuccess, sMessage);
-      } catch(e) {
-        // oh well  
-      }
-    }
-  };
-  // </d>
-
-  _mixin = function(oMain, oAdd) {
-    // non-destructive merge
-    var o1 = {}, i, o2, o;
-    for (i in oMain) { // clone c1
-      if (oMain.hasOwnProperty(i)) {
-        o1[i] = oMain[i];
-      }
-    }
-    o2 = (typeof oAdd === 'undefined'?_s.defaultOptions:oAdd);
-    for (o in o2) {
-      if (o2.hasOwnProperty(o) && typeof o1[o] === 'undefined') {
-        o1[o] = o2[o];
-      }
-    }
-    return o1;
-  };
-
   _initMovie = function() {
     if (_html5Only) {
       _createMovie();
@@ -2282,14 +2232,6 @@ function SoundManager(smURL, smID) {
     if (_s.oninitmovie instanceof Function) {
       setTimeout(_s.oninitmovie, 1);
     }
-  };
-
-  _go = function(sURL) {
-    // where it all begins.
-    if (sURL) {
-      _s.url = sURL;
-    }
-    _initMovie();
   };
 
   _waitForEI = function() {
@@ -2348,6 +2290,56 @@ function SoundManager(smURL, smID) {
     _removeEvt(_win, 'load', _waitForEI);
   };
 
+  _go = function(sURL) {
+    // where it all begins.
+    if (sURL) {
+      _s.url = sURL;
+    }
+    _initMovie();
+  };
+
+  // <d>
+  _wDS = function(o, errorLevel) {
+    if (!o) {
+      return '';
+    } else {
+      return _s._wD(_str(o), errorLevel);
+    }
+  };
+
+  if (_wl.indexOf('debug=alert') + 1 && _s.debugMode) {
+    _s._wD = function(sText) {alert(sText);};
+  }
+
+  _toggleDebug = function() {
+    var o = _id(_s.debugID),
+    oT = _id(_s.debugID + '-toggle');
+    if (!o) {
+      return false;
+    }
+    if (_debugOpen) {
+      // minimize
+      oT.innerHTML = '+';
+      o.style.display = 'none';
+    } else {
+      oT.innerHTML = '-';
+      o.style.display = 'block';
+    }
+    _debugOpen = !_debugOpen;
+  };
+
+  _debugTS = function(sEventType, bSuccess, sMessage) {
+    // troubleshooter debug hooks
+    if (typeof sm2Debugger !== 'undefined') {
+      try {
+        sm2Debugger.handleEvent(sEventType, bSuccess, sMessage);
+      } catch(e) {
+        // oh well  
+      }
+    }
+  };
+  // </d>
+
   _getSWFCSS = function() {
     var css = [];
     if (_s.debugMode) {
@@ -2405,7 +2397,7 @@ function SoundManager(smURL, smID) {
     }
     // allow init to restart
     _waitingForEI = false;
-    setTimeout(_waitForEI, 500);
+    // setTimeout(_waitForEI, 500);
     cleanup();
   };
 
@@ -2421,8 +2413,7 @@ function SoundManager(smURL, smID) {
       _initUserOnload();
       return true;
     }
-    var sClass = _s.oMC.className,
-    wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent());
+    var wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent());
     if (!wasTimeout) {
       _didInit = true;
     }
@@ -2632,6 +2623,9 @@ function SoundManager(smURL, smID) {
     _s.html5.usingFlash = _featureCheck();
     _needsFlash = _s.html5.usingFlash;
     _didDCLoaded = true;
+    if (_doc.removeEventListener) {
+      _doc.removeEventListener('DOMContentLoaded', _dcLoaded, false);
+    }
     _go();
   };
 
@@ -2696,6 +2690,13 @@ function SoundManager(smURL, smID) {
     }
   };
 
+  _dcIE = function() {
+    if (_doc.readyState === 'complete') {
+      _dcLoaded();
+      _doc.detachEvent('onreadystatechange', _dcIE);
+    }
+  };
+
   // focus and window load, init
   if (!_s.hasHTML5 || _needsFlash) {
     // only applies to Flash mode
@@ -2706,13 +2707,6 @@ function SoundManager(smURL, smID) {
       _addEvt(_win, 'mousemove', _handleFocus); // massive Safari focus hack
     }
   }
-
-  _dcIE = function() {
-    if (_doc.readyState === 'complete') {
-      _dcLoaded();
-      _doc.detachEvent('onreadystatechange', _dcIE);
-    }
-  };
 
   if (_doc.addEventListener) {
     _doc.addEventListener('DOMContentLoaded', _dcLoaded, false);
