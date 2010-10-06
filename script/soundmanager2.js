@@ -615,13 +615,14 @@ function SoundManager(smURL, smID) {
   };
 
   this._writeDebug = function(sText, sType, bTimestamp) {
-    // pseudo-private console.log()-style output
-    // <d>
-    var sDID = 'soundmanager-debug', o, oItem, sMethod;
     // If the debug log callback is set, always call it, regardless of debugMode
     if (_s.ondebuglog) {
       _s.ondebuglog(sText, sType, bTimestamp);
     }
+
+    // pseudo-private console.log()-style output
+    // <d>
+    var sDID = 'soundmanager-debug', o, oItem, sMethod;
     if (!_s.debugMode) {
       return false;
     }
