@@ -657,29 +657,12 @@ package {
         }
       }
 
-      // s.addEventListener(ProgressEvent.PROGRESS, checkLoadProgress); // May be called often, potential CPU drain
-      // s.addEventListener(Event.FINISH, onFinish);
-      // s.loaded = true; // TODO: Investigate - Flash 9 non-FLV bug??
-      // s.didLoad = true; // TODO: Investigate - bug?
-      // if (didRecreate || s.sURL != sURL) {
       // don't try to load if same request already made
       s.sURL = sURL;
 
       if (s.useNetstream) {
         try {
           s.useEvents = true;
-          // if (s.ns) {
-            // s.addNetstreamEvents(s);
-            // ExternalInterface.call(baseJSObject + "['" + s.sID + "']._whileloading", s.ns.bytesLoaded, s.ns.bytesTotal, int(s.duration || 0));
-            s.ns.play(sURL);
-/*
-            if (!bAutoPlay) {
-              s.ns.pause();
-            }
-          } else {
-            writeDebug('_load(): Note: No netStream found.'+(!s.connected?' (Not connected yet.)':''));
-          }
-*/
         } catch(e: Error) {
           writeDebug('_load(): error: ' + e.toString());
         }
