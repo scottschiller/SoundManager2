@@ -933,16 +933,7 @@ function SoundManager(smURL, smID) {
       } else {
         _s._wD(fN + '"' + _t.sID + '"');
       }
-
-      // Streams will pause when their buffer is full if they are not auto-playing.
-      // In this case paused is true, but the song hasn't started playing yet. If
-      // we just call resume() the onplay() callback will never be called.
-
-      // Also, if we just call resume() in this case and the sound has been muted
-      // (volume is 0), it will never have its volume set so sound will be heard
-      // when it shouldn't.
-
-      if (_t.paused && _t.position !== null) {
+      if (_t.paused && _t.position && _t.position > 0) { // https://gist.github.com/37b17df75cc4d7a90bf6
         _s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
       } else {
