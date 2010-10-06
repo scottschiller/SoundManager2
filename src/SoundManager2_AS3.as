@@ -293,6 +293,7 @@ package {
           bT = oSound.ns.bytesTotal;
           nD = int(oSound.duration || 0); // can sometimes be null with short MP3s? Wack.
           nP = oSound.ns.time * 1000;
+
           if (nP != oSound.lastValues.position) {
             oSound.lastValues.position = nP;
             hasNew = true;
@@ -313,20 +314,19 @@ package {
             oSound.lastValues.bufferLength = bufferLength;
             hasNew = true;
           }
-          if (oSound.loaded != true && nD > 0 && bL == bT) {
+
+          // Don't set loaded for streams because bytesLoaded and bytesTotal are always 0
+          // writeDebug('ns: time/duration, bytesloaded/total: '+nP+'/'+nD+', '+bL+'/'+bT);
+          if (oSound.loaded != true && nD > 0 && bL == bT && bL != 0 && bT != 0) {
             // non-MP3 has loaded
-            // writeDebug('ns: time/duration, bytesloaded/total: '+nP+'/'+nD+', '+bL+'/'+bT);
             oSound.loaded = true;
             try {
-              ExternalInterface.call(sMethod, bL, bT, nD); // _whileloading()
+              ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
               ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", oSound.duration > 0 ? 1 : 0);
             } catch(e: Error) {
               writeDebug('_whileLoading/_onload error: ' + e.toString());
             }
           } else if (oSound.loaded != true && hasNew) {
-            // writeDebug('whileloading() loaded/total/duration: '+bL+', '+bT+', '+nD);
-            ExternalInterface.call(sMethod, bL, bT, nD); // _whileloading()
-          } else if (!oSound.loaded && bL == 0 && bT && oSound.ns.bufferLength != oSound.lastValues.bufferLength) {
             ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
           }
 
