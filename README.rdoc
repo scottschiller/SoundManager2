@@ -82,10 +82,7 @@ Our FMS server has some peculiarities that we have to deal with:
 
 == Debugging
 
-1. Set
-
-    soundManager.debugFlash = true;
-
+1. Set <tt>soundManager.debugFlash = true;</tt>
 2. Use a debug version of the SWF e.g. soundmanager2_flash9_debug.swf
 3. Open the Flash IDE.  Open the SM2 source code files. Start a remote debugging session.
 4. Refresh the application in the browser (make sure caching is off).
