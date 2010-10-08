@@ -301,5 +301,9 @@
  <arg line='-c "rm -r tmp/*"'/>
 </exec>
 
+<exec executable="/bin/sh">
+ <arg line='-c "rmdir tmp"'/>
+</exec>
+
 </target>
 </project>
