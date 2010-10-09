@@ -87,6 +87,7 @@ function SoundManager(smURL, smID) {
     'position': null,              // offset (milliseconds) to seek to within loaded sound data.
     'pan': 0,                      // "pan" settings, left-to-right, -100 to 100
     'type': null,                  // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
+    'usePolicyFile': false,        // request crossdomain.xml with MP3s on remote domains (for ID3/data access)
     'volume': 100                  // self-explanatory. 0-100, the latter being the max.
   };
 
@@ -300,9 +301,9 @@ function SoundManager(smURL, smID) {
       }
       oSound = make();
       if (_fV === 8) {
-        _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1);
+        _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1, _tO.usePolicyFile);
       } else {
-        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false, _tO.autoLoad ? true : false);
+        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false, _tO.autoLoad, _tO.usePolicyFile);
         if (!_tO.serverURL) {
           // We are connected immediately
           oSound.connected = true;
@@ -809,9 +810,9 @@ function SoundManager(smURL, smID) {
           _t.isHTML5 = false;
           _t._iO = _loopFix(_t._iO);
           if (_fV === 8) {
-            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1);
+            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1, _t._iO.usePolicyFile);
           } else {
-            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1, _t._iO.autoLoad?true:false);
+            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1, _t._iO.autoLoad?true:false, _t._iO.usePolicyFile);
           }
         } catch(e) {
           _wDS('smError', 2);

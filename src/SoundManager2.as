@@ -241,10 +241,11 @@ class SoundManager2 {
       if (isPaused) s.stop();
     }
 
-    var _load = function(sID, sURL, bStream, bAutoPlay) {
+    var _load = function(sID, sURL, bStream, bAutoPlay, bCheckPolicyFile) {
       // writeDebug('_load(): '+sID+', '+sURL+', '+bStream+', '+bAutoPlay);
       if (typeof bAutoPlay == 'undefined') bAutoPlay = false;
       if (typeof bStream == 'undefined') bStream = true;
+      if (typeof bCheckPolicyFile == 'undefined') bCheckPolicyFile = false;
       // writeDebug('bStream: '+bStream);
       // writeDebug('bAutoPlay: '+bAutoPlay);
       // checkProgress();
@@ -252,6 +253,7 @@ class SoundManager2 {
       s.onID3 = onID3;
       s.onLoad = onLoad;
       s.loaded = true;
+      s.checkPolicyFile = bCheckPolicyFile;
       s.loadSound(sURL, bStream);
       s.didJustBeforeFinish = false;
       if (bAutoPlay != true) {
@@ -274,7 +276,7 @@ class SoundManager2 {
       s.didJustBeforeFinish = false;
     }
 
-    var _createSound = function(sID, justBeforeFinishOffset, loops) {
+    var _createSound = function(sID, justBeforeFinishOffset, loops, checkPolicyFile) {
       var s = new Sound();
       if (!soundObjects[sID]) {
         sounds.push(sID);
@@ -286,6 +288,7 @@ class SoundManager2 {
       s.paused = false;
       s.loaded = false;
       s.justBeforeFinishOffset = justBeforeFinishOffset || 0;
+      s.checkPolicyFile = checkPolicyFile;
       s.lastValues = {
         bytes: 0,
         position: 0,

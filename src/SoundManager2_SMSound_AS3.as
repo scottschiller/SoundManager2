@@ -89,8 +89,9 @@ package {
     public var connect_time: Number;
     public var play_time: Number;
     public var recordStats: Boolean = false;
+    public var checkPolicyFile:Boolean = false;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false, autoLoad: Boolean = false) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false, autoLoad: Boolean = false, checkPolicyFile: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -123,10 +124,10 @@ package {
         this.bufferTimes = [this.bufferTime];
       }
       setAutoPlay(autoPlay);
-
       if (recordStats) {
         this.start_time = getTimer();
       }
+      this.checkPolicyFile = checkPolicyFile;
 
       writeDebug('SoundManager2_SMSound_AS3: Got duration: '+duration+', autoPlay: '+autoPlay);
 
@@ -168,7 +169,7 @@ package {
           writeDebug('NetConnection: connected');
           try {
             this.ns = new NetStream(this.nc);
-            this.ns.checkPolicyFile = true;
+            this.ns.checkPolicyFile = this.checkPolicyFile;
             // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
             this.ns.bufferTime = getStartBuffer(); // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
             this.st = new SoundTransform();
@@ -387,7 +388,7 @@ package {
         try {
           this.didLoad = true;
           this.urlRequest = new URLRequest(sURL);
-          this.soundLoaderContext = new SoundLoaderContext(1000, true); // check for policy (crossdomain.xml) file on remote domains - http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundLoaderContext.html
+          this.soundLoaderContext = new SoundLoaderContext(1000, this.checkPolicyFile); // check for policy (crossdomain.xml) file on remote domains - http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundLoaderContext.html
           this.load(this.urlRequest, this.soundLoaderContext);
         } catch(e: Error) {
           writeDebug('error during loadSound(): ' + e.toString());

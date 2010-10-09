@@ -617,7 +617,7 @@ package {
       }
     }
 
-    public function _load(sID:String, sURL:String, bStream: Boolean, bAutoPlay: Boolean, nLoops: Number, bAutoLoad: Boolean) : void {
+    public function _load(sID:String, sURL:String, bStream: Boolean, bAutoPlay: Boolean, nLoops: Number, bAutoLoad: Boolean, bCheckPolicyFile: Boolean) : void {
       // writeDebug('_load()');
       if (typeof bAutoPlay == 'undefined') bAutoPlay = false;
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
@@ -640,9 +640,10 @@ package {
         ns.serverUrl = s.serverUrl;
         ns.duration = s.duration;
         ns.recordStats = s.recordStats;
+        ns.checkPolicyFile = s.checkPolicyFile;
         ns.useEvents = true;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, bAutoPlay, ns.useEvents, ns.bufferTimes, ns.recordStats, bAutoLoad);
+        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, bAutoPlay, ns.useEvents, ns.bufferTimes, ns.recordStats, bAutoLoad, ns.checkPolicyFile);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -735,14 +736,15 @@ package {
       ns.autoPlay = s.autoPlay;
       ns.recordStats = s.recordStats;
       ns.autoLoad = s.autoLoad;
+      ns.checkPolicyFile = s.checkPolicyFile;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, ns.autoPlay, false, ns.bufferTimes, ns.recordStats, ns.autoLoad); // false: don't allow events just yet
+      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, ns.autoPlay, false, ns.bufferTimes, ns.recordStats, ns.autoLoad, ns.checkPolicyFile); // false: don't allow events just yet
       soundObjects[sID].connected = true; // fake it?
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, autoPlay:Boolean, useEvents:Boolean, bufferTimes:Array, recordStats:Boolean, autoLoad:Boolean) : void {
-      var s: SoundManager2_SMSound_AS3 = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, bufferTime, serverUrl, duration, autoPlay, useEvents, bufferTimes, recordStats, autoLoad);
+    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, autoPlay:Boolean, useEvents:Boolean, bufferTimes:Array, recordStats:Boolean, autoLoad:Boolean, checkPolicyFile:Boolean) : void {
+      var s: SoundManager2_SMSound_AS3 = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, bufferTime, serverUrl, duration, autoPlay, useEvents, bufferTimes, recordStats, autoLoad, checkPolicyFile);
       if (!soundObjects[sID]) {
         sounds.push(sID);
       }
@@ -754,6 +756,7 @@ package {
       s.paused = false;
       s.loaded = false;
       s.justBeforeFinishOffset = justBeforeFinishOffset || 0;
+      s.checkPolicyFile = checkPolicyFile;
       s.lastValues = {
         bytes: 0,
         position: 0,
