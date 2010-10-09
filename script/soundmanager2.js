@@ -299,6 +299,10 @@ function SoundManager(smURL, smID) {
           }
         }
       }
+      if (!_tO.usePolicyFile && (_tO.onid3 || _tO.usePeakData || _tO.useWaveformData || _tO.useEQData)) {
+        _s._wD(_cs + 'enabling usePolicyFile for data access');
+        _tO.usePolicyFile = true;
+      }
       oSound = make();
       if (_fV === 8) {
         _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1, _tO.usePolicyFile);
