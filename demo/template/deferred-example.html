@@ -2,7 +2,7 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>SoundManager 2: Lazy / Deferred Loading Example</title>
+<title>SoundManager 2: Deferred loading / Lazy-loading / Dynamic script loading Example</title>
 <meta name="description" content="How to load soundmanager2.js on-the-fly using JavaScript, and start it dynamically after window.load() has already fired using beginDelayedInit()." />
 <style type="text/css">
 #soundmanager-debug {
@@ -64,8 +64,8 @@ window.onload = function() {
             id:'foo',
             url:'../_mp3/mouseover.mp3'
           }).play();
-          msg(soundManager.supported()?'started OK':'Error/unsupported');
         }
+        msg(soundManager.supported()?'started OK':'Loaded OK, but unable to start: unsupported/flash blocked, etc.');
       });
       soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
     });
@@ -98,8 +98,8 @@ window.onload = function() {
             id:'foo',
             url:'../_mp3/mouseover.mp3'
           }).play();
-          <span>// soundManager.supported()?'started OK':'Error/unsupported';</span>
         }
+        <span>// msg(soundManager.supported()?'started OK':'Loaded OK, but unable to start: unsupported/flash blocked, etc.');</span>
       });
       soundManager.beginDelayedInit(); <span>// ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable</span>
     });
