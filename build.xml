@@ -273,7 +273,7 @@
 </exec>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/flexsdk/bin/mxmlc -static-link-runtime-shared-libraries=true -optimize=true -o tmp/soundmanager2_flash_xdomain/soundmanager2_flash9_debug.swf -file-specs tmp/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
+ <arg line='-c "/Applications/flexsdk/bin/mxmlc -debug=true -static-link-runtime-shared-libraries=true -optimize=true -o tmp/soundmanager2_flash_xdomain/soundmanager2_flash9_debug.swf -file-specs tmp/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
 </exec>
 
 <echo>Building no-debug cross-domain SWFs...</echo>
