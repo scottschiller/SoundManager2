@@ -315,6 +315,11 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 				
 			<h5>Known HTML5 Audio bugs/limitations/annoyances</h5>
 
+			<p>As of the October, 2010 release of SM2 (V2.97a.20101010):</p>
+			<ul>
+			 <li>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 and 10.6.4) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</li>
+		    </ul>
+
 			<p>As of the August, 2010 release of SM2 (V2.96a.20100822):</p>
 			<ul>
 			 <li>Safari 5.0.1 (533.17.18) on Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour. Apple are aware of the regression, which began with Safari 4.0 on Snow Leopard (perhaps with the new QuickTime.) See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</li>
@@ -947,6 +952,14 @@ for (prop in this.id3) {
 }</span>).play();</code></pre></dd>
 						   </dl>
 
+						   <dl id="smsound-usepolicyfile" class="f-block s-usepolicyfile">
+						   <dt>usePolicyFile</dt>
+						   <dd>Boolean value (default: <code>false</code>) which instructs Flash, when loading MP3/MP4 content from remote/third party domains, to request example.com/crossdomain.xml first in order to determine permissions for access to metadata such as ID3 info, waveform, peak and/or spectrum data.</dd>
+						   <dd><code>usePolicyFile</code> will be automagically set to <code>true</code> if your sound options have an <code>onid3()</code> event handler, or uses sound data (peak/wave/spectrum) features. By default, Flash will not have access to this metadata on remote domains unless granted cross-domain security permissions via the crossdomain.xml file.</dd>
+						   <dd>Consider additional HTTP traffic (albeit, perhaps with caching-like behaviour for subsequent checks?) and silent 404s in most cases given few hosts use crossdomain.xml files.</dd>
+						   <dd>See Adobe's knowledge base for <a href="http://kb2.adobe.com/cps/963/50c96388.html" title="Adobe KB: ID3 does not load on cross-domain MP3s">related ID3 + crossdomain.xml</a> documentation.</dd>
+						   </dl>
+
                                                   </div>
 
 						  <div style="margin-top:2em">
@@ -1199,6 +1212,7 @@ for (prop in this.id3) {
   pan: 0,               <span>// "pan" settings, left-to-right, -100 to 100</span>
   stream: true,         <span>// allows playing before entire file has loaded (recommended)</span>
   type: null,           <span>// MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3</span>
+  usePolicyFile: false, <span>// enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)</span>
   volume: 100,          <span>// self-explanatory. 0-100, the latter being the max.</span>
   whileloading: null,   <span>// callback function for updating progress (X of Y bytes received)</span>
   whileplaying: null,   <span>// callback during play (position update)</span>
@@ -1488,9 +1502,9 @@ soundManager.movieStarOptions = {<span>
 	 <li><a href="#soundmanager-url">url</a></li>
 	 <li>useConsole</li>
 	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
-     <li class="recent" title="Recently-added feature"><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
+     <li><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
 	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
-     <li class="new" title="New, experimental in-progress feature">useHTML5Audio</li>
+     <li class="recent" title="Recently-added, beta feature">useHTML5Audio</li>
      <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
 	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>
 	 <li>waitForWindowLoad</li>
@@ -1549,7 +1563,7 @@ soundManager.movieStarOptions = {<span>
      <li title="Flash 9.0r115+ only" class="flash9">bufferTime</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
-     <li title="Newly-implemented feature" class="new">loops</li>
+     <li title="Recently-updated feature" class="recent">loops</li>
      <li>multiShot</li>
      <li>multiShotEvents</li>
      <li>onbeforefinishtime</li>
@@ -1560,8 +1574,9 @@ soundManager.movieStarOptions = {<span>
      <li title="Flash 9+ only, new feature" class="flash9 new"><a href="#smsound-serverurl">serverURL</a></li>
      <li><a href="#smsound-sid">sID</a></li>
      <li>stream</li>
-     <li title="New feature" class="new"><a href="#smsound-type">type</a></li>
+     <li title="Recently-added feature" class="recent"><a href="#smsound-type">type</a></li>
      <li><a href="#smsound-url">url</a></li>
+     <li title="New feature" class="new"><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
      <li>volume</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-waveformdata">waveformData</a></li>
     </ul>

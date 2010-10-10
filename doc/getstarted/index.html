@@ -136,7 +136,8 @@
 
 			  <h4 id="basic-inclusion">Including SoundManager</h4>
 
-			  <p>SM2 can be as small as 10 KB over the wire, depending on what version you use. A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds.</p>
+			  <p>The soundmanager2.js core can get down to 10 KB over the wire, depending on what version you use. A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds.</p>
+			  <p>Regardless of which build you use, take advantage of <a href="http://developer.yahoo.com/performance/rules.html#gzip" title="Best Practices for Speeding Up Your Web Site (Yahoo Developer Network)">gzip compression</a> on your server for big savings. As shown below, SoundManager 2 compresses quite well with gzip; the full debug-enabled version served <i>with</i> gzip is smaller than even then minified, no-debug version served without it.</p>
 			
 			  <table id="sm2-filesizes" cellpadding="0" cellspacing="0">
 
@@ -144,7 +145,7 @@
 			    <th>Build version</th>
 			    <th>Recommended use</th>
 			    <th class="nw">File size</th>
-			    <th class="nw">+ <a href="http://www.sergeychernyshev.com/blog/speed-up-your-site-drop-in-htaccess-file/" title="If you're at all serious about performance, make sure you use gzip!">gzip</a></th>
+			    <th class="nw">+ <a href="http://www.sergeychernyshev.com/blog/speed-up-your-site-drop-in-htaccess-file/" title="Friends don't let friends run websites without gzip!">gzip</a></th>
 			   </tr>
 
 			   <tr>
@@ -153,40 +154,40 @@
 				  <pre>&lt;script src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Development, testing, debugging</td>
-				 <td class="nw">93 KB</td>
-				 <td class="nw">~24.5 KB</td>
+				 <td class="nw">90 KB</td>
+				 <td class="nw">~25 KB</td>
 			   </tr>
 
 			   <tr>
 				 <td>
-				  <p>Compressed (Google Closure-munged, no comments or whitespace), debug-enabled version</p>
+				  <p>Minified (Google Closure Compiler-munged, no comments or whitespace), debug-enabled version</p>
 				  <pre>&lt;script src="<span>soundmanager2-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
-				 <td>Production, with an option for debugging (eg. via #debug=1)</td>
+				 <td>Production, with debug code</td>
 				 <td class="nw">42 KB</td>
-				 <td class="nw">~13.5 KB</td>
+				 <td class="nw">~14 KB</td>
 			   </tr>
 
 			   <tr>
 				 <td>
-				  <p>Build-script optimized, compressed, no-debug version</p>
+				  <p>Build-script optimized, minified, no-debug version</p>
 				  <pre>&lt;script src="<span>soundmanager2-nodebug-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
-				 <td>Performance + bandwidth-optimized, no debug option</td>
+				 <td>Production-optimized, debug code removed</td>
 				 <td class="nw">30 KB</td>
-				 <td class="nw booyaa" title="Best-case scenario for load time/performance">~9 KB!</td>
+				 <td class="nw booyaa" title="Best-case scenario for load time/performance">~9.5 KB!</td>
 			   </tr>
 
 			  </table>
-
-			  <p>You then need to tell SM2 where to find the SWF it needs, and optionally, what version and other features to use:</p>
+			
+			  <p>You then need to tell SM2 where to find the flash .SWF it will need (if no HTML5 support), and optionally what version of Flash (~3 KB for flash 8, ~10 KB for flash 9) depending on what API features you want, as well as other features:</p>
 
 <pre>
 &lt;script&gt;
 soundManager.url = '<span>/path/to/swf-files/</span>';
 soundManager.flashVersion = 9; <span><span>// optional: shiny features (default = 8)</span></span>
 soundManager.useFlashBlock = false; <span><span>// optionally, enable when you're ready to <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">dive in</a></span></span>
-<span><span>// enable <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.</span></span>
+<span><span>// enable <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous. iPad/iPhone will always get this.</span></span>
 <span><span>// soundManager.useHTML5Audio = true;</span></span>
 &lt;/script&gt;</pre>
 
@@ -311,6 +312,8 @@ soundManager.onerror = function() {
     soundManager.beginDelayedInit(); <span><span>// start SM2 init.</span></span>
   });
 }</code></pre>
+
+			  <p>For a live demo, check out the <a href="../../demo/template/deferred-example.html" title="SoundManager 2 deferred loading example">deferred loading example</a>.</p>
 
 			  </div>
 

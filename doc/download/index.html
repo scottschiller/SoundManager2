@@ -128,11 +128,11 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p>Current version: 2.96a.20100822</p>
-				<p>SoundManager 2's HTML5 <code>Audio()</code> support now considered to be beta-worthy. iPhone/iPad will now play a sequence of sounds, user interaction only required to start first one. Flash on-screen positioning tweak for Android devices that run Flash. Safari 5.0.1 on Snow Leopard still has buggy HTML5 audio implementation, and is disabled by default; known Apple bug. See <a href="#history">revision history</a> for details.</p>
+				<p>Code cleanup (full debug codebase ~5% lighter), HTML5 audio tweaks, merged RTMP fork from GitHub, experimental video feature <i>removed</i>, optional crossdomain.xml feature. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv296a-20100822.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.96a.20100822</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20101010.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20101010</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a></p>
+				<p><b>Performance tip:</b> SM2's code size varies from 90 KB (debug) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 			</div>
 			
 		</div>
@@ -156,7 +156,56 @@
 			  <ul id="revision-list" class="standard">
 
 			   <li class="in">
-			    <h3><b>V2.96a.20100822</b> - HTML5 audio support no longer alpha, Safari 5.0.1/SL HTML5 audio issues continue, iPad/iPhone "play through", Flash tweak for Android</h3>
+			    <h3><b>V2.97a.20101010</b> - Code cleanup, HTML5 audio tweaks, merged RTMP fork, removal of experimental video, optional usePolicyFile crossdomain.xml feature</h3>
+				<p>Shuffling of SoundManager 2 core, approximately 5% shaved off full debug-enabled file size after bug fixes, additional comments, new features and so on. Internal event handling code cleaned up. .SWF builds optimized, Flash 9 non-debug version now under 10 KB. Debug version now flash debugger-enabled. Merged GitHub user kjvarga's RTMP fork including improvements for Red5 + Flash Media Server streaming cases - buffering, event and state handling. Experimental video feature is toast, createVideo() no longer implemented. iPhone + iPad touch events on page player + 360&deg; player UI demos; tap and drag to seek, etc.</p>
+				
+			    <ul class="double">
+			
+			     <li class="in">
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+				   <li>No HTML5 audio for *any* Safari on OS X Snow Leopard 10.6.[3|4] due to underlying bugs causing intermittent audio playback failure; ongoing Apple issue, on their radar. (See <a href="http://github.com/scottschiller/SoundManager2/commit/707697685408ef4aafd23811eeaa61a2d2ec120a">related GitHub commit</a>)</li>
+				   <li>Don't <code>unload()</code> at <code>onfinish()</code> for HTML5 audio (was originally done to be conservative, but results in additional HTTP requests despite caching expectations?)</li>
+				   <li><code>onload()</code> for HTML5 now using proper boolean values</li>
+				   <li>Fix NetStream-specific <code>autoLoad</code>/<code>autoPlay</code>/<code>volume</code> <code>createSound()</code> call, specific null flash sound object error scenario. (Related <a href="http://github.com/scottschiller/SoundManager2/commit/0867fd641e83fda4e99665567a62f3398651fac4">changes on GitHub</a>.)</li>
+				   <li>Fix for "<code>onbufferchange(1)</code> followed immediately by <code>onbufferchange(0)</code>" case when audio was actually still buffering.</li>
+				   <li>Removed <code>setPosition()</code> within <code>unload()</code>, cleaner exit when destroying a sound</li>
+				  </ul>
+			     </li>
+
+			     <li class="in">
+				  <p class="compact">Merged: RTMP Fork</p>
+				  <ul class="nested compact flat">
+				   <li>Merged GitHub user kjvarga's <a href="http://github.com/kjvarga/SoundManager2/">RTMP fork of SoundManager 2</a>, including buffering, event and state handling fixes and improvements. For more RTMP documentation/features, see the readme on GitHub, or <a href="../../README.rdoc" class="norewrite">view locally</a>.</li>
+				  </ul>
+                 </li>
+
+			     <li class="in">
+				  <p class="compact">API Updates</p>
+				  <ul class="nested compact flat">
+				   <li><b>Removed</b> experimental video feature (originally added late 2008, never developed further.) <code>createVideo()</code>, <code>allowFullScreen</code> and related video methods are now gone. Other dedicated HTML5/flash video player projects have since solved this problem.</li>
+                   <li>New SMSound option: <a href="../#smsound-usepolicyfile" title="SoundManager sound option: usePolicyFile">usePolicyFile</a> - (boolean, default: <code>false</code>) - enables Flash to request /crossdomain.xml file for content on third-party domains, if access to ID3/metadata such as wave/peak/spectrum is needed. Will automagically enable if <code>onid3()</code> or peak/wave/spectrum features are being used.</li>
+				   <li><code>console.warn()</code>-style messaging (instead of throwing exceptions) if <code>createSound()</code> etc. are called before SM2 init has fired. Now calls similar warning and exits if called after a failed, unsuccessful startup (ie., timeout or not-supported case.)</li>
+				  </ul>
+				 </li>
+
+			     <li class="in">
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>SoundManager 2 core code cleanup, ~5% shaved off soundmanager2.js code size after new features, bug fixes and comments etc. Internal event handling (DOM-related events for init, IE 6 vs. everybody else) improved.</li>
+				   <li>Flash builds optimized; Flash 9 SWF build now under 10 KB. Debug-enabled Flash 9 SWF now hooks into Flash debug player/IDE debugging tools (compiled with <code>-debug=true</code>)</li>
+				   <li>Attempt to detect RTL documents, position Flash accordingly if so to avoid long horizontal scrollbar issue (<a href="http://getsatisfaction.com/schillmania/topics/rtl_window_scroll_bar_issues_with_container_position" rel="nofollow">related discussion</a>)</li>
+				   <li>iPhone + iPad <code>touchmove()</code> and related events added to page player + 360&deg; player UI demos; tap and drag to seek should now work.</li>
+			      </ul>
+			     </li>
+
+			    </ul>
+
+			   </li>
+
+
+			   <li class="in">
+			    <h3><b>V2.96a.20100822</b> - HTML5 audio support no longer alpha, Safari 5.0.1/SL HTML5 audio issues continue, iPad/iPhone "play through", Flash tweak for Android (<a href="../../download/soundmanagerv296a-20100822.zip">Download archived version</a>)</h3>
 				<p><code>useHTML5Audio</code> feature now considered beta-worthy, though disabled by default to be safe (with the exception of iPhone + iPad.) iPhone/iPad will now play a sequence of sounds, user interaction only required to start first one. Flash on-screen positioning tweak for Android devices that run Flash. Safari 5.0.1 on Snow Leopard exhibits same buggy HTML5 audio issue, disabled by default; Apple have been notified. IE 9 "Platform Preview 4" has <code>&lt;audio&gt;</code> but no <code>Audio()</code> support (yet?) See <a href="https://connect.microsoft.com/IE/feedback/details/586311/audio-but-no-audio-support">bug #586311</a> (may require connect.microsoft.com / Windows Live ID, login first etc.)</p>
 				
 			    <ul class="double">
@@ -255,10 +304,6 @@
 			    <h3><b>V2.96a.20100520</b> - HTML5 Edition (<a href="../../download/soundmanagerv295b-20100520.zip">Download archived version</a>)</h3>
 			
 				<p>Experimental HTML5 support, lots of code shuffling and performance tweaks.</p>
-			
-			    <!--
-			    <p><b>Epic update:</b> Experimental HTML5 <code>Audio()</code> via <a href="../#soundmanager-usehtml5audio" title="SoundManager: useHTML5Audio feature">soundManager.useHTML5Audio</a>, iPad and Palm Pre support! Looping in Flash! New non-debug versions of SWFs, build-script-optimized -nodebug version of SM2 (<a href="../getstarted/#basic-inclusion" title="Including SoundManager 2, file size options">down to 9 KB with gzip!</a>) and more. See <a href="#history">revision history</a> for details.</p>
-			    -->
 			
 			    <ul class="double">
 			
