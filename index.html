@@ -54,6 +54,15 @@ var PP_CONFIG = {
 	  threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
     }
 
+    function checkBadSafari() {
+		var _ua = navigator.userAgent;
+		if (!window.location.toString().match(/sm2\-ignorebadua/i) && _ua.match(/safari/i) && !_ua.match(/chrome/i) && _ua.match(/OS X 10_6_(3|4)/i)) { // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
+		  var complaint = document.createElement('li');
+		  complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled for this browser/OS due to load/play failures in Safari 4 + 5 on Snow Leopard 10.6.3/4, caused by bugs in QuickTime X and/or underlying frameworks. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)<br>Try <a href="?sm2-ignorebadua">HTML5 anyway?</a> ("water drop" MP3 playback seems to fail most often.)';
+		  _id('html5-audio-notes').appendChild(complaint);
+		}
+	}
+
 	soundManager.onready(function() {
 	  if (soundManager.supported()) {
 		_id('sm2-support').style.display = 'none';
@@ -69,21 +78,16 @@ var PP_CONFIG = {
           for (item in s.audioFormats) {
             if (s.audioFormats.hasOwnProperty(item)) {
 			  needsFlash = (soundManager.filePattern.test('.'+item));
-              items.push('<span class="'+(s.html5[item]?'true':'false')+(!s.html5[item] && needsFlash?' partial':'')+'" title="'+(s.html5[item]?'Native HTML5 support found':'No HTML5 support found'+(needsFlash?', using Flash fallback':', no Flash support either'))+'">'+item+'</span>');
+              items.push('<span class="'+(s.html5[item]?'true':'false')+(!s.html5[item] && needsFlash?' partial':'')+'" title="'+(s.html5[item]?'Native HTML5 support found':'No HTML5 support found'+(needsFlash?', using Flash fallback':', no Flash support either'))+'">'+(s.html5[item]?'&lt;':'')+item+(s.html5[item]?'&gt;':'')+'</span>');
             }
           }
-          li.innerHTML = 'Your browser\'s <em class="true">HTML5</em> vs. <em class="partial">Flash</em> support (best guess):<b>'+items.join('')+'</b>'+(!soundManager._use_maybe?' (Try <a href="#sm2-useHTML5Maybe=1" onclick="window.location.href=this.href;window.location.reload()" title="Try using probably|maybe for HTML5 Audio().canPlayType(), more buggy but may get HTML5 support on Chrome/OS X and other browsers.">less-strict HTML5 checking</a>?)':' (allowing <b>maybe</b> for <code>canPlayType()</code>, less-strict HTML5 audio support tests)');
+          li.innerHTML = 'This browser\'s <em class="true">&lt;HTML5&gt;</em> vs. <em class="partial">Flash</em> support (best guess):<b>'+items.join('')+'</b>'+(!soundManager._use_maybe?' (Try <a href="#sm2-useHTML5Maybe=1" onclick="window.location.href=this.href;window.location.reload()" title="Try using probably|maybe for HTML5 Audio().canPlayType(), more buggy but may get HTML5 support on Chrome/OS X and other browsers.">less-strict HTML5 checking</a>?)':' (allowing <b>maybe</b> for <code>canPlayType()</code>, less-strict HTML5 audio support tests)');
 	      _id('html5-audio-notes').appendChild(li);
 	      _id('without-html5').style.display = 'inline';
 	    } else {
 	      _id('without-html5').style.display = 'none';
 		}
-		var _ua = navigator.userAgent;
-		if (!window.location.toString().match(/sm2\-ignorebadua/i) && _ua.match(/safari/i) && !_ua.match(/chrome/i) && _ua.match(/OS X 10_6_(3|4)/i)) { // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-		  var complaint = document.createElement('li');
-		  complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled for this browser due to load/play failures in Safari 4 + 5 on Snow Leopard 10.6.3/4, caused by bugs in QuickTime X and/or underlying frameworks. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)<br>Try <a href="?sm2-ignorebadua">HTML5 anyway?</a> ("water drop" MP3 playback will intermittently fail.)';
-		  _id('html5-audio-notes').appendChild(complaint);
-		}
+		checkBadSafari();
 	    // check inline player / HTML 5 bits
 	    var items = _id('muxtape-html5').getElementsByTagName('a');
 	    for (var i=0, j=items.length; i<j; i++) {
@@ -92,6 +96,8 @@ var PP_CONFIG = {
 		    items[i].title += ' \n\nNOTE: Format apparently not supported by this browser.';
 	      }
 		}
+	  } else {
+        checkBadSafari();
 	  }
 	});
 
