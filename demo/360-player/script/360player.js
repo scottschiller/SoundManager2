@@ -2,10 +2,7 @@
 
   SoundManager 2 Demo: 360-degree / "donut player"
   ------------------------------------------------
-
   http://schillmania.com/projects/soundmanager2/
-
-  * Beta-ish warning: Subject to flux. *
 
   An inline player with a circular UI.
   Based on the original SM2 inline player.
