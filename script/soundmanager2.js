@@ -955,6 +955,7 @@ function SoundManager(smURL, smID) {
         _t._iO = _policyFix(_loopFix(_t._iO));
         if (_t._iO.onplay && _updatePlayState) {
           _t._iO.onplay.apply(_t);
+          _t._onplay_called = true;
         }
         _t.setVolume(_t._iO.volume, true);
         _t.setPan(_t._iO.pan, true);
@@ -1091,22 +1092,29 @@ function SoundManager(smURL, smID) {
       return _t;
     };
 
+    // When auto-loaded streams pause on buffer full they have a playState of 0.
+    // We need to make sure that the playState is set to 1 when these streams "resume".
+    //
+    // When a paused stream is resumed, we need to trigger the onplay() callback if it
+    // hasn't been called already.  In this case since the sound is being played for the
+    // first time, I think it's more appropriate to call onplay() rather than onresume().
     this.resume = function() {
-      // When auto-loaded streams pause on buffer full they have a playState of 0.
-      // We need to make sure that the playState is set to 1 when these streams "resume".
       if (!_t.paused) {
         return _t;
       }
       _s._wD('SMSound.resume()');
       _t.paused = false;
-      _t.playState = 1; // TODO: verify that this is needed.
+      _t.playState = 1;
       if (!_t.isHTML5) {
         _s.o._pause(_t.sID); // flash method is toggle-based (pause/resume)
       } else {
         _t._setup_html5().play();
         _start_html5_timer();
       }
-      if (_t._iO.onresume) {
+      if (!_t._onplay_called && _t._iO.onplay) {
+        _t._iO.onplay.apply(_t);
+        _t._onplay_called = true;
+      } else if (_t._iO.onresume) {
         _t._iO.onresume.apply(_t);
       }
       return _t;
@@ -1275,6 +1283,7 @@ function SoundManager(smURL, smID) {
       _t._onPositionFired = 0;
       _t._hasTimer = null;
       _t._added_events = null;
+      _t._onplay_called = false;
       _t._audio = null;
       _a = null;
       _t.bytesLoaded = null;
