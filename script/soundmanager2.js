@@ -1033,12 +1033,13 @@ function SoundManager(smURL, smID) {
       var position, offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration || _t._iO.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
       _t.position = offset;
       _t.resetOnPosition(_t.position);
+      _t._iO.position = offset;
       if (!_t.isHTML5) {
         position = _fV === 9 ? _t.position : _t.position / 1000;
         // KJV We want our sounds to play on seek.  A progressive download that
         // is loaded has paused = false so resume() does nothing and the sound
         // doesn't play.  Handle that case here.
-        if (_t.playState === 0) {
+        if (_t.serverURL && _t.playState === 0) {
           _t.play({ position: position });
         } else {
           _s.o._setPosition(_t.sID, position, (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
@@ -2824,9 +2825,7 @@ function SoundManager(smURL, smID) {
 
 } // SoundManager()
 
-// var SM2_DEFER = true;
-// details: http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading
-
+// SM2_DEFER details: http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading
 if (typeof SM2_DEFER === 'undefined' || !SM2_DEFER) {
   soundManager = new SoundManager();
 }
