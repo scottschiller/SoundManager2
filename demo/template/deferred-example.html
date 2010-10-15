@@ -17,9 +17,8 @@
 
 <script type="text/javascript">
 
-function loadScript(sURL,onLoad) {
-  try {
-  var loadScriptHandler = function() {
+function loadScript(sURL, onLoad) {
+  function loadScriptHandler() {
     var rs = this.readyState;
     if (rs == 'loaded' || rs == 'complete') {
       this.onreadystatechange = null;
@@ -42,9 +41,6 @@ function loadScript(sURL,onLoad) {
   }
   oS.src = sURL;
   document.getElementsByTagName('head')[0].appendChild(oS);
-  } catch(e) {
-    // oh well
-  }
 }
 
 function msg(s) {
@@ -85,7 +81,41 @@ window.onload = function() {
 
 <p>SoundManager 2 status: <b id="sm2-status">Waiting for window.onload()...</b></p>
 
-<pre>window.onload = function() {
+<pre>
+<span>/*
+ * Dynamic script loading helper
+ * Normalizes good browser onload() vs. IE readyState weirdness
+ */
+</span>
+function loadScript(sURL, onLoad) {
+  function loadScriptHandler() {
+    var rs = this.readyState;
+    if (rs == 'loaded' || rs == 'complete') {
+      this.onreadystatechange = null;
+      this.onload = null;
+      if (onLoad) {
+        onLoad();
+      }
+    }
+  }
+  function scriptOnload() {
+    this.onreadystatechange = null;
+    this.onload = null;
+    window.setTimeout(onLoad,20);
+  }
+  var oS = document.createElement('script');
+  oS.type = 'text/javascript';
+  if (onLoad) {
+    oS.onreadystatechange = loadScriptHandler;
+    oS.onload = scriptOnload;
+  }
+  oS.src = sURL;
+  document.getElementsByTagName('head')[0].appendChild(oS);
+}
+
+<span>// Wait for window load, then load soundmanager2.js, let it start and play a test sound</span>
+
+window.onload = function() {
   <span>// Window loaded, waiting 1 second...</span>
   setTimeout(function() {
     <span>// Loading soundmanager2.js...</span>
@@ -112,6 +142,14 @@ window.onload = function() {
  <h2>Making SM2 wait for window.onload()</h2>
  <p>If you prefer to have the library wait for window.onload() before calling soundManager.onload()/onerror() methods, you can modify SM2's "waitForWindowLoad" property:</p>
 <code>soundManager.waitForWindowLoad = true;</code>
+
+ <h2 style="margin-top:1em">Preventing auto-init using SM2_DEFER</h2>
+ <p>If you want to completely defer the normal start-up of SM2 and call the SoundManager() constructor yourself, you can declare an SM2_DEFER global and set it to true.</p>
+ <pre><code>window.SM2_DEFER = true;
+<span>// some time later, manually start SM2...</span>
+soundManager = new SoundManager();
+soundManager.beginDelayedInit(); <span>// ensure SM2 begins its init process, in the event dom ready / window.load() have already passed</span></code></pre> 
+
  <h2 style="margin-top:1em">Disabling debug output</h2>
  <p>SoundManager 2 will write to a debug &lt;div&gt; element or a javascript console if available, by default. To disable it, simply set the relevant property to false:</p>
 <code>soundManager.debugMode = false;</code>
