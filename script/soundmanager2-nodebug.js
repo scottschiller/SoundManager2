@@ -1429,7 +1429,6 @@ function SoundManager(smURL, smID) {
         if (_t.durationEstimate === undefined) {
           _t.durationEstimate = _t.duration;
         }
-        _t.bufferLength = nBufferLength;
         if (_t.readyState !== 3 && _t._iO.whileloading) {
           _t._iO.whileloading.apply(_t);
         }
