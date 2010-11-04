@@ -144,6 +144,7 @@ url = '/path/to/swfs/';  <span>// path (directory) where SM2 .SWF files will be 
 useConsole = true;       <span>// use firebug/safari console.log()-type debug console if available</span>
 useMovieStar = true;     <span>// enable <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+</a> MPEG4 audio support</span>
 useFastPolling = false;  <span>// fast timer=higher callback frequency, combine w/useHighPerformance</span>
+customPollingInterval = null; <span>// msecs for polling interval. Default is 50 unless 'useFastPolling' is on.</span>
 useHighPerformance = false;<span>// position:fixed flash movie for faster JS/flash callbacks</span>
 waitForWindowLoad = false; <span>// always delay soundManager.onload() until after window.onload()</span>
 wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HTML on top of flash)</span>
@@ -227,12 +228,17 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			<p>Note that when the timeout is disabled, soundManager will not fire its onerror() handler if there is an error at the flash loading stage.</p>
 		  </div>
 
-		  <div class="f-block f-usefastpolling f-usehighperformance">
+		  <div class="f-block f-usefastpolling f-usehighperformance f-custompollinginterval">
 			<h4 id="soundmanager-usefastpolling">soundManager.useFastPolling</h4>
 			<p>By default <code>useFastPolling = false</code>, and thus SoundManager uses a 20-milisecond timer inside Flash when polling for updated sound properties such as <code>bytesLoaded</code> and data and event callbacks eg. <code>whileloading()</code>, <code>whileplaying()</code> and so on. With <code>useFastPolling = true</code>, a 1-msec timer is used and callback frequency may noticeably increase. This is best combined with <code>useHighPerformance</code> for optimal results.</p>
 		  </div>
+
+		  <div class="f-block f-custompollinginterval f-usefastpolling f-usehighperformance">
+			<h4 id="soundmanager-custompollinginterval">soundManager.customPollingInterval</h4>
+			<p>Setting this will override <code>useFastPolling</code>. E.g. set this to 200 to have 200ms intervals. This is useful in case your callbacks are CPU intensive.</p>
+		  </div>
 		
-		  <div class="f-block f-usehighperformance f-usefastpolling">
+		  <div class="f-block f-usehighperformance f-usefastpolling f-custompollinginterval">
 			<h4 id="soundmanager-highperformance">soundManager.useHighPerformance</h4>
 			<p>Perhaps intuitively, Flash is given higher priority when positioned within the viewable area of the browser, at least 6px in height (oddly), fully-opaque, visible and displayed on the screen. By default, <code class="in">soundManager.useHighPerformance</code> is enabled and should noticeably reduce JS/flash lag and increase the frequency of callbacks such as <code class="in">whileplaying()</code> in some circumstances.</p>
 			<p><code class="in">soundManager.useHighPerformance = true;</code></p>
@@ -1502,6 +1508,7 @@ soundManager.movieStarOptions = {<span>
 	 <li><a href="#soundmanager-url">url</a></li>
 	 <li>useConsole</li>
 	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
+	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-custompollinginterval">customPollingInterval</a></li>
      <li><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
 	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
      <li class="recent" title="Recently-added, beta feature">useHTML5Audio</li>
