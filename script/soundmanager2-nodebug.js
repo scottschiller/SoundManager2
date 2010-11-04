@@ -31,6 +31,7 @@ function SoundManager(smURL, smID) {
   this.useMovieStar = true;          // enable support for Flash 9.0r115+ (codename "MovieStar") MPEG4 audio formats (AAC, M4V, FLV, MOV etc.)
   this.bgColor = '#ffffff';          // movie (.swf) background color, eg. '#000000'
   this.useHighPerformance = false;   // position:fixed flash movie can help increase js/flash speed, minimize lag
+  this.customPollingInterval = null; // msecs for polling interval. Default is 50, unless 'useFastPolling' is enabled.
   this.flashLoadTimeout = 1000;      // msec to wait for flash movie to load before failing (0 = infinity)
   this.wmode = null;                 // string: flash rendering mode - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
@@ -2124,9 +2125,17 @@ function SoundManager(smURL, smID) {
       return false; // ignore if already succeeded
     }
 
-    function _initMsg() {
-      //_s._wD('-- SoundManager 2 ' + _s.version + (!_html5Only && _s.useHTML5Audio?(_s.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') + (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + ((_s.useFastPolling?'fast':'normal') + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
-    }
+     function _initMsg() {
+         //_s._wD('-- SoundManager 2 ' +
+             _s.version +
+             (!_html5Only && _s.useHTML5Audio?(_s.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') +
+             (_s.useMovieStar?', MovieStar mode':'') +
+             (_s.useHighPerformance?', high performance mode, ':', ') +
+             (( _s.customPollingInterval ? 'custom (' + _s.customPollingInterval + 'ms)' : (_s.useFastPolling?'fast':'normal')) + ' polling') +
+             (_s.wmode?', wmode: ' + _s.wmode:'') +
+             (_s.debugFlash?', flash debug mode':'') +
+             (_s.useFlashBlock?', flashBlock mode':'') + ' --', 1);
+     }
 
     if (_html5Only) {
       _setVersionInfo();
@@ -2427,7 +2436,7 @@ function SoundManager(smURL, smID) {
       try {
         sm2Debugger.handleEvent(sEventType, bSuccess, sMessage);
       } catch(e) {
-        // oh well  
+        // oh well
       }
     }
     return true;
@@ -2681,7 +2690,7 @@ function SoundManager(smURL, smID) {
       if (!_s.allowPolling) {
         //_wDS('noPolling', 1);
       } else {
-        _setPolling(true, _s.useFastPolling?true:false);
+        _setPolling(true, _s.customPollingInterval ? _s.customPollingInterval : _s.useFastPolling ? 10 : 50);
       }
       if (!_s.debugMode) {
         _s.o._disableDebug();
