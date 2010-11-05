@@ -64,8 +64,6 @@ package {
     // internal objects
     public var sounds:Array = []; // indexed string array
     public var soundObjects: Dictionary = new Dictionary(); // associative Sound() object Dictionary type
-    public var timerInterval: uint = 50;
-    public var timerIntervalHighPerformance: uint = 10; // ~30fps (in Safari on OSX, anyway..)
     public var timer: Timer = null;
     public var pollingEnabled: Boolean = false; // polling (timer) flag - disabled by default, enabled by JS->Flash call
     public var debugEnabled: Boolean = true; // Flash debug output enabled by default, disabled by JS call
@@ -904,10 +902,9 @@ package {
       }
     }
 
-    public function _setPolling(bPolling: Boolean = false, bUseHighPerformanceTimer: Boolean = false) : void {
+    public function _setPolling(bPolling: Boolean = false, nTimerInterval: uint = 50) : void {
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
-        var nTimerInterval: uint = (bUseHighPerformanceTimer ? timerIntervalHighPerformance : timerInterval);
         writeDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
         timer = new Timer(nTimerInterval, 0);
         timer.addEventListener(TimerEvent.TIMER, function() : void {

@@ -66,7 +66,6 @@ class SoundManager2 {
     var sounds = []; // indexed string array
     var soundObjects = []; // associative Sound() object array
     var timer = null;
-    var timerInterval = 50;
     var pollingEnabled = false; // polling (timer) flag - disabled by default, enabled by JS->Flash call
     var debugEnabled = true; // Flash debug output enabled by default, disabled by JS call
     var flashDebugEnabled = false; // debug output to flash movie, off by default
@@ -355,7 +354,10 @@ class SoundManager2 {
       soundObjects[sID].setVolume(nVol);
     }
 
-    var _setPolling = function(bPolling) {
+    var _setPolling = function(bPolling, timerInterval) {
+      if (typeof timerInterval === 'undefined') {
+        timerInterval = 50;
+      }
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
         writeDebug('Enabling polling, ' + timerInterval + ' ms interval');
