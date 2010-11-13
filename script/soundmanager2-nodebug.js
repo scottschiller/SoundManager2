@@ -186,15 +186,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _addEvt, _removeEvt, _slice = Array.prototype.slice,
-  _is_pre = _ua.match(/pre\//i),
-  _iPadOrPhone = _ua.match(/(ipad|iphone)/i),
-  _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone),
-  _isIE = (_ua.match(/MSIE/i)),
-  _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)),
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
-  _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null),
-  _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari),
-  _okToDisable = !_tryInitOnFocus;
+  _is_pre = _ua.match(/pre\//i), _iPadOrPhone = _ua.match(/(ipad|iphone)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone), _isIE = (_ua.match(/MSIE/i)), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
   this._overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null);
@@ -2608,7 +2600,7 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_(3|4)/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
+    isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_(3|4|5)/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
     isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (iPad) + iOS4 works.
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
