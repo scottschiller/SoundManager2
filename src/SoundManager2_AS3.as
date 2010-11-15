@@ -662,7 +662,6 @@ package {
       if (s.useNetstream) {
         try {
           s.useEvents = true;
-          s.ns.play(sURL);
         } catch(e: Error) {
           writeDebug('_load(): error: ' + e.toString());
         }
