@@ -341,6 +341,7 @@ package {
         } else if (!this.didLoad) {
           writeDebug('start: !didLoad - playing '+this.sURL);
           this.ns.play(this.sURL);
+          this.pauseOnBufferFull = false; // SAS: playing behaviour overrides buffering behaviour
           this.didLoad = true;
           this.paused = false;
         } else {
