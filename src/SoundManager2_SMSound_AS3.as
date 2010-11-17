@@ -278,20 +278,20 @@ package {
     }
 
     public function metaDataHandler(infoObject: Object) : void {
-      /*
-	  var data:String = new String();
-	  for (var prop:* in infoObject) {
-		data += prop+': '+infoObject[prop]+' ';
-	  }
-	  ExternalInterface.call('soundManager._writeDebug','Metadata: '+data);
-	  */
+      if (sm.debugEnabled) {
+        var data:String = new String();
+        for (var prop:* in infoObject) {
+          data += prop+': '+infoObject[prop]+' \n';
+        }
+        writeDebug('Metadata: '+data);
+      }
+      this.duration = infoObject.duration * 1000;
       if (!this.loaded) {
         // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
         // TODO: investigate loaded/total values
         // ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
         ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, (infoObject.duration || this.duration))
       }
-      this.duration = infoObject.duration * 1000;
       // null this out for the duration of this object's existence.
       // it may be called multiple times.
       this.cc.onMetaData = function(infoObject: Object) : void {}
