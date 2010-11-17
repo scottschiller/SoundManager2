@@ -2619,7 +2619,7 @@ function SoundManager(smURL, smID) {
         _s.hasHTML5 = true;
       }
       if (isBadSafari) {
-        //_s._wD('SoundManager::Note: Buggy HTML5 Audio in Safari on OS X 10.6.[3|4], see https://bugs.webkit.org/show_bug.cgi?id=32159 - disabling HTML5 audio',1);
+        //_s._wD('SoundManager::Note: Buggy HTML5 Audio in Safari on OS X 10.6.[3|4|5], see https://bugs.webkit.org/show_bug.cgi?id=32159 - disabling HTML5 audio',1);
         _s.useHTML5Audio = false;
         _s.hasHTML5 = false;
         return true;
