@@ -2222,7 +2222,8 @@ function SoundManager(smURL, smID) {
               'width': '6px',
               'height': '6px',
               'top': '-9999px',
-              'left': '-9999px'
+              'left': '-9999px',
+              'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
             };
             if (isRTL) {
               s.left = Math.abs(parseInt(s.left,10))+'px';
