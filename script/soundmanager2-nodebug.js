@@ -833,8 +833,8 @@ function SoundManager(smURL, smID) {
           if (_a) {
             // abort()-style method here, stop loading? (doesn't exist?)
             _a.pause();
-            _a.src = _s.nullURL; // needed? does nulling object work? any better way to cancel/unload/abort?
-            _a.load();
+            _a.src = null; // needed? does nulling object work? any better way to cancel/unload/abort?
+            // _a.load(); // load() of about:blank / null can hang Chrome, JS error in IE 9 preview 7
             _t._audio = null;
             _a = null;
             // delete _t._audio;
@@ -1875,7 +1875,7 @@ function SoundManager(smURL, smID) {
   };
 
   _policyFix = function(sOpt, sPre) {
-    if (sOpt && !sOpt.usePolicyFile && (sOpt.onid3 || sOpt.usePeakData || sOpt.useWaveformData || sOpt.useEQData)) {
+    if (!_s.isHTML5 && sOpt && !sOpt.usePolicyFile && (sOpt.onid3 || sOpt.usePeakData || sOpt.useWaveformData || sOpt.useEQData)) {
       //_s._wD((sPre?sPre+':':'') + _str('policy'));
       sOpt.usePolicyFile = true;
     }
