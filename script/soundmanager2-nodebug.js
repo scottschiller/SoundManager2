@@ -1995,7 +1995,7 @@ function SoundManager(smURL, smID) {
       _s.flashVersion = _defaultFlashVersion;
     }
     var isDebug = (_s.debugMode || _s.debugFlash?'_debug.swf':'.swf'); // debug flash movie, if applicable
-    if (!_html5Only && _s.audioFormats.mp4.required && _s.flashVersion < 9) {
+    if (_s.useHTML5Audio && !_html5Only && _s.audioFormats.mp4.required && _s.flashVersion < 9) {
       //_s._wD(_str('needfl9'));
       _s.flashVersion = 9;
     }
