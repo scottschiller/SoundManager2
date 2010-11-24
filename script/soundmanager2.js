@@ -185,7 +185,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _addEvt, _removeEvt, _slice = Array.prototype.slice,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice,
   _is_pre = _ua.match(/pre\//i), _iPadOrPhone = _ua.match(/(ipad|iphone)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone), _isIE = (_ua.match(/MSIE/i)), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
@@ -532,7 +532,7 @@ function SoundManager(smURL, smID) {
       _disableObject(_s.sounds[_s.soundIDs[i]]);
     }
     _initComplete(bNoDisable); // fire "complete", despite fail
-    _removeEvt(_win, 'load', _initUserOnload);
+    _event.remove(_win, 'load', _initUserOnload);
     return true;
   };
 
@@ -1733,7 +1733,8 @@ function SoundManager(smURL, smID) {
     return o1;
   };
 
-  (function() {
+  _event = (function() {
+
     var old = (_win.attachEvent),
     evt = {
       add: (old?'attachEvent':'addEventListener'),
@@ -1762,13 +1763,19 @@ function SoundManager(smURL, smID) {
       }
     }
 
-    _addEvt = function() {
+    function add() {
       apply(getArgs(arguments), 'add');
+    }
+
+    function remove() {
+      apply(getArgs(arguments), 'remove');
+    }
+
+    return {
+      'add': add,
+      'remove': remove
     };
 
-    _removeEvt = function() {
-      apply(getArgs(arguments), 'remove');
-    };
   }());
 
   _html5OK = function(iO) {
@@ -2026,44 +2033,6 @@ function SoundManager(smURL, smID) {
     }
     _s.o._setPolling(bPolling, bHighPerformance);
   };
-
-  (function() {
-    var old = (_win.attachEvent),
-    evt = {
-      add: (old?'attachEvent':'addEventListener'),
-      remove: (old?'detachEvent':'removeEventListener')
-    };
-
-    function getArgs(oArgs) {
-      var args = _slice.call(oArgs), len = args.length;
-      if (old) {
-        args[1] = 'on' + args[1]; // prefix
-        if (len > 3) {
-          args.pop(); // no capture
-        }
-      } else if (len === 3) {
-        args.push(false);
-      }
-      return args;
-    }
-
-    function apply(args, sType) {
-      var oFunc = args.shift()[evt[sType]];
-      if (old) {
-        oFunc(args[0], args[1]);
-      } else {
-        oFunc.apply(this, args);
-      }
-    }
-
-    _addEvt = function() {
-      apply(getArgs(arguments), 'add');
-    };
-
-    _removeEvt = function() {
-      apply(getArgs(arguments), 'remove');
-    };
-  }());
 
   function _initDebug() {
     if (_s.debugURLParam.test(_wl)) {
@@ -2395,7 +2364,7 @@ function SoundManager(smURL, smID) {
       return false;
     }
     _waitingForEI = true;
-    _removeEvt(_win, 'load', _delayWaitForEI);
+    _event.remove(_win, 'load', _delayWaitForEI);
     if (_tryInitOnFocus && !_isFocused) {
       _wDS('waitFocus');
       return false;
@@ -2538,8 +2507,8 @@ function SoundManager(smURL, smID) {
 
   _handleFocus = function() {
     function cleanup() {
-      _removeEvt(_win, 'focus', _handleFocus);
-      _removeEvt(_win, 'load', _handleFocus);
+      _event.remove(_win, 'focus', _handleFocus);
+      _event.remove(_win, 'load', _handleFocus);
     }
     if (_isFocused || !_tryInitOnFocus) {
       cleanup();
@@ -2550,7 +2519,7 @@ function SoundManager(smURL, smID) {
     _s._wD('soundManager::handleFocus()');
     if (_isSafari && _tryInitOnFocus) {
       // giant Safari 3.1 hack - assume mousemove = focus given lack of focus event
-      _removeEvt(_win, 'mousemove', _handleFocus);
+      _event.remove(_win, 'mousemove', _handleFocus);
     }
     // allow init to restart
     _waitingForEI = false;
@@ -2591,7 +2560,7 @@ function SoundManager(smURL, smID) {
     }
     if (_s.waitForWindowLoad && !_windowLoaded) {
       _wDS('waitOnload');
-      _addEvt(_win, 'load', _initUserOnload);
+      _event.add(_win, 'load', _initUserOnload);
       return false;
     } else {
       if (_s.waitForWindowLoad && _windowLoaded) {
@@ -2654,7 +2623,7 @@ function SoundManager(smURL, smID) {
       }
       _wDS('onloadOK', 1);
       if (_s.waitForWindowLoad) {
-        _addEvt(_win, 'load', _initUserOnload);
+        _event.add(_win, 'load', _initUserOnload);
       }
     },1);
   };
@@ -2714,7 +2683,7 @@ function SoundManager(smURL, smID) {
     }
 
     function _cleanup() {
-      _removeEvt(_win, 'load', _s.beginDelayedInit);
+      _event.remove(_win, 'load', _s.beginDelayedInit);
     }
 
     if (_s.hasHTML5) {
@@ -2863,11 +2832,11 @@ function SoundManager(smURL, smID) {
   // focus and window load, init
   if (!_s.hasHTML5 || _needsFlash) {
     // only applies to Flash mode
-    _addEvt(_win, 'focus', _handleFocus);
-    _addEvt(_win, 'load', _handleFocus);
-    _addEvt(_win, 'load', _delayWaitForEI);
+    _event.add(_win, 'focus', _handleFocus);
+    _event.add(_win, 'load', _handleFocus);
+    _event.add(_win, 'load', _delayWaitForEI);
     if (_isSafari && _tryInitOnFocus) {
-      _addEvt(_win, 'mousemove', _handleFocus); // massive Safari focus hack
+      _event.add(_win, 'mousemove', _handleFocus); // massive Safari focus hack
     }
   }
 
