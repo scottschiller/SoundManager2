@@ -37,8 +37,6 @@ package {
   import flash.utils.clearInterval;
   import flash.utils.Dictionary;
   import flash.utils.Timer;
-  import flash.xml.XMLDocument;
-  import flash.xml.XMLNode;
 
   public class SoundManager2_AS3 extends Sprite {
 
@@ -124,7 +122,6 @@ package {
           ExternalInterface.addCallback('_externalInterfaceTest', _externalInterfaceTest);
           ExternalInterface.addCallback('_disableDebug', _disableDebug);
           ExternalInterface.addCallback('_getMemoryUse', _getMemoryUse);
-          ExternalInterface.addCallback('_loadFromXML', _loadFromXML);
           ExternalInterface.addCallback('_createSound', _createSound);
           ExternalInterface.addCallback('_destroySound', _destroySound);
           ExternalInterface.addCallback('_setAutoPlay', _setAutoPlay);
@@ -921,44 +918,9 @@ package {
       return System.totalMemory.toString();
     }
 
-    // XML handler stuff
-    public function _loadFromXML(sURL:String) : void {
-      var loader: URLLoader = new URLLoader();
-      loader.addEventListener(Event.COMPLETE, parseXML);
-      writeDebug('Attempting to load XML: ' + sURL);
-      try {
-        loader.load(new URLRequest(sURL));
-      } catch(e: Error) {
-        writeDebug('Error loading XML: ' + e.toString());
-      }
-    }
-
-    public function parseXML(e: Event) : void {
-      try {
-        var oXML: XMLDocument = new XMLDocument();
-        oXML.ignoreWhite = true;
-        oXML.parseXML(e.target.data);
-        var xmlRoot: XMLNode = oXML.firstChild;
-        var xmlAttr:Object = xmlRoot.attributes;
-        var oOptions:Object = {};
-        var i: int = 0;
-        var j: int = 0;
-        for (i = 0, j = xmlRoot.childNodes.length; i < j; i++) {
-          xmlAttr = xmlRoot.childNodes[i].attributes;
-          oOptions = {
-            id: xmlAttr.id,
-            url: xmlRoot.attributes.baseHref + xmlAttr.href,
-            stream: xmlAttr.stream
-          }
-          ExternalInterface.call(baseJSController + ".createSound", oOptions);
-        }
-      } catch(e: Error) {
-        writeDebug('Error parsing XML: ' + e.toString());
-      }
-    }
-
     // -----------------------------------
     // end methods
+
   }
 
   // package

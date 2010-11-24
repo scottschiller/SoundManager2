@@ -103,24 +103,17 @@ soundManager.onready(function() {
   soundManager.defaultOptions.whileplaying = mpc.whileplaying;
   soundManager.defaultOptions.onfinish = mpc.onfinish;
 
-  // get drumkit sounds from XML file (as opposed to using createSound)
-
-  if (!soundManager.hasHTML5) {
-    soundManager.loadFromXML('acoustic-drumkit.xml');
-  } else {
-    if (!soundManager.html5.needsFlash) {
-      document.getElementById('isHTML5').style.display = 'inline';
-    }
-    var soundURLs = 'AMB_BD_1,AMB_FTM2,AMB_HHCL,AMB_HHOP,AMB_HHPD,AMB_HTM,AMB_LTM2,AMB_MTM,AMB_RIM1,AMB_SN13,AMB_SN_5,CHINA_1,CRASH_1,CRASH_5,CRASH_6,RIDE_1'.split(',');
-    for (var i=0; i<soundURLs.length; i++) {
-      soundManager.createSound('s'+i, 'audio/'+soundURLs[i]+'.mp3');
-    }
+  if (!soundManager.html5.needsFlash) {
+    document.getElementById('isHTML5').style.display = 'inline';
+  }
+  var soundURLs = 'AMB_BD_1,AMB_FTM2,AMB_HHCL,AMB_HHOP,AMB_HHPD,AMB_HTM,AMB_LTM2,AMB_MTM,AMB_RIM1,AMB_SN13,AMB_SN_5,CHINA_1,CRASH_1,CRASH_5,CRASH_6,RIDE_1'.split(',');
+  for (var i=0; i<soundURLs.length; i++) {
+    soundManager.createSound('s'+i, 'audio/'+soundURLs[i]+'.mp3');
   }
 
   /*
 
-   You can also create sounds using Javascript methods, instead of XML.
-   Options can also be set on a per-file basis, with specific option overrides.
+   createSound options can also be set on a per-file basis, with specific option overrides.
    (Options not specified here will inherit defaults as defined in soundManager.defaultOptions.)
 
    eg.

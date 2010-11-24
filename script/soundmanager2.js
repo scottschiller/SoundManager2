@@ -229,15 +229,6 @@ function SoundManager(smURL, smID) {
     return _isIE?_win[smID]:(_isSafari?_id(smID) || _doc[smID]:_id(smID));
   };
 
-  this.loadFromXML = function(sXmlUrl) {
-    try {
-      _s.o._loadFromXML(sXmlUrl);
-    } catch(e) {
-      _failSafely();
-    }
-    return true;
-  };
-
   this.createSound = function(oOptions) {
     var _cs = 'soundManager.createSound(): ',
     thisOptions = null, oSound = null, _tO = null;
@@ -1920,10 +1911,6 @@ function SoundManager(smURL, smID) {
     // </d>
   };
 
-  _id = function(sID) {
-    return _doc.getElementById(sID);
-  };
-
   _str = function() { // o [,items to replace]
     // <d>
     var args = _slice.call(arguments), // real array, please
@@ -2907,6 +2894,6 @@ if (typeof SM2_DEFER === 'undefined' || !SM2_DEFER) {
 
 // public interfaces
 window.SoundManager = SoundManager; // constructor
-window.soundManager = soundManager; // public instance: API, Flash callbacks etc.
+window.soundManager = soundManager; // public API, flash callbacks etc
 
 }(window));

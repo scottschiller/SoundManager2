@@ -369,43 +369,6 @@ class SoundManager2 {
       }
     }
 
-    // XML handler stuff
-    var parseXML = function(oXML) {
-      var xmlRoot = oXML.firstChild;
-      var xmlAttr = xmlRoot.attributes;
-      var oOptions = {};
-      for (var i = 0, j = xmlRoot.childNodes.length; i < j; i++) {
-        xmlAttr = xmlRoot.childNodes[i].attributes;
-        oOptions = {
-          id: xmlAttr.id,
-          url: xmlRoot.attributes.baseHref + xmlAttr.href,
-          stream: xmlAttr.stream
-        }
-        ExternalInterface.call(baseJSController + ".createSound", oOptions);
-      }
-    }
-
-    var xmlOnloadHandler = function(ok) {
-      if (ok) {
-        writeDebug("XML loaded");
-        parseXML(this);
-      } else {
-        writeDebug('XML load failed');
-      }
-    }
-
-    // ---
-    var _loadFromXML = function(sXmlUrl) {
-      writeDebug("_loadFromXML(" + sXmlUrl + ")");
-      // ExternalInterface.call(baseJSController+"._writeDebug","_loadFromXML("+sXmlUrl+")");
-      // var oXmlHandler = new XMLHandler(sXmlUrl);
-      var oXML = new XML();
-      oXML.ignoreWhite = true;
-      oXML.onLoad = xmlOnloadHandler;
-      writeDebug("Attempting to load XML: " + sXmlUrl);
-      oXML.load(sXmlUrl);
-    }
-
     var _init = function() {
 
       // OK now stuff should be available
@@ -422,7 +385,6 @@ class SoundManager2 {
         ExternalInterface.addCallback('_setPolling', this, _setPolling);
         ExternalInterface.addCallback('_externalInterfaceTest', this, _externalInterfaceTest);
         ExternalInterface.addCallback('_disableDebug', this, _disableDebug);
-        ExternalInterface.addCallback('_loadFromXML', null, _loadFromXML);
         ExternalInterface.addCallback('_createSound', this, _createSound);
         ExternalInterface.addCallback('_destroySound', this, _destroySound);
       } catch(e) {

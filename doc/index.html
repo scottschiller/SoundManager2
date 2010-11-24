@@ -621,14 +621,6 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 		<dd>Example: <code>var mbUsed = (soundManager.getMemoryUse()/1024/1024).toFixed(2); <span><span>// eg. 12.05 MB</span></span></code></dd>
 	   </dl>
 
-	   <dl id="soundmanager-loadfromxml" class="f-block f-loadfromxml">
-	   <dt>loadFromXML(<span>xmlURL:string</span>)</dt>
-	   <dd>Loads and creates sounds as defined in a <a href="http://www.schillmania.com/projects/soundmanager/" title="SoundManager v1 project page">SoundManager v1</a> XML file (legacy)</dd>
-	   <dd>Note that per-sound options are not supported with this method, and sound objects will be created immediately upon loading and parsing of the XML. The sounds will inherit the <code>defaultOptions</code> settings, with the exception of the <code>stream</code> attribute as set in the XML (true if defined, defaultOption applied if omitted.)</dd>
-	   <dd>Example: <code>soundManager.loadFromXML('<span>/path/to/some.xml</span>');</code></dd>
-	   <dd>XML format example: <a href="../demo/mpc/acoustic-drumkit.xml">MPC drumkit XML file</a></dd>
-	   </dl>
-
 	   <dl id="soundmanager-supported" class="f-block f-supported">
 	   <dt><span>isSupported:boolean</span> supported()</dt>
 	   <dd>Returns a boolean indicating whether soundManager has attempted to and succeeded in initialising. This function will return false if called before initialisation has occurred.</dd>
@@ -1528,7 +1520,6 @@ soundManager.movieStarOptions = {<span>
 	 <li class="flash9" title="Flash 9.0+ only"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
      <li><a href="#soundmanager-getsoundbyid">getSoundById()</a></li>
      <li><a href="#soundmanager-load">load()</a></li>
-     <li><a href="#soundmanager-loadfromxml">loadFromXML()</a></li>
      <li><a href="#soundmanager-mute">mute()</a></li>
      <li><a href="#soundmanager-pause">pause()</a></li>
      <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
