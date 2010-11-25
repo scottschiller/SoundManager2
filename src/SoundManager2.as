@@ -265,11 +265,13 @@ class SoundManager2 {
 
     var _unload = function(sID, sURL) {
       // effectively "stop" loading by loading a tiny MP3
-      // writeDebug('_unload()');
       var s = soundObjects[sID];
       s.onID3 = null;
       s.onLoad = null;
       s.loaded = false;
+      // ensure position is reset, if unload fails
+      s.start(0,1);
+      s.stop();
       s.loadSound(sURL, true);
       s.stop(); // prevent auto-play
       s.didJustBeforeFinish = false;
