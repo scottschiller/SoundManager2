@@ -377,7 +377,9 @@ package {
             oSound.lastValues.bytes = bL;
             ExternalInterface.call(sMethod, bL, bT, nD);
           }
+
         }
+
         // peak data
         if (oSoundChannel && oSound.usePeakData) {
           if (lP != oSound.lastValues.leftPeak) {
@@ -391,69 +393,60 @@ package {
         }
 
         var newDataError:Boolean = false;
-        var dataErrors:Array = [];
+        var dataError:String;
 
         // special case: Netstream may try to fire whileplaying() after finishing. check that stop hasn't fired.
         isPlaying = (oSound.didLoad && !oSound.paused && (!oSound.useNetstream || (oSound.useNetstream && oSound.lastNetStatus != "NetStream.Play.Stop"))); // don't update if stream has ended
 
         // raw waveform + EQ spectrum data
-        if (isPlaying && oSoundChannel || oSound.useNetstream) {
+        if (isPlaying && oSoundChannel) { // || oSound.useNetstream)) {
+
           if (oSound.useWaveformData) {
-            if (areSoundsInaccessible == false) {
+            if (!areSoundsInaccessible && !oSound.handledDataError && !oSound.ignoreDataError) {
               try {
                 oSound.getWaveformData();
               } catch(e: Error) {
-                // this shouldn't happen, but does seem to fire from time to time.
-                writeDebug('getWaveformData() warning: ' + e.toString());
-              }
-            } else if (oSound.handledDataError != true && oSound.ignoreDataError != true) {
-              try {
-                oSound.getWaveformData();
-              } catch(e: Error) {
-                writeDebug('getWaveformData() (waveform data) '+e.toString());
+                if (!oSound.handledDataError) {
+                  writeDebug('getWaveformData() (waveform data) '+e.toString());
+                }
                 // oSound.useWaveformData = false;
                 newDataError = true;
-                dataErrors.push(e.toString());
-                oSound.handledDataError = true;
+                dataError = e.toString();
               }
             }
           }
+
           if (oSound.useEQData) {
-            if (areSoundsInaccessible == false) {
+            if (!areSoundsInaccessible && !oSound.handledDataError && !oSound.ignoreDataError) {
               try {
                 oSound.getEQData();
               } catch(e: Error) {
-                writeDebug('getEQData() warning: ' + e.toString());
-                newDataError = true;
-                dataErrors.push(e.toString());
-                oSound.handledDataError = true;
-              }
-            } else if (oSound.handledDataError != true && oSound.ignoreDataError != true) {
-              try {
-                oSound.getEQData();
-              } catch(e: Error) {
-                // writeDebug('computeSpectrum() (EQ data) '+e.toString());
+                if (!oSound.handledDataError) {
+                  writeDebug('computeSpectrum() (EQ data) '+e.toString());
+                }
                 // oSound.useEQData = false;
                 newDataError = true;
-                dataErrors.push(e.toString());
-                oSound.handledDataError = true;
+                dataError = e.toString();
               }
             }
           }
+
           if (oSound.waveformDataArray != oSound.lastValues.waveformDataArray) {
             oSound.lastValues.waveformDataArray = oSound.waveformDataArray;
             newWaveformData = true;
           }
+
           if (oSound.eqDataArray != oSound.lastValues.eqDataArray) {
             oSound.lastValues.eqDataArray = oSound.eqDataArray;
             newEQData = true;
           }
-        }
 
-        if (newDataError) {
+          if (newDataError && !oSound.handledDataError) {
             sMethod = baseJSObject + "['" + sounds[i] + "']._ondataerror";
-            var errors:String = dataErrors.join('<br>\n');
-            ExternalInterface.call(sMethod, 'data unavailable: ' + errors);
+            ExternalInterface.call(sMethod, 'data unavailable: ' + dataError);
+            oSound.handledDataError = true;
+          }
+
         }
 
         if (typeof nP != 'undefined' && hasNew) { // && isPlaying - removed to allow updates while paused, eg. from setPosition() calls
