@@ -4,10 +4,10 @@
 <head>
 <title>SoundManager 2 Demo: Play MP3 links on a page, "page as playlist" style</title>
 
-<!-- for this page only, make things pretty -->
+<!-- demo.css for this page only, make things pretty -->
 <link rel="stylesheet" type="text/css" href="css/demo.css" />
 
-<!-- player core CSS -->
+<!-- Page player core CSS -->
 <link rel="stylesheet" type="text/css" href="css/page-player.css" />
 
 <!-- soundManager.useFlashBlock: related CSS -->
@@ -20,56 +20,48 @@
 <style type="text/css">
 ul.playlist li .comment {font-size:0.65em;opacity:0.5}
 </style>
-<script type="text/javascript" src="../../script/soundmanager2.js"></script>
-<script type="text/javascript">
+
+<!-- soundManager API -->
+<script src="../../script/soundmanager2.js"></script>
+
+<script>
 
 /* --------
 
   Config override: This demo uses shiny flash 9 stuff, overwriting Flash 8-based defaults
-  Alternate PP_CONFIG object must be defined before page-player JS is included/executed.
+  Alternate PP_CONFIG object must be defined before soundManager.onready()/onload() fire.
   Alternately, edit the config in page-player.js to simply use the values below by default
 
 -------- */
 
-// demo only..
+// demo only, but you can use these settings too..
+soundManager.flashVersion = 9;
 soundManager.useHighPerformance = true; // keep flash on screen, boost performance
 soundManager.wmode = 'transparent'; // transparent SWF, if possible
 soundManager.useFastPolling = true; // increased JS callback frequency
 soundManager.url = '../../swf/';
 
+// custom page player configuration
+
 var PP_CONFIG = {
-  flashVersion: 9,       // version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.
+  autoStart: false,      // begin playing first sound when page loads
+  playNext: true,        // stop after one sound, or play through list until end
+  useThrottling: false,  // try to rate-limit potentially-expensive calls (eg. dragging position around)</span>
   usePeakData: true,     // [Flash 9 only] whether or not to show peak data (left/right channel values) - nor noticable on CPU
-  useWaveformData: true, // [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
+  useWaveformData: false,// [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
   useEQData: false,      // [Flash 9 only] show EQ (frequency spectrum) data
   useFavIcon: false,     // try to apply peakData to address bar (Firefox + Opera) - performance note: appears to make Firefox 3 do some temporary, heavy disk access/swapping/garbage collection at first(?) - may be too heavy on CPU
   useMovieStar: true     // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
 }
 
 </script>
-<script type="text/javascript" src="script/page-player.js"></script>
-<script type="text/javascript">
-var is_shiny = false;
-function setTheme(sTheme) {
-  var o = pagePlayer.getElementsByClassName('playlist','ul');
-  for (var i=o.length; i--;) {
-    o[i].className = 'playlist'+(pagePlayer.cssBase?' '+pagePlayer.cssBase:'')+(sTheme?' '+sTheme:'')+(is_shiny?' shiny':'');
-  }
-  return false;
-}
-function setShiny(bShiny) {
-  is_shiny = bShiny;
-  var o = pagePlayer.getElementsByClassName('playlist','ul');
-  var sClass = 'shiny';
-  for (var i=o.length; i--;) {
-    if (!bShiny) {
-	  pagePlayer.removeClass(o[i],sClass);
-	} else {
-	  pagePlayer.addClass(o[i],sClass);
-	}
-  }
-}
-</script>
+
+<!-- Page player main script -->
+<script src="script/page-player.js"></script>
+
+<!-- optional: Metadata UI prototype (not needed unless you want the bottom-most demo bits) -->
+<script src="script/optional-page-player-metadata.js"></script>
+
 </head>
 
 <body>
@@ -79,9 +71,10 @@ function setShiny(bShiny) {
  <h1><a href="http://www.schillmania.com/projects/soundmanager2/" title="Play a page of mp3s with javascript via SoundManager 2">SoundManager 2</a> / "Page as a playlist"</h1>
 
  <h2 style="margin-top:0px;border:none">Muxtape.com-style UI, MP3/AAC Player Example</h2>
- <p class="note">*CSS 3 border-radius supported by Firefox 2.x+, Safari (2.x?) and IE 9.</p>
 
- <p style="margin-top:1.5em;color:#333">This page uses shiny features which require Flash 9. The <a href="basic.html" title="Basic page player demo">default config</a> uses Flash 8.</p>
+ <p style="padding-top:0.5em;color:#333">This page uses shiny features which require Flash 9. The <a href="basic.html" title="Basic page player demo">default config</a> uses Flash 8.</p>
+
+ <p id="experimental-features" style="margin-top:0.5em;color:#333">You can also try enabling <a href="#experimental" onclick="window.location.href = this;window.location.reload()">experimental visualization features</a>.</p>
 
  <div id="sm2-container">
   <!-- SM2 flash goes here -->
@@ -106,30 +99,6 @@ function setShiny(bShiny) {
   <li><a href="http://freshly-ground.com/data/video/Jellyfish.mov">Jellyfish <span class="comment">(848x480 H.264 video, playing audio portion only)</span></a></li>
  </ul>
 
- <div id="control-template">
-  <!-- control markup inserted dynamically after each link -->
-  <div class="controls">
-   <div class="statusbar">
-    <div class="loading"></div>
-    <div class="position"></div>
-   </div>
-  </div>
-  <div class="timing">
-   <div id="sm2_timing" class="timing-data">
-    <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span>
-   </div>
-  </div>
-  <div class="peak">
-   <div class="peak-box"><span class="l"></span><span class="r"></span></div>
-  </div>
- </div>
-
- <div id="spectrum-container" class="spectrum-container">
-  <div class="spectrum-box">
-   <div class="spectrum"></div>
-  </div>
- </div>
-
  <h3 style="margin-top:1em">Basics</h3>
 
  <p class="note">Don't want a Flash 9 requirement, EQ/waveform, perhaps less CPU? See Flash 8-based <a href="basic.html" title="Page as playlist demo">basic demo</a>.</p>
@@ -152,7 +121,7 @@ function setShiny(bShiny) {
    <input id="makeShiny" name="makeShiny" type="checkbox" onchange="setShiny(this.checked)" value="Shiny" /> <label for="makeShiny">Also add "shiny", eg. &lt;ul class="shiny playlist"&gt;...</label>
   </div>
  </form>
- <script type="text/javascript">document.getElementById('makeShiny').checked=false;</script>
+ <script>document.getElementById('makeShiny').checked=false;</script>
 
  <h2 id="metadata">Experimental (Alpha) Variant: MP3 "Metadata": Annotations / notes / sub-tracks</h2>
  <p>A potential approach to noting interesting moments in sounds, scene changes, new tracks in seamless DJ mixes etc. Keep in mind this is a single MP3 being loaded, but annotations are placed along the timeline as shown.</p>
@@ -201,7 +170,7 @@ function setShiny(bShiny) {
  <p>This provides a nice HTML base for all browsers and user agents, and enhances progressively for those with Javascript and Flash. Links pointing to MP3s are assigned an onclick handler which intercepts the click (preventing the browser from following the link and unloading the page. SM2 will then create sound objects as needed to play the MP3s. In the event there is an error at runtime or a lack of support (no JS/Flash etc.), the browser will simply load the MP3s directly as it normally would. This includes iPhones, etc.</p>
 
  <h3>HTML Fragments (UI Element Templates)</h3>
- <p>Each item in the playlist has its own set of controls and progress indicators, etc. This content is defined once as a hidden template of HTML in-page separate from the playlist markup and is cloned for each item as needed. This can be easily styled with CSS as well, of course.</p>
+ <p>Each item in the playlist has its own set of controls and progress indicators, etc. This content is defined once as a hidden template of HTML in the player JavaScript file, separate from the playlist markup, and is cloned for each item as needed. This can be easily styled with CSS as well, of course.</p>
 
 <h2>I'd like to use this.</h2>
 <p>See this <a href="basic.html" title="Page as playlist demo">basic demo</a> for reference.</p>
@@ -218,8 +187,9 @@ function setShiny(bShiny) {
 <p>The custom parameters used to make this demo page are highlighted in red.</p>
 <pre class="block"><code>  <span>// ( within page-player.js )</span>
 
+  soundManager.flashVersion = <span style="color:red">9</span>; <span>// If you need flash 9, include this line.</span>
+
   this.config = {
-    flashVersion: <span style="color:red">9</span>,       <span>// version of Flash to tell SoundManager to use - either 8 or 9.</span>
     usePeakData: <span style="color:red">true</span>,     <span>// [Flash 9 only] show peak (VU-meter) data</span>
     useFavIcon: <span style="color:red">true</span>,      <span>// try to show peakData in address bar (Firefox + Opera) - requires usePeakData = true too, of course.</span>
     useWaveformData: <span style="color:red">true</span>, <span>// [Flash 9 only] true: show raw waveform data - WARNING: CPU-intensive</span>
@@ -238,10 +208,11 @@ function setShiny(bShiny) {
 
 <p>Alternately, you may override the defaults on a per-page basis by defining an "alternate configuration" object <b>before</b> the page-player.js file has been included in your source code:</p>
 
-<pre class="block"><code>  <span>// ( before page-player.js )</span>
+<pre class="block"><code>  <span>// ( before soundManager.onready()/onload() have fired )</span>
+
+  soundManager.flashVersion = <span style="color:red">9</span>; <span>// If you need flash 9, include this line.</span>
 
   var PP_CONFIG = {
-    flashVersion: 9,       <span>// version of Flash to tell SoundManager to use - either 8 or 9. Flash 9 required for peak / spectrum data.</span>
     usePeakData: true,     <span>// [Flash 9 only] whether or not to show peak data (no notable CPU cost)</span>
     useWaveformData: true  <span>// [Flash 9 only] show raw waveform data. WARNING: Experimental, likely CPU-heavy</span>
   }</code></pre>
@@ -296,6 +267,7 @@ function setShiny(bShiny) {
 
 <div>
 <pre>
+
  SoundManager 2: "page as playlist" example
  ------------------------------------------
 
@@ -361,6 +333,39 @@ function setShiny(bShiny) {
 <p><a href="http://www.schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project home</a></p>
 
 </div>
+
+<!-- demo-only stuff -->
+<script>
+
+// enable experimental features, if #experimental is in the URL
+if (window.location.toString().match(/experimental/i)) {
+  PP_CONFIG.usePeakData = true;
+  PP_CONFIG.useWaveformData = true;
+  PP_CONFIG.useFavIcon = true;
+  document.getElementById('experimental-features').style.display = 'none';
+}
+
+var is_shiny = false;
+function setTheme(sTheme) {
+  var o = pagePlayer.getByClassName('playlist','ul');
+  for (var i=o.length; i--;) {
+    o[i].className = 'playlist'+(pagePlayer.cssBase?' '+pagePlayer.cssBase:'')+(sTheme?' '+sTheme:'')+(is_shiny?' shiny':'');
+  }
+  return false;
+}
+function setShiny(bShiny, e) {
+  is_shiny = bShiny;
+  var o = pagePlayer.getByClassName('playlist','ul');
+  var sClass = 'shiny';
+  for (var i=o.length; i--;) {
+    if (!bShiny) {
+      pagePlayer.removeClass(o[i],sClass);
+    } else {
+      pagePlayer.addClass(o[i],sClass);
+    }
+  }
+}
+</script>
 
 </body>
 </html>
