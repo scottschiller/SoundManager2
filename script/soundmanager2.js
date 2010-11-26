@@ -10,7 +10,7 @@
  * V2.97a.20101010
  */
 
-/*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true, regexp: false */
+/*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
 /*global window, SM2_DEFER, sm2Debugger, alert, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
 
 (function(window) {
@@ -1465,15 +1465,20 @@ function SoundManager(smURL, smID) {
         if (_html5_events.hasOwnProperty(f)) {
           add(f, _html5_events[f]);
         }
+        /*
+          if (_isSafari && f === 'ended') {
+            // Safari prematurely fires "ended" right away otherwise?
+            setTimeout(function(){
+              if (_t && _a) {
+                _add('ended', _ended);
+              }
+            }, 250);
+          } else {
+            add(f, _html5_events[f]);
+          }
+        */
       }
 
-/*
-      // avoid stupid premature event-firing bug in Safari(?)
-      setTimeout(function(){
-        if (_t && _a) {
-          _add('ended', _ended);
-        }
-*/
       return true;
 
     };
@@ -1522,7 +1527,7 @@ function SoundManager(smURL, smID) {
 
     this._whileplaying = function(nPosition, oPeakData, oWaveformDataLeft, oWaveformDataRight, oEQData) {
       if (isNaN(nPosition) || nPosition === null) {
-        return false; // Flash may return NaN at times
+        return false; // flash safety net
       }
       if (_t.playState === 0 && nPosition > 0) {
         // invalid position edge case for end/stop
@@ -1755,11 +1760,12 @@ function SoundManager(smURL, smID) {
     }
 
     function apply(args, sType) {
-      var oFunc = args.shift()[evt[sType]];
+      var element = args.shift(),
+          method = [evt[sType]];
       if (old) {
-        oFunc(args[0], args[1]);
+        element[method](args[0], args[1]);
       } else {
-        oFunc.apply(this, args);
+        element[method].apply(element, args);
       }
     }
 
@@ -2020,6 +2026,7 @@ function SoundManager(smURL, smID) {
       _s.mimePattern = _s.netStreamMimeTypes;
       _s.features.movieStar = true;
     } else {
+      _s.useMovieStar = false;
       _s.features.movieStar = false;
     }
     _s.filePattern = _s.filePatterns[(_fV !== 8?'flash9':'flash8')];
@@ -2558,6 +2565,7 @@ function SoundManager(smURL, smID) {
     } else {
       _debugTS('onload', true);
     }
+    _event.add(window, 'unload', _doNothing); // prevent browser from showing cached state via back button, because flash will be dead
     if (_s.waitForWindowLoad && !_windowLoaded) {
       _wDS('waitOnload');
       _event.add(_win, 'load', _initUserOnload);
@@ -2616,12 +2624,12 @@ function SoundManager(smURL, smID) {
         _flashBlockHandler();
       }
       _processOnReady();
-      _wDS('onload', 1);
       // call user-defined "onload", scoped to window
       if (_s.onload instanceof Function) {
+        _wDS('onload', 1);
         _s.onload.apply(_win);
+        _wDS('onloadOK', 1);
       }
-      _wDS('onloadOK', 1);
       if (_s.waitForWindowLoad) {
         _event.add(_win, 'load', _initUserOnload);
       }
