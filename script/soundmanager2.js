@@ -186,14 +186,14 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice,
-  _is_pre = _ua.match(/pre\//i), _iPadOrPhone = _ua.match(/(ipad|iphone)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _iPadOrPhone), _isIE = (_ua.match(/MSIE/i)), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
+  _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = (_ua.match(/MSIE/i)), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
   this._overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null);
   this.useAltURL = !this._overHTTP; // use altURL if not "online"
 
-  if (_iPadOrPhone || _is_pre) {
-    // might as well force it on Apple + Palm, flash support unlikely
+  if (_is_iDevice || _is_pre) {
+    // during HTML5 beta period (off by default), may as well force it on Apple + Palm, flash support unlikely
     _s.useHTML5Audio = true;
     _s.ignoreFlash = true;
   }
@@ -2181,7 +2181,7 @@ function SoundManager(smURL, smID) {
 
     // safety check for legacy (change to Flash 9 URL)
     _setVersionInfo();
-    _s.url = _normalizeMovieURL(this._overHTTP?remoteURL:localURL);
+    _s.url = _normalizeMovieURL(_s._overHTTP?remoteURL:localURL);
     smURL = _s.url;
 
     _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
@@ -2311,7 +2311,7 @@ function SoundManager(smURL, smID) {
     }
 
     _initMsg();
-    _s._wD('soundManager::createMovie(): Trying to load ' + smURL + (!this._overHTTP && _s.altURL?' (alternate URL)':''), 1);
+    _s._wD('soundManager::createMovie(): Trying to load ' + smURL + (!_s._overHTTP && _s.altURL?' (alternate URL)':''), 1);
 
     return true;
   };
@@ -2385,7 +2385,7 @@ function SoundManager(smURL, smID) {
       p = _s.getMoviePercent();
       if (!_didInit) {
         _s._wD(_sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0?'Loading ' + _s.movieURL + ' may have failed (and/or Flash ' + _fV + '+ not present?), ':'') + 'Flash blocked or JS-Flash security error.' + (_s.debugFlash?' ' + _str('checkSWF'):''), 2);
-        if (!this._overHTTP && p) {
+        if (!_s._overHTTP && p) {
           _wDS('localFail', 2);
           if (!_s.debugFlash) {
             _wDS('tryDebug', 2);
@@ -2395,7 +2395,7 @@ function SoundManager(smURL, smID) {
           // if 0 (not null), probably a 404.
           _s._wD(_str('swf404', _s.url));
         }
-        _debugTS('flashtojs', false, ': Timed out' + this._overHTTP?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
+        _debugTS('flashtojs', false, ': Timed out' + _s._overHTTP?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
       }
       // give up / time-out, depending
       if (!_didInit && _okToDisable) {
