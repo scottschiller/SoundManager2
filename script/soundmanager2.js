@@ -1785,7 +1785,7 @@ function SoundManager(smURL, smID) {
   }());
 
   _html5OK = function(iO) {
-    return ((iO.type?_html5CanPlay({type:iO.type}):false)||_html5CanPlay(iO.url));
+    return (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay(iO.url)||_html5Only); // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
   };
 
   _html5CanPlay = function(sURL) {
