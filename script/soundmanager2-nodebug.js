@@ -185,7 +185,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _mobileFlash, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice,
   _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = (_ua.match(/MSIE/i)), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
@@ -2097,58 +2097,6 @@ function SoundManager(smURL, smID) {
     */
   }
 
-  _mobileFlash = (function(){
-
-    var oM = null;
-
-    function resetPosition() {
-      if (oM) {
-        oM.left = oM.top = '-9999px';
-      }
-    }
-
-    function reposition() {
-      oM.left = _win.scrollX+'px';
-      oM.top = _win.scrollY+'px';
-    }
-
-    function setReposition(bOn) {
-      //_s._wD('mobileFlash::flash on-screen hack: '+(bOn?'ON':'OFF'));
-      var f = _win[(bOn?'add':'remove')+'EventListener'];
-      f('resize', reposition, false);
-      f('scroll', reposition, false);
-    }
-
-    function check(inDoc) {
-      // mobile flash (Android for starters) check
-      oM = _s.oMC.style;
-      if (_ua.match(/android/i)) {
-        if (inDoc) {
-          if (_s.flashLoadTimeout) {
-            _s.//_wDS('mfTimeout');
-            _s.flashLoadTimeout = 0;
-          }
-          return false;
-        }
-        //_s._wD('mfOn');
-        oM.position = 'absolute';
-        oM.left = oM.top = '0px';
-        setReposition(true);
-        _s.onready(function(){
-          setReposition(false); // detach
-          resetPosition(); // restore when OK/timed out
-        });
-        reposition();
-      }
-      return true;
-    }
-
-    return {
-      'check': check
-    };
-
-  }());
-
   _createMovie = function(smID, smURL) {
 
     var specialCase = null,
@@ -2250,7 +2198,8 @@ function SoundManager(smURL, smID) {
               // >= 6px for flash to run fast, >= 8px to start up under Firefox/win32 in some cases. odd? yes.
               'bottom': '0px',
               'left': '0px',
-              'overflow': 'hidden'
+              'overflow': 'hidden',
+              'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
             };
           } else {
             s = {
@@ -2259,7 +2208,7 @@ function SoundManager(smURL, smID) {
               'height': '6px',
               'top': '-9999px',
               'left': '-9999px',
-              'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
+              'hasPriority': 'true'
             };
             if (isRTL) {
               s.left = Math.abs(parseInt(s.left,10))+'px';
@@ -2290,7 +2239,6 @@ function SoundManager(smURL, smID) {
         } catch(e) {
           throw new Error(_str('appXHTML'));
         }
-        _mobileFlash.check();
       } else {
         // it's already in the document.
         sClass = _s.oMC.className;
@@ -2302,7 +2250,6 @@ function SoundManager(smURL, smID) {
           oEl.innerHTML = movieHTML;
         }
         _appendSuccess = true;
-        _mobileFlash.check(true);
       }
     }
 
