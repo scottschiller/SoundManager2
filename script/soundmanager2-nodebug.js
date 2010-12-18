@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20101010
+ * V2.97a.20101220
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20101010';
+  this.versionNumber = 'V2.97a.20101220';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -2543,7 +2543,7 @@ function SoundManager(smURL, smID) {
       success: (ignoreInit?_s.ok():!_disabled)
     },
     queue = [], i, j,
-    canRetry = (!_s.useFlashBlock || (_s.useFlashBlock && !_s.ok()));
+    canRetry = (_needsFlash && _s.useFlashBlock && !_s.ok());
     for (i = 0, j = _onready.length; i < j; i++) {
       if (_onready[i].fired !== true) {
         queue.push(_onready[i]);
