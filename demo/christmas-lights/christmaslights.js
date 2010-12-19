@@ -530,8 +530,8 @@ function XLSF(oTarget) {
     var screenY = (document.documentElement.clientHeight||document.body.clientHeight||document.body.scrollHeight);
   }
 
-  var jMax = Math.floor((screenX-16)/self.lightXY);
-  var iMax = Math.floor((screenY-16)/self.lightXY);
+  var jMax = Math.floor((screenX)/self.lightXY);
+  var iMax = Math.floor((screenY-12)/self.lightXY);
 
   for (i=0; i<iMax; i++) {
     for (j=0; j<jMax; j++) {
@@ -566,11 +566,9 @@ function XLSF(oTarget) {
         x2 = light.x;
         y2 = light.y;
         angle = Math.atan2((y-y2),(x-x2))*(180/Math.PI);
-        // angle += (45*180/Math.PI)
         if (light.col%2 === 0) { 
           angle += (270*180/Math.PI);
         }
-        // drawBulb(o,img,o._data.row,o._data.col,angle,bulb_width/96);
         if (transforms.prop) {
           light.o.style[transforms.prop] = 'rotate('+angle+'deg)';
         }
@@ -591,8 +589,8 @@ function XLSF(oTarget) {
       x = e.clientX;
       y = e.clientY;
     }
-    lightCol = Math.floor((x/(screenX-16))*jMax),
-    lightRow = Math.floor((y/(screenY-16))*(iMax+0.5))
+    lightCol = Math.floor((x/(self.lightClasses[self.lightClass]*jMax)*jMax)),
+    lightRow = Math.floor((y/(self.lightClasses[self.lightClass]*iMax)*iMax))
     lightIndex = (jMax*lightRow)+lightCol;
     if (self.lights[lightIndex]) {
       self.lights[lightIndex].smash();
