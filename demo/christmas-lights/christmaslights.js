@@ -20,6 +20,7 @@ function XLSF(oTarget) {
   var self = this;
   var xlsf = self;
   var useAngle = window.location.href.match(/angle/i);
+  var useFollow = window.location.toString().match(/follow/i);
   var classBase = 'xlsf-light'+(useAngle?' xlsf-angled':'');
   var animDuration = 1;
   var lastMouseX = 0;
@@ -114,7 +115,7 @@ function XLSF(oTarget) {
   this.appendLights = function() {
 	writeDebug('xlsf.appendLights()');
     self.oTarget.appendChild(self.oFrag);
-    self.oFrag = document.createDocumentFragment();
+    // self.oFrag = document.createDocumentFragment();
   }
 
   function ExplosionFragment(nType,sClass,x,y,vX,vY) {
@@ -142,7 +143,6 @@ function XLSF(oTarget) {
     } else if (self.sClass == 'right') {
       this.vX = Math.abs(this.vX)*-1;
     }
-// */
 
     this.burstTween = function() {
       // determine frame to show
@@ -197,9 +197,7 @@ function XLSF(oTarget) {
 
     var mX = x;
     var mY = y;
-
     var type = typeMap[nType+sClass];
-
     var scale = 7.5
     var shift = 2;
 
@@ -219,17 +217,11 @@ function XLSF(oTarget) {
       for (var i=self.fragments.length; i--;) {
         self.o.appendChild(self.fragments[i].o);
       }
-      // xlsf.oTarget.appendChild(self.o);
-      // self.oFrag = document.createDocumentFragment();
       if (!IS_MOON_COMPUTER) {
         // faster rendering, particles get cropped
-        // xlsf.oFrag.appendChild(self.o);
         xlsf.oExplosionTarget.appendChild(self.o);
       } else {
         // slower rendering, can overlay body
-        // _id('header').appendChild(self.o); 
-        // (document.documentElement?document.documentElement:document.body).appendChild(o);
-        // xlsf.oFrag.appendChild(self.o);
         xlsf.oExplosionTarget.appendChild(self.o);
       }
     }
@@ -253,20 +245,18 @@ function XLSF(oTarget) {
       self.boxVX = boxVX;
       self.boxVY = boxVY;
       // boundary checks
-// /*
       if (self.sClass == 'right') {
         self.boxVX = Math.abs(self.boxVX)*-1;
       } else if (self.sClass == 'left') {
         self.boxVX = Math.abs(self.boxVX);
       }
-// */
       for (var i=self.fragments.length; i--;) {
         self.fragments[i].animate();
       }
       if (!isIE && (IS_MOON_COMPUTER)) {
         var oAExplode = new Y.A(self.o,{marginLeft:{to:100*self.boxVX},marginTop:{to:150*self.boxVY},opacity:{to:0.01}},animDuration,Y.UE.easeInStrong);
       } else {
-        // even IE 7 sucks w/alpha-transparent PNG + CSS opacity. Boo urns.
+        // even IE 7 sucks w/alpha-transparent PNG + CSS opacity. Boourns.
         var oAExplode = new Y.A(self.o,{marginLeft:{to:100*self.boxVX},marginTop:{to:150*self.boxVY}},animDuration,Y.UE.easeInStrong);
       }
       oAExplode.onComplete.subscribe(self.reset);
@@ -276,14 +266,11 @@ function XLSF(oTarget) {
 
     this.init();
 
-    // this.trigger(); // boooom!
-
   }
 
   function Light(sSizeClass,sClass,nType,x,y,row,col) {
     var self = this;
     this.o = document.createElement('div');
-//    this.o.src = 'image/empty.gif';
     this.sClass = sClass;
     this.sSizeClass = sSizeClass;
     this.nType = (nType||0);
@@ -309,10 +296,6 @@ function XLSF(oTarget) {
     this.soundID = 'smash'+this.glassType;
     var panValue = xlsf.soundPan.panValue; // eg. +/- 80%
     this.pan = parseInt(this.x<=xlsf.soundPan.mid?-panValue+((this.x/xlsf.soundPan.mid)*panValue):(this.x-xlsf.soundPan.mid)/(xlsf.soundPan.right-xlsf.soundPan.mid)*panValue);
-
-    this.initSound = function() {
-      // soundManager.createSound({id:self.soundID,url:urlBase+'sound/glass'+this.glassType+'.mp3',autoLoad:true,pan:self.pan});
-    }
 
     this.setBGPos = function(x,y) {
       self.o.style.backgroundPosition = ((self.bgBaseX+x)+'px '+(self.bgBaseY+y)+'px');
@@ -353,8 +336,6 @@ function XLSF(oTarget) {
     }
 
     this.explode = function(e) {
-      // self.oExplosion = new Explosion(self.nType,self.sClass,self.x,self.y);
-      // console.log(self.nType+self.sClass);
       self.oExplosion.trigger(0,1); // boooom!
     }
 
@@ -374,7 +355,7 @@ function XLSF(oTarget) {
         self.setBGPos(self.w*-rndFrame,0);
       }
       if (!useFollow && !useAngle && transforms.prop) {
-        self.o.style[transforms.prop] = 'rotate('+Math.random()*plusMinus(30)+'deg)';
+        self.o.style[transforms.prop] = 'rotate('+Math.random()*plusMinus(20)+'deg)';
       }
       xlsf.lightSmashCounter++;
       for (var i=activeLights.length; i--;) {
@@ -463,7 +444,6 @@ function XLSF(oTarget) {
         self.lights[self.lights.length-self.lightSmashCounter].smash();
       }
     } else {
-	console.log('stopping');
       self.stopSequence();
     }
   }
@@ -627,11 +607,11 @@ function XLSF(oTarget) {
     }
   }
 
-  if (isTouchDevice) { 
-    document.addEventListener('touchstart', function(e) {
-      document.addEventListener('touchmove', mouseOrTouchMove, false);
-      document.addEventListener('touchend', function(e) {
-        document.removeEventListener('touchMove', mouseOrTouchMove);
+  if (isTouchDevice && self.oTarget !== document.documentElement) { 
+    self.oTarget.addEventListener('touchstart', function(e) {
+      self.oTarget.addEventListener('touchmove', mouseOrTouchMove, false);
+      self.oTarget.addEventListener('touchend', function(e) {
+        self.oTarget.removeEventListener('touchMove', mouseOrTouchMove);
       });
       mouseOrTouchMove(e); // initial touch might be a smashy one, too
       e.preventDefault();
@@ -645,20 +625,8 @@ function XLSF(oTarget) {
     }
   }
 
-  var useFollow = false;
-
-  if (window.location.toString().match(/follow/i)) {
-    useFollow = true;
-  }
-
-  // post-load/init case in the event this object is created late
-  // if (soundManager && soundManager._didInit && !soundManager._disabled) this.initSounds();
-
   this.startSequence(self.randomLights);
 
-  // setTimeout(this.destroyLights,10000);
-  // setTimeout(this.uberSmash,10000);
-  
 } // --- XLSF2007()
 
 var xlsf = null;
@@ -675,10 +643,6 @@ soundManager.useHighPerformance = true;
 soundManager.wmode = 'transparent';
 soundManager.debugMode = false;
 
-soundManager.onload = function() {
-  setTimeout(smashInit,500);
-}
-
-soundManager.onerror = function() {
-  setTimeout(smashInit,500);
-}
+soundManager.onready(function() {
+  setTimeout(smashInit,20);
+});
