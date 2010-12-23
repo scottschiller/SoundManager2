@@ -1554,7 +1554,12 @@ hr {
 }
 
 #revision-list > li {
+ margin-top:3em;
  margin-bottom:2em;
+}
+
+#revision-list > li:first-child {
+ margin-top:2em;
 }
 
 /* seasonal decorations */
