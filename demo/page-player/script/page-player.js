@@ -32,7 +32,7 @@ function PagePlayer() {
       // sniffing for favicon stuff, IE workarounds and touchy-feely devices
       ua = navigator.userAgent,
       supportsFavicon = (ua.match(/(opera|firefox)/i)),
-      isTouchDevice = (ua.match(/ipad|iphone/i));
+      isTouchDevice = (ua.match(/ipad|ipod|iphone/i));
 
   // configuration options
   // note that if Flash 9 is required, you must set soundManager.flashVersion = 9 in your script before this point.
