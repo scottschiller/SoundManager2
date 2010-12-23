@@ -596,12 +596,11 @@ function XLSF(oTarget) {
       self.lights[lightIndex].smash();
     }
     if (useFollow) {
-      lastMouseX = parseInt(e.clientX);
-      lastMouseY = parseInt(e.clientY);
+      lastMouseX = x;
+      lastMouseY = y;
       if (!mmhTimer) {
         mmhTimer = window.setTimeout(followMouseMove, 33); // try to be nice and throttle this call, which may be expensive
       }
-      // followMouseMove(e);
     }
   }
 
