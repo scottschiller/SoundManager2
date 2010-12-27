@@ -640,6 +640,6 @@ soundManager.useHighPerformance = true;
 soundManager.wmode = 'transparent';
 soundManager.debugMode = false;
 
-soundManager.onready(function() {
-  setTimeout(smashInit,20);
-});
+// start in either case
+soundManager.onready(smashInit);
+soundManager.ontimeout(smashInit);

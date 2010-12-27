@@ -238,9 +238,7 @@ soundManager.useMovieStar = true;
 // ----
 
 soundManager.onready(function() {
-  if (soundManager.supported()) {
-    // soundManager.createSound() etc. may now be called
-    inlinePlayer = new InlinePlayer();
-  }
+  // soundManager.createSound() etc. may now be called
+  inlinePlayer = new InlinePlayer();
 });
 

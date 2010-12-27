@@ -204,19 +204,14 @@ soundManager.onerror = function() {
 </span>});
 </code></pre>
 
- <p>An optional status object is actually passed to your onready() listener, which you can use instead of checking <code>soundManager.supported()</code>:</p>
+ <p>You may also listen for a startup timeout, a form of failure (eg., Flash was required, but was blocked from loading etc.):</p>
 
-<pre class="block"><code>soundManager.onready(function(oStatus) {
-  <span><span>// oStatus: object containing "success" parameter</span>
-  if (oStatus.success) {
-    <span>// createSound() / play() etc. can now be called</span>
-  } else {
+<pre class="block"><code>soundManager.ontimeout(function() {<span>
     <span>// uh-oh, SM2 failed to start - error, unsupported etc.</span>
-  }
 </span>});
 </code></pre>
 
-<p>SoundManager first processes the <code>onready</code> queue in the order items were added, and then fires <code>soundManager.onload()</code> or <code>onerror()</code>. If you call <code>onready()</code> after SM2 has loaded, your callback will be fired immediately.</p>
+<p>SoundManager first processes the <code>onready</code> or <code>ontimeout</code> queue in the order items were added, and then fires <code>soundManager.onload()</code> or <code>onerror()</code>. If you call <code>onready()</code> after SM2 has loaded, your callback will be fired immediately.</p>
 
  <h2>A note about initialization</h2>
  

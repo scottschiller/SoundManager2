@@ -471,7 +471,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				  </dl>
 
 	   <dl id="soundmanager-createsound-overloaded" class="f-block f-createsound">
-	    <dt><span>object:SMSound </span>createSound(<span>id:string,url:string</span>) - overloaded method</dt>
+	    <dt><span>object:SMSound </span>createSound(<span>id:string, url:string</span>) - overloaded method</dt>
 	    <dd title="id:string,url:string">Creates a sound with the specified ID and URL (simple two-parameter method.)</dd>
 	    <dd>Example: <code>soundManager.createSound('<span>mySound</span>','<span>/audio/mysoundfile.mp3</span>');</code></dd>
 	   </dl>
@@ -490,33 +490,33 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   </dl>
 
 	   <dl id="soundmanager-onready" class="f-block f-onready">
-	   <dt>onready(<span>callback:function(status),[scope]</span>)</dt>
-	   <dd title="callback:function">Queue <code>onload()</code>-style event listener(s) processed at (or immediately, if added after) SM2 initialization, just before <code>soundManager.onload()</code> or <code>onerror()</code> are called. More flexible than single <code>soundManager.onload()</code> event, allows separate scripts to add listeners etc. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
+	   <dt>onready(<span>callback:function, [scope]</span>)</dt>
+	   <dd title="callback:function">Queue <code>addEventListener</code>-style event handler(s) for SM2 init success, processed at (or immediately, if added after) SM2 initialization, just before <code>soundManager.onload()</code> is called. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
 	   <dd>Example: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
-	   <dd>A "status" object is also passed to the callback, which can be safely ignored. It includes a "success" parameter, indicating the state of <code>soundManager.ok()</code>.</dd>
 	   <dd>Example:
-<pre class="block"><code>soundManager.onready(<span>function(oStatus) {
-  if (oStatus.success) {
-    alert('Yay, SM2 loaded OK!');	
-  } else {
-    alert('Oh snap, SM2 could not start.');
-  }
-}</span>);</code></pre>
-		<p>You may also check <code>soundManager.ok()</code> instead.</p>
 <pre class="block"><code>soundManager.onready(<span>function() {
-  if (soundManager.ok()) {
-    alert('Yay, SM2 loaded OK!');	
-  } else {
-    alert('Oh snap, SM2 could not start.');
-  }
+  alert('Yay, SM2 loaded OK!');	
 }</span>);</code></pre>
 	   </dd>
 	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
-	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts up.</dd>
+	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
+	   </dl>
+
+	   <dl id="soundmanager-ontimeout" class="f-block f-ontimeout">
+	   <dt>ontimeout(<span>callback:function, [scope]</span>)</dt>
+	   <dd title="callback:function">Queue <code>addEventListener()</code>-style event handler(s) for SM2 init failure, processed at (or immediately, if added after) SM2 initialization, just before <code>soundManager.onerror()</code> is called. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
+	   <dd>Example: <code>soundManager.ontimeout(<span>myOnTimeoutHandler</span>); soundManager.ontimeout(<span>myOtherHandler</span>);</code></dd>
+	   <dd>Example:
+<pre class="block"><code>soundManager.ontimeout(<span>function() {
+  alert('SM2 failed to start. Flash missing, blocked or security error?');	
+}</span>);</code></pre>
+	   </dd>
+	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
+	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
 	   </dl>
 
 	   <dl id="soundmanager-play" class="f-block f-play">
-	   <dt><span>object:SMSound</span> play(<span>id:string,[options object]</span>)</dt>
+	   <dt><span>object:SMSound</span> play(<span>id:string, [options object]</span>)</dt>
 	   <dd title="soundID:string">Starts playing the sound specified by ID. (Will start loading if applicable, and will play ASAP.)</dd>
 	   <dd>Returns an <code>SMSound</code> (sound object) instance.</dd>
 	   <dd>Example: <code>soundManager.play('<span>mySound</span>');</code></dd>
@@ -577,7 +577,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   </dl>
 
 	   <dl id="soundmanager-setvolume" class="f-block f-setvolume">
-	   <dt><span>object:SMSound</span> setVolume(<span>id:string,volume:integer</span>)</dt>
+	   <dt><span>object:SMSound</span> setVolume(<span>id:string, volume:integer</span>)</dt>
 	   <dd title="id:string,volume:integer">Sets the volume of the sound specified by ID and returns the related sound object. Accepted values: 0-100. Affects <span>volume</span> property.</dd>
 	   <dd>Example: <code>soundManager.setVolume('<span>mySound</span>',<span>50</span>);</code></dd>
 	   </dl>
@@ -620,7 +620,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   </dl>
 
 	   <dl id="soundmanager-load" class="f-block f-load">
-	   <dt><span>object:SMSound</span> load(<span>id:string,[options object]</span>)</dt>
+	   <dt><span>object:SMSound</span> load(<span>id:string, [options object]</span>)</dt>
 	   <dd title="soundID:string">Starts loading the sound specified by ID, with options if specified. Returns the related sound object.</dd>
 	   <dd>Example: <code>soundManager.load('<span>mySound</span>');</code></dd>
 	   <dd>Example 2: <code>soundManager.load('<span>mySound</span>',{<span>volume:50,onfinish:playNextSound</span>});</code></dd>
@@ -1372,7 +1372,7 @@ soundManager.movieStarOptions = {<span>
 			   <dd>If you want multiple listeners for this event, see <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a>.</dd>
 
 			   <dt title="method(object:function)">onready(<span>callback:function(status),[scope]</span>)</dt>
-			   <dd title="callback:function">Queue <code>onload()</code>-style event listener(s), triggered when soundManager has either started or failed.</dd>
+			   <dd title="callback:function">Queue <code>onload()</code>-style event listener(s), triggered when soundManager has successfully started.</dd>
 			   <dd>Example: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
 			   <dd>For more detail and examples, see <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a>.</dd>
 
@@ -1564,6 +1564,7 @@ soundManager.movieStarOptions = {<span>
      <li><a href="#soundmanager-oninitmovie">oninitmovie()</a></li>
      <li><a href="#soundmanager-onload">onload()</a></li>
      <li><a href="#soundmanager-onready">onready()</a></li>
+     <li class="new" title="Newly-added feature"><a href="#soundmanager-ontimeout">ontimeout()</a></li>
     </ul>
 
    </li>

@@ -29,104 +29,114 @@
 <script type="text/javascript">
 // <![CDATA[
 
-	var isHome = true;
-	if (!window.location.href.toString().match(/sm2-usehtml5audio/i)) {
-      soundManager.useHTML5Audio = true; // w00t.
+var isHome = true;
+
+if (!window.location.href.toString().match(/sm2-usehtml5audio/i)) {
+  soundManager.useHTML5Audio = true; // w00t.
+}
+
+soundManager.useFlashBlock = true;
+soundManager.bgColor = '#ffffff';
+soundManager.debugMode = false;
+soundManager.url = 'swf/';
+soundManager.wmode = 'transparent'; // hide initial flash of white on everything except firefox/win32
+
+var PP_CONFIG = {
+  autoStart: false,      // begin playing first sound when page loads
+  playNext: true,        // stop after one sound, or play through list until end
+  useThrottling: false,  // try to rate-limit potentially-expensive calls (eg. dragging position around)</span>
+  usePeakData: true,     // [Flash 9 only] whether or not to show peak data (left/right channel values) - nor noticable on CPU
+  useWaveformData: false,// [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
+  useEQData: false,      // [Flash 9 only] show EQ (frequency spectrum) data
+  useFavIcon: false,     // try to apply peakData to address bar (Firefox + Opera) - performance note: appears to make Firefox 3 do some temporary, heavy disk access/swapping/garbage collection at first(?) - may be too heavy on CPU
+  useMovieStar: true     // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
+}
+
+if (navigator.platform.match(/win32/i) && navigator.userAgent.match(/firefox/i)) {
+  // extra-special homepage case (you should never see this), prevent out-of-view SWF load failure WITH high performance AND flashblock AND SWF in a placed element
+  soundManager.useHighPerformance = false;
+}
+
+soundManager.useFastPolling = true;
+
+if (!navigator.userAgent.match(/msie 6/i)) {
+  threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
+}
+
+function checkBadSafari() {
+  var _ua = navigator.userAgent;
+  if (!window.location.toString().match(/sm2\-ignorebadua/i) && _ua.match(/safari/i) && !_ua.match(/chrome/i) && _ua.match(/OS X 10_6_(3|4|5)/i)) { // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
+    var complaint = document.createElement('li');
+    complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled for this browser/OS due to load/play failures in Safari 4 + 5 on Snow Leopard 10.6.3/4, caused by bugs in QuickTime X and/or underlying frameworks. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)<br>Try <a href="?sm2-ignorebadua">HTML5 anyway?</a> ("water drop" MP3 playback seems to fail most often.)';
+    _id('html5-audio-notes').appendChild(complaint);
+  }
+}
+
+soundManager.onready(function() {
+
+  _id('sm2-support').style.display = 'none';
+  doChristmasLights();
+
+  // if using HTML5, show some additional format support info
+  // written while watching The Big Lebowski for the Nth time. Donny, you're out of your element!
+  var s = soundManager;
+
+  if (s.useHTML5Audio && s.hasHTML5) {
+    var li = document.createElement('li');
+    li.className = 'html5support';
+    var items = [];
+    var needsFlash = false;
+    for (item in s.audioFormats) {
+      if (s.audioFormats.hasOwnProperty(item)) {
+        needsFlash = (soundManager.filePattern.test('.' + item));
+        items.push('<span class="' + (s.html5[item] ? 'true' : 'false') + (!s.html5[item] && needsFlash ? ' partial' : '') + '" title="' + (s.html5[item] ? 'Native HTML5 support found' : 'No HTML5 support found' + (needsFlash ? ', using Flash fallback' : ', no Flash support either')) + '">' + (s.html5[item] ? '&lt;' : '') + item + (s.html5[item] ? '&gt;' : '') + '</span>');
+      }
     }
-	soundManager.useFlashBlock = true;
-	soundManager.bgColor = '#ffffff';
-	soundManager.debugMode = false;
-	soundManager.url = 'swf/';
-	soundManager.wmode = 'transparent'; // hide initial flash of white on everything except firefox/win32
 
-    var PP_CONFIG = {
-      autoStart: false,      // begin playing first sound when page loads
-      playNext: true,        // stop after one sound, or play through list until end
-      useThrottling: false,  // try to rate-limit potentially-expensive calls (eg. dragging position around)</span>
-      usePeakData: true,     // [Flash 9 only] whether or not to show peak data (left/right channel values) - nor noticable on CPU
-      useWaveformData: false,// [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
-      useEQData: false,      // [Flash 9 only] show EQ (frequency spectrum) data
-      useFavIcon: false,     // try to apply peakData to address bar (Firefox + Opera) - performance note: appears to make Firefox 3 do some temporary, heavy disk access/swapping/garbage collection at first(?) - may be too heavy on CPU
-      useMovieStar: true     // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
+    li.innerHTML = 'This browser\'s <em class="true">&lt;HTML5&gt;</em> vs. <em class="partial">Flash</em> support (best guess):<b>' + items.join('') + '</b>' + (!soundManager._use_maybe ? ' (Try <a href="#sm2-useHTML5Maybe=1" onclick="window.location.href=this.href;window.location.reload()" title="Try using probably|maybe for HTML5 Audio().canPlayType(), more buggy but may get HTML5 support on Chrome/OS X and other browsers.">less-strict HTML5 checking</a>?)' : ' (allowing <b>maybe</b> for <code>canPlayType()</code>, less-strict HTML5 audio support tests)');
+    _id('html5-audio-notes').appendChild(li);
+    _id('without-html5').style.display = 'inline';
+
+  } else {
+
+    _id('without-html5').style.display = 'none';
+
+  }
+
+  checkBadSafari();
+
+  // check inline player / HTML 5 bits
+  var items = _id('muxtape-html5').getElementsByTagName('a');
+  for (var i = 0, j = items.length; i < j; i++) {
+    if (!soundManager.canPlayLink(items[i])) {
+      items[i].className += ' not-supported';
+      items[i].title += ' \n\nNOTE: Format apparently not supported by this browser.';
     }
+  }
 
-	if (navigator.platform.match(/win32/i) && navigator.userAgent.match(/firefox/i)) {
-    // extra-special homepage case (you should never see this), prevent out-of-view SWF load failure WITH high performance AND flashblock AND SWF in a placed element
-      soundManager.useHighPerformance = false;
+});
+
+soundManager.ontimeout(function() {
+
+  // failed to load
+  var o = _id('sm2-support');
+  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>' + (soundManager.hasHTML5 ? 'The flash portion of ' : '') + 'SoundManager 2 was unable to start. ' + (soundManager.useHTML5Audio ? (soundManager.hasHTML5 ? '</p><p>Partial HTML5 Audio() is present, but flash is needed for MP3 and/or MP4 support.' : '<br>(No HTML5 Audio() support found, either.)') : '') + '<br>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it should be visible above.</p><p id="flash-offline">' + (!soundManager._overHTTP ? '<b>Viewing offline</b>? You may need to change a Flash security setting.' : 'Other possible causes: Missing .SWF, or no Flash?') + ' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot">Troubleshooting</a></p></div>';
+  var hatesFlash = (navigator.userAgent.match(/(ipad|iphone)/i));
+  o.innerHTML = smLoadFailWarning;
+  if (hatesFlash || soundManager.getMoviePercent()) {
+    // movie loaded at least somewhat, so don't show flashblock things
+    _id('flashblocker').style.display = 'none';
+    if (hatesFlash) {
+      // none of that here.
+      _id('flash-offline').style.display = 'none';
     }
-	soundManager.useFastPolling = true;
+  }
+  o.style.marginBottom = '1.5em';
+  o.style.display = 'block';
 
-    if (!navigator.userAgent.match(/msie 6/i)) {
-	  threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
-    }
+});
 
-    function checkBadSafari() {
-		var _ua = navigator.userAgent;
-		if (!window.location.toString().match(/sm2\-ignorebadua/i) && _ua.match(/safari/i) && !_ua.match(/chrome/i) && _ua.match(/OS X 10_6_(3|4|5)/i)) { // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-		  var complaint = document.createElement('li');
-		  complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled for this browser/OS due to load/play failures in Safari 4 + 5 on Snow Leopard 10.6.3/4, caused by bugs in QuickTime X and/or underlying frameworks. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)<br>Try <a href="?sm2-ignorebadua">HTML5 anyway?</a> ("water drop" MP3 playback seems to fail most often.)';
-		  _id('html5-audio-notes').appendChild(complaint);
-		}
-	}
-
-	soundManager.onready(function() {
-	  if (soundManager.supported()) {
-		_id('sm2-support').style.display = 'none';
-	    doChristmasLights();
-	    // if using HTML5, show some additional format support info
-	    // written while watching The Big Lebowski for the Nth time. Donny, you're out of your element!
-        var s = soundManager;
-	    if (s.useHTML5Audio && s.hasHTML5) {
-	      var li = document.createElement('li');
-	      li.className = 'html5support';
-	      var items = [];
-	      var needsFlash = false;
-          for (item in s.audioFormats) {
-            if (s.audioFormats.hasOwnProperty(item)) {
-			  needsFlash = (soundManager.filePattern.test('.'+item));
-              items.push('<span class="'+(s.html5[item]?'true':'false')+(!s.html5[item] && needsFlash?' partial':'')+'" title="'+(s.html5[item]?'Native HTML5 support found':'No HTML5 support found'+(needsFlash?', using Flash fallback':', no Flash support either'))+'">'+(s.html5[item]?'&lt;':'')+item+(s.html5[item]?'&gt;':'')+'</span>');
-            }
-          }
-          li.innerHTML = 'This browser\'s <em class="true">&lt;HTML5&gt;</em> vs. <em class="partial">Flash</em> support (best guess):<b>'+items.join('')+'</b>'+(!soundManager._use_maybe?' (Try <a href="#sm2-useHTML5Maybe=1" onclick="window.location.href=this.href;window.location.reload()" title="Try using probably|maybe for HTML5 Audio().canPlayType(), more buggy but may get HTML5 support on Chrome/OS X and other browsers.">less-strict HTML5 checking</a>?)':' (allowing <b>maybe</b> for <code>canPlayType()</code>, less-strict HTML5 audio support tests)');
-	      _id('html5-audio-notes').appendChild(li);
-	      _id('without-html5').style.display = 'inline';
-	    } else {
-	      _id('without-html5').style.display = 'none';
-		}
-		checkBadSafari();
-	    // check inline player / HTML 5 bits
-	    var items = _id('muxtape-html5').getElementsByTagName('a');
-	    for (var i=0, j=items.length; i<j; i++) {
-	      if (!soundManager.canPlayLink(items[i])) {
-		    items[i].className += ' not-supported';
-		    items[i].title += ' \n\nNOTE: Format apparently not supported by this browser.';
-	      }
-		}
-	  } else {
-        checkBadSafari();
-	  }
-	});
-
-	soundManager.onerror = function() {
-	  // failed to load
-	  var o = _id('sm2-support');
-	  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>'+(soundManager.hasHTML5?'The flash portion of ':'')+'SoundManager 2 was unable to start. '+(soundManager.useHTML5Audio?(soundManager.hasHTML5?'</p><p>Partial HTML5 Audio() is present, but flash is needed for MP3 and/or MP4 support.':'<br>(No HTML5 Audio() support found, either.)'):'')+'<br>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it should be visible above.</p><p id="flash-offline">'+(!soundManager._overHTTP?'<b>Viewing offline</b>? You may need to change a Flash security setting.':'Other possible causes: Missing .SWF, or no Flash?')+' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot">Troubleshooting</a></p></div>';
-	  var hatesFlash = (navigator.userAgent.match(/(ipad|iphone)/i));
-	  o.innerHTML = smLoadFailWarning;
-	  if (hatesFlash || soundManager.getMoviePercent()) {
-	    // movie loaded at least somewhat, so don't show flashblock things
-		_id('flashblocker').style.display = 'none';
-		if (hatesFlash) {
-		  // none of that here.
-		  _id('flash-offline').style.display = 'none';
-		}
-	  }
-      o.style.marginBottom = '1.5em';
-	  o.style.display = 'block';
-	}
-	
-	// side note: If it's not december but you want to smash things, try #christmas=1 in the homepage URL.
-
+// side note: If it's not december but you want to smash things, try #christmas=1 in the homepage URL.
 // 	]]>
 </script>
 <script type="text/javascript" src="demo/index.js"></script>

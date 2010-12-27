@@ -1262,9 +1262,5 @@ if (threeSixtyPlayer.config.usePeakData) {
   soundManager.flash9Options.usePeakData = true;
 }
 
-soundManager.onready(function(){
-  if (soundManager.supported()) {
-    // soundManager.createSound() etc. may now be called
-    threeSixtyPlayer.init();
-  }
-});
+// hook into SM2 init
+soundManager.onready(threeSixtyPlayer.init);

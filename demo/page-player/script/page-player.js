@@ -1030,8 +1030,6 @@ function PagePlayer() {
 }
 
 soundManager.onready(function() {
-  if (soundManager.supported()) {
-    pagePlayer = new PagePlayer();
-    pagePlayer.init(typeof PP_CONFIG !== 'undefined' ? PP_CONFIG : null);
-  }
+  pagePlayer = new PagePlayer();
+  pagePlayer.init(typeof PP_CONFIG !== 'undefined' ? PP_CONFIG : null);
 });

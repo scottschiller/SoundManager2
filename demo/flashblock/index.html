@@ -33,17 +33,14 @@ if (winLoc.match(/flash9/i)) {
   soundManager.flashVersion = 8;
 }
 
-soundManager.onready(function(){
-  var ok = soundManager.supported();
+soundManager.ontimeout(function(){
   var loaded = soundManager.getMoviePercent();
-  var msg = null;
-  if (!ok) {
-    // loaded, or no?
-    msg = 'No response (yet), flash movie '+(loaded?'loaded OK (likely security/error case)':'has not loaded (likely flash-blocked.)')+' Waiting indefinitely ...';
-  } else {
-    msg = 'SoundManager load OK';
-  }
-  document.getElementById('sm2-status').innerHTML = msg;
+  document.getElementById('sm2-status').innerHTML = 'No response (yet), flash movie '+(loaded?'loaded OK (likely security/error case)':'has not loaded (likely flash-blocked.)')+' Waiting indefinitely ...';
+});
+
+soundManager.onready(function(){
+  var loaded = soundManager.getMoviePercent();
+  document.getElementById('sm2-status').innerHTML = 'SoundManager load OK';
 });
 
 </script>

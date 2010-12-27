@@ -74,15 +74,15 @@ soundManager._flashBlock = new function() {
     soundManager._flashBlock.startTimer(750);
   };
 
-  soundManager.onready(function(oStatus) {
+  soundManager.onready(function() {
     // SM2 has now initialized, either no blocking OR blocked movie was allowed/whitelisted
     var fb = soundManager._flashBlock;
-    if (oStatus.success) {
-      // Yay! recovered OK.
-      fb.checkFlashStatus();
-    } else {
-      // Blocking was passed (or no blocking), but then something *else* went wrong.
-    }
+    // Yay! recovered OK.
+    fb.checkFlashStatus();
+  });
+
+  soundManager.ontimeout(function() {
+    // Blocking was passed (or no blocking), but then something *else* went wrong.
     // stop timer, if applicable
     fb.stopTimer();
   });

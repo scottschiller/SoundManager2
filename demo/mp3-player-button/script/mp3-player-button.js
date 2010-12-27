@@ -240,8 +240,6 @@ soundManager.useFlashBlock = true;
 soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
 
 soundManager.onready(function() {
-  if (soundManager.supported()) {
-    // soundManager.createSound() etc. may now be called
-    basicMP3Player = new BasicMP3Player();
-  }
+  // soundManager.createSound() etc. may now be called
+  basicMP3Player = new BasicMP3Player();
 });

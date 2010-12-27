@@ -36,7 +36,6 @@ soundManager.onload = function() {
 <!-- SM2 BAREBONES TEMPLATE: END -->
 
 
-
 </head>
 
 <body style="height:100%">
@@ -81,6 +80,23 @@ soundManager.onload = function() {
 <span style="background:#eee;padding:0.25em">// Option 2 (better): More flexible onload() + createSound() method</span>
 
 soundManager.onload = function() {
+
+  <em><em>var mySound = soundManager.createSound({
+    id: 'aSound',
+    url: '/path/to/an.mp3'
+    <span>// onload: <span>[ event handler function object ],</span></span>
+    <span>// other options here..</span>
+  });
+
+  mySound.play();
+
+</em></em>}
+
+<span style="background:#eee;padding:0.25em">// Option 3 (best): onready() + createSound() / ontimeout() methods for success/failure:</span>
+
+soundManager.onready(function() {
+
+  <span>// SM2 has loaded - now you can create and play sounds!</span>
   <em><em>var mySound = soundManager.createSound({
     id: 'aSound',
     url: '/path/to/an.mp3'
@@ -88,25 +104,15 @@ soundManager.onload = function() {
     <span>// other options here..</span>
   });
   mySound.play();
-</em></em>}
 
-<span style="background:#eee;padding:0.25em">// Option 3 (best): onready() + createSound() methods, handle load/failure together:</span>
-
-soundManager.onready(function() {
-  <span>// check if SM2 successfully loaded..</span>
-  <em><em>if (soundManager.supported()) {</em></em>
-    <span>// SM2 has loaded - now you can create and play sounds!</span>
-    <em><em>var mySound = soundManager.createSound({
-      id: 'aSound',
-      url: '/path/to/an.mp3'
-      <span>// onload: <span>[ event handler function object ],</span></span>
-      <span>// other options here..</span>
-    });
-    mySound.play();
-  } else {
-    <span>// (Optional) Hrmm, SM2 could not start. Show an error, etc.?</span>
-  }</em></em>
 });
+
+soundManager.ontimeout(function() {
+
+  <span>// (Optional) Hrmm, SM2 could not start. Show an error, etc.?</span>
+
+});
+
 
 &lt;/script&gt;</pre></code>
 
