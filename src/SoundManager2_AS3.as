@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20101221";
+    public var version:String = "V2.97a.20101221+DEV";
     public var version_as:String = "(AS3/Flash 9)";
 
     /*
