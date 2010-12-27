@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20101221
+ * V2.97a.20101221+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20101221';
+  this.versionNumber = 'V2.97a.20101221+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -185,7 +185,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _onready = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnReady, _processOnReady, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice,
+  _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice,
   _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = (_ua.match(/MSIE/i)), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
@@ -583,6 +583,24 @@ function SoundManager(smURL, smID) {
   };
 
   this.onready = function(oMethod, oScope) {
+    var sType = 'onready';
+    if (oMethod && oMethod instanceof Function) {
+      if (_didInit) {
+        //_wDS('queue', sType);
+      }
+      if (!oScope) {
+        oScope = _win;
+      }
+      _addOnEvent(sType, oMethod, oScope);
+      _processOnEvents();
+      return true;
+    } else {
+      throw _str('needFunction', sType);
+    }
+  };
+
+  this.ontimeout = function(oMethod, oScope) {
+    var sType = 'ontimeout';
     if (oMethod && oMethod instanceof Function) {
       if (_didInit) {
         //_wDS('queue');
@@ -590,11 +608,11 @@ function SoundManager(smURL, smID) {
       if (!oScope) {
         oScope = _win;
       }
-      _addOnReady(oMethod, oScope);
-      _processOnReady();
+      _addOnEvent(sType, oMethod, oScope);
+      _processOnEvents({type:sType});
       return true;
     } else {
-      throw _str('needFunction');
+      throw _str('needFunction', sType);
     }
   };
 
@@ -676,7 +694,8 @@ function SoundManager(smURL, smID) {
     if (_s.soundIDs.length) {
       //_s._wD('Destroying ' + _s.soundIDs.length + ' SMSound objects...');
     }
-    for (var i = _s.soundIDs.length; i--;) {
+    var i, j;
+    for (i = _s.soundIDs.length; i--;) {
       _s.sounds[_s.soundIDs[i]].destruct();
     }
     // trash ze flash
@@ -695,8 +714,12 @@ function SoundManager(smURL, smID) {
     _s.enabled = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = _s.swfLoaded = false;
     _s.soundIDs = _s.sounds = [];
     _s.o = null;
-    for (i = _onready.length; i--;) {
-      _onready[i].fired = false;
+    for (i in _on_queue) {
+      if (_on_queue.hasOwnProperty(i)) {
+        for (j = _on_queue[i].length; j--;) {
+          _on_queue[i][j].fired = false;
+        }
+      }
     }
     //_s._wD(_sm + ': Rebooting...');
     _win.setTimeout(function() {
@@ -1889,7 +1912,7 @@ function SoundManager(smURL, smID) {
     waitFocus: _sm + ': Special case: Waiting for focus-related event..',
     waitImpatient: _sm + ': Getting impatient, still waiting for Flash%s...',
     waitForever: _sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
-    needFunction: _sm + '.onready(): Function object expected',
+    needFunction: _sm + ': Function object expected for %s',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
     noMS: 'MovieStar mode not enabled. Exiting.',
     currentObj: '--- ' + _sm + '._debug(): Current sound objects ---',
@@ -1906,7 +1929,7 @@ function SoundManager(smURL, smID) {
     badRemove: 'Warning: Failed to remove flash movie.',
     noPeak: 'Warning: peakData features unsupported for movieStar formats',
     shutdown: _sm + '.disable(): Shutting down',
-    queue: _sm + '.onready(): Queueing handler',
+    queue: _sm + ': Queueing %s handler',
     smFail: _sm + ': Failed to initialise.',
     smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
     fbTimeout: 'No flash response, applying .'+_s.swfCSS.swfTimedout+' CSS..',
@@ -2444,7 +2467,7 @@ function SoundManager(smURL, smID) {
         //_s._wD(name+': '+_str('fbTimeout')+(p?' ('+_str('fbLoaded')+')':''));
       }
       _s.didFlashBlock = true;
-      _processOnReady(true); // fire onready(), complain lightly
+      _processOnEvents({type:'ontimeout',ignoreInit:true}); // fire onready(), complain lightly
       if (_s.onerror instanceof Function) {
         _s.onerror.apply(_win);
       }
@@ -2489,7 +2512,7 @@ function SoundManager(smURL, smID) {
       // all good.
       //_s._wD('-- SoundManager 2: loaded --');
       _didInit = true;
-      _processOnReady();
+      _processOnEvents();
       _initUserOnload();
       return true;
     }
@@ -2503,7 +2526,7 @@ function SoundManager(smURL, smID) {
       if (_s.useFlashBlock) {
         _s.oMC.className = _getSWFCSS() + ' ' + (_s.getMoviePercent() === null?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
       }
-      _processOnReady();
+      _processOnEvents({type:'ontimeout'});
       //_debugTS('onload', false);
       if (_s.onerror instanceof Function) {
         _s.onerror.apply(_win);
@@ -2526,31 +2549,40 @@ function SoundManager(smURL, smID) {
     return true;
   };
 
-  _addOnReady = function(oMethod, oScope) {
-    _onready.push({
+  _addOnEvent = function(sType, oMethod, oScope) {
+    if (typeof _on_queue[sType] === 'undefined') {
+      _on_queue[sType] = [];
+    }
+    _on_queue[sType].push({
       'method': oMethod,
       'scope': (oScope || null),
       'fired': false
     });
   };
 
-  _processOnReady = function(ignoreInit) {
-    if (!_didInit && !ignoreInit) {
+  _processOnEvents = function(oOptions) {
+    if (!oOptions) { // assume onready, if unspecified
+      oOptions = {
+        type: 'onready'
+      };
+    }
+    if (!_didInit && oOptions && !oOptions.ignoreInit) {
       // not ready yet.
       return false;
     }
     var status = {
-      success: (ignoreInit?_s.ok():!_disabled)
+      success: (oOptions && oOptions.ignoreInit?_s.ok():!_disabled)
     },
+    srcQueue = (oOptions && oOptions.type?_on_queue[oOptions.type]||[]:[]), // queue specified by type, or none
     queue = [], i, j,
     canRetry = (_needsFlash && _s.useFlashBlock && !_s.ok());
-    for (i = 0, j = _onready.length; i < j; i++) {
-      if (_onready[i].fired !== true) {
-        queue.push(_onready[i]);
+    for (i = 0; i < srcQueue.length; i++) {
+      if (srcQueue[i].fired !== true) {
+        queue.push(srcQueue[i]);
       }
     }
     if (queue.length) {
-      //_s._wD(_sm + ': Firing ' + queue.length + ' onready() item' + (queue.length > 1?'s':''));
+      //_s._wD(_sm + ': Firing ' + queue.length + ' '+oOptions.type+'() item' + (queue.length === 1?'':'s'));
       for (i = 0, j = queue.length; i < j; i++) {
         if (queue[i].scope) {
           queue[i].method.apply(queue[i].scope, [status]);
@@ -2570,7 +2602,7 @@ function SoundManager(smURL, smID) {
       if (_s.useFlashBlock) {
         _flashBlockHandler();
       }
-      _processOnReady();
+      _processOnEvents();
       // call user-defined "onload", scoped to window
       if (_s.onload instanceof Function) {
         //_wDS('onload', 1);
