@@ -186,7 +186,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   _s = this, _sm = 'soundManager', _id, _ua = navigator.userAgent, _wl = window.location.href.toString(), _fV = this.flashVersion, _doc = document, _win = window, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5Only = false, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice,
-  _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = (_ua.match(/MSIE/i)), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
+  _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = _ua.match(/MSIE/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
   this._overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null);
@@ -1110,6 +1110,7 @@ function SoundManager(smURL, smID) {
     // When a paused stream is resumed, we need to trigger the onplay() callback if it
     // hasn't been called already.  In this case since the sound is being played for the
     // first time, I think it's more appropriate to call onplay() rather than onresume().
+
     this.resume = function() {
       if (!_t.paused) {
         return _t;
@@ -1119,6 +1120,10 @@ function SoundManager(smURL, smID) {
       _t.playState = 1;
       if (!_t.isHTML5) {
         _s.o._pause(_t.sID); // flash method is toggle-based (pause/resume)
+        if (_t._iO.isMovieStar && _isWebkit) {
+          // Bizarre Webkit bug (Chrome reported via 8tracks.com dudes): AAC content paused for 30+ seconds(?) will not resume without a reposition.
+          _t.setPosition(_t.position);
+        }
       } else {
         _t._setup_html5().play();
         _start_html5_timer();
@@ -1345,7 +1350,7 @@ function SoundManager(smURL, smID) {
         _t.isHTML5 = true;
         _add_html5_events();
       }
-      _a.loop = (_iO.loops>1?'loop':'');
+      _a.loop = (_iO.loops>1?'loop':''); // boolean instead of "loop", for webkit? - spec says string. http://www.w3.org/TR/html-markup/audio.html#audio.attrs.loop
       return _t._audio;
     };
 
@@ -2238,7 +2243,7 @@ function SoundManager(smURL, smID) {
             }
           }
         }
-        if (_ua.match(/webkit/i)) {
+        if (_isWebkit) {
           _s.oMC.style.zIndex = 10000; // soundcloud-reported render/crash fix, safari 5
         }
         if (!_s.debugFlash) {
