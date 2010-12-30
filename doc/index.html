@@ -491,26 +491,27 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 	   <dl id="soundmanager-onready" class="f-block f-onready">
 	   <dt>onready(<span>callback:function, [scope]</span>)</dt>
-	   <dd title="callback:function">Queue <code>addEventListener</code>-style event handler(s) for SM2 init success, processed at (or immediately, if added after) SM2 initialization, just before <code>soundManager.onload()</code> is called. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
-	   <dd>Example: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
+	   <dd title="callback:function">Queues an event callback/handler for successful initialization and "ready to use" state of SoundManager 2. An optional scope parameter can be specified; if none, the callback is scoped to the window. If <code>onready()</code> is called after successful initialization, the callback will be executed immediately. The <code>onready()</code> queue is processed before <code>soundManager.onload()</code>.</dd>
 	   <dd>Example:
 <pre class="block"><code>soundManager.onready(<span>function() {
   alert('Yay, SM2 loaded OK!');	
 }</span>);</code></pre>
 	   </dd>
+	   <dd>Example: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
 	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
 	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
 	   </dl>
 
 	   <dl id="soundmanager-ontimeout" class="f-block f-ontimeout">
 	   <dt>ontimeout(<span>callback:function, [scope]</span>)</dt>
-	   <dd title="callback:function">Queue <code>addEventListener()</code>-style event handler(s) for SM2 init failure, processed at (or immediately, if added after) SM2 initialization, just before <code>soundManager.onerror()</code> is called. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
+	   <dd title="callback:function">Queues an event callback/handler for SM2 init failure, processed at (or immediately, if added after) SM2 initialization has failed, just before <code>soundManager.onerror()</code> is called. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
 	   <dd>Example: <code>soundManager.ontimeout(<span>myOnTimeoutHandler</span>); soundManager.ontimeout(<span>myOtherHandler</span>);</code></dd>
 	   <dd>Example:
 <pre class="block"><code>soundManager.ontimeout(<span>function() {
   alert('SM2 failed to start. Flash missing, blocked or security error?');	
 }</span>);</code></pre>
 	   </dd>
+       <dd>The timeout event is not necessarily fatal, as SM2 may be rebooted and fire an <code>onready()</code> in the <code>useFlashBlock</code> case (where the user sees, and chooses to unblock, the Flash component after a failed init attempt.)</dd>
 	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
 	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
 	   </dl>
