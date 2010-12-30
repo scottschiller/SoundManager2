@@ -196,11 +196,7 @@ soundManager.onerror = function() {
  <p>You can register listeners by passing a function to <code>onready()</code>, and it will be called when SoundManager has finished starting up:</p>
 
 <pre class="block"><code>soundManager.onready(function() {<span>
-  if (soundManager.supported()) {
     <span>// createSound() / play() etc. can now be called</span>
-  } else {
-    <span>// uh-oh, SM2 failed to start - error, unsupported etc.</span>
-  }
 </span>});
 </code></pre>
 

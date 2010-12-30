@@ -34,7 +34,7 @@ soundManager._flashBlock = new function() {
   var oMC = _sm.oMC; // DIV (default: #sm2-container) for .SWF
   var oStatus = document.getElementById('sm2-status'); // demo-only
 
-  if (!_sm.supported()) {
+  if (!_sm.ok()) {
     // make the movie more visible, so user can fix
     oMC.className = 'swf-timedout';
     _s.didTimeout = true;
