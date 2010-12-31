@@ -3,7 +3,7 @@ body {
 }
 
 h1, h2, h3 {
- font:normal 3em "Helvetica Neue Light","Helvetica Neue",helvetica,georgia,"times new roman","Arial Rounded MT Bold",verdana,tahoma,arial,"sans serif";
+ font:normal 3em "Helvetica Neue",helvetica,georgia,"times new roman","Arial Rounded MT Bold",verdana,tahoma,arial,"sans serif";
  font-weight:normal;
  margin-bottom:0px;
 }

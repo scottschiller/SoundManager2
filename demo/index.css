@@ -299,7 +299,7 @@ h2 {
 #top h2 {
  /* tagline */
  font-size:1.25em;
- font-weight:lighter;
+ font-weight:300;
  padding-top:2px;
  letter-spacing:-1px;
 }
@@ -913,8 +913,8 @@ span.nevermind,
 
 #reset-filter {
  position:relative;
- font-family:"Helvetica Neue Light","Helvetica Neue","Helvetica",helvetica,arial,verdana,sans-serif;
- font-weight:lighter;
+ font-family:"Helvetica Neue","Helvetica",helvetica,arial,verdana,sans-serif;
+ font-weight:300;
  font-size:2.5em;
  letter-spacing:-1px;
 }

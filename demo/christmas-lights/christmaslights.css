@@ -46,7 +46,7 @@ h1 {
 h1, h2, h3 {
  clear:both;
  float:left;
- font-family:lighter "Helvetica Neue Light","Helvetica Neue",georgia,"times new roman","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
+ font-family:"Helvetica Neue",georgia,"times new roman","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
  font-size:3em;
  font-size-adjust:none;
  margin-bottom:0.25em;
