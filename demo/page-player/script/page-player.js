@@ -32,7 +32,8 @@ function PagePlayer() {
       // sniffing for favicon stuff, IE workarounds and touchy-feely devices
       ua = navigator.userAgent,
       supportsFavicon = (ua.match(/(opera|firefox)/i)),
-      isTouchDevice = (ua.match(/ipad|ipod|iphone/i));
+      isTouchDevice = (ua.match(/ipad|ipod|iphone/i)),
+      cleanup;
 
   // configuration options
   // note that if Flash 9 is required, you must set soundManager.flashVersion = 9 in your script before this point.
@@ -268,6 +269,20 @@ function PagePlayer() {
     }
   };
 
+  this.playNext = function(oSound) {
+    if (!oSound) {
+      oSound = self.lastSound;
+    }
+    if (!oSound) {
+      return false;
+    }
+    var nextItem = self.getNextItem(oSound._data.oLI);
+    if (nextItem) {
+      pl.handleClick({target:nextItem}); // fake a click event - aren't we sneaky. ;)
+    }
+    return nextItem;
+  };
+
   this.setPageTitle = function(sTitle) {
     if (!self.config.updatePageTitle) {
       return false;
@@ -322,16 +337,12 @@ function PagePlayer() {
     },
 
     finish: function() {
-      var nextItem;
       pl.removeClass(this._data.oLI,this._data.className);
       this._data.className = '';
       this._data.oPosition.style.width = '0px';
       // play next if applicable
       if (self.config.playNext) {
-        nextItem = self.getNextItem(this._data.oLI);
-        if (nextItem) {
-          pl.handleClick({target:nextItem}); // fake a click event - aren't we sneaky. ;)
-        }
+        pl.playNext(this);
       } else {
         self.setPageTitle();
         self.resetPageIcon();
@@ -1012,9 +1023,9 @@ function PagePlayer() {
 
     }
 
-    function cleanup() {
+    cleanup = function() {
       doEvents('remove');
-    }
+    };
 
     doEvents('add');
 
