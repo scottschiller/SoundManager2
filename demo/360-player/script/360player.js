@@ -42,6 +42,7 @@ function ThreeSixtyPlayer() {
 
     playNext: false,   // stop after one sound, or play through list until end
     autoPlay: false,   // start playing the first sound right away
+    allowMultiple: false,  // let many sounds play at once (false = only one sound playing at a time)
     loadRingColor: '#ccc', // how much has loaded
     playRingColor: '#000', // how much has played
     backgroundRingColor: '#eee', // color shown underneath load + play ("not yet loaded" color)
@@ -361,7 +362,7 @@ function ThreeSixtyPlayer() {
         // different sound
         thisSound.togglePause(); // start playing current
         sm._writeDebug('sound different than last sound: '+self.lastSound.sID);
-        if (self.lastSound) {
+        if (!self.config.allowMultiple && self.lastSound) {
           self.stopSound(self.lastSound);
         }
       }
@@ -455,7 +456,7 @@ function ThreeSixtyPlayer() {
 
       self.soundsByURL[soundURL] = thisSound;
       self.sounds.push(thisSound);
-      if (self.lastSound) {
+      if (!self.config.allowMultiple && self.lastSound) {
         self.stopSound(self.lastSound);
       }
       thisSound.play();
@@ -550,7 +551,7 @@ function ThreeSixtyPlayer() {
       self.stopEvent(e);
       return false;
     }
-    var thisSound = self.lastSound;
+    var thisSound = self.lastSound; // TODO: In multiple sound case, figure out which sound is involved etc.
     // just in case, update coordinates (maybe the element moved since last time.)
     self.refreshCoords(thisSound);
     var oData = self.lastSound._360data;
@@ -661,24 +662,24 @@ function ThreeSixtyPlayer() {
   }
 
 
-this.deg2rad = function(nDeg) {
-  return (nDeg * Math.PI/180);
-}
+  this.deg2rad = function(nDeg) {
+    return (nDeg * Math.PI/180);
+  }
 
-this.rad2deg = function(nRad) {
-  return (nRad * 180/Math.PI);
-}
+  this.rad2deg = function(nRad) {
+    return (nRad * 180/Math.PI);
+  }
 
-this.getTime = function(nMSec,bAsString) {
-  // convert milliseconds to mm:ss, return as object literal or string
-  var nSec = Math.floor(nMSec/1000);
-  var min = Math.floor(nSec/60);
-  var sec = nSec-(min*60);
-  // if (min == 0 && sec == 0) return null; // return 0:00 as null
-  return (bAsString?(min+':'+(sec<10?'0'+sec:sec)):{'min':min,'sec':sec});
-}
+  this.getTime = function(nMSec,bAsString) {
+    // convert milliseconds to mm:ss, return as object literal or string
+    var nSec = Math.floor(nMSec/1000);
+    var min = Math.floor(nSec/60);
+    var sec = nSec-(min*60);
+    // if (min == 0 && sec == 0) return null; // return 0:00 as null
+    return (bAsString?(min+':'+(sec<10?'0'+sec:sec)):{'min':min,'sec':sec});
+  }
 
-this.clearCanvas = function(oCanvas) {
+  this.clearCanvas = function(oCanvas) {
     var canvas = oCanvas;
     var ctx = null;
     if (canvas.getContext){
@@ -688,55 +689,57 @@ this.clearCanvas = function(oCanvas) {
     var width = canvas.offsetWidth;
     var height = canvas.offsetHeight;
     ctx.clearRect(-(width/2), -(height/2), width, height);
-}
-
-
-var fullCircle = (isOpera||isChrome?359.9:360); // I dunno what Opera doesn't like about this.
-
-this.updatePlaying = function() {
-  if (this.bytesLoaded) {
-    this._360data.lastValues.bytesLoaded = this.bytesLoaded;
-    this._360data.lastValues.bytesTotal = this.bytesTotal;
-  }
-  if (this.position) {
-    this._360data.lastValues.position = this.position;
-  }
-  if (this.durationEstimate) {
-    this._360data.lastValues.durationEstimate = this.durationEstimate;
   }
 
-  self.drawSolidArc(this._360data.oCanvas,self.config.backgroundRingColor,this._360data.width,this._360data.radius,self.deg2rad(fullCircle),false);
+  var fullCircle = (isOpera||isChrome?359.9:360); // I dunno what Opera doesn't like about this.
 
-  self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.loadRingColorMetadata:self.config.loadRingColor),this._360data.width,this._360data.radius,self.deg2rad(fullCircle*(this._360data.lastValues.bytesLoaded/this._360data.lastValues.bytesTotal)),0,true);
+  this.updatePlaying = function() {
 
-  if (this._360data.lastValues.position != 0) {
-    // don't draw if 0 (full black circle in Opera)
-    self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.playRingColorMetadata:self.config.playRingColor),this._360data.width,this._360data.radius,self.deg2rad((this._360data.didFinish==1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
+    if (this.bytesLoaded) {
+      this._360data.lastValues.bytesLoaded = this.bytesLoaded;
+      this._360data.lastValues.bytesTotal = this.bytesTotal;
+    }
+
+    if (this.position) {
+      this._360data.lastValues.position = this.position;
+    }
+
+    if (this.durationEstimate) {
+      this._360data.lastValues.durationEstimate = this.durationEstimate;
+    }
+
+    self.drawSolidArc(this._360data.oCanvas,self.config.backgroundRingColor,this._360data.width,this._360data.radius,self.deg2rad(fullCircle),false);
+
+    self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.loadRingColorMetadata:self.config.loadRingColor),this._360data.width,this._360data.radius,self.deg2rad(fullCircle*(this._360data.lastValues.bytesLoaded/this._360data.lastValues.bytesTotal)),0,true);
+
+    if (this._360data.lastValues.position != 0) {
+      // don't draw if 0 (full black circle in Opera)
+      self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.playRingColorMetadata:self.config.playRingColor),this._360data.width,this._360data.radius,self.deg2rad((this._360data.didFinish==1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
+    }
+
+    // metadata goes here
+    if (this._360data.metadata) {
+      this._360data.metadata.events.whileplaying();
+    }
+
+    var timeNow = (self.config.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000));
+
+    if (timeNow != this._360data.lastTime) {
+      this._360data.lastTime = timeNow;
+      this._360data.oTiming.innerHTML = timeNow;
+    }
+
+    // draw spectrum, if applicable
+    if (!isIE) { // IE can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
+      self.updateWaveform(this);
+      // self.updateWaveformOld(this);
+    }
+
+    if (self.config.useFavIcon && self.vuMeter) {
+      self.vuMeter.updateVU(this);
+    }
+
   }
-
-  // metadata goes here
-  if (this._360data.metadata) {
-    this._360data.metadata.events.whileplaying();
-  }
-
-  var timeNow = (self.config.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000));
-
-  if (timeNow != this._360data.lastTime) {
-    this._360data.lastTime = timeNow;
-    this._360data.oTiming.innerHTML = timeNow;
-  }
-
-  // draw spectrum, if applicable
-  if (!isIE) { // IE can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
-    self.updateWaveform(this);
-    // self.updateWaveformOld(this);
-  }
-
-  if (self.config.useFavIcon && self.vuMeter) {
-    self.vuMeter.updateVU(this);
-  }
-
-}
 
   this.updateWaveform = function(oSound) {
 

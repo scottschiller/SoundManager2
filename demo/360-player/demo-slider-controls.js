@@ -236,9 +236,12 @@ function Controller(o) {
     // set innerHTML
 document.getElementById('config-code').innerHTML = "\
 // 360player.js, config section\n\
+\n\
 this.config = {\n\
-  playNext: <span>false</span>,\n\
-  autoPlay: <span>false</span>,\n\
+\n\
+  playNext: <span>"+threeSixtyPlayer.config.playNext+"</span>,\n\
+  autoPlay: <span>"+threeSixtyPlayer.config.autoPlay+"</span>,\n\
+  allowMultiple: <span>"+threeSixtyPlayer.config.allowMultiple+"</span>,\n\
   loadRingColor: <span>'"+threeSixtyPlayer.config.loadRingColor+"'</span>,\n\
   playRingColor: <span>'"+threeSixtyPlayer.config.playRingColor+"'</span>,\n\
   backgroundRingColor: <span>'"+threeSixtyPlayer.config.backgroundRingColor+"'</span>,\n\
