@@ -1,11 +1,6 @@
 /* General warning: Beta-ish. Code could be a bit cleaner. */
 
 .ui360,
-.ui360 * {
- position:relative;
-}
-
-.ui360,
 .sm2-360ui {
  /* size of the container for the circle, etc. */
  width:50px;
@@ -19,23 +14,18 @@
  padding-bottom:1px;
  margin-bottom:-18px; /* approximate "line height" we want */
  padding-left:42px; /* 50px, with a few off - margin used for visualization UI */
-}
-
-.ui360 a {
- line-height:50px;
-}
-
-.sm2-360ui {
- margin-left:-50px;
-}
-
-.ui360 {
  width:auto;
 }
 
 .ui360,
 .ui360 * {
+ position:relative;
  vertical-align:middle;
+}
+
+
+.ui360 a {
+ line-height:50px;
 }
 
 .sm2-360ui {
@@ -45,6 +35,7 @@
  *float:left; /* IE 6+7 */
  *display:inline;
  *clear:left;
+ margin-left:-50px;
 }
 
 .sm2-360ui.sm2_playing,
@@ -108,6 +99,8 @@
  position:absolute;
  left:0px;
  top:0px;
+ width:100%;
+ height:100%;
  z-index:2;
  display:none;
 }

@@ -26,8 +26,8 @@ function ThreeSixtyPlayer() {
   var isChrome = (uA.match(/chrome/i));
   var isFirefox = (uA.match(/firefox/i));
   var isTouchDevice = (uA.match(/ipad|iphone/i));
+  var hasRealCanvas = (typeof G_vmlCanvasManager === 'undefined' && typeof document.createElement('canvas').getContext('2d') !== 'undefined');
   this.excludeClass = 'threesixty-exclude'; // CSS class for ignoring MP3 links
-
   this.links = [];
   this.sounds = [];
   this.soundsByURL = [];
@@ -438,8 +438,10 @@ function ThreeSixtyPlayer() {
       }
 
       // set the cover width/height to match the canvas
+      /*
       thisSound._360data.oCover.style.width = self.config.circleDiameter+'px';
       thisSound._360data.oCover.style.height = self.config.circleDiameter+'px';
+      */
 
       // minimize ze font
       if (self.config.scaleFont && self.config.fontSizeMax != null) {
@@ -547,6 +549,9 @@ function ThreeSixtyPlayer() {
   }
 
   this.mouseDown = function(e) {
+    if (!isTouchDevice && e.button > 1) {
+      return true; // ignore non-left-click
+    }
     if (!self.lastSound) {
       self.stopEvent(e);
       return false;
@@ -712,8 +717,8 @@ function ThreeSixtyPlayer() {
 
     self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.loadRingColorMetadata:self.config.loadRingColor),this._360data.width,this._360data.radius,self.deg2rad(fullCircle*(this._360data.lastValues.bytesLoaded/this._360data.lastValues.bytesTotal)),0,true);
 
+    // don't draw if 0 (full black circle in Opera)
     if (this._360data.lastValues.position != 0) {
-      // don't draw if 0 (full black circle in Opera)
       self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.playRingColorMetadata:self.config.playRingColor),this._360data.width,this._360data.radius,self.deg2rad((this._360data.didFinish==1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
     }
 
@@ -730,9 +735,8 @@ function ThreeSixtyPlayer() {
     }
 
     // draw spectrum, if applicable
-    if (!isIE) { // IE can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
+    if (hasRealCanvas) { // IE <9 can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
       self.updateWaveform(this);
-      // self.updateWaveformOld(this);
     }
 
     if (self.config.useFavIcon && self.vuMeter) {
@@ -831,54 +835,6 @@ function ThreeSixtyPlayer() {
         oSound._360data.width = parseInt(oSound._360data.widthMax*oSound._360data.amplifier);
       }
     }
-
-  }
-
-  this.updateWaveformOld = function(oSound) {
-
-    if ((!self.config.useWaveformData && !self.config.useEQData && !self.config.usePeakData) || (!sm.features.waveformData && !sm.features.eqData && !sm.features.peakData)) {
-      // feature not enabled..
-      return false;
-    }
-
-    if (!oSound.waveformData.left.length && !oSound.eqData.length && !oSound.peakData.left.length) {
-      // no data (or errored out/paused/unavailable?)
-      return false;
-    }
-
-    var oCanvas = oSound._360data.oCanvas.getContext('2d');
-    var offX = 0;
-    var offY = parseInt(self.config.circleDiameter*2/3);
-    var scale = offY*1/3; // Y axis (+/- this distance from 0)
-    var downSample = 1;
-    downSample = Math.max(1,downSample);
-    var j = oSound.waveformData.left.length;
-    var lineWidth = Math.max(1,((j*1/downSample)/self.config.circleDiameter));
-    var lineHeight = scale*2.5;
-    var thisY = 0;
-    var offset = offY;
-    var rotateDeg = -90;
-    oCanvas.rotate(self.deg2rad(rotateDeg*-1)); // compensate for arc starting at EAST // http://stackoverflow.com/questions/319267/tutorial-for-html-canvass-arc-function
-    oCanvas.translate(-self.config.circleRadius,-self.config.circleRadius);
-
-    if (self.config.useWaveformData) {
-      for (var i=0; i<j; i+=downSample) {
-        thisY = offY+(oSound.waveformData.left[i]*scale);
-        oCanvas.fillRect((i/j*(self.config.circleDiameter-lineWidth)+1),thisY,lineWidth,lineHeight);
-      }
-    } else {
-      // EQ spectrum
-      var offset = 9;
-      var yDiff = 0;
-      for (var i=0; i<128; i+=4) {
-        yDiff = oSound.eqData[i]*scale;
-        oCanvas.fillRect(i/128*(self.config.circleDiameter-4),self.config.circleDiameter-yDiff,lineWidth*3,yDiff);
-      }
-    }
-
-    // finished drawing..
-    oCanvas.translate(self.config.circleRadius,self.config.circleRadius);
-    oCanvas.rotate(self.deg2rad(rotateDeg)); // compensate for arc starting at EAST
 
   }
 
@@ -1099,7 +1055,7 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
     }
   };
 
-  this.testCanvas = function(noOpaque) {
+  this.testCanvas = function() {
     // canvas + toDataURL();
     var c = document.createElement('canvas');
     var ctx = null;
@@ -1123,7 +1079,7 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
 
   this.init = function() {
     if (self.config.useFavIcon) {
-      me.vuDataCanvas = me.testCanvas(true);
+      me.vuDataCanvas = me.testCanvas();
       if (me.vuDataCanvas && (isFirefox || isOpera)) {
         // these browsers support dynamically-updating the favicon
         me.createVUData();

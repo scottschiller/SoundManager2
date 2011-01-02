@@ -53,26 +53,38 @@
 
 .sm2-inline-list .sm2-360ui {
  border:1px solid #eee;
+ /* offset the border */
+ margin-left:-1px;
+ margin-top:-1px;
 }
 
 .sm2-inline-list .ui360 a {
  position:absolute;
+ display:inline;
  left:0px;
  bottom:0px;
- margin-left:1px;
  width:100%; /* 2px padding in box */
- height:auto;
- font-size:x-small;
- padding:2px 0px;
- color:#999;
- line-height:15px;
+ height:100%;
+ *height:256px; /* IE is dumb. */
+ overflow:hidden;
+ font-size:small;
+ font-weight:300;
+ color:#333;
+ margin:0px;
+ padding:0px;
+ line-height:488px; /* bottom vertical alignment for text */
+ *line-height:480px; /* IE again */
  text-align:center;
- display:inline;
  -moz-border-radius:0px;
  -khtml-border-radius:0px;
  border-radius:0px;
 }
 
+.sm2-inline-list .ui360:hover {
+ background-color:#fbfbfb;
+}
+
+.sm2-inline-list .ui360 a.sm2_link:hover,
 .sm2-inline-list .ui360 a:focus,
 .sm2-inline-list .ui360 a:active {
  background-color:transparent;
@@ -80,9 +92,9 @@
 
 /* Use a bigger loading image for this layout */
 
-.ui360 .sm2-360ui.sm2_buffering .sm2-360btn,
-.ui360 .sm2-360ui.sm2_buffering .sm2-360btn:hover {
-  background:transparent url(icon_loading_spinner_bigger.gif) no-repeat 50% 50%;
-  opacity:0.5;
-  visibility:visible;
+
+.ui360:hover .sm2-360btn-default {
+ background:transparent url(360-button-play-light.png) no-repeat 50% 50%;
+ _background:transparent url(360-button-play.gif) no-repeat 50% 50%;
+ cursor:pointer;
 }

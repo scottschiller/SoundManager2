@@ -55,6 +55,11 @@ if (window.location.href.match(/hifi/i)) {
   threeSixtyPlayer.config.useFavIcon = true;
 }
 
+if (window.location.href.match(/html5/i)) {
+  // for testing IE 9, etc.
+  soundManager.useHTML5Audio = true;
+}
+
 </script>
 
 <!-- DEMO only, customization UI: Yahoo! YUI colorpicker stuff -->
@@ -242,20 +247,21 @@ pre.block {
 
 		<div class="sm2-inline-list"> <!-- remove this class to have one item per line -->
 
+			<div class="ui360"><a href="http://freshly-ground.com/data/audio/sm2/Adrian%20Glynn%20-%20Blue%20Belle%20Lament.mp3">Adrian Glynn - Blue Belle Lament</a></div>
 			<div class="ui360"><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20I%20Tried.mp3">SonReal - I Tried</a></div>
 			<div class="ui360"><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20People%20Asking.mp3">SonReal - People Asking</a></div>
 			<div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3">20060826 - Armstrong Groove</a></div>
-			<div class="ui360"><a href="../../demo/_mp3/sine,%20square,%20sawtooth,%20rando.mp3">Sine, Square, Sawtooth, Wave (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 
 	   	</div>
 	
-		<p class="note" style="clear:both;padding-top:1em">"I Tried" and "People Asking" courtesy of <a href="http://sonreal.bandcamp.com/album/the-lightyear-mixtape" title="The Lightyear Mixtape from SonReal, Vancouver-based hip-hop artist">SonReal</a>, from the "Lightyear" Mixtape.</p>
+		<p class="note medium-note" style="clear:both"><b>Artist thank-yous</b>: "Blue Belle Lament" courtesy of <a href="http://www.adrianglynn.com/" title="Adrian Glynn, Vancouver Musician">Adrian Glynn</a>. "I Tried" and "People Asking" courtesy of <a href="http://sonreal.bandcamp.com/album/the-lightyear-mixtape" title="The Lightyear Mixtape from SonReal, Vancouver-based hip-hop artist">SonReal</a>.</p>
 
 	 	<h2 style="clear:left;padding-top:1em">Block list</h2>
 
 		<div>
 	     	<div class="ui360"><a href="http://freshly-ground.com/data/audio/mpc/20090207%20-%20Loverman.mp3">20090207 - Loverman</a></div>
 		 	<div class="ui360"><a href="../../demo/_mp3/1hz-10khz-sweep.mp3">1-10 Khz Sweep (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
+			<div class="ui360"><a href="../../demo/_mp3/sine,%20square,%20sawtooth,%20rando.mp3">Sine, Square, Sawtooth, Wave (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 		</div>
 		
 
