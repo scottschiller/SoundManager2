@@ -574,6 +574,11 @@ div.clear {
  background:#666;
 }
 
+.medium-note {
+ padding-top:1.5em;
+ font-size:1em;
+}
+
 ul.standard {
  line-height:1.5em;
  padding-left:1.2em;
@@ -1218,6 +1223,23 @@ a.feature:hover {
  background:#ff0000;
  border-color:#ff6666;
  color:#fff;
+}
+
+a.warning,
+span.warning {
+ font-weight:bold;
+}
+
+a.warning,
+span.warning,
+a.warning code,
+span.warning code {
+ color:#993300;
+}
+
+a.warning:hover {
+ color:#fff;
+ background:#993300;
 }
 
 .newer p {
