@@ -310,7 +310,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			
 			<p>Once <code>soundManager.onready()</code> has fired and SM2 has started, you can check for support via a number of methods. Namely, <a href="#soundmanager-canplaylink">soundManager.canPlayLink()</a> will take an <code>&lt;a&gt;</code> element and check its <code>href</code> and <code>type</code> attributes, if available, for hints as to its format or type. You can also pass arbitrary URLs to <a href="#soundmanager-canplayurl">soundManager.canPlayURL()</a>, which will make a "best guess" based on the extension it finds. In any event, SM2 will return a true/false value from canPlay methods based on HTML and/or flash capabilities.</p>
 			
-			<p>To see what formats are supported by HTML5, watch SM2's debug/console output when debug is enabled, or dump the contents of <code>soundManager.html5</code> to the console; it will show the results of tests for simple items like "mp3", as well as <code>canPlayType()</code> strings such as 'mpeg; codecs=mp3'
+			<p>To see what formats are supported by HTML5, watch SM2's debug/console output when debug is enabled, or dump the contents of <code>soundManager.html5</code> to the console; it will show the results of tests for simple items like "mp3", as well as <code>canPlayType()</code> strings such as 'mpeg; codecs=mp3'</p>
 			
 			<h5>Apple iPad, iPhone, Palm Pre: Special Cases</h5>
 			<p>The "Big iPhone" doesn't do Flash, and does support HTML5 <code>Audio()</code> pretty decently - so SM2 makes a special exception to enable <code>useHTML5Audio</code> when it detects an iPad, iPhone or Palm Pre user agent string by default. Feel free to disable this if you wish.</p>
@@ -324,7 +324,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 			 <h5>HTML5 Audio: Notes, bugs, quirks and annoyances</h5>
 
- 			 <p>As of the December, 2010 release of SM2 (V2.97a.20101221):</p>
+ 			 <p>As of the January, 2011 (V2.97a.20110101) and December, 2010 releases of SM2 (V2.97a.20101221):</p>
                          <ul>
                           <li>The <code>bytesLoaded</code> and <code>bytesTotal</code> properties may become less-relevant under HTML5 due to non-linear HTTP downloading (using ranges and partials), but they are still provided under Firefox at this time.</li>
                           <li>Related to bytes loading/total, a sound's <code>onload</code> event may not always be fired (Mozilla currently discourage use of the DOM <code>loaded</code> event), again because of range requests and the ability to arbitrarily seek within a file.</li>
@@ -332,7 +332,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
                           <li>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 - 10.6.5) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>. HTML5 audio in Safari on Windows (provided QuickTime is installed) does not have the same fatal bug.</li>
                          </ul>
 
-                         <p>As of the October, 2010 release of SM2 (V2.97a.20101010):</p>
+             <p>As of the October, 2010 release of SM2 (V2.97a.20101010):</p>
 			 <ul>
 			  <li>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 and 10.6.4) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</li>
 		         </ul>
@@ -497,7 +497,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
   alert('Yay, SM2 loaded OK!');	
 }</span>);</code></pre>
 	   </dd>
-	   <dd>Example: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
+	   <dd>Queueing multiple handlers: <code>soundManager.onready(<span>myOnReadyHandler</span>); soundManager.onready(<span>myOtherHandler</span>);</code></dd>
 	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
 	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
 	   </dl>
@@ -505,12 +505,12 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dl id="soundmanager-ontimeout" class="f-block f-ontimeout">
 	   <dt>ontimeout(<span>callback:function, [scope]</span>)</dt>
 	   <dd title="callback:function">Queues an event callback/handler for SM2 init failure, processed at (or immediately, if added after) SM2 initialization has failed, just before <code>soundManager.onerror()</code> is called. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
-	   <dd>Example: <code>soundManager.ontimeout(<span>myOnTimeoutHandler</span>); soundManager.ontimeout(<span>myOtherHandler</span>);</code></dd>
 	   <dd>Example:
 <pre class="block"><code>soundManager.ontimeout(<span>function() {
   alert('SM2 failed to start. Flash missing, blocked or security error?');	
 }</span>);</code></pre>
 	   </dd>
+	   <dd>Queueing multiple handlers: <code>soundManager.ontimeout(<span>myOnTimeoutHandler</span>); soundManager.ontimeout(<span>myOtherHandler</span>);</code></dd>
        <dd>The timeout event is not necessarily fatal, as SM2 may be rebooted and fire an <code>onready()</code> in the <code>useFlashBlock</code> case (where the user sees, and chooses to unblock, the Flash component after a failed init attempt.)</dd>
 	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
 	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
@@ -831,6 +831,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
     soundManager._writeDebug(this.sID+' connected: '+(bConnect?'true':'false'));
   }
 </span>}).play();<span><span> // will result in connection being made</span></span></code></pre>
+                   </dd>
 				   </dl>
 
 				   <dl id="smsound-onfinish" class="f-block s-onfinish">
