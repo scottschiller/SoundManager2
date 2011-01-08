@@ -927,10 +927,8 @@ function SoundManager(smURL, smID) {
           _s._wD(fN + 'Attempting to load "' + _t.sID + '"', 1);
           // try to get this sound playing ASAP
           if (!_t.isHTML5) {
-            if (!_t._iO.serverURL) {
-              _t._iO.autoPlay = true;
-              _t.load(_t._iO);
-            }
+            _t._iO.autoPlay = true; // assign directly because setAutoPlay() increments the instanceCount
+            _t.load(_t._iO);
           } else {
             _t.load(_t._iO);
             _t.readyState = 1;
@@ -944,13 +942,11 @@ function SoundManager(smURL, smID) {
       } else {
         _s._wD(fN + '"' + _t.sID + '"');
       }
-      // Streams will pause when their buffer is full if they are not auto-playing.
+      // Streams will pause when their buffer is full if they are being loaded.
       // In this case paused is true, but the song hasn't started playing yet. If
-      // we just call resume() the onplay() callback will never be called.
-
-      // Also, if we just call resume() in this case and the sound has been muted
-      // (volume is 0), it will never have its volume set so sound will be heard
-      // when it shouldn't.
+      // we just call resume() the onplay() callback will never be called.  So
+      // only call resume() if the position is > 0.
+      // Another reason is because options like volume won't have been applied yet.
       if (_t.paused && _t.position && _t.position > 0) { // https://gist.github.com/37b17df75cc4d7a90bf6
         _s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
@@ -1602,6 +1598,7 @@ function SoundManager(smURL, smID) {
       return true;
     };
 
+    // Only applies to RTMP
     this._onconnect = function(bSuccess) {
       var fN = 'SMSound._onconnect(): ';
       bSuccess = (bSuccess === 1);
@@ -1609,12 +1606,15 @@ function SoundManager(smURL, smID) {
       _t.connected = bSuccess;
       if (bSuccess) {
         _t.failures = 0;
+        if (_idCheck(_t.sID)) {
+          if (_t.getAutoPlay()) {
+            _t.play(undefined, _t.getAutoPlay()); // only update the play state if auto playing
+          } else if (_t._iO.autoLoad) {
+            _t.load();
+          }
+        }
         if (_t._iO.onconnect) {
           _t._iO.onconnect.apply(_t,[bSuccess]);
-        }
-        // don't play if the sound is being destroyed
-        if (_idCheck(_t.sID) && (_t.options.autoLoad || _t.getAutoPlay())) {
-          _t.play(undefined, _t.getAutoPlay()); // only update the play state if auto playing
         }
       }
     };

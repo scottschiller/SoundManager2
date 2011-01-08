@@ -56,7 +56,7 @@ package {
     public var ignoreDataError: Boolean = false;
     public var autoPlay: Boolean = false;
     public var autoLoad: Boolean = false;
-    public var pauseOnBufferFull: Boolean = true;
+    public var pauseOnBufferFull: Boolean = false; // only applies to RTMP
     public var loops: Number = 1;
     public var lastValues: Object = {
       bytes: 0,
@@ -123,7 +123,6 @@ package {
       } else {
         this.bufferTimes = [this.bufferTime];
       }
-      setAutoPlay(autoPlay);
       if (recordStats) {
         this.start_time = getTimer();
       }
@@ -132,6 +131,10 @@ package {
       writeDebug('SoundManager2_SMSound_AS3: Got duration: '+duration+', autoPlay: '+autoPlay);
 
       if (this.useNetstream) {
+        // Pause on buffer full if auto-loading an RTMP stream
+        if (this.serverUrl && this.autoLoad) {
+          this.pauseOnBufferFull = true;
+        }
 
         this.cc = new Object();
         this.nc = new NetConnection();
@@ -347,6 +350,7 @@ package {
         } else {
           // previously loaded, perhaps stopped/finished. play again?
           writeDebug('playing again (not paused, didLoad = true)');
+          this.pauseOnBufferFull = false;
           this.ns.play(this.sURL);
         }
 
@@ -375,13 +379,15 @@ package {
       this.removeEventListener(Event.SOUND_COMPLETE, _onfinish);
     }
 
-    public function loadSound(sURL: String, bStream: Boolean) : void {
+    public function loadSound(sURL: String) : void {
       if (this.useNetstream) {
         this.useEvents = true;
         if (this.didLoad != true) {
-          ExternalInterface.call('loadSound(): loading ' + this.sURL);
-          this.ns.play(this.sURL);
-          this.didLoad = true;
+          this.ns.play(this.sURL); // load streams by playing them
+          if (!this.autoPlay) {
+            this.pauseOnBufferFull = true;
+          }
+          this.paused = false;
         }
         // this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
@@ -397,19 +403,16 @@ package {
       }
     }
 
+    // Set the value of autoPlay
     public function setAutoPlay(autoPlay: Boolean) : void {
       if (!this.serverUrl) {
-        // don't apply to non-RTMP, netstream stuff.
-        this.autoPlay = true;
-        this.pauseOnBufferFull = false;
+        this.autoPlay = autoPlay;
       } else {
         this.autoPlay = autoPlay;
         if (this.autoPlay) {
           this.pauseOnBufferFull = false;
-          // writeDebug('ignoring pauseOnBufferFull because autoPlay is on');
         } else if (!this.autoPlay) {
           this.pauseOnBufferFull = true;
-          // writeDebug('pausing on buffer full because autoPlay is off');
         }
       }
     }
@@ -526,7 +529,7 @@ package {
           this.pauseOnBufferFull = false;
           // Call pause in JS.  This will call back to us to pause again, but
           // that should be harmless.
-          writeDebug('Pausing song because buffer is full');
+          writeDebug('Pausing on buffer full');
           ExternalInterface.call(baseJSObject + "['" + this.sID + "'].pause", false);
         }
 

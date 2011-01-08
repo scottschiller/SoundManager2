@@ -649,22 +649,16 @@ package {
       // don't try to load if same request already made
       s.sURL = sURL;
 
-      if (s.useNetstream) {
-        try {
-          s.useEvents = true;
-        } catch(e: Error) {
-          writeDebug('_load(): error: ' + e.toString());
-        }
-      } else {
-        try {
+      try {
+        if (!s.useNetstream) {
           s.addEventListener(IOErrorEvent.IO_ERROR, function(e: IOErrorEvent) : void {
             s.doIOError(e);
           });
-          s.loadSound(sURL, bStream);
-        } catch(e: Error) {
-          // oh well
-          writeDebug('_load: Error loading ' + sURL + '. Flash error detail: ' + e.toString());
         }
+        s.loadSound(sURL);
+      } catch(e: Error) {
+        // oh well
+        writeDebug('_load: Error loading ' + sURL + '. Flash error detail: ' + e.toString());
       }
 
       s.didJustBeforeFinish = false;
