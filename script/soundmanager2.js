@@ -89,7 +89,8 @@ function SoundManager(smURL, smID) {
     'pan': 0,                      // "pan" settings, left-to-right, -100 to 100
     'type': null,                  // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     'usePolicyFile': false,        // enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)
-    'volume': 100                  // self-explanatory. 0-100, the latter being the max.
+    'volume': 100,                 // self-explanatory. 0-100, the latter being the max.
+    'playOnSeek': false            // play the sound when the position changes
   };
 
   this.flash9Options = {      // flash 9-only options, merged into defaultOptions if flash 9 is being used
@@ -299,18 +300,13 @@ function SoundManager(smURL, smID) {
           }
         }
       }
-    }
-    if (_tO.autoLoad || _tO.autoPlay) {
-      if (oSound) {
-        if (_s.isHTML5) {
-          oSound.autobuffer = 'auto'; // early HTML5 implementation (non-standard)
-          oSound.preload = 'auto'; // standard
-        } else {
-          oSound.load(_tO);
-        }
+
+      if ((_tO.autoLoad || _tO.autoPlay) && !_tO.serverURL) {
+        oSound.load(_tO); // call load for non-rtmp streams
       }
     }
-    if (_tO.autoPlay) {
+
+    if (_tO.autoPlay && !_tO.serverURL) { // rtmp will play in onconnect
       oSound.play();
     }
     return oSound;
@@ -809,11 +805,16 @@ function SoundManager(smURL, smID) {
       _t.readyState = 1;
       _t.playState = 0;
       if (_html5OK(_t._iO)) {
-        _s._wD('HTML5 load: '+_t._iO.url);
         oS = _t._setup_html5(_t._iO);
-        oS.load();
-        if (_t._iO.autoPlay) {
-          _t.play();
+        if (!oS._called_load) {
+          _s._wD('HTML5::load: '+_t.sID);
+          oS.load();
+          oS._called_load = true;
+          if (_t._iO.autoPlay) {
+            _t.play();
+          }
+        } else {
+          _s._wD('HTML5 ignoring request to load again: '+_t.sID);
         }
       } else {
         try {
@@ -888,7 +889,7 @@ function SoundManager(smURL, smID) {
 
     this.play = function(oOptions, _updatePlayState) {
       var fN = 'SMSound.play(): ', allowMulti;
-      _updatePlayState = (typeof _updatePlayState === 'undefined' ? true : _updatePlayState);
+      _updatePlayState = _updatePlayState === undefined ? true : _updatePlayState; // default true
       if (!oOptions) {
         oOptions = {};
       }
@@ -901,7 +902,7 @@ function SoundManager(smURL, smID) {
             _s._wD(fN+' Netstream not connected yet - setting autoPlay');
             _t.setAutoPlay(true);
           }
-          return _t;
+          return _t; // play will be called in _onconnect()
         }
       }
       if (_html5OK(_t._iO)) {
@@ -1015,7 +1016,13 @@ function SoundManager(smURL, smID) {
     this.setAutoPlay = function(autoPlay) {
       _s._wD('sound '+_t.sID+' turned autoplay ' + (autoPlay ? 'on' : 'off'));
       _t._iO.autoPlay = autoPlay;
-      _s.o._setAutoPlay(_t.sID, autoPlay);
+      if (_t.isHTML5) {
+        if (_a && autoPlay) {
+          _t.play(); // HTML5 onload isn't reliable
+        }
+      } else {
+        _s.o._setAutoPlay(_t.sID, autoPlay);
+      }
       if (autoPlay) {
         // KJV Only increment the instanceCount if the sound isn't loaded (TODO: verify RTMP)
         if (!_t.instanceCount && _t.readyState === 1) {
@@ -1045,16 +1052,15 @@ function SoundManager(smURL, smID) {
       _t._iO.position = offset;
       if (!_t.isHTML5) {
         position = _fV === 9 ? _t.position : _t.position / 1000;
-        // KJV We want our sounds to play on seek.  A progressive download that
-        // is loaded has paused = false so resume() does nothing and the sound
-        // doesn't play.  Handle that case here.
-        if (_t.serverURL && _t.playState === 0) {
+        // Play on seek?  A progressive download that is loaded has paused == false
+        // so resuming won't work.  Handle that case here.
+        if (_t._iO.playOnSeek && _t.playState === 0) {
           _t.play({ position: position });
         } else {
           _s.o._setPosition(_t.sID, position, (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
-          // if (_t.paused) {
-          //  _t.resume();
-          // }
+          if (_t._iO.playOnSeek && _t.paused) {
+           _t.resume();
+          }
         }
       } else if (_a) {
         _s._wD('setPosition(): setting position to '+(_t.position / 1000));
@@ -1072,7 +1078,11 @@ function SoundManager(smURL, smID) {
         }
         if (_t.paused) { // if paused, refresh UI right away
           _t._onTimer(true); // force update
-          if (_t._iO.useMovieStar) {
+        }
+        if (_t._iO.playOnSeek) {
+          if (_t.playState === 0) {
+            _t.play();
+          } else if (_t.paused) {
             _t.resume();
           }
         }
@@ -1106,7 +1116,6 @@ function SoundManager(smURL, smID) {
     // When a paused stream is resumed, we need to trigger the onplay() callback if it
     // hasn't been called already.  In this case since the sound is being played for the
     // first time, I think it's more appropriate to call onplay() rather than onresume().
-
     this.resume = function() {
       if (!_t.paused) {
         return _t;
