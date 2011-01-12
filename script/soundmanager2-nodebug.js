@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20110101
+ * V2.97a.20110101+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20110101';
+  this.versionNumber = 'V2.97a.20110101+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -1077,12 +1077,9 @@ function SoundManager(smURL, smID) {
         } else {
           //_s._wD('HTML5 warning: cannot set position while playState == 0 (not playing)',2);
         }
-        if (_t.paused) { // if paused, refresh UI right away
-          _t._onTimer(true); // force update
-          if (_t._iO.useMovieStar) {
-            _t.resume();
-          }
-        }
+      }
+      if (_t.isHTML5 && _t.paused) {
+        _t._onTimer(true); // force update
       }
       return _t;
     };
@@ -1824,7 +1821,7 @@ function SoundManager(smURL, smID) {
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
-    var result, mime, fileExt, item, aF = _s.audioFormats;
+    var result, mime, offset, fileExt, item, aF = _s.audioFormats;
     if (!_html5Ext) {
       _html5Ext = [];
       for (item in aF) {
@@ -1842,6 +1839,10 @@ function SoundManager(smURL, smID) {
     if (!fileExt || !fileExt.length) {
       if (!mime) {
         return false;
+      } else {
+        // audio/mp3 -> mp3, result should be known
+        offset = mime.indexOf(';');
+        fileExt = (offset !== -1?mime.substr(0,offset):mime).substr(6); // strip "audio/X; codecs.."
       }
     } else {
       fileExt = fileExt[0].substr(1); // "mp3", for example
@@ -2625,7 +2626,7 @@ function SoundManager(smURL, smID) {
 
   _featureCheck = function() {
     var needsFlash, item,
-    isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_(3|4|5)/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
+    isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_(3|4|5|6)/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
     isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (iPad) + iOS4 works.
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
