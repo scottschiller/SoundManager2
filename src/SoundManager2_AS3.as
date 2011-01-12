@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20110101";
+    public var version:String = "V2.97a.20110101+DEV";
     public var version_as:String = "(AS3/Flash 9)";
 
     /*
@@ -289,7 +289,15 @@ package {
           nD = int(oSound.duration || 0); // can sometimes be null with short MP3s? Wack.
           nP = oSound.ns.time * 1000;
 
-          if (nP != oSound.lastValues.position) {
+          if (oSound.paused) {
+            // special case: paused netStreams don't update if setPosition() is called while they are paused.
+            // instead, return lastValues.position which should reflect setPosition() call.
+            // writeDebug('paused case, setting nP of '+nP+' to -1');
+            // writeDebug('lastValues: '+oSound.lastValues.position);
+            nP = oSound.lastValues.position;
+          }
+
+          if (nP >= 0 && nP != oSound.lastValues.position) {
             oSound.lastValues.position = nP;
             hasNew = true;
           }
@@ -574,7 +582,6 @@ package {
         writeDebug('setPosition: setting buffer to '+s.ns.bufferTime+' secs');
 
         nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
-        writeDebug('setPosition: ' + nSecOffset);
         s.ns.seek(nSecOffset);
         checkProgress(); // force UI update
       } else {
@@ -850,7 +857,7 @@ package {
         // writeDebug('_pause(): position: '+s.lastValues.position);
         if (s.useNetstream) {
           if (s.ns) {
-            s.lastValues.position = s.ns.time;
+            s.lastValues.position = s.ns.time*1000;
             s.ns.pause();
           } else if (s.autoPlay) {
             s.setAutoPlay(false);
