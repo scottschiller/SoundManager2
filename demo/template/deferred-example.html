@@ -59,7 +59,7 @@ window.onload = function() {
 
   msg('Window loaded, waiting 1 second...');
 
-  setTimeout(function(){
+  setTimeout(function() {
 
     msg('Loading soundmanager2.js...');
 
@@ -86,9 +86,9 @@ window.onload = function() {
 
       });
 
-    });
+      soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
 
-    soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+    });
 
   },1000);
 
@@ -117,7 +117,6 @@ window.onload = function() {
 function loadScript(sURL, onLoad) {
 
   function loadScriptHandler() {
-
     var rs = this.readyState;
     if (rs == 'loaded' || rs == 'complete') {
       this.onreadystatechange = null;
@@ -126,15 +125,12 @@ function loadScript(sURL, onLoad) {
         onLoad();
       }
     }
-
   }
 
   function scriptOnload() {
-
     this.onreadystatechange = null;
     this.onload = null;
     window.setTimeout(onLoad,20);
-
   }
 
   var oS = document.createElement('script');
@@ -154,7 +150,7 @@ window.onload = function() {</span>
 
   msg('Window loaded, waiting 1 second...');
 
-  setTimeout(function(){
+  setTimeout(function() {
 
     msg('Loading soundmanager2.js...');
 
@@ -165,25 +161,20 @@ window.onload = function() {</span>
       soundManager.url = '../../swf/';
 
       soundManager.onready(function() {
-
         soundManager.createSound({
           id:'foo',
           url:'../_mp3/mouseover.mp3'
         }).play();
-
         msg('started OK');
-
       });
 
       soundManager.ontimeout(function() {
-
         msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
-
       });
 
-    });
+      soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
 
-    soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+    });
 
   },1000);
 
