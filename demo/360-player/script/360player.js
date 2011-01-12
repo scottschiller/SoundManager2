@@ -60,7 +60,7 @@ function ThreeSixtyPlayer() {
     animDuration: 500,
     animTransition: Animator.tx.bouncy, // http://www.berniecode.com/writing/animator.html
     showHMSTime: false, // hours:minutes:seconds vs. seconds-only
-    scaleFont: false,  // also set the font size (if possible) while animating the circle
+    scaleFont: true,  // also set the font size (if possible) while animating the circle
 
     // optional: spectrum or EQ graph in canvas (not supported in IE, too slow via ExCanvas)
     useWaveformData: false,
@@ -367,7 +367,12 @@ function ThreeSixtyPlayer() {
         }
       }
     } else {
-      // append some dom shiz
+
+      // append some dom shiz, make noise
+
+      var oContainer = o.parentNode;
+
+      var has_vis = (self.getElementsByClassName('ui360-vis','div',oContainer.parentNode).length);
 
       // create sound
       thisSound = sm.createSound({
@@ -380,10 +385,15 @@ function ThreeSixtyPlayer() {
        onfinish:self.events.finish,
        onbufferchange:self.events.bufferchange,
        whileloading:self.events.whileloading,
-       whileplaying:self.events.whileplaying
+       whileplaying:self.events.whileplaying,
+       useWaveformData:(has_vis && self.config.useWaveformData),
+       useEQData:(has_vis && self.config.useEQData),
+       usePeakData:(has_vis && self.config.usePeakData)
       });
-      var oContainer = o.parentNode;
+
       // tack on some custom data
+
+      var diameter = parseInt(self.getElementsByClassName('sm2-360ui','div',oContainer)[0].offsetWidth);
 
       thisSound._360data = {
         oUI360: self.getParentByClassName(o,'ui360'), // the (whole) entire container
@@ -394,14 +404,20 @@ function ThreeSixtyPlayer() {
         oButton: self.getElementsByClassName('sm2-360btn','img',oContainer)[0],
         oTiming: self.getElementsByClassName('sm2-timing','div',oContainer)[0],
         oCover: self.getElementsByClassName('sm2-cover','div',oContainer)[0],
+        circleDiameter: diameter,
+        circleRadius: diameter/2,
         lastTime: null,
         didFinish: null,
         pauseCount:0,
         radius:0,
-        amplifier: (self.config.usePeakData?0.9:1), // TODO: x1 if not being used, else use dynamic "how much to amplify by" value
-        radiusMax: self.config.circleDiameter*0.175, // circle radius
+        fontSize: 1,
+        fontSizeMax: self.config.fontSizeMax,
+        scaleFont: (has_vis && self.config.scaleFont),
+        showHMSTime: has_vis,
+        amplifier: (has_vis && self.config.usePeakData?0.9:1), // TODO: x1 if not being used, else use dynamic "how much to amplify by" value
+        radiusMax: diameter*0.175, // circle radius
         width:0,
-        widthMax: self.config.circleDiameter*0.4, // width of the outer ring
+        widthMax: diameter*0.4, // width of the outer ring
         lastValues: {
           bytesLoaded: 0,
           bytesTotal: 0,
@@ -421,8 +437,8 @@ function ThreeSixtyPlayer() {
           var thisSound = this;
           thisSound._360data.radius = parseInt(thisSound._360data.radiusMax*thisSound._360data.amplifier*nProgress);
           thisSound._360data.width = parseInt(thisSound._360data.widthMax*thisSound._360data.amplifier*nProgress);
-          if (self.config.scaleFont && self.config.fontSizeMax != null) {
-            thisSound._360data.oTiming.style.fontSize = parseInt(Math.max(1,self.config.fontSizeMax*nProgress))+'px';
+          if (thisSound._360data.scaleFont && thisSound._360data.fontSizeMax != null) {
+            thisSound._360data.oTiming.style.fontSize = parseInt(Math.max(1,thisSound._360data.fontSizeMax*nProgress))+'px';
             thisSound._360data.oTiming.style.opacity = nProgress;
           }
           if (thisSound.paused || thisSound.playState == 0 || thisSound._360data.lastValues.bytesLoaded == 0 || thisSound._360data.lastValues.position == 0) {
@@ -444,7 +460,7 @@ function ThreeSixtyPlayer() {
       */
 
       // minimize ze font
-      if (self.config.scaleFont && self.config.fontSizeMax != null) {
+      if (thisSound._360data.scaleFont && thisSound._360data.fontSizeMax != null) {
         thisSound._360data.oTiming.style.fontSize = '1px';
       }
 
@@ -517,7 +533,7 @@ function ThreeSixtyPlayer() {
   this.refreshCoords = function(thisSound) {
     thisSound._360data.canvasXY = self.findXY(thisSound._360data.oCanvas);
     // thisSound._360data.canvasMid = [Math.floor(thisSound._360data.oCanvas.offsetWidth/2), Math.floor(thisSound._360data.oCanvas.offsetHeight/2)]; // doesn't work in IE, w/h are wrong
-    thisSound._360data.canvasMid = [self.config.circleRadius,self.config.circleRadius];
+    thisSound._360data.canvasMid = [thisSound._360data.circleRadius,thisSound._360data.circleRadius];
     thisSound._360data.canvasMidXY = [thisSound._360data.canvasXY[0]+thisSound._360data.canvasMid[0], thisSound._360data.canvasXY[1]+thisSound._360data.canvasMid[1]];
   }
 
@@ -727,7 +743,7 @@ function ThreeSixtyPlayer() {
       this._360data.metadata.events.whileplaying();
     }
 
-    var timeNow = (self.config.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000));
+    var timeNow = (this._360data.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000));
 
     if (timeNow != this._360data.lastTime) {
       this._360data.lastTime = timeNow;
@@ -735,7 +751,7 @@ function ThreeSixtyPlayer() {
     }
 
     // draw spectrum, if applicable
-    if (hasRealCanvas) { // IE <9 can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
+    if (this.instanceOptions.useWaveformData && hasRealCanvas) { // IE <9 can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
       self.updateWaveform(this);
     }
 
@@ -766,9 +782,9 @@ function ThreeSixtyPlayer() {
 
     var oCanvas = oSound._360data.oCanvas.getContext('2d');
     var offX = 0;
-    var offY = parseInt(self.config.circleDiameter/2);
+    var offY = parseInt(oSound._360data.circleDiameter/2);
     var scale = offY/2; // Y axis (+/- this distance from 0)
-    var lineWidth = Math.floor(self.config.circleDiameter-(self.config.circleDiameter*0.175)/(self.config.circleDiameter/255)); // width for each line
+    var lineWidth = Math.floor(oSound._360data.circleDiameter-(oSound._360data.circleDiameter*0.175)/(oSound._360data.circleDiameter/255)); // width for each line
     lineWidth = 1;
     var lineHeight = 1;
     var thisY = 0;
@@ -829,8 +845,8 @@ function ThreeSixtyPlayer() {
           nPeak = (nPeak||oSound.eqData[i]);
         }
         oSound._360data.amplifier = (self.config.useAmplifier?(0.9+(nPeak*0.1)):1);
-        oSound._360data.radiusMax = self.config.circleDiameter*0.175*oSound._360data.amplifier;
-        oSound._360data.widthMax = self.config.circleDiameter*0.4*oSound._360data.amplifier;
+        oSound._360data.radiusMax = oSound._360data.circleDiameter*0.175*oSound._360data.amplifier;
+        oSound._360data.widthMax = oSound._360data.circleDiameter*0.4*oSound._360data.amplifier;
         oSound._360data.radius = parseInt(oSound._360data.radiusMax*oSound._360data.amplifier);
         oSound._360data.width = parseInt(oSound._360data.widthMax*oSound._360data.amplifier);
       }
@@ -841,19 +857,72 @@ function ThreeSixtyPlayer() {
   this.callbackCount = 0;
   this.peakDataHistory = [];
 
-  this.getUIHTML = function() {
+  this.getUIHTML = function(diameter) {
     return [
-     '<canvas class="sm2-canvas" width="'+self.config.circleDiameter+'" height="'+self.config.circleDiameter+'"></canvas>',
+     '<canvas class="sm2-canvas" width="'+diameter+'" height="'+diameter+'"></canvas>',
      ' <img src="'+self.config.imageRoot+'empty.gif" class="sm2-360btn sm2-360btn-default" style="border:none" />', // note use of imageMap, edit or remove if you use a different-size image.
      ' <div class="sm2-timing'+(navigator.userAgent.match(/safari/i)?' alignTweak':'')+'"></div>', // + Ever-so-slight Safari horizontal alignment tweak
      ' <div class="sm2-cover"></div>'
     ];
   }
 
+  this.uiTest = function(sClass) {
+
+    // fake a 360 UI so we can get some numbers from CSS, etc.
+
+    var oTemplate = document.createElement('div');
+    oTemplate.className = 'sm2-360ui';
+
+    var oFakeUI = document.createElement('div');
+    oFakeUI.className = 'ui360'+(sClass?' '+sClass:''); // ui360 ui360-vis
+
+    var oFakeUIBox = oFakeUI.appendChild(oTemplate.cloneNode(true));
+
+    oFakeUI.style.position = 'absolute';
+    oFakeUI.style.left = '-9999px';
+
+    var oTemp = document.body.appendChild(oFakeUI);
+
+    var fakeDiameter = oFakeUIBox.offsetWidth;
+
+    var uiHTML = self.getUIHTML(fakeDiameter);
+
+    oFakeUIBox.innerHTML = uiHTML[1]+uiHTML[2]+uiHTML[3];
+    delete uiHTML;
+
+    var circleDiameter, circleRadius, fontSizeMax;
+
+    circleDiameter = parseInt(oFakeUIBox.offsetWidth);
+    circleRadius = parseInt(circleDiameter/2);
+
+    var oTiming = self.getElementsByClassName('sm2-timing','div',oTemp)[0];
+    fontSizeMax = parseInt(self.getStyle(oTiming,'font-size'));
+    if (isNaN(fontSizeMax)) {
+      // getStyle() etc. didn't work.
+      fontSizeMax = null;
+    }
+
+    soundManager._writeDebug('diameter, font size: '+circleDiameter+','+fontSizeMax);
+
+    oFakeUI.parentNode.removeChild(oFakeUI);
+    delete oFakeUI;
+    delete oFakeUIBox;
+    delete oTemp;
+
+    return {
+      circleDiameter: circleDiameter,
+      circleRadius: circleRadius,
+      fontSizeMax: fontSizeMax
+    }
+
+  }
+
   this.init = function() {
     sm._writeDebug('threeSixtyPlayer.init()');
     var oItems = self.getElementsByClassName('ui360','div');
     var oLinks = [];
+
+    var is_vis = false;
 
     for (var i=0,j=oItems.length; i<j; i++) {
       oLinks.push(oItems[i].getElementsByTagName('a')[0]);
@@ -865,42 +934,29 @@ function ThreeSixtyPlayer() {
     var oCanvas = null;
     var oCanvasCTX = null;
     var oCover = null;
+    var diameter = null;
+    var radius = null;
 
     self.oUITemplate = document.createElement('div');
     self.oUITemplate.className = 'sm2-360ui';
-    
-    // fake a 360 UI so we can get some numbers from CSS, etc.
 
-    var oFakeUI = document.createElement('div');
-    oFakeUI.className = 'ui360';
+    self.oUITemplateVis = document.createElement('div');
+    self.oUITemplateVis.className = 'sm2-360ui';
 
-    var oFakeUIBox = oFakeUI.appendChild(self.oUITemplate.cloneNode(true));
-    oFakeUI.style.position = 'absolute';
-    oFakeUI.style.left = '-9999px';
-    var uiHTML = self.getUIHTML();
+    var uiData = self.uiTest();
 
-    oFakeUIBox.innerHTML = uiHTML[1]+uiHTML[2]+uiHTML[3];
-    delete uiHTML;
+    self.config.circleDiameter = uiData.circleDiameter;
+    self.config.circleRadius = uiData.circleRadius;
+    // self.config.fontSizeMax = uiData.fontSizeMax;
 
-    var oTemp = document.body.appendChild(oFakeUI);
+    var uiDataVis = self.uiTest('ui360-vis');
 
-    self.config.circleDiameter = parseInt(oFakeUIBox.offsetWidth);
-    self.config.circleRadius = parseInt(self.config.circleDiameter/2);
-    var oTiming = self.getElementsByClassName('sm2-timing','div',oTemp)[0];
-    self.config.fontSizeMax = parseInt(self.getStyle(oTiming,'font-size'));
-    if (isNaN(self.config.fontSizeMax)) {
-      // getStyle() etc. didn't work.
-      self.config.fontSizeMax = null;
-    }
-    // soundManager._writeDebug('diameter, font size: '+self.config.circleDiameter+','+self.config.fontSizeMax);
-
-    oFakeUI.parentNode.removeChild(oFakeUI);
-    delete oFakeUI;
-    delete oFakeUIBox;
-    delete oTemp;
+    self.config.fontSizeMax = uiDataVis.fontSizeMax;
 
     // canvas needs inline width and height, doesn't quite work otherwise
-    self.oUITemplate.innerHTML = self.getUIHTML().join('');
+    self.oUITemplate.innerHTML = self.getUIHTML(self.config.circleDiameter).join('');
+
+    self.oUITemplateVis.innerHTML = self.getUIHTML(uiDataVis.circleDiameter).join('');
 
     for (i=0,j=oLinks.length; i<j; i++) {
       if (sm.canPlayLink(oLinks[i]) && !self.hasClass(oLinks[i],self.excludeClass)) {
@@ -908,8 +964,14 @@ function ThreeSixtyPlayer() {
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
         foundItems++;
+
+        is_vis = self.hasClass(oLinks[i].parentNode, 'ui360-vis');
+
+        diameter = (is_vis ? uiDataVis : uiData).circleDiameter;
+        radius = (is_vis ? uiDataVis : uiData).circleRadius;
+
         // add canvas shiz
-        var oUI = oLinks[i].parentNode.insertBefore(self.oUITemplate.cloneNode(true),oLinks[i]);
+        var oUI = oLinks[i].parentNode.insertBefore((is_vis?self.oUITemplateVis:self.oUITemplate).cloneNode(true),oLinks[i]);
 
         if (isIE && typeof G_vmlCanvasManager != 'undefined') { // IE only
           var o = oLinks[i].parentNode;
@@ -917,8 +979,8 @@ function ThreeSixtyPlayer() {
           o2.className = 'sm2-canvas';
           var oID = 'sm2_canvas_'+parseInt(Math.random()*1048576);
           o2.id = oID;
-          o2.width = self.config.circleDiameter;
-          o2.height = self.config.circleDiameter;
+          o2.width = diameter;
+          o2.height = diameter;
           oUI.appendChild(o2);
           G_vmlCanvasManager.initElement(o2); // Apply ExCanvas compatibility magic
           oCanvas = document.getElementById(oID);
@@ -936,7 +998,7 @@ function ThreeSixtyPlayer() {
           self.addEventHandler(oCover,'touchstart',self.mouseDown);
         }
         oCanvasCTX = oCanvas.getContext('2d');
-        oCanvasCTX.translate(self.config.circleRadius,self.config.circleRadius);
+        oCanvasCTX.translate(radius, radius);
         oCanvasCTX.rotate(self.deg2rad(-90)); // compensate for arc starting at EAST // http://stackoverflow.com/questions/319267/tutorial-for-html-canvass-arc-function
       }
     }
@@ -1210,16 +1272,6 @@ if (soundManager.debugMode) {
 }
 
 threeSixtyPlayer = new ThreeSixtyPlayer();
-
-if (threeSixtyPlayer.config.useWaveformData) {
-  soundManager.flash9Options.useWaveformData = true;
-}
-if (threeSixtyPlayer.config.useEQData) {
-  soundManager.flash9Options.useEQData = true;
-}
-if (threeSixtyPlayer.config.usePeakData) {
-  soundManager.flash9Options.usePeakData = true;
-}
 
 // hook into SM2 init
 soundManager.onready(threeSixtyPlayer.init);

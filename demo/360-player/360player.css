@@ -117,9 +117,6 @@
  z-index:3;
 }
 
-.ui360 .sm2-360btn-default {
-}
-
 .ui360 .sm2-360data {
  display:inline-block;
  font-family:helvetica;
@@ -136,6 +133,10 @@
 .ui360 .sm2-360btn-default {
  background:transparent url(360-button-play.png) no-repeat 50% 50%;
  _background:transparent url(360-button-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
+}
+
+.ui360-vis,
+.ui360 .sm2-360btn-default {
  cursor:pointer;
 }
 
