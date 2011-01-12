@@ -28,7 +28,9 @@ h1 {
 }
 
 h2 {
- font-family:helvetica,arial,verdana,tahoma,"sans serif";
+/*
+ font-family:"helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
+*/
  font-size:1.5em;
 }
 
@@ -54,10 +56,34 @@ h5 {
  padding-bottom:0.25em;
 }
 
+body.home #about-sm2 h2.special,
+body.home #about-sm2 h3,
+body.home #about-sm2 h4 {
+ font-weight:300;
+ font-size:1.75em;
+ border-bottom:none;
+/*
+ letter-spacing:-0.0413em;
+*/
+ padding-bottom:0px;
+}
+
+body.home #about-sm2 h3 {
+ color:#333;
+}
+
+body.home #about-sm2 h4 {
+ font-size:1.3em;
+ color:#333;
+/*
+ letter-spacing:-0.001em;
+*/
+}
+
 body.home h4 {
-	border-bottom: 1px solid #e9e9e9;
-	padding-bottom: 0.33em;
-	margin-bottom: 0.75em;
+ border-bottom: 1px solid #e9e9e9;
+ padding-bottom: 0.33em;
+ margin-bottom: 0.75em; 
 }
 
 em em {
@@ -392,6 +418,7 @@ h2 {
 .columnar .c2 h3:first-child {
  margin-top:0.2em;
  padding-bottom:0.3em;
+ font-weight:bold;
 }
 
 .columnar .c2 > .f-block:first-child > h4 {
@@ -407,7 +434,7 @@ h2 {
 }
 
 .columnar .c2 p {
- line-height:1.5em;
+ line-height:1.75em;
 }
 
 .three .columnar {
@@ -580,7 +607,7 @@ div.clear {
 }
 
 ul.standard {
- line-height:1.5em;
+ line-height:1.75em;
  padding-left:1.2em;
  *padding-left:0px;
  color:#333;
@@ -984,7 +1011,7 @@ div#gsfn_list_widget a.widget_title {
 
 div#gsfn_list_widget .powered_by {
  font-family:verdana,arial;
- margin:0px 1em 0px 1em;
+ margin:-0.25em 1em 0px 1em;
  padding:0.25em 0px 0px 0px;
  border-top: 1px solid #ccc;
  font-size:xx-small;
@@ -1105,7 +1132,8 @@ a.cta span {
 }
 
 a.cta:hover,
-.c2 a:hover {
+.c2 a:hover,
+#sm2-options a:hover {
  background-color:#3399cc;
  border-color:#3399cc;
  color:#fff;
@@ -1356,8 +1384,13 @@ ul.playlist {
  font-size:xx-small;
 }
 
+ul.playlist li {
+ margin-bottom:0.2em;
+}
+
 ul.playlist li a {
  font-size:1em;
+ color:#333;
 }
 
 ul.playlist li a,
@@ -1459,21 +1492,35 @@ ul.graphic li a.sm2_link {
  letter-spacing: -0.02em;
 }
 
+ul.inline-playlist {
+ min-height:49px;
+ min-width:512px;
+ margin-top:4em;
+}
+
+ul.inline-playlist li {
+ float:left;
+ display:inline;
+ width:45%;
+ margin-right:0.25%;
+}
+
+body.home .sm2-inline-list .ui360 {
+ /* canvas visualization: box tweak */
+ margin-right:1px;
+}
+
 /* Flash positioning and flashblock / clicktoflash handling */
 
 /* special-case for the SM2 homepage only */
 
 body.home #sm2-container {
+/*
  position:absolute;
+*/
  width:48px;
  height:48px;
  margin:1px 0px 0px 1px;
-}
-
-body.home #sm2-container.high_performance {
- bottom:auto;
- left:auto;
- top:auto;
 }
 
 body.home #sm2-container.swf_timedout {
@@ -1483,10 +1530,19 @@ body.home #sm2-container.swf_timedout {
  z-index:2;
 }
 
+/*
+body.home #sm2-container.high_performance {
+ bottom:auto;
+ left:auto;
+ top:auto;
+}
+
+
 body.home #sm2-container.swf_unblocked {
  width:1px;
  height:1px;
 }
+*/
 
 #sm2-support {
  display:none;
@@ -1739,4 +1795,41 @@ ul.file-structure li span {
 
 #history li.in > p.compact {
 	font-weight:bold;
+}
+
+#sm2-options {
+	/* -html5, -debug etc. */
+	position: relative;
+	clear: both;
+	color: #666;
+	margin: 0.33em 0.75em 0px 0.75em;
+	border-top: 1px solid #e6e6e6;
+}
+
+#sm2-options .options-divider {
+	font-size: xx-small;
+	color: #ccc;
+}
+
+#sm2-options p {
+	font-size: x-small;
+	padding-left: 0px;
+}
+
+#sm2-options p:first-child {
+	margin-top: 0.75em;
+}
+
+#sm2-options a {
+	color: #3399cc;
+	text-decoration: none;
+	padding: 1px;
+	margin-top: -2px 0px 0px -2px;
+}
+
+#sm2-options a:hover {
+}
+
+#without-html5 {
+	display: none;
 }
