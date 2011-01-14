@@ -195,11 +195,13 @@ function SoundManager(smURL, smID) {
   this.useAltURL = !this._overHTTP; // use altURL if not "online"
   this._global_a = null;
 
-  if (_s.useGlobalHTML5Audio && (_is_iDevice || _is_pre)) {
+  if (_is_iDevice || _is_pre) {
     // during HTML5 beta period (off by default), may as well force it on Apple + Palm, flash support unlikely
     _s.useHTML5Audio = true;
     _s.ignoreFlash = true;
-    _useGlobalHTML5Audio = true;
+    if (_s.useGlobalHTML5Audio) {
+      _useGlobalHTML5Audio = true;
+    }
   }
 
   if (_is_pre || this._use_maybe) {
@@ -833,7 +835,7 @@ function SoundManager(smURL, smID) {
 
     // TODO: verify if this is actually implemented anywhere yet.
     playing: _html5_event(function(e) {
-      _s._wD('HTML5::playing: '+this._t.sID+', '+this.url);
+      _s._wD('HTML5::playing: '+this._t.sID+', '+this._t.url);
       // once play starts, no buffering
       this._t._onbufferchange(0);
     }),
@@ -1054,7 +1056,9 @@ function SoundManager(smURL, smID) {
           if (_t._a) {
             // abort()-style method here, stop loading? (doesn't exist?)
             _t._a.pause();
+// if (!_useGlobalHTML5Audio || (_useGlobalHTML5Audio && _t.playState)) { // if global audio, only unload if actively playing
             _t._a.src = ''; // https://developer.mozilla.org/En/Using_audio_and_video_in_Firefox#Stopping_the_download_of_media
+// }
           }
         }
         // reset load/status flags
@@ -1131,7 +1135,7 @@ function SoundManager(smURL, smID) {
             _t.load(_t._iO);
           } else {
             _t.load(_t._iO);
-            _t.readyState = 1;
+            // _t.readyState = 1; // redundant
           }
         } else if (_t.readyState === 2) {
           _s._wD(fN + 'Could not load "' + _t.sID + '" - exiting', 2);
@@ -1555,8 +1559,20 @@ function SoundManager(smURL, smID) {
         return _a; // same url, ignore request
       }
       if (_a) {
-        _s._wD('setting new URL on existing object: '+_iO.url);
-        _a.src = _iO.url;
+        if (decodeURI(_a.src) === _iO.url) {
+          _s._wD('_setup_html5(): URL already at '+_iO.url);
+        } else {
+          _s._wD('setting new URL on existing object: '+_iO.url);
+          /*
+           * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
+           * Fixes case with devices that can only play one sound at a time
+           * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
+           */
+          if (_is_iDevice && _a._t.playState && _a._t) {
+            _a._t.stop();
+          }
+          _a.src = _iO.url;
+        }
       } else {
         _s._wD('creating HTML5 Audio() element with URL: '+_iO.url);
         _a = new Audio(_iO.url);
