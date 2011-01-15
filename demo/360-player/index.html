@@ -103,18 +103,18 @@ pre.block {
  <div>
 	
 <pre class="block"><code>&lt;div class="<span>ui360</span>"&gt;
- &lt;a href="/path/to/an.mp3"&gt;
+ &lt;a href="/path/to/an.mp3"&gt;play "an.mp3"&lt;/a&gt;
 &lt;/div&gt;</code></pre>
   
  </div>
 
- <p>When the link is clicked, the script adds a <code>UI</code> template to the block, prepending it in front of the MP3 link:</p>
+ <p>When the 360 player script loads, it adds a <code>UI</code> template to the block, prepending it in front of the MP3 link:</p>
 
 <pre class="block"><code>&lt;div class="<span>ui360</span>"&gt;
  <span><span>&lt;-- dynamically-inserted block --&gt;</span></span>
  &lt;div class="<span>ui</span>"&gt;
   &lt;canvas class="<span>sm2-canvas</span>"&gt;&lt;/canvas&gt;
-  &lt;img class="<span>sm2-360btn</span>" /&gt; 
+  &lt;span class="<span>sm2-360btn</span>"&gt;&lt;/span&gt; 
   &lt;div class="<span>sm2-timing</span>"&gt;&lt;/div&gt;
   &lt;div class="<span>sm2-cover</span>"&gt;&lt;/div&gt;
  &lt;/div&gt;
@@ -133,7 +133,6 @@ pre.block {
   loadRingColor: <span>'#ccc',</span> <span><span>// amount of sound which has loaded</span></span>
   playRingColor: <span>'#000'</span>, <span><span>// amount of sound which has played</span></span>
   backgroundRingColor: <span>'#eee', </span><span><span>// "default" color shown underneath everything else</span></span>
-  imageRoot: <span>''</span>,</span> <span><span>// path to prepend for empty.gif used for play/pause button
   animDuration: <span>500</span>,
   animTransition: <span>Animator.tx.bouncy</span> <span><span>// http://www.berniecode.com/writing/animator.html</span></span>
 }</code></pre>

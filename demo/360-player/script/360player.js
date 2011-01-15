@@ -33,6 +33,7 @@ function ThreeSixtyPlayer() {
   this.soundsByURL = [];
   this.indexByURL = [];
   this.lastSound = null;
+  this.lastTouchedSound = null;
   this.soundCount = 0;
   this.oUITemplate = null;
   this.oUIImageMap = null;
@@ -56,7 +57,6 @@ function ThreeSixtyPlayer() {
 
     circleDiameter: null, // set dynamically according to values from CSS
     circleRadius: null,
-    imageRoot: '', // image path to prepend for transparent .GIF - eg. /images/
     animDuration: 500,
     animTransition: Animator.tx.bouncy, // http://www.berniecode.com/writing/animator.html
     showHMSTime: false, // hours:minutes:seconds vs. seconds-only
@@ -401,7 +401,7 @@ function ThreeSixtyPlayer() {
         className: self.css.sPlaying,
         oUIBox: self.getElementsByClassName('sm2-360ui','div',oContainer)[0],
         oCanvas: self.getElementsByClassName('sm2-canvas','canvas',oContainer)[0],
-        oButton: self.getElementsByClassName('sm2-360btn','img',oContainer)[0],
+        oButton: self.getElementsByClassName('sm2-360btn','span',oContainer)[0],
         oTiming: self.getElementsByClassName('sm2-timing','div',oContainer)[0],
         oCover: self.getElementsByClassName('sm2-cover','div',oContainer)[0],
         circleDiameter: diameter,
@@ -572,12 +572,18 @@ function ThreeSixtyPlayer() {
       self.stopEvent(e);
       return false;
     }
-    var thisSound = self.lastSound; // TODO: In multiple sound case, figure out which sound is involved etc.
+    var evt = e?e:event;
+    if (isTouchDevice && evt.touches) {
+      evt = evt.touches[0];
+    }
+    var target = (evt.target||evt.srcElement);
+    var thisSound = self.getSoundByURL(self.getElementsByClassName('sm2_link','a',self.getParentByClassName(target,'ui360'))[0].href); // self.lastSound; // TODO: In multiple sound case, figure out which sound is involved etc.
     // just in case, update coordinates (maybe the element moved since last time.)
+    self.lastTouchedSound = thisSound;
     self.refreshCoords(thisSound);
-    var oData = self.lastSound._360data;
+    var oData = thisSound._360data;
     self.addClass(oData.oUIBox,'sm2_dragging');
-    oData.pauseCount = (self.lastSound.paused?1:0);
+    oData.pauseCount = (self.lastTouchedSound.paused?1:0);
     // self.lastSound.pause();
     self.mmh(e?e:event);
     if (isTouchDevice) {
@@ -593,10 +599,10 @@ function ThreeSixtyPlayer() {
   }
 
   this.mouseUp = function(e) {
-    var oData = self.lastSound._360data;
+    var oData = self.lastTouchedSound._360data;
     self.removeClass(oData.oUIBox,'sm2_dragging');
     if (oData.pauseCount == 0) {
-      self.lastSound.resume();
+      self.lastTouchedSound.resume();
     }
     if (!isTouchDevice) {
       document.onmousemove = null;
@@ -613,7 +619,7 @@ function ThreeSixtyPlayer() {
     if (typeof e == 'undefined') {
       var e = event;
     }
-    var oSound = self.lastSound;
+    var oSound = self.lastTouchedSound;
     var coords = self.getMouseXY(e);
     var x = coords[0];
     var y = coords[1];
@@ -860,7 +866,7 @@ function ThreeSixtyPlayer() {
   this.getUIHTML = function(diameter) {
     return [
      '<canvas class="sm2-canvas" width="'+diameter+'" height="'+diameter+'"></canvas>',
-     ' <img src="'+self.config.imageRoot+'empty.gif" class="sm2-360btn sm2-360btn-default" style="border:none" />', // note use of imageMap, edit or remove if you use a different-size image.
+     ' <span class="sm2-360btn sm2-360btn-default"></span>', // note use of imageMap, edit or remove if you use a different-size image.
      ' <div class="sm2-timing'+(navigator.userAgent.match(/safari/i)?' alignTweak':'')+'"></div>', // + Ever-so-slight Safari horizontal alignment tweak
      ' <div class="sm2-cover"></div>'
     ];
@@ -989,8 +995,7 @@ function ThreeSixtyPlayer() {
           oCanvas = oLinks[i].parentNode.getElementsByTagName('canvas')[0];
         }
         oCover = self.getElementsByClassName('sm2-cover','div',oLinks[i].parentNode)[0];
-        var oBtn = oLinks[i].parentNode.getElementsByTagName('img')[0];
-        var oBtn = oLinks[i].parentNode.getElementsByTagName('img')[0]
+        var oBtn = oLinks[i].parentNode.getElementsByTagName('span')[0];
         self.addEventHandler(oBtn,'click',self.buttonClick);
         if (!isTouchDevice) {
           self.addEventHandler(oCover,'mousedown',self.mouseDown);

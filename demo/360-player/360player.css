@@ -107,6 +107,7 @@
 
 .ui360 .sm2-360btn {
  position:absolute;
+ display:block;
  top:50%;
  left:50%;
  width:22px;

@@ -247,7 +247,6 @@ this.config = {\n\
   backgroundRingColor: <span>'"+threeSixtyPlayer.config.backgroundRingColor+"'</span>,\n\
   circleDiameter: <span>"+threeSixtyPlayer.config.circleDiameter+"</span>,\n\
   circleRadius: <span>"+threeSixtyPlayer.config.circleRadius+"</span>,\n\
-  imageRoot: <span>'"+threeSixtyPlayer.config.imageRoot+"'</span>,\n\
   animDuration: <span>"+threeSixtyPlayer.config.animDuration+"</span>,\n\
   animTransition: <span>Animator.tx.bouncy</span>,\n\
   showHMSTime: <span>"+threeSixtyPlayer.config.showHMSTime+"</span>,\n\
@@ -684,7 +683,6 @@ if (window.location.toString().match(/hifi/i)) {
 		  backgroundRingColor: '#eee',
 		  circleDiameter: 256,
 		  circleRadius: 128,
-		  imageRoot: '',
 		  animDuration: 500,
 		  animTransition: Animator.tx.bouncy,
 		  showHMSTime: true,
