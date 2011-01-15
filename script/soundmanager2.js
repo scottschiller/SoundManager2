@@ -1555,24 +1555,20 @@ function SoundManager(smURL, smID) {
     this._setup_html5 = function(oOptions) {
       var _iO = _mixin(_t._iO, oOptions),
           _a = _useGlobalHTML5Audio ? _s._global_a : _t._a;
-      if (_a && _a._t && _a.src === _iO.url) {
-        return _a; // same url, ignore request
-      }
       if (_a) {
-        if (decodeURI(_a.src) === _iO.url) {
-          _s._wD('_setup_html5(): URL already at '+_iO.url);
-        } else {
-          _s._wD('setting new URL on existing object: '+_iO.url);
-          /*
-           * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
-           * Fixes case with devices that can only play one sound at a time
-           * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
-           */
-          if (_is_iDevice && _a._t.playState && _a._t) {
-            _a._t.stop();
-          }
-          _a.src = _iO.url;
+        if (_a._t && decodeURI(_a.src) === _iO.url) {
+          return _a; // same url, ignore request
         }
+        _s._wD('setting new URL on existing object: '+_iO.url);
+        /*
+         * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
+         * Fixes case with devices that can only play one sound at a time
+         * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
+         */
+        if (_is_iDevice && _a._t.playState && _a._t) {
+          _a._t.stop();
+        }
+        _a.src = _iO.url;
       } else {
         _s._wD('creating HTML5 Audio() element with URL: '+_iO.url);
         _a = new Audio(_iO.url);
