@@ -62,13 +62,12 @@ threeSixtyPlayer.config = {
 
   playNext: false,
   autoPlay: false,
-  allowMultiple: false,
+  allowMultiple: true,
   loadRingColor: '#ccc',
   playRingColor: '#000',
   backgroundRingColor: '#eee',
   circleDiameter: 256,
   circleRadius: 128,
-  imageRoot: 'demo/360-player/',
   animDuration: 500,
   animTransition: Animator.tx.bouncy,
   showHMSTime: true,
@@ -102,15 +101,11 @@ if (navigator.platform.match(/win32/i) && navigator.userAgent.match(/firefox/i))
 
 soundManager.useFastPolling = true;
 
-if (!navigator.userAgent.match(/msie 6/i)) {
-  threeSixtyPlayer.config.imageRoot = 'demo/360-player/';
-}
-
 function checkBadSafari() {
   var _ua = navigator.userAgent;
   if (!window.location.toString().match(/sm2\-ignorebadua/i) && _ua.match(/safari/i) && !_ua.match(/chrome/i) && _ua.match(/OS X 10_6_(3|4|5|6)/i)) { // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
     var complaint = document.createElement('li');
-    complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled for this browser/OS due to load/play failures in Safari 4 + 5 on Snow Leopard 10.6.3/4/5/6, caused by bugs in QuickTime X and/or underlying frameworks. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)<br>Try <a href="?sm2-ignorebadua">HTML5 anyway?</a> ("water drop" MP3 playback seems to fail most often.)';
+    complaint.innerHTML = '<b>Note</b>: HTML5 audio disabled for this browser/OS due to load/play failures in Safari 4 + 5 on Snow Leopard 10.6.3/4/5/6, caused by bugs in QuickTime X and/or underlying frameworks. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9">bugs.webkit.org #32519</a>. (Safari on Leopard + Win32, and iPad OK, however.)<br>Try <a href="?sm2-ignorebadua&sm2-usehtml5audio=1">HTML5 anyway?</a> ("water drop" MP3 playback seems to fail most often.)';
     _id('html5-audio-notes').appendChild(complaint);
   }
 }
@@ -328,7 +323,7 @@ body #sm2-container embed {
 
                  <img src="demo/_image/speaker.png" alt="speaker icon" style="float:left;display:inline;width:68px;height:68px;margin:1em 1em 0px 0px" />
 
-		 <h2 class="special" style="margin-top:0.33em">SoundManager 2 makes it easier to play audio using JavaScript.</h2>
+		 <h2 class="special" style="margin-top:0.25em">SoundManager 2 makes it easier to play audio using JavaScript.</h2>
 		
 		 <p style="margin-top:0.5em">Using HTML5 and Flash, SoundManager 2 provides reliable cross-platform audio under a single API. <a href="doc/getstarted/#intro" class="cta" style="white-space:nowrap">How It Works <span>&raquo;</span></a></p>
 
@@ -336,17 +331,21 @@ body #sm2-container embed {
 	
 		</div>
 
-<div style="float:right;display:inline;background:#fff;padding-left:1em">
+<div class="header-demo">
 
- <img src="demo/_image/soundmanager2-speaker.png" alt="SoundManager 2 speaker logo" />
+	<h3 style="float:left;display:inline;margin-top:0.75em;margin-right:0.75em">Audio, just about anywhere.</h3>
+	
+	<div class="sm2-inline-list" style="float:left;display:inline;margin-top:0.2em">
+	 <div class="ui360"><a href="demo/_mp3/office_lobby.mp3" class="sm2_link norewrite exclude button-exclude inline-exclude">Office lobby sound</a></div>
+	 <div class="ui360" style="float:left;display:inline"><a href="demo/_mp3/mak.mp3" title="360 demo: Angry Cow Sound" class="norewrite exclude button-exclude inline-exclude">Random</a></div>
+	 <div class="ui360" style="float:left;display:inline"><a href="http://freshly-ground.com/data/audio/sm2/water-drop.mp3" title="360 Demo: Water Drop" class="exclude button-exclude inline-exclude">Water Drop</a></div>
+	</div>
 
-</div>
+	<div style="float:right;display:inline;padding-left:1em;margin-top:-1em">
 
-<h3 style="margin-top:0.75em;float:left;display:inline;margin-right:0.75em">Audio, just about anywhere.</h3>
-<div class="sm2-inline-list" style="float:left;display:inline;margin-top:2px">
- <div class="ui360"><a href="demo/_mp3/office_lobby.mp3" class="sm2_link norewrite exclude button-exclude inline-exclude">Office lobby sound</a></div>
- <div class="ui360" style="float:left;display:inline"><a href="demo/_mp3/mak.mp3" title="360 demo: Angry Cow Sound" class="norewrite exclude button-exclude inline-exclude">Random</a></div>
- <div class="ui360" style="float:left;display:inline"><a href="http://freshly-ground.com/data/audio/sm2/water-drop.mp3" title="360 Demo: Water Drop" class="exclude button-exclude inline-exclude">Water Drop</a></div>
+	 <img src="demo/_image/soundmanager2-speaker.png" alt="SoundManager 2 speaker logo" />
+
+	</div>
 
 </div>
 
@@ -354,80 +353,85 @@ body #sm2-container embed {
 
 <div style="clear:left;padding-top:1.5em"></div>
 
-<h3 style="float:left;display:inline;margin-right:0.75em;margin-top:0px">Complexity, reduced.</h3>
-<div style="float:left;display:inline;margin-top:6px">
-<a href="demo/_mp3/coins.mp3" title="Play &quot;Change&quot;" class="sm2_button exclude inline-exclude norewrite" style="padding:0px">coins.mp3</a>
+<div>
+
+ <h3 style="float:left;display:inline;margin-right:0.75em">Complexity, reduced.</h3>
+
+ <div style="float:left;display:inline;vertical-align:bottom;margin-top:0.85em">
+  <a href="demo/_mp3/coins.mp3" title="Play &quot;Change&quot;" class="sm2_button exclude inline-exclude norewrite" style="padding:0px">coins.mp3</a>
 &nbsp;&nbsp;
-<a href="demo/christmas-lights/sound/glass0.mp3" class="sm2_button exclude inline-exclude norewrite" title="Play &quot;Glass break 1&quot;" style="padding:0px">glass0.mp3</a>
+  <a href="demo/christmas-lights/sound/glass0.mp3" class="sm2_button exclude inline-exclude norewrite" title="Play &quot;Glass break 1&quot;" style="padding:0px">glass0.mp3</a>
 &nbsp;&nbsp;
-<a href="demo/christmas-lights/sound/glass1.mp3" class="sm2_button exclude inline-exclude threesixty-exclude norewrite" title="Play &quot;Glass break 2&quot;" style="padding:0px">glass1.mp3</a>
+  <a href="demo/christmas-lights/sound/glass1.mp3" class="sm2_button exclude inline-exclude threesixty-exclude norewrite" title="Play &quot;Glass break 2&quot;" style="padding:0px">glass1.mp3</a>
 &nbsp;&nbsp;
+ </div>
+
 </div>
+
 <!--
 <a href="demo/christmas-lights/sound/glass2.mp3" class="sm2_button exclude inline-exclude threesixty-exclude norewrite" title="Play &quot;Glass break 3&quot;" style="padding:0px">glass2.mp3</a>
 -->
 
-<p style="clear:left;padding-top:1em">Supporting HTML5 audio in modern browsers can be tedious, let alone "legacy" HTML4-based browsers. SoundManager 2 gives you a simple but powerful API that supports both new and old, using HTML5 audio where supported and an invisible Flash fallback where needed. Ideally when using SM2, audio "just works."</p>
+<p style="clear:left;padding-top:1em">Supporting HTML5 audio in modern browsers can be tedious, let alone "legacy" HTML4-based browsers. SoundManager 2 gives you a simple but powerful API that supports both new and old, using HTML5 audio where supported and an invisible Flash fallback where needed. Ideally, when using SoundManager 2, audio "just works."</p>
 
-<div style="position:relative;float:right;display:inline;margin-top:1.3em">
+<div>
 
- <h3>See and hear, here.</h3>
+<div style="clear:both;padding-top:2em"></div>
 
- <ul class="playlist" style="float:right;display:inline;width:256px;min-height:49px;margin-top:2em;padding-bottom:1em">
-  <li><a href="http://freshly-ground.com/data/audio/mpc/20060826 - Armstrong.mp3" class="button-exclude inline-exclude threesixty-exclude">Armstrong Beat</a></li>
-  <li><a href="http://freshly-ground.com/data/audio/mpc/20090119 - Untitled Groove.mp3" class="button-exclude inline-exclude threesixty-exclude">Untitled Groove</a></li>
-  <li><a href="http://freshly-ground.com/data/audio/sm2/quail-64kbps-he-aac-from-itunes-renamed-from-mp4.aac" title="48 kbps MPEG4 High-Efficiency AAC test sound: BC Quail" class="button-exclude inline-exclude threesixty-exclude">BC Quail <span class="sidenote">(HE-AAC)</span></a></li>
+<h3 style="float:left;display:inline;margin-top:0px">Big features, small footprint.</h3>
+	
+	<div style="position:relative;float:right;display:inline;margin-top:0px;margin-left:5em">
+
+	 <h3 style="margin-top:0px">See and hear, here.</h3>
+
+	 <div class="sm2-inline-list" style="margin-top:1em">
+	  <div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/The%20Fugitives%20-%20Graffiti%20Sex.mp3" class="exclude button-exclude inline-exclude" style="position:absolute;color:#333">The Fugitives - Graffiti Sex</a></div>
+	 </div>
+
+	 <div style="width:256px">
+
+	 <ul class="playlist" style="float:right;display:inline;width:256px;min-height:49px;margin-top:2em;padding-bottom:0px">
+	  <li><a href="http://freshly-ground.com/data/audio/mpc/20060826 - Armstrong.mp3" class="button-exclude inline-exclude threesixty-exclude">Armstrong Beat</a></li>
+	  <li><a href="http://freshly-ground.com/data/audio/mpc/20090119 - Untitled Groove.mp3" class="button-exclude inline-exclude threesixty-exclude">Untitled Groove</a></li>
+	  <li><a href="http://freshly-ground.com/data/audio/sm2/quail-64kbps-he-aac-from-itunes-renamed-from-mp4.aac" title="48 kbps MPEG4 High-Efficiency AAC test sound: BC Quail" class="button-exclude inline-exclude threesixty-exclude">BC Quail <span class="sidenote">(HE-AAC)</span></a></li>
+	 </ul>
+
+	  <ul id="muxtape-html5" class="playlist" style="clear:both;margin-top:0px;padding-top:0px">
+	   <li><a href="http://freshly-ground.com/data/audio/sm2/20060924%20-%20Ghosts%20&%20Goblins%20Reconstructed.ogg" title="OGG sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">Ghosts+Goblins Reconstructed <span class="sidenote">(OGG)</span></a></li>
+	   <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" title="WAV sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">A corked beer bottle <span class="sidenote">(WAV)</span></a></li>
+	  </ul>
+
+	 </div>
+
+	</div>
+	
+  <p style="clear:left;padding-top:1em;min-width:30em">SoundManager 2 packs a full-featured API (100 KB of raw code) into as little as 10 KB over the wire. The source is provided in fully-commented, -no-debug and compiler-optimized "minified" versions appropriate for development and production use.</p>
+
+ <h3>Tech features</h3>
+
+ <h4>HTML5 Audio Support <span style="color:#888">(Beta-ish)</span></h4>
+
+ <ul id="html5-audio-notes" class="standard">
+  <li>100% Flash-free MP3 + MP4/AAC where supported. Works on iPad, iPhone iOS 4</li>
+  <li>Seamless flash fallback for MP3/MP4 content, if needed</li>
+  <li>HTML5/Flash API switching is transparent, handled internally</li>
+  <li>WAV + OGG playback possible via HTML5, if supported</li>
+  <li>See <a href="doc/#soundmanager-usehtml5audio" title="soundManager.useHTML5Audio HTML5 Audio() support feature documentation">soundManager<wbr>.useHTML5Audio</a> for implementation details</li>
  </ul>
 
- <div class="sm2-inline-list" style="margin-top:1em">
-  <div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/The%20Fugitives%20-%20Graffiti%20Sex.mp3" class="exclude button-exclude inline-exclude" style="position:absolute;color:#333">The Fugitives - Graffiti Sex</a></div>
- </div>
-
- <div style="width:256px">
-
-  <ul id="muxtape-html5" class="playlist" style="padding-top:1.5em;clear:both">
-   <li><a href="http://freshly-ground.com/data/audio/sm2/20060924%20-%20Ghosts%20&%20Goblins%20Reconstructed.ogg" title="OGG sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">Ghosts+Goblins Reconstructed <span class="sidenote">(OGG)</span></a></li>
-   <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" title="WAV sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">A corked beer bottle <span class="sidenote">(WAV)</span></a></li>
-  </ul>
-
- </div>
-
 </div>
-
-<h3>Big features, small footprint.</h3>
-
-<div style="margin-right:290px">
-
-  <p style="padding-top:1em">SoundManager 2 packs a ton of functionality, but can get down to as little as 10 KB over the wire. The core API is provided in fully-commented, -no-debug and compiler-optimized "minified" versions appropriate for development and production use.</p>
-
-</div>
-
-<h3>Tech features</h3>
-
- <div style="margin-right:290px">
-
-			<h4>HTML5 Audio Support <span style="color:#888">(Beta-ish)</span></h4>
-			<ul id="html5-audio-notes" class="standard">
-			 <li>100% Flash-free MP3 + MP4/AAC where supported. Works on iPad, iPhone iOS 4</li>
-			 <li>Fallback to Flash for MP3/MP4 support, as needed</li>
-			 <li>SM2 API is unchanged, transparent; HTML5/Flash switching handled internally</li>
-             <li>HTML5 API support approximates Flash 8 API features, minus ID3, plus buffering</li>
-			 <li>Some other formats (WAV/OGG) supported via HTML5, depending on browser</li>
-			 <li>See <a href="doc/#soundmanager-usehtml5audio" title="soundManager.useHTML5Audio HTML5 Audio() support feature documentation">soundManager<wbr>.useHTML5Audio</a> for implementation details</li>
-			</ul>
- </div>
 
 <!--
 	<div style="float:left;display:inline;width:50%;vertical-align:top">
 -->		
 		<div style="margin-right:4em">
 
-			<h4>Basic API Features (Flash 8)</h4>
+			<h4>Basic API Features (Flash 8, HTML5)</h4>
 
 			<ul class="standard">
 			 <li>Load, stop, play, pause, mute, seek, pan, volume control from JavaScript</li>
 			 <li>Events: onload(), whileloading(), whileplaying(), onfinish() and more</li>
-			 <li>ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)</li>
+			 <li>Flash-only: ID3V1 and ID3V2 tag support for MP3s (title, artist, genre etc.)</li>
 			</ul>
 
         </div>
@@ -460,6 +464,11 @@ body #sm2-container embed {
 			 <li>Community-based <a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2" title="discussion/support for SoundManager 2 on Get Satisfaction">discussion/support</a></li>
 			</ul>
 			
+<!--/min-width -->
+</div>
+
+<div style="padding-top:1px">
+
 		<h4>As Heard On <span class="scratched-out">TV</span> The Internets</h4>
 		<p class="tight compact">A few nifty places SoundManager 2 has been seen in use on the Wild World Web:</p>
 		<div class="inthewild">
@@ -474,10 +483,9 @@ body #sm2-container embed {
 		<h4>Download!</h4>
 		<p style="margin-top:1.5em"><a href="doc/download/" class="feature">Get SoundManager 2</a></p>
 
+</div>
 
 <!-- /#about-sm2 -->
-
-</div>
 
 </div>
 

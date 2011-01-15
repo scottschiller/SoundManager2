@@ -38,6 +38,10 @@ h3 {
  font-size:1.17em;
  border-bottom:1px solid #ccc;
  padding-bottom:0.25em;
+}
+
+h3,
+.likeh3 {
  margin-top:1.5em;
 }
 
@@ -68,13 +72,23 @@ body.home #about-sm2 h4 {
  padding-bottom:0px;
 }
 
+body.home #about-sm2 h2.special {
+ font-size:2em;
+ margin-top:0.1em;
+}
+
+body.home #about-sm2 h2.special,
+body.home #about-sm2 h3 {
+ letter-spacing:0px;
+}
+
 body.home #about-sm2 h3 {
  color:#333;
 }
 
 body.home #about-sm2 h4 {
  font-size:1.3em;
- color:#333;
+ color:#555;
 /*
  letter-spacing:-0.001em;
 */
@@ -366,7 +380,7 @@ h2 {
 .columnar .c1 h2 {
  position:relative;
  font-size:1.2em;
- padding:0.46em 0.5em;
+ padding:0.35em 0.5em;
  vertical-align:middle;
  background:#333;
  color:#fff;
@@ -434,7 +448,7 @@ h2 {
 }
 
 .columnar .c2 p {
- line-height:1.75em;
+ line-height:1.5em;
 }
 
 .three .columnar {
@@ -607,12 +621,12 @@ div.clear {
 }
 
 ul.standard {
- line-height:1.75em;
+ line-height:1.5em;
  padding-left:1.2em;
  *padding-left:0px;
  color:#333;
  margin-top:0.5em;
- margin-bottom:0.5em;
+ margin-bottom:1em;
  list-style-type:square;
 }
 
@@ -622,7 +636,7 @@ ul.standard li {
 
 ul.standard ul {
  margin-top:0.5em;
- margin-bottom:1em;
+ margin-bottom:1.5em;
  padding-left:1.2em;
 }
 
@@ -1443,7 +1457,7 @@ ul.playlist li a.not-supported {
  /* give user a hint that the format doesn't work */
  text-decoration:line-through;
  color:#666;
- opacity:0.5;
+ opacity:0.25;
 }
 
 ul.graphic li {
@@ -1508,6 +1522,17 @@ ul.inline-playlist li {
 body.home .sm2-inline-list .ui360 {
  /* canvas visualization: box tweak */
  margin-right:1px;
+}
+
+/*
+body.home ul.standard {
+ color:#666;
+}
+*/
+
+body.home .columnar .c2 p {
+ line-height:1.6em;
+ color:#333;
 }
 
 /* Flash positioning and flashblock / clicktoflash handling */
