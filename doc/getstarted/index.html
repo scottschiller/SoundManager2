@@ -16,6 +16,7 @@
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
 	soundManager.useFlashBlock = true;
+        soundManager.bgColor = '#f6f6f6';
 	soundManager.debugMode = true;
 	soundManager.debugFlash = true; // enable flash debug output for this page
 	soundManager.url = '../../swf/';
@@ -125,8 +126,8 @@
 			
 				 <h3>SoundManager 2 Tutorial: What, Why, How</h3>
 			
-				 <p><strong>Problem:</strong> Browsers lack good, consistent native audio support. (HTML 5's <code>Audio()</code> is the future, but does not have majority support yet.)</p>
-				 <p><strong>Solution:</strong> Javascript API via Flash + ExternalInterface, works almost everywhere. If HTML5 audio support is enabled, flash fallback used for browsers that don't support "non-free" MP3 + MP4 formats.</p>
+				 <p><strong>Problem:</strong> Browsers lack good, consistent native audio support. (HTML 5's <code>Audio()</code> is the future, but is still in development.)</p>
+				 <p><strong>Solution:</strong> Javascript API using HTML5 Audio() + headless Flash via ExternalInterface, works almost everywhere. If HTML5 is supported but "non-free" MP3/MP4 formats are not, flash is used as a fallback.</p>
 				 <p>SoundManager 2 wraps and extends both the Flash and HTML Audio Sound APIs, providing a single, unified sound API to Javascript; the API is the same, whether HTML or Flash is ultimately used to play sound. (The flash portion is hidden, transparent to both developers and end users.)</p>
 
 				</div>

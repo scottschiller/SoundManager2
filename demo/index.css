@@ -100,6 +100,20 @@ body.home h4 {
  margin-bottom: 0.75em; 
 }
 
+body.home .demo-more,
+body.home .demo-more-abs {
+ text-align:right;
+ font-size:x-small;
+ margin-right:0.25em;
+ white-space:nowrap;
+}
+
+body.home .demo-more-abs {
+ position:absolute;
+ right:0px;
+ bottom:0px;
+}
+
 em em {
  /* special highlight */
  color:#003366;
@@ -380,7 +394,7 @@ h2 {
 .columnar .c1 h2 {
  position:relative;
  font-size:1.2em;
- padding:0.35em 0.5em;
+ padding:0.37em 0.5em;
  vertical-align:middle;
  background:#333;
  color:#fff;
@@ -698,8 +712,8 @@ ul.standard ul {
 }
 
 .c3 h2 {
- height:1.75em;
- line-height:1.75em;
+ height:2em;
+ line-height:2em;
 }
 
 .wedge {
@@ -717,7 +731,7 @@ ul.standard ul {
 
 .c3 h2 .l,
 .c3 h2 .r {
- border-top:1.66em solid #333;
+ border-top:2em solid #333;
 }
 
 .wedge .l,
@@ -729,7 +743,7 @@ ul.standard ul {
  width:16px;
  height:100%;
  margin-left:-16px;
- border-top:1.7em solid #333;
+ border-top:2em solid #333;
 }
 
 .wedge .r,
