@@ -92,6 +92,11 @@ pre code {
 <link rel="stylesheet" type="text/css" href="../flashblock/flashblock.css" />
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="script/mp3-player-button.js"></script>
+<script>
+soundManager.useFlashBlock = true; // optional - if used, required flashblock.css
+soundManager.url = '../../swf/'; // required: path to directory containing SM2 SWF files
+</script>
+
 </head>
 
 <body>
@@ -111,10 +116,10 @@ pre code {
  <h3>Inline text, with "play" button</h3>
 
  <p>Example code (link with a <b>sm2_button</b> CSS class):</p>
-<pre>&lt;p&gt; Spare change <code>&lt;a href="/path/to/coins.mp3" title="Play &amp;quot;coins&amp;quot;" class="sm2_button"&gt;coins.mp3&lt;/a&gt;</code> &lt;/p&gt;</pre>
+<pre>&lt;p&gt; <code>&lt;a href="/path/to/coins.mp3" title="Play &amp;quot;coins&amp;quot;" class="sm2_button"&gt;coins.mp3&lt;/a&gt;</code> Spare change&lt;/p&gt;</pre>
  <p>Renders as:</p>
 <div>
- <p>Spare change <a href="../../demo/_mp3/coins.mp3" class="sm2_button" title="Play &quot;coins&quot;">coins.mp3</a></p>
+ <p><a href="../../demo/_mp3/coins.mp3" class="sm2_button" title="Play &quot;coins&quot;">coins.mp3</a> Spare change</p>
  <p class="note">Note that the text inside the link is hidden and replaced with an image, but should be descriptive - or at least should say something generic, like "play".</p>
 </div>
  <h3>Basic MP3 play button, no text</h3>
