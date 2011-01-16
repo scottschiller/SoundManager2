@@ -195,6 +195,7 @@ function Controller(o) {
 	if (threeSixtyPlayer) {
 	  var val = self.controls[0].value;
 	  threeSixtyPlayer.config.circleDiameter = self.controls[0].value;
+
 	  threeSixtyPlayer.config.circleRadius = self.controls[0].value/2;
 	  // update some stuff
 
@@ -220,16 +221,45 @@ function Controller(o) {
 	
 	  // radio buttons
 
-      threeSixtyPlayer.config.useWaveformData=(document.getElementById('use-waveform').checked?true:false);
+          threeSixtyPlayer.config.useWaveformData=(document.getElementById('use-waveform').checked?true:false);
 	
 	  threeSixtyPlayer.config.waveformDataOutside = document.getElementById('waveform-inside').checked?false:true;
 	
-      threeSixtyPlayer.config.eqDataOutside = document.getElementById('eq-inside').checked?false:true;
+          threeSixtyPlayer.config.eqDataOutside = document.getElementById('eq-inside').checked?false:true;
 
-      threeSixtyPlayer.config.useAmplifier = (document.getElementById('use-amplifier').checked?true:false);
+          threeSixtyPlayer.config.useAmplifier = (document.getElementById('use-amplifier').checked?true:false);
 	
 	  // threeSixtyPlayer.refreshCoords();
 	}
+
+        if (threeSixtyPlayer.lastSound) {
+
+          threeSixtyPlayer.lastSound._360data.circleDiameter = self.controls[0].value;
+
+   	  threeSixtyPlayer.lastSound._360data.circleRadius = self.controls[0].value/2;
+
+	  threeSixtyPlayer.lastSound._360data.waveformDataLineRatio = (self.controls[1].value/100)*2;
+
+	  threeSixtyPlayer.lastSound._360data.waveformDataDownsample = (self.controls[2].value);
+
+	  threeSixtyPlayer.lastSound._360data.eqDataLineRatio = parseInt((self.controls[3].value/100)*3*1000)/1000;
+	
+	  threeSixtyPlayer.lastSound._360data.eqDataDownsample = (self.controls[4].value);
+	
+	  threeSixtyPlayer.lastSound._360data.useEQData = (document.getElementById('disabled-1').checked?true:false);
+	
+	  // radio buttons
+
+          threeSixtyPlayer.lastSound._360data.useWaveformData=(document.getElementById('use-waveform').checked?true:false);
+	
+	  threeSixtyPlayer.lastSound._360data.waveformDataOutside = document.getElementById('waveform-inside').checked?false:true;
+	
+          threeSixtyPlayer.lastSound._360data.eqDataOutside = document.getElementById('eq-inside').checked?false:true;
+
+          threeSixtyPlayer.lastSound._360data.useAmplifier = (document.getElementById('use-amplifier').checked?true:false);
+
+        }
+
   }
 
   this.updateExampleCode = function() {
