@@ -1,7 +1,8 @@
 /* larger canvas, spectrum + EQ visualization and other items */
 
 .ui360-vis,
-.ui360-vis .sm2-360ui {
+.ui360-vis .sm2-360ui,
+.sm2-inline-list .ui360-vis {
  /* size of the container for the circle, etc. */
  width:256px;
  height:256px;
@@ -18,10 +19,20 @@
  background-position:22.6% 50%; /* (~109px) initial play button position */
 }
 
+.sm2-inline-list .ui360-vis {
+ cursor:pointer
+}
+
 .ui360-vis a {
  font:14px "helvetica neue",helvetica,monaco,lucida,terminal,monospace;
  white-space:nowrap;
+ text-indent:0px; /* undo inline style */
+ top:46%; /* ehh. */
+}
+
+.sm2-inline-list .ui360-vis a {
  line-height:256px;
+ top:auto;
 }
 
 .ui360-vis .sm2-360ui {
@@ -81,19 +92,21 @@
  border-radius:0px;
 }
 
-/*
-.sm2-inline-list .ui360-vis:hover a.sm2_link {
- background-color:#fbfbfb;
+.sm2-inline-list .ui360 a:hover {
+ background-color:transparent; /* reset */
 }
-*/
 
-.sm2-inline-list .ui360-vis:hover a.sm2_link,
+.sm2-inline-list .ui360-vis:hover .sm2-360ui,
 .sm2-inline-list .ui360-vis a.sm2_link:hover,
-.sm2-inline-list .ui360-vis a:focus,
-.sm2-inline-list .ui360-vis a:active {
- background-color:#fbfbfb;
+.sm2-inline-list .ui360-vis a.sm2_link:active,
+.sm2-inline-list .ui360-vis a.sm2_link:focus {
+ background-color:transparent;
 }
 
+.sm2-inline-list .ui360-vis:hover a.sm2_link {
+ background-color:#fafafa;
+ *background-color:transparent; /* eh, screw IE. */
+}
 
 /* Use a bigger loading image for this layout */
 
@@ -102,6 +115,13 @@
  height:48px;
  margin-left:-24px;
  margin-top:-24px;
+}
+
+.ui360-vis:hover .sm2-360btn {
+ /* show "play" anywhere on UI when hovering */
+ background:transparent url(360-button-vis-play-light.png) no-repeat 50% 50%;
+ _background:transparent url(360-button-vis-play.gif) no-repeat 50% 50%;
+ cursor:pointer;
 }
 
 .ui360-vis .sm2-360ui.sm2_paused .sm2-360btn {
@@ -124,18 +144,16 @@
  cursor:pointer;
 }
 
-
-.ui360-vis,
-.ui360-vis .sm2-360btn-default {
- background:transparent url(360-button-vis-play.png) no-repeat 50% 50%;
- _background:transparent url(360-button-vis-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
+.ui360-vis {
+ /* non-JS / before-loaded state */
+ background:transparent url(360-button-vis-play.png) no-repeat 21% 50%;
+ _background:transparent url(360-button-vis-play.gif) no-repeat 21% 50%; /* IE 6-only: special crap GIF */
 }
 
-
-.ui360-vis:hover .sm2-360btn-default {
- background:transparent url(360-button-vis-play-light.png) no-repeat 50% 50%;
- _background:transparent url(360-button-vis-play.gif) no-repeat 50% 50%;
- cursor:pointer;
+.ui360-vis .sm2-360btn-default {
+ /* real button, post-loaded state */
+ background:transparent url(360-button-vis-play.png) no-repeat 50% 50%;
+ _background:transparent url(360-button-vis-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
 }
 
 .ui360-vis .sm2-360ui.sm2_dragging .sm2-360btn {

@@ -1,41 +1,34 @@
 /* General warning: Beta-ish. Code could be a bit cleaner. */
 
+.ui360, /* entire UI */
+.sm2-360ui { /* canvas container */
+ position:relative;
+}
+
 .ui360,
 .sm2-360ui {
- /* size of the container for the circle, etc. */
+ min-width:50px; /* should always be at least this. */
+ min-height:50px;
+}
+
+.sm2-360ui {
  width:50px;
  height:50px;
 }
 
-.ui360 {
- position:relative;
- /* a little extra spacing */
- padding-top:1px;
- padding-bottom:1px;
- margin-bottom:-18px; /* approximate "line height" we want */
- padding-left:42px; /* 50px, with a few off - margin used for visualization UI */
- width:auto;
-}
-
 .ui360,
 .ui360 * {
- position:relative;
  vertical-align:middle;
-}
-
-
-.ui360 a {
- line-height:50px;
 }
 
 .sm2-360ui {
  position:relative;
  display:inline-block; /* firefox 3 et al */
- float:left; /* firefox 2 needs this, inline-block would work with fx3 and others */
- *float:left; /* IE 6+7 */
+ float:left; /* IE 6+7, firefox 2 needs this, inline-block would work with fx3 and others */
  *display:inline;
- *clear:left;
- margin-left:-50px;
+/*
+ clear:left;
+*/
 }
 
 .sm2-360ui.sm2_playing,
@@ -44,13 +37,19 @@
  z-index:10;
 }
 
-.ui360 a.sm2_link { /* this class added to playable links by SM2 */
+.ui360 a { /* .sm2_link class added to playable links by SM2 */
+ float:left;
+ display:inline;
  position:relative;
-}
-
-.ui360 a {
  color:#000;
  text-decoration:none;
+ left:3px; /* slight spacing on left UI */
+ top:18px; /* vertical align */
+ text-indent:50px; /* make room for UI at left */
+}
+
+.ui360 a.sm2_link { /* SM2 has now started */
+ text-indent:0px; /* UI now in place. */
 }
 
 .ui360 a,
@@ -130,28 +129,23 @@
 
 /* this could be optimized a fair bit. */
 
-.ui360,
-.ui360 .sm2-360btn-default {
- background:transparent url(360-button-play.png) no-repeat 50% 50%;
- _background:transparent url(360-button-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
-}
-
-.ui360-vis,
-.ui360 .sm2-360btn-default {
- cursor:pointer;
-}
-
 .ui360 {
  /*
   "fake" button shown before SM2 has started, non-JS/non-SM2 case etc.
   background image will be removed via JS, in threeSixyPlayer.init()
  */
- background-position:6px 50%;
+ background:transparent url(360-button-play.png) no-repeat 14px 50%;
+ _background:transparent url(360-button-play.gif) no-repeat 14px 50%; /* IE 6-only: special crap GIF */
 }
 
+.ui360 .sm2-360btn-default,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn {
  background:transparent url(360-button-play.png) no-repeat 50% 50%;
- _background:transparent url(360-button-play.gif) no-repeat 50% 50%;
+ _background:transparent url(360-button-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
+}
+
+.ui360 .sm2-360btn-default,
+.ui360 .sm2-360ui.sm2_paused .sm2-360btn {
  cursor:pointer;
 }
 
@@ -168,7 +162,6 @@
  _background:transparent url(360-button-pause-light.gif) no-repeat 50% 50%;
  cursor:pointer;
 }
-
 
 .ui360 .sm2-360ui.sm2_playing .sm2-timing {
  visibility:visible;
@@ -191,7 +184,6 @@
 }
 
 .ui360 .sm2-360ui.sm2_playing .sm2-360btn,
-x.ui360 .sm2-360btn-playing,
 .ui360 .sm2-360ui.sm2_dragging .sm2-360btn,
 .ui360 .sm2-360ui.sm2_dragging .sm2-360btn:hover,
 .ui360 .sm2-360ui.sm2_dragging .sm2-360btn-playing:hover {
@@ -219,7 +211,8 @@ x.ui360 .sm2-360btn-playing,
 }
 
 .sm2-inline-list .ui360 {
- margin-bottom:0px;
+ /* inline player: minor tweak, tighten spacing */
+ margin-right:-2px;
 }
 
 .sm2-inline-block .ui360 {
