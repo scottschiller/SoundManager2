@@ -84,6 +84,8 @@ body.home #about-sm2 h3 {
 
 body.home #about-sm2 h3 {
  color:#333;
+ padding-bottom:3px;
+ border-bottom:1px solid #eee;
 }
 
 body.home #about-sm2 h4 {
@@ -112,6 +114,10 @@ body.home .demo-more-abs {
  position:absolute;
  right:0px;
  bottom:0px;
+}
+
+.home-shopping-network {
+ font-style:italic;
 }
 
 em em {
@@ -1533,9 +1539,8 @@ ul.inline-playlist li {
  margin-right:0.25%;
 }
 
-body.home .sm2-inline-list .ui360 {
- /* canvas visualization: box tweak */
- margin-right:1px;
+body.home .sm2-inline-list .ui360-vis {
+ margin-right:0px;
 }
 
 /*
