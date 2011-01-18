@@ -1554,6 +1554,24 @@ body.home .columnar .c2 p {
  color:#333;
 }
 
+body.home .c2 ul.playlist li a {
+ _color:#000; /* stupid IE */
+}
+
+body.home .c2 ul.playlist li.sm2_paused a,
+body.home .c2 ul.playlist li.sm2_playing a {
+ _color:#fff; /* argh */
+}
+
+body.home .c2 ul.standard {
+ _margin-left:1.5em;
+}
+
+body.home .ie6sucks {
+ _background:transparent !important;
+ _display:none !important;
+}
+
 /* Flash positioning and flashblock / clicktoflash handling */
 
 /* special-case for the SM2 homepage only */
