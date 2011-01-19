@@ -901,6 +901,8 @@ function SoundManager(smURL, smID) {
     })
   };
 
+  /*
+
   _HTML5_networkStates = {
     0: 'NETWORK_EMPTY',
     1: 'NETWORK_IDLE',
@@ -923,6 +925,8 @@ function SoundManager(smURL, smID) {
     3: 'MEDIA_ERR_DECODE',  // Decoding error
     4: 'MEDIA_ERR_SRC_NOT_SUPPORTED' // Unsupported format
   };
+
+  */
 
   // --- SMSound (sound object) instance ---
 
