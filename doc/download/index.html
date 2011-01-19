@@ -262,8 +262,8 @@ soundManager.ontimeout(function(){
 		       </li>
 
 			   <li class="in">
-			    <h3><b>V2.97a.20101010</b> - Code cleanup, HTML5 audio tweaks, merged RTMP fork, removal of experimental video, optional usePolicyFile crossdomain.xml feature (<a href="../../download/soundmanagerv297a-20101010.zip">Download archived version</a>)</h3>
-				<p>Shuffling of SoundManager 2 core, approximately 5% shaved off full debug-enabled file size after bug fixes, additional comments, new features and so on. Internal event handling code cleaned up. .SWF builds optimized, Flash 9 non-debug version now under 10 KB. Debug version now flash debugger-enabled. Merged GitHub user kjvarga's RTMP fork including improvements for Red5 + Flash Media Server streaming cases - buffering, event and state handling. Experimental video feature is toast, createVideo() no longer implemented. iPhone + iPad touch events on page player + 360&deg; player UI demos; tap and drag to seek, etc.</p>
+			    <h3><b>V2.97a.20101010</b> - Code cleanup, HTML5 audio tweaks, RTMP features, removal of experimental video, optional usePolicyFile crossdomain.xml feature (<a href="../../download/soundmanagerv297a-20101010.zip">Download archived version</a>)</h3>
+				<p>Shuffling of SoundManager 2 core, approximately 5% shaved off full debug-enabled file size after bug fixes, additional comments, new features and so on. Internal event handling code cleaned up. .SWF builds optimized, Flash 9 non-debug version now under 10 KB. Debug version now flash debugger-enabled. RTMP improvements for Red5 + Flash Media Server streaming cases - buffering, event and state handling. Experimental video feature is toast, createVideo() no longer implemented. iPhone + iPad touch events on page player + 360&deg; player UI demos; tap and drag to seek, etc.</p>
 				
 			    <ul class="double">
 			
@@ -278,13 +278,6 @@ soundManager.ontimeout(function(){
 				   <li>Removed <code>setPosition()</code> within <code>unload()</code>, cleaner exit when destroying a sound</li>
 				  </ul>
 			     </li>
-
-			     <li class="in">
-				  <p class="compact">Merged: RTMP Fork</p>
-				  <ul class="nested compact flat">
-				   <li>Merged GitHub user kjvarga's <a href="http://github.com/kjvarga/SoundManager2/">RTMP fork of SoundManager 2</a>, including buffering, event and state handling fixes and improvements. For more RTMP documentation/features, see the readme on GitHub, or <a href="../../README.rdoc" class="norewrite">view locally</a>.</li>
-				  </ul>
-                 </li>
 
 			     <li class="in">
 				  <p class="compact">API Updates</p>
@@ -378,7 +371,7 @@ soundManager.ontimeout(function(){
 			     <li class="in">
 			      <p class="compact">API Updates</p>
 			      <ul class="nested compact flat">
-				   <li>New experimental <a href="../#smsound-serverurl" title="SMSound serverURL property">RTMP support</a> via kjvarga's fork at <a href="http://github.com/kjvarga/SoundManager2/">http://github.com/kjvarga/SoundManager2/</a> while maintaining existing NetStream-based behaviour for non-RTMP MPEG4 audio, etc. Uses new <code>serverURL</code> parameter for FMS (I used Red5 for dev/testing,) eg. <code>soundManager.createSound({id:'rtmpTest',serverURL:'rtmp://localhost/oflaDemo',url:'oh-alberta.mp3'}).play();</code></li>
+				   <li>New experimental <a href="../#smsound-serverurl" title="SMSound serverURL property">RTMP support</a> while maintaining existing NetStream-based behaviour for non-RTMP MPEG4 audio, etc. Uses new <code>serverURL</code> parameter for FMS (I used Red5 for dev/testing,) eg. <code>soundManager.createSound({id:'rtmpTest',serverURL:'rtmp://localhost/oflaDemo',url:'oh-alberta.mp3'}).play();</code></li>
 				   <li>New SMSound option for createSound(), load(), play(): '<a href="../#smsound-type" title="SMSound type option">type</a>', for specifying MIME type alongside URL to help with detecting playability. eg. 
 <code>soundManager.createSound({id:'foo', url:'/player.php?stream=1', type:'audio/mp3'}).play();</code> and so on. Hat tip: <a href="http://sylvinus.org">sylvinus.org</a></li>
                    <li>New SMSound event: <a href="../#smsound-onposition" title="SMSound onposition() event">onposition()</a>, for attaching listeners to specific times within a sound.</li>

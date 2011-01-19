@@ -38,7 +38,6 @@ function SoundManager(smURL, smID) {
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = false;        // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio().canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
-  this.ondebuglog = false;           // callback made with each log message, regardless of debugMode
   this.useGlobalHTML5Audio = true;   // true = reuse single HTML5 audio object across all sounds on mobile devices.
 
   this.audioFormats = {
@@ -100,15 +99,13 @@ function SoundManager(smURL, smID) {
     'useWaveformData': false, // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
     'useEQData': false,       // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
     'onbufferchange': null,   // callback for "isBuffering" property change
-    'ondataerror': null,      // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
-    'onstats': null           // callback for when connection & play times have been measured
+    'ondataerror': null      // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
   };
 
   this.movieStarOptions = { // flash 9.0r115+ MPEG4 audio options, merged into defaultOptions if flash 9+movieStar mode is enabled
     'bufferTime': 3,        // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try increasing.)
     'serverURL': null,      // rtmp: FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
     'onconnect': null,      // rtmp: callback for connection to flash media server
-    'bufferTimes': null,    // array of buffer sizes to use. Size increases as buffer fills up.
     'duration': null        // rtmp: song duration (msec)
   };
 
@@ -296,7 +293,7 @@ function SoundManager(smURL, smID) {
       if (_fV === 8) {
         _s.o._createSound(_tO.id, _tO.onjustbeforefinishtime, _tO.loops||1, _tO.usePolicyFile);
       } else {
-        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.bufferTimes, _tO.onstats ? true : false, _tO.autoLoad, _tO.usePolicyFile);
+        _s.o._createSound(_tO.id, _tO.url, _tO.onjustbeforefinishtime, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.autoLoad, _tO.usePolicyFile);
         if (!_tO.serverURL) {
           // We are connected immediately
           oSound.connected = true;
@@ -622,10 +619,6 @@ function SoundManager(smURL, smID) {
   };
 
   this._writeDebug = function(sText, sType, bTimestamp) {
-    // If the debug log callback is set, always call it, regardless of debugMode
-    if (_s.ondebuglog) {
-      _s.ondebuglog(sText, sType, bTimestamp);
-    }
     // pseudo-private console.log()-style output
     // <d>
     var sDID = 'soundmanager-debug', o, oItem, sMethod;
@@ -769,13 +762,7 @@ function SoundManager(smURL, smID) {
     canplay: _html5_event(function(e) {
       _s._wD('HTML5::canplay: '+this._t.sID+', '+this._t.url);
       this._t._onbufferchange(0);
-      var stats = this._t._time_stats,
-          position1K = (!isNaN(this._t.position)?this._t.position/1000:null);
-      stats.play_time = (new Date()).getTime();
-      this._t._onstats({
-        connect_time: stats.connect_time - stats.start_time,
-        play_time: stats.play_time - stats.connect_time
-      });
+      var position1K = (!isNaN(this._t.position)?this._t.position/1000:null);
       // set the position if position was set before the sound loaded
       this._t._html5_canplay = true;
       if (this._t.position && this.currentTime !== position1K) {
@@ -824,7 +811,6 @@ function SoundManager(smURL, smID) {
       _s._wD('HTML5::loadstart: '+this._t.sID);
       // assume buffering at first
       this._t._onbufferchange(1);
-      this._t._time_stats.connect_time = (new Date()).getTime();
     }),
 
     play: _html5_event(function(e) {
@@ -1112,7 +1098,6 @@ function SoundManager(smURL, smID) {
         _t._setup_html5(_t._iO);
         _start_html5_timer();
       }
-      // KJV paused sounds have playState 1. We want these sounds to play.
       if (_t.playState === 1 && !_t.paused) {
         allowMulti = _t._iO.multiShot;
         if (!allowMulti) {
@@ -1227,7 +1212,7 @@ function SoundManager(smURL, smID) {
         _s.o._setAutoPlay(_t.sID, autoPlay);
       }
       if (autoPlay) {
-        // KJV Only increment the instanceCount if the sound isn't loaded (TODO: verify RTMP)
+        // only increment the instanceCount if the sound isn't loaded (TODO: verify RTMP)
         if (!_t.instanceCount && _t.readyState === 1) {
           _t.instanceCount++;
           _s._wD('sound '+_t.sID+' incremented instance count to '+_t.instanceCount);
@@ -1243,12 +1228,7 @@ function SoundManager(smURL, smID) {
       if (nMsecOffset === undefined) {
         nMsecOffset = 0;
       }
-      // KJV Use the duration from the instance options, if we don't have a track duration yet.
-      // Auto-loading streams with a starting position in their options will start playing
-      // as soon as they connect.  In the start() call we set the position on the stream,
-      // but because the stream hasn't played _t.duration won't have been set (that is
-      // done in whileloading()).  So if we don't have a duration yet, use the duration
-      // from the instance options, if available.
+      // Use the duration from the instance options, if we don't have a track duration yet.
       var original_pos, position, position1K, offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration || _t._iO.duration, Math.max(nMsecOffset, 0))); // position >= 0 and <= current available (loaded) duration
       original_pos = _t.position;
       _t.position = offset;
@@ -1257,8 +1237,7 @@ function SoundManager(smURL, smID) {
       _t._iO.position = offset;
       if (!_t.isHTML5) {
         position = _fV === 9 ? _t.position : position1K;
-        // Play on seek?  A progressive download that is loaded has paused == false
-        // so resuming won't work.  Handle that case here.
+        // Play on seek?  A progressive download that is loaded has paused == false so resuming won't work. Handle here.
         if (_t._iO.playOnSeek && _t.playState === 0) {
           _t.play({ position: position });
         } else {
@@ -1518,7 +1497,6 @@ function SoundManager(smURL, smID) {
       _t._onplay_called = false;
       _t._a = null;
       _t._html5_canplay = false;
-      _t._time_stats = {}; // for tracking play & connect times
       _t.bytesLoaded = null;
       _t.bytesTotal = null;
       _t.position = null;
@@ -1579,7 +1557,6 @@ function SoundManager(smURL, smID) {
       _a._called_load = false;
       _t.isHTML5 = true;
       _t._a = _a; // store a ref on the track
-      _t._time_stats.start_time = (new Date()).getTime();
       _a._t = _t; // store a ref on the audio
       _t._add_html5_events();
       _a.loop = (_iO.loops>1?'loop':'');
@@ -1834,17 +1811,6 @@ function SoundManager(smURL, smID) {
           _s._wD('SMSound._onjustbeforefinish(): "' + _t.sID + '"');
           _t._iO.onjustbeforefinish.apply(_t);
         }
-      }
-    };
-
-    // Connect & play time callback from Flash.  Only useful if autoload is on.
-    //
-    // Contains:
-    //   connect_time - RTMP: time to connect to server; HTML5: time till load start
-    //   play_time    - RTMP & HTML5: time to be ready to play (bufferfull & canplay, respectively)
-    this._onstats = function(stats) {
-      if (_t._iO.onstats) {
-        _t._iO.onstats(_t, stats);
       }
     };
 

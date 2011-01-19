@@ -81,17 +81,12 @@ package {
     public var st: SoundTransform;
     public var useNetstream: Boolean;
     public var bufferTime: Number = 3; // previously 0.1
-    public var bufferTimes: Array;     // an array of integers (for specifying multiple buffers)
     public var lastNetStatus: String = null;
     public var serverUrl: String = null;
 
-    public var start_time: Number;
-    public var connect_time: Number;
-    public var play_time: Number;
-    public var recordStats: Boolean = false;
     public var checkPolicyFile:Boolean = false;
 
-    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, bufferTimes: Array = null, recordStats: Boolean = false, autoLoad: Boolean = false, checkPolicyFile: Boolean = false) {
+    public function SoundManager2_SMSound_AS3(oSoundManager: SoundManager2_AS3, sIDArg: String = null, sURLArg: String = null, usePeakData: Boolean = false, useWaveformData: Boolean = false, useEQData: Boolean = false, useNetstreamArg: Boolean = false, netStreamBufferTime: Number = 1, serverUrl: String = null, duration: Number = 0, autoPlay: Boolean = false, useEvents: Boolean = false, autoLoad: Boolean = false, checkPolicyFile: Boolean = false) {
       this.sm = oSoundManager;
       this.sID = sIDArg;
       this.sURL = sURLArg;
@@ -111,20 +106,10 @@ package {
       this.useNetstream = useNetstreamArg;
       this.serverUrl = serverUrl;
       this.duration = duration;
-      this.recordStats = recordStats;
       this.useEvents = useEvents;
       this.autoLoad = autoLoad;
       if (netStreamBufferTime) {
         this.bufferTime = netStreamBufferTime;
-      }
-      // Use bufferTimes instead of bufferTime
-      if (bufferTimes !== null) {
-        this.bufferTimes = bufferTimes;
-      } else {
-        this.bufferTimes = [this.bufferTime];
-      }
-      if (recordStats) {
-        this.start_time = getTimer();
       }
       this.checkPolicyFile = checkPolicyFile;
 
@@ -154,7 +139,6 @@ package {
         }
         this.nc.connect(serverUrl);
       } else {
-        this.connect_time = this.start_time;
         this.connected = true;
       }
 
@@ -174,17 +158,13 @@ package {
             this.ns = new NetStream(this.nc);
             this.ns.checkPolicyFile = this.checkPolicyFile;
             // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
-            this.ns.bufferTime = getStartBuffer(); // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
+            this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
             this.st = new SoundTransform();
             this.cc.onMetaData = this.metaDataHandler;
             this.ns.client = this.cc;
             this.ns.receiveAudio(true);
             this.addNetstreamEvents();
-
             this.connected = true;
-            if (recordStats) {
-              this.recordConnectTime();
-            }
             if (this.useEvents) {
               writeDebug('firing _onconnect for '+this.sID);
               ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
@@ -247,35 +227,6 @@ package {
 
     }
 
-    // Set the buffer size on the current NetSream instance to <tt>buffer</tt> secs
-    // Only set the buffer if it's different to the current buffer.
-    public function setBuffer(buffer: int) : void {
-      if (buffer != this.ns.bufferTime) {
-        this.ns.bufferTime = buffer;
-        writeDebug('set buffer to '+this.ns.bufferTime+' secs');
-      }
-    }
-
-    // Return the size of the starting buffer.
-    public function getStartBuffer() : int {
-      return this.bufferTimes[0];
-    }
-
-    // Return the size of the next buffer, given the size of the current buffer.
-    // If there are no more buffers, returns the current buffer size.
-    public function getNextBuffer(current_buffer: int) : int {
-      var i: int = bufferTimes.indexOf(current_buffer);
-      if (i == -1) {
-        // Couldn't find the buffer, start from the start buffer size
-        return getStartBuffer();
-      } else if (i + 1 >= bufferTimes.length) {
-        // Last (or only) buffer, keep the current buffer
-        return current_buffer;
-      } else {
-        return this.bufferTimes[i+1];
-      }
-   }
-
     public function writeDebug (s: String, bTimestamp: Boolean = false) : Boolean {
       return this.sm.writeDebug (s, bTimestamp); // defined in main SM object
     }
@@ -331,7 +282,7 @@ package {
         var set_position:Boolean = this.lastValues.position != null && this.lastValues.position != nMsecOffset;
         if (set_position) {
           // Minimize the buffer so playback starts ASAP
-          this.setBuffer(this.getStartBuffer());
+          this.ns.bufferTime = this.bufferTime;
         }
 
         if (this.paused) {
@@ -440,23 +391,6 @@ package {
       }
     }
 
-    public function recordPlayTime() : void {
-      this.play_time = Math.round(getTimer() - (this.start_time + this.connect_time));
-      writeDebug('Play took '+ this.play_time + ' ms');
-      // We must now have both stats, call the onstats callback
-      ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onstats", {
-        play_time:    this.play_time,
-        connect_time: this.connect_time
-      });
-      // Stop tracking any stats for this object
-      this.recordStats = false;
-    }
-
-    public function recordConnectTime() : void {
-      this.connect_time = Math.round(getTimer() - this.start_time);
-      writeDebug('Connect took '+ this.connect_time + ' ms');
-    }
-
     // Handle FMS bandwidth check callback.
     // @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html
     // @see http://www.johncblandii.com/index.php/2007/12/fms-a-quick-fix-for-missing-onbwdone-onfcsubscribe-etc.html
@@ -515,11 +449,6 @@ package {
 
       } else if (e.info.code == "NetStream.Play.Start" || e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Buffer.Full") {
 
-        // First time buffer has filled. Print debugging output.
-        if (this.recordStats && !this.play_time) {
-          this.recordPlayTime();
-        }
-
         // RTMP case..
         // We wait for the buffer to fill up before pausing the just-loaded song because only if the
         // buffer is full will the song continue to buffer until the user hits play.
@@ -531,15 +460,6 @@ package {
           // that should be harmless.
           writeDebug('Pausing on buffer full');
           ExternalInterface.call(baseJSObject + "['" + this.sID + "'].pause", false);
-        }
-
-        // The buffer is full.  Increase its size if possible.
-        // Double buffering has not been shown to cause false starts, so this is safe.
-        if (e.info.code == "NetStream.Buffer.Full") {
-          var next_buffer: int = this.getNextBuffer(this.ns.bufferTime);
-          if (next_buffer != this.ns.bufferTime) {
-            this.setBuffer(next_buffer);
-          }
         }
 
         var isNetstreamBuffering: Boolean = (e.info.code == "NetStream.Buffer.Empty" || e.info.code == "NetStream.Play.Start");
@@ -566,9 +486,8 @@ package {
           }
 
         } else if (e.info.code == "NetStream.Buffer.Empty") {
-
           // The buffer is empty.  Start from the smallest buffer again.
-          this.setBuffer(this.getStartBuffer());
+          this.ns.bufferTime = this.bufferTime;
         }
       }
 
