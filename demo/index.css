@@ -38,10 +38,12 @@ h3 {
  font-size:1.17em;
  border-bottom:1px solid #ccc;
  padding-bottom:0.25em;
+ _margin-top:1.5em; /* fark IE6 */
 }
 
 h3,
-.likeh3 {
+.likeh3,
+.home .columnar .c2 #about-sm2 h3:first-child { /* silly override */
  margin-top:1.5em;
 }
 
@@ -60,20 +62,34 @@ h5 {
  padding-bottom:0.25em;
 }
 
+body.home .sm2-speaker {
+ float:right;
+ display:inline;
+ padding-left:1em;
+ margin-top:-40px;
+ background:#fff;
+ max-width:192px;
+ min-width:64px;
+ width:30%;
+}
+
+body.home .sm2-speaker img {
+ width:100%;
+ max-width:192px;
+ min-width:32px;
+}
+
 body.home #about-sm2 h2.special,
 body.home #about-sm2 h3,
 body.home #about-sm2 h4 {
  font-weight:300;
  font-size:1.75em;
  border-bottom:none;
-/*
- letter-spacing:-0.0413em;
-*/
  padding-bottom:0px;
 }
 
 body.home #about-sm2 h2.special {
- font-size:2em;
+ font-size:2.2em;
  margin-top:0.1em;
 }
 
@@ -88,18 +104,17 @@ body.home #about-sm2 h3 {
  border-bottom:1px solid #eee;
 }
 
-body.home #about-sm2 h4 {
- font-size:1.3em;
- color:#555;
-/*
- letter-spacing:-0.001em;
-*/
-}
-
 body.home h4 {
  border-bottom: 1px solid #e9e9e9;
  padding-bottom: 0.33em;
  margin-bottom: 0.75em; 
+}
+
+body.home #about-sm2 h4 {
+ font-size:1.3em;
+ color:#444;
+ margin-bottom: 0.5em;
+ margin-top: 1.5em;
 }
 
 body.home .demo-more,
@@ -369,7 +384,7 @@ h2 {
  padding:0px 0px 2em 0px;
  padding-top:1px;
  margin:0px auto;
- max-width:110em;
+ max-width:106em;
  *padding:0px 1em 2em 1em;
  zoom:1;
 }
@@ -540,7 +555,7 @@ ul {
  min-width:17em;
  max-width:20em;
  background:#3399cc;
- opacity:0.95;
+ opacity:0.97;
  _width:17em;
  *opacity:1;
  *top:1.5em;
@@ -567,9 +582,10 @@ ul {
  display:block;
  width:auto;
  border:none;
- padding:0.4em;
+ padding:0.5em;
  padding-left:1em;
  color:#fff;
+ color:rgba(255,255,255,0.9);
 }
 
 #nav ul li a {
@@ -1577,19 +1593,47 @@ body.home .ie6sucks {
 /* special-case for the SM2 homepage only */
 
 body.home #sm2-container {
-/*
- position:absolute;
-*/
+ display:block;
+ overflow:hidden;
  width:48px;
  height:48px;
- margin:1px 0px 0px 1px;
+ margin:1em 0px 0px 1px;
+ /* IE 6 hax, unlikely to have flashblock anyway... */
+ _width:8px;
+ _height:8px;
+ _margin:-8px 0px 0px 0px;
 }
 
 body.home #sm2-container.swf_timedout {
+ /* when blocked, show this inline */
+ position:relative;
+ left:0px;
+ top:0px;
  border:1px solid #ff3333;
  border-bottom:none;
- margin:0px;
+ margin:1em 0px 0px 0px;
  z-index:2;
+}
+
+body.home #sm2-container.swf_unblocked {
+ /* if unblocked, retain relative position so stuff doesn't break. */
+ position:relative;
+}
+
+body.home #sm2-container.swf_loaded {
+ /* resular, loaded case */
+ width:8px;
+ height:8px;
+}
+
+body.home #sm2-container.swf_unblocked,
+body.home #sm2-container.swf_loaded,
+body.home #sm2-container.swf_unblocked embed,
+body.home #sm2-container.swf_loaded embed {
+ left:0px;
+ top:0px;
+ margin:0px;
+ bottom:auto;
 }
 
 /*
@@ -1606,56 +1650,75 @@ body.home #sm2-container.swf_unblocked {
 }
 */
 
+#sm2-support-warning {
+ display:none;
+ border:1px solid #ff9999;
+ padding:0.5em;
+ margin-top:1.5em;
+ font-weight:bold;
+}
+
 #sm2-support {
  display:none;
  font-size:1em;
- border:1px solid #ff3333;
+ margin-top:-1px;
+ width:245px;
+}
+
+#sm2-support-warning,
+#sm2-support {
  background:#fff6f0;
- margin-top:48px;
+ border:1px solid #ff3333;
+}
+
+body.home #about-sm2 #sm2-support h3 {
+	border-color:#ff9999;
+	margin-top:0.25em;
+}
+
+body.home #special-demo-left {
+ min-height:65px;
+ position:relative;
+ float:left;
+ display:inline;
+ margin-right:1.5em;
+ padding-right:0.9em;
+ border-right:1px solid #eee;
+ *border-right:none;
+ _width:210px;
+}
+
+body.home #special-demo-right {
+ min-height:47px;
+ position:relative;
+ float:left;
+ display:inline;
+ margin-top:18px;
+ padding-right:15px;
+}
+
+body.home #special-demo-right a {
+ padding:0px;
+}
+
+body.home #inline-playlist {
+ clear:both;
+ float:right;
+ display:inline;
+ width:256px;
+ min-height:49px;
+ margin-top:2em;
+ padding-bottom:0px;
 }
 
 #demo-box {
  position:relative;
  float:right;
  display:inline;
- background: #fff; /* hide borders behind this box */
- padding-left:32px;
- padding-right:16px;
- margin-top:-1em;
- width:21.25em;
- /* hide from IE 6 */
- _position:absolute;
- _left:-9999em;
- _top:-9999em;
-}
-
-#demo-box #without-html5 {
- display:none;
-}
-
-#demo-box #with-debug,
-#demo-box #without-html5,
-#demo-box #without-html5 a {
- display:inline;
- margin-top:-0.75em;
- font-weight:normal;
- font-size:x-small;
- text-decoration:none;
- font-weight:normal;
- color:#666;
-}
-
-#demo-box #with-debug {
-	margin-right:1.5em;
-}
-
-#demo-box #without-html5 a:hover,
-#demo-box #with-debug:hover {
- color:#fff;
-}
-
-#demo-box a.feature-hot {
- display:inline;
+ margin-top:-4px;
+ background:#fff;
+ padding-left:2em;
+width:256px;
 }
 
 hr {
