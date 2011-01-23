@@ -1,13 +1,13 @@
 /** @license
- * SoundManager 2: Javascript Sound for the Web
- * --------------------------------------------
+ * SoundManager 2: JavaScript Sound for the Web
+ * ----------------------------------------------
  * http://schillmania.com/projects/soundmanager2/
  *
  * Copyright (c) 2007, Scott Schiller. All rights reserved.
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20110101+DEV
+ * V2.97a.20110123
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -39,6 +39,7 @@ function SoundManager(smURL, smID) {
   this.useHTML5Audio = false;        // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio().canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
   this.useGlobalHTML5Audio = true;   // true = reuse single HTML5 audio object across all sounds on mobile devices.
+  this.requireFlash = false;         // (experimental) if true, prevents "HTML5-only" mode when flash present. Allows flash to handle RTMP/serverURL, but HTML5 for other cases
 
   this.audioFormats = {
     // determines HTML5 support, flash requirements
@@ -110,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20110101+DEV';
+  this.versionNumber = 'V2.97a.20110123';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -124,6 +125,7 @@ function SoundManager(smURL, smID) {
     'swfDefault': 'movieContainer',
     'swfError': 'swf_error', // SWF loaded, but SM2 couldn't start (other error)
     'swfTimedout': 'swf_timedout',
+    'swfLoaded': 'swf_loaded',
     'swfUnblocked': 'swf_unblocked', // or loaded OK
     'sm2Debug': 'sm2_debug',
     'highPerf': 'high_performance',
@@ -1953,7 +1955,7 @@ function SoundManager(smURL, smID) {
   }());
 
   _html5OK = function(iO) {
-    return (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay(iO.url)||_html5Only); // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
+    return (!iO.serverURL && (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay(iO.url)||_html5Only)); // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
   };
 
   _html5CanPlay = function(sURL) {
@@ -2608,11 +2610,11 @@ function SoundManager(smURL, smID) {
 
   _flashBlockHandler = function() {
     // *possible* flash block situation.
-    var name = _str('fbHandler'), p = _s.getMoviePercent();
+    var name = _str('fbHandler'), p = _s.getMoviePercent(), css = _s.swfCSS;
     if (!_s.ok()) {
       if (_needsFlash) {
         // make the movie more visible, so user can fix
-        _s.oMC.className = _getSWFCSS() + ' ' + _s.swfCSS.swfDefault + ' ' + (p === null?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
+        _s.oMC.className = _getSWFCSS() + ' ' + css.swfDefault + ' ' + (p === null?css.swfTimedout:css.swfError);
         //_s._wD(name+': '+_str('fbTimeout')+(p?' ('+_str('fbLoaded')+')':''));
       }
       _s.didFlashBlock = true;
@@ -2626,7 +2628,7 @@ function SoundManager(smURL, smID) {
         //_s._wD(name+': Unblocked');
       }
       if (_s.oMC) {
-        _s.oMC.className = _getSWFCSS() + ' ' + _s.swfCSS.swfDefault + (' '+_s.swfCSS.swfUnblocked);
+        _s.oMC.className = [_getSWFCSS(), css.swfDefault, css.swfLoaded + (_s.didFlashBlock?' '+css.swfUnblocked:'')].join(' ');
       }
     }
   };
@@ -2785,23 +2787,12 @@ function SoundManager(smURL, smID) {
 
     } else if (typeof AX !== 'undefined') {
 
-      getAX = function(name) {
-        var o = null;
-        try {
-          o = new AX(name);
-        } catch(err) {
-          o = null;
-        }
-        return (o === null);
-      };
-      axBase = 'ShockwaveFlash.ShockwaveFlash';
-      axNames = [axBase, axBase+'.6', axBase+'.7'];
-      for (i=axNames.length; i-- && !hasPlugin;) {
-        obj = getAX(axNames[i]);
-        if (obj) {
-          hasPlugin = true;
-        }
+      try {
+        obj = new AX('ShockwaveFlash.ShockwaveFlash');
+      } catch(e) {
+        // oh well
       }
+      hasPlugin = (!!obj);
 
     }
 
@@ -2849,7 +2840,7 @@ function SoundManager(smURL, smID) {
     if (_s.ignoreFlash) {
       needsFlash = false;
     }
-    _html5Only = (_s.useHTML5Audio && _s.hasHTML5 && !needsFlash);
+    _html5Only = (_s.useHTML5Audio && _s.hasHTML5 && !needsFlash && !_s.requireFlash);
     return needsFlash;
   };
 
