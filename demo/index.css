@@ -67,6 +67,7 @@ body.home .sm2-speaker {
  display:inline;
  padding-left:1em;
  margin-top:-40px;
+ *margin-top:0px; /* IE 7 buggery */
  background:#fff;
  max-width:192px;
  min-width:64px;
@@ -1695,6 +1696,7 @@ body.home #special-demo-right {
  display:inline;
  margin-top:18px;
  padding-right:15px;
+ *display:none; /* overflows in IE 7, can't be arsed */
 }
 
 body.home #special-demo-right a {
