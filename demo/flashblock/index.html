@@ -96,8 +96,12 @@ soundManager.onready(function(){
   Maybe highlight on-screen, red border, etc..? */</span></span>
 }
 #sm2-container.swf_unblocked {
-  <span><span>/* Applied if movie loads successfully
-  (flash started, so move off-screen etc.) */</span></span>
+  <span><span>/* Applied if movie loads successfully after
+  an unblock (flash started, so move off-screen etc.) */</span></span>
+}
+#sm2-container.swf_loaded {
+  <span><span>/* Applied if movie loads, regardless of whether
+  it was initially blocked */</span></span>
 }
 #sm2-container.swf_error {
   <span><span>/* "Fatal" error case: SWF loaded,
