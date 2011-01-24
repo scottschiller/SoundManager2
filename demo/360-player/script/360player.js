@@ -15,18 +15,29 @@
 
 */
 
+/*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
+/*global document, window, soundManager, navigator */
+
+var threeSixtyPlayer, // instance
+    ThreeSixtyPlayer; // constructor
+
+(function(window) {
+
 function ThreeSixtyPlayer() {
-  var self = this;
-  var pl = this;
-  var sm = soundManager; // soundManager instance
-  var uA = navigator.userAgent;
-  var isIE = (uA.match(/msie/i));
-  var isOpera = (uA.match(/opera/i));
-  var isSafari = (uA.match(/safari/i));
-  var isChrome = (uA.match(/chrome/i));
-  var isFirefox = (uA.match(/firefox/i));
-  var isTouchDevice = (uA.match(/ipad|iphone/i));
-  var hasRealCanvas = (typeof G_vmlCanvasManager === 'undefined' && typeof document.createElement('canvas').getContext('2d') !== 'undefined');
+
+  var self = this,
+      pl = this,
+      sm = soundManager, // soundManager instance
+      uA = navigator.userAgent,
+      isIE = (uA.match(/msie/i)),
+      isOpera = (uA.match(/opera/i)),
+      isSafari = (uA.match(/safari/i)),
+      isChrome = (uA.match(/chrome/i)),
+      isFirefox = (uA.match(/firefox/i)),
+      isTouchDevice = (uA.match(/ipad|iphone/i)),
+      hasRealCanvas = (typeof window.G_vmlCanvasManager === 'undefined' && typeof document.createElement('canvas').getContext('2d') !== 'undefined'),
+      fullCircle = (isOpera||isChrome?359.9:360); // I dunno what Opera doesn't like about this. I'm probably doing it wrong.
+
   this.excludeClass = 'threesixty-exclude'; // CSS class for ignoring MP3 links
   this.links = [];
   this.sounds = [];
@@ -38,6 +49,8 @@ function ThreeSixtyPlayer() {
   this.oUITemplate = null;
   this.oUIImageMap = null;
   this.vuMeter = null;
+  this.callbackCount = 0;
+  this.peakDataHistory = [];
 
   this.config = {
 
@@ -52,13 +65,12 @@ function ThreeSixtyPlayer() {
     segmentRingColor: 'rgba(255,255,255,0.33)', // metadata/annotation (segment) colors
     segmentRingColorAlt: 'rgba(0,0,0,0.1)',
     loadRingColorMetadata: '#ddd', // "annotations" load color
-    playRingColorMetadata: 'rgba(96,160,224,0.99)', // how much has played when metadata is present
     playRingColorMetadata: 'rgba(128,192,256,0.9)', // how much has played when metadata is present
 
     circleDiameter: null, // set dynamically according to values from CSS
     circleRadius: null,
     animDuration: 500,
-    animTransition: Animator.tx.bouncy, // http://www.berniecode.com/writing/animator.html
+    animTransition: window.Animator.tx.bouncy, // http://www.berniecode.com/writing/animator.html
     showHMSTime: false, // hours:minutes:seconds vs. seconds-only
     scaleFont: true,  // also set the font size (if possible) while animating the circle
 
@@ -89,44 +101,53 @@ function ThreeSixtyPlayer() {
 
     useFavIcon: false // Experimental (also requires usePeakData: true).. Try to draw a "VU Meter" in the favicon area, if browser supports it (Firefox + Opera as of 2009)
 
-  }
+  };
 
   this.css = {
+
     // CSS class names appended to link during various states
     sDefault: 'sm2_link', // default state
     sBuffering: 'sm2_buffering',
     sPlaying: 'sm2_playing',
     sPaused: 'sm2_paused'
-  }
+
+  };
 
   this.addEventHandler = function(o,evtName,evtHandler) {
-    typeof(attachEvent)=='undefined'?o.addEventListener(evtName,evtHandler,false):o.attachEvent('on'+evtName,evtHandler);
-  }
+    return typeof(window.attachEvent)==='undefined'?o.addEventListener(evtName,evtHandler,false):o.attachEvent('on'+evtName,evtHandler);
+  };
 
   this.removeEventHandler = function(o,evtName,evtHandler) {
-    typeof(attachEvent)=='undefined'?o.removeEventListener(evtName,evtHandler,false):o.detachEvent('on'+evtName,evtHandler);
-  }
+    return typeof(window.attachEvent)==='undefined'?o.removeEventListener(evtName,evtHandler,false):o.detachEvent('on'+evtName,evtHandler);
+  };
 
   this.hasClass = function(o,cStr) {
-    return (typeof(o.className)!='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false);
-  }
+    return typeof(o.className)!=='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false;
+  };
 
   this.addClass = function(o,cStr) {
-    if (!o || !cStr || self.hasClass(o,cStr)) return false;
+
+    if (!o || !cStr || self.hasClass(o,cStr)) {
+      return false;
+    }
     o.className = (o.className?o.className+' ':'')+cStr;
-  }
+
+  };
 
   this.removeClass = function(o,cStr) {
-    if (!o || !cStr || !self.hasClass(o,cStr)) return false;
+
+    if (!o || !cStr || !self.hasClass(o,cStr)) {
+      return false;
+    }
     o.className = o.className.replace(new RegExp('( '+cStr+')|('+cStr+')','g'),'');
-  }
+
+  };
 
   this.getElementsByClassName = function(className,tagNames,oParent) {
-    var doc = (oParent||document);
-    var matches = [];
-    var i,j;
-    var nodes = [];
-    if (typeof tagNames != 'undefined' && typeof tagNames != 'string') {
+
+    var doc = (oParent||document),
+        matches = [], i,j, nodes = [];
+    if (typeof tagNames !== 'undefined' && typeof tagNames !== 'string') {
       for (i=tagNames.length; i--;) {
         if (!nodes || !nodes[tagNames[i]]) {
           nodes[tagNames[i]] = doc.getElementsByTagName(tagNames[i]);
@@ -137,7 +158,7 @@ function ThreeSixtyPlayer() {
     } else {
       nodes = doc.all||doc.getElementsByTagName('*');
     }
-    if (typeof(tagNames)!='string') {
+    if (typeof(tagNames)!=='string') {
       for (i=tagNames.length; i--;) {
         for (j=nodes[tagNames[i]].length; j--;) {
           if (self.hasClass(nodes[tagNames[i]][j],className)) {
@@ -153,60 +174,80 @@ function ThreeSixtyPlayer() {
       }
     }
     return matches;
-  }
+
+  };
 
   this.getParentByNodeName = function(oChild,sParentNodeName) {
-    if (!oChild || !sParentNodeName) return false;
+
+    if (!oChild || !sParentNodeName) {
+      return false;
+    }
     sParentNodeName = sParentNodeName.toLowerCase();
-    while (oChild.parentNode && sParentNodeName != oChild.parentNode.nodeName.toLowerCase()) {
+    while (oChild.parentNode && sParentNodeName !== oChild.parentNode.nodeName.toLowerCase()) {
       oChild = oChild.parentNode;
     }
-    return (oChild.parentNode && sParentNodeName == oChild.parentNode.nodeName.toLowerCase()?oChild.parentNode:null);
-  }
+    return (oChild.parentNode && sParentNodeName === oChild.parentNode.nodeName.toLowerCase()?oChild.parentNode:null);
+
+  };
 
   this.getParentByClassName = function(oChild,sParentClassName) {
-    if (!oChild || !sParentClassName) return false;
+
+    if (!oChild || !sParentClassName) {
+      return false;
+    }
     while (oChild.parentNode && !self.hasClass(oChild.parentNode,sParentClassName)) {
       oChild = oChild.parentNode;
     }
     return (oChild.parentNode && self.hasClass(oChild.parentNode,sParentClassName)?oChild.parentNode:null);
-  }
+
+  };
 
   this.getSoundByURL = function(sURL) {
-    return (typeof self.soundsByURL[sURL] != 'undefined'?self.soundsByURL[sURL]:null);
-  }
+    return (typeof self.soundsByURL[sURL] !== 'undefined'?self.soundsByURL[sURL]:null);
+  };
 
   this.isChildOfNode = function(o,sNodeName) {
+
     if (!o || !o.parentNode) {
       return false;
     }
     sNodeName = sNodeName.toLowerCase();
     do {
       o = o.parentNode;
-    } while (o && o.parentNode && o.nodeName.toLowerCase() != sNodeName);
-    return (o && o.nodeName.toLowerCase() == sNodeName?o:null);
-  }
+    } while (o && o.parentNode && o.nodeName.toLowerCase() !== sNodeName);
+    return (o && o.nodeName.toLowerCase() === sNodeName?o:null);
+
+  };
 
   this.isChildOfClass = function(oChild,oClass) {
-    if (!oChild || !oClass) return false;
+
+    if (!oChild || !oClass) {
+      return false;
+    }
     while (oChild.parentNode && !self.hasClass(oChild,oClass)) {
       oChild = self.findParent(oChild);
     }
     return (self.hasClass(oChild,oClass));
-  }
+
+  };
 
   this.findParent = function(o) {
-    if (!o || !o.parentNode) return false;
+
+    if (!o || !o.parentNode) {
+      return false;
+    }
     o = o.parentNode;
-    if (o.nodeType == 2) {
-      while (o && o.parentNode && o.parentNode.nodeType == 2) {
+    if (o.nodeType === 2) {
+      while (o && o.parentNode && o.parentNode.nodeType === 2) {
         o = o.parentNode;
       }
     }
     return o;
-  }
+
+  };
 
   this.getStyle = function(o,sProp) {
+
     // http://www.quirksmode.org/dom/getstyles.html
     try {
       if (o.currentStyle) {
@@ -218,21 +259,24 @@ function ThreeSixtyPlayer() {
       // oh well
     }
     return null;
-  }
+
+  };
 
   this.findXY = function(obj) {
-    var curleft = 0;
-    var curtop = 0;
+
+    var curleft = 0, curtop = 0;
     do {
       curleft += obj.offsetLeft;
       curtop += obj.offsetTop;
-    } while (obj = obj.offsetParent);
+    } while (!!(obj = obj.offsetParent));
     return [curleft,curtop];
-  }
+
+  };
 
   this.getMouseXY = function(e) {
+
     // http://www.quirksmode.org/js/events_properties.html
-    e = e?e:event;
+    e = e?e:window.event;
     if (isTouchDevice && e.touches) {
       e = e.touches[0];
     }
@@ -241,15 +285,16 @@ function ThreeSixtyPlayer() {
     } else if (e.clientX || e.clientY) {
       return [e.clientX+self.getScrollLeft(),e.clientY+self.getScrollTop()];
     }
-  }
+
+  };
 
   this.getScrollLeft = function() {
     return (document.body.scrollLeft+document.documentElement.scrollLeft);
-  }
+  };
 
   this.getScrollTop = function() {
     return (document.body.scrollTop+document.documentElement.scrollTop);
-  }
+  };
 
   this.events = {
 
@@ -281,13 +326,14 @@ function ThreeSixtyPlayer() {
     },
 
     finish: function() {
+      var nextLink;
       pl.removeClass(this._360data.oUIBox,this._360data.className);
       this._360data.className = '';
       // self.clearCanvas(this._360data.oCanvas);
       this._360data.didFinish = true; // so fan draws full circle
       self.fanIn(this);
       if (pl.config.playNext) {
-        var nextLink = (pl.indexByURL[this._360data.oLink.href]+1);
+        nextLink = (pl.indexByURL[this._360data.oLink.href]+1);
         if (nextLink<pl.links.length) {
           pl.handleClick({'target':pl.links[nextLink]});
         }
@@ -305,57 +351,70 @@ function ThreeSixtyPlayer() {
       this._360data.fps++;
     },
 
-     bufferchange: function() {
-       if (this.isBuffering) {
-         pl.addClass(this._360data.oUIBox,pl.css.sBuffering);
-       } else {
-         pl.removeClass(this._360data.oUIBox,pl.css.sBuffering);
-       }
-     }
+    bufferchange: function() {
+      if (this.isBuffering) {
+        pl.addClass(this._360data.oUIBox,pl.css.sBuffering);
+      } else {
+        pl.removeClass(this._360data.oUIBox,pl.css.sBuffering);
+      }
+    }
 
-  }
+  };
 
   this.stopEvent = function(e) {
-   if (typeof e != 'undefined' && typeof e.preventDefault != 'undefined') {
+
+   if (typeof e !== 'undefined' && typeof e.preventDefault !== 'undefined') {
       e.preventDefault();
-    } else if (typeof event != 'undefined' && typeof event.returnValue != 'undefined') {
-      event.returnValue = false;
+    } else if (typeof window.event !== 'undefined' && typeof window.event.returnValue !== 'undefined') {
+      window.event.returnValue = false;
     }
     return false;
-  }
+
+  };
 
   this.getTheDamnLink = (isIE)?function(e) {
     // I really didn't want to have to do this.
     return (e && e.target?e.target:window.event.srcElement);
   }:function(e) {
     return e.target;
-  }
+  };
 
   this.handleClick = function(e) {
+
     // a sound link was clicked
     if (e.button > 1) {
       // only catch left-clicks
       return true;
     }
-    var o = self.getTheDamnLink(e);
-    if (o.nodeName.toLowerCase() != 'a') {
+
+    var o = self.getTheDamnLink(e),
+        sURL, soundURL, thisSound, oContainer, has_vis, diameter;
+
+    if (o.nodeName.toLowerCase() !== 'a') {
       o = self.isChildOfNode(o,'a');
-      if (!o) return true;
+      if (!o) {
+        return true;
+      }
     }
+
     if (!self.isChildOfClass(o,'ui360')) {
       // not a link we're interested in
       return true;
     }
-    var sURL = o.getAttribute('href');
+
+    sURL = o.getAttribute('href');
+
     if (!o.href || !sm.canPlayLink(o) || self.hasClass(o,self.excludeClass)) {
       return true; // pass-thru for non-MP3/non-links
     }
+
     sm._writeDebug('handleClick()');
-    var soundURL = (o.href);
-    var thisSound = self.getSoundByURL(soundURL);
+    soundURL = (o.href);
+    thisSound = self.getSoundByURL(soundURL);
+
     if (thisSound) {
       // already exists
-      if (thisSound == self.lastSound) {
+      if (thisSound === self.lastSound) {
         // and was playing (or paused)
         thisSound.togglePause();
       } else {
@@ -370,9 +429,8 @@ function ThreeSixtyPlayer() {
 
       // append some dom shiz, make noise
 
-      var oContainer = o.parentNode;
-
-      var has_vis = (self.getElementsByClassName('ui360-vis','div',oContainer.parentNode).length);
+      oContainer = o.parentNode;
+      has_vis = (self.getElementsByClassName('ui360-vis','div',oContainer.parentNode).length);
 
       // create sound
       thisSound = sm.createSound({
@@ -393,7 +451,7 @@ function ThreeSixtyPlayer() {
 
       // tack on some custom data
 
-      var diameter = parseInt(self.getElementsByClassName('sm2-360ui','div',oContainer)[0].offsetWidth);
+      diameter = parseInt(self.getElementsByClassName('sm2-360ui','div',oContainer)[0].offsetWidth, 10);
 
       thisSound._360data = {
         oUI360: self.getParentByClassName(o,'ui360'), // the (whole) entire container
@@ -425,7 +483,7 @@ function ThreeSixtyPlayer() {
           durationEstimate: 0
         }, // used to track "last good known" values before sound finish/reset for anim
         animating: false,
-        oAnim: new Animator({
+        oAnim: new window.Animator({
           duration: self.config.animDuration,
           transition:self.config.animTransition,
           onComplete: function() {
@@ -435,13 +493,13 @@ function ThreeSixtyPlayer() {
         }),
         oAnimProgress: function(nProgress) {
           var thisSound = this;
-          thisSound._360data.radius = parseInt(thisSound._360data.radiusMax*thisSound._360data.amplifier*nProgress);
-          thisSound._360data.width = parseInt(thisSound._360data.widthMax*thisSound._360data.amplifier*nProgress);
-          if (thisSound._360data.scaleFont && thisSound._360data.fontSizeMax != null) {
-            thisSound._360data.oTiming.style.fontSize = parseInt(Math.max(1,thisSound._360data.fontSizeMax*nProgress))+'px';
+          thisSound._360data.radius = parseInt(thisSound._360data.radiusMax*thisSound._360data.amplifier*nProgress, 10);
+          thisSound._360data.width = parseInt(thisSound._360data.widthMax*thisSound._360data.amplifier*nProgress, 10);
+          if (thisSound._360data.scaleFont && thisSound._360data.fontSizeMax !== null) {
+            thisSound._360data.oTiming.style.fontSize = parseInt(Math.max(1,thisSound._360data.fontSizeMax*nProgress), 10)+'px';
             thisSound._360data.oTiming.style.opacity = nProgress;
           }
-          if (thisSound.paused || thisSound.playState == 0 || thisSound._360data.lastValues.bytesLoaded == 0 || thisSound._360data.lastValues.position == 0) {
+          if (thisSound.paused || thisSound.playState === 0 || thisSound._360data.lastValues.bytesLoaded === 0 || thisSound._360data.lastValues.position === 0) {
             self.updatePlaying.apply(thisSound);
           }
         },
@@ -449,18 +507,12 @@ function ThreeSixtyPlayer() {
       };
 
       // "Metadata" (annotations)
-      if (typeof self.Metadata != 'undefined' && self.getElementsByClassName('metadata','div',thisSound._360data.oUI360).length) {
+      if (typeof self.Metadata !== 'undefined' && self.getElementsByClassName('metadata','div',thisSound._360data.oUI360).length) {
         thisSound._360data.metadata = new self.Metadata(thisSound,self);
       }
 
-      // set the cover width/height to match the canvas
-      /*
-      thisSound._360data.oCover.style.width = self.config.circleDiameter+'px';
-      thisSound._360data.oCover.style.height = self.config.circleDiameter+'px';
-      */
-
       // minimize ze font
-      if (thisSound._360data.scaleFont && thisSound._360data.fontSizeMax != null) {
+      if (thisSound._360data.scaleFont && thisSound._360data.fontSizeMax !== null) {
         thisSound._360data.oTiming.style.fontSize = '1px';
       }
 
@@ -478,21 +530,24 @@ function ThreeSixtyPlayer() {
         self.stopSound(self.lastSound);
       }
       thisSound.play();
+
     }
 
     self.lastSound = thisSound; // reference for next call
 
-    if (typeof e != 'undefined' && typeof e.preventDefault != 'undefined') {
+    if (typeof e !== 'undefined' && typeof e.preventDefault !== 'undefined') {
       e.preventDefault();
-    } else if (typeof event != 'undefined') {
-      event.returnValue = false;
+    } else if (typeof window.event !== 'undefined') {
+      window.event.returnValue = false;
     }
     return false;
-  }
+
+  };
 
   this.fanOut = function(oSound) {
+
      var thisSound = oSound;
-     if (thisSound._360data.animating == 1) {
+     if (thisSound._360data.animating === 1) {
        return false;
      }
      thisSound._360data.animating = 0;
@@ -502,106 +557,122 @@ function ThreeSixtyPlayer() {
        // oncomplete hack
        thisSound._360data.animating = 0;
      },self.config.animDuration+20);
-  }
+
+  };
 
   this.fanIn = function(oSound) {
+
      var thisSound = oSound;
-     if (thisSound._360data.animating == -1) {
+     if (thisSound._360data.animating === -1) {
        return false;
      }
      thisSound._360data.animating = -1;
      soundManager._writeDebug('fanIn: '+thisSound.sID+': '+thisSound._360data.oLink.href);
-    // massive hack
+     // massive hack
      thisSound._360data.oAnim.seekTo(0); // play to end
-    window.setTimeout(function() {
-      // reset full 360 fill after animation has completed (oncomplete hack)
-      thisSound._360data.didFinish = false;
-      thisSound._360data.animating = 0;
-      self.resetLastValues(thisSound);
-    },self.config.animDuration+20);
+     window.setTimeout(function() {
+       // reset full 360 fill after animation has completed (oncomplete hack)
+       thisSound._360data.didFinish = false;
+       thisSound._360data.animating = 0;
+       self.resetLastValues(thisSound);
+     }, self.config.animDuration+20);
 
-  }
+  };
 
   this.resetLastValues = function(oSound) {
-    var oData = oSound._360data;
-    oData.lastValues.position = 0;
-    // oData.lastValues.bytesLoaded = 0; // will likely be cached, if file is small
-    // oData.lastValues.bytesTotal = 0;
-    // oData.lastValues.durationEstimate = 0;
-  }
+    oSound._360data.lastValues.position = 0;
+  };
 
   this.refreshCoords = function(thisSound) {
+
     thisSound._360data.canvasXY = self.findXY(thisSound._360data.oCanvas);
-    // thisSound._360data.canvasMid = [Math.floor(thisSound._360data.oCanvas.offsetWidth/2), Math.floor(thisSound._360data.oCanvas.offsetHeight/2)]; // doesn't work in IE, w/h are wrong
     thisSound._360data.canvasMid = [thisSound._360data.circleRadius,thisSound._360data.circleRadius];
     thisSound._360data.canvasMidXY = [thisSound._360data.canvasXY[0]+thisSound._360data.canvasMid[0], thisSound._360data.canvasXY[1]+thisSound._360data.canvasMid[1]];
-  }
+
+  };
 
   this.stopSound = function(oSound) {
+
     soundManager._writeDebug('stopSound: '+oSound.sID);
     soundManager.stop(oSound.sID);
     soundManager.unload(oSound.sID);
-  }
+
+  };
 
   this.buttonClick = function(e) {
-    var o = e?(e.target?e.target:e.srcElement):event.srcElement;
+
+    var o = e?(e.target?e.target:e.srcElement):window.event.srcElement;
     self.handleClick({target:self.getParentByClassName(o,'sm2-360ui').nextSibling}); // link next to the nodes we inserted
     return false;
-  }
+
+  };
 
   this.buttonMouseDown = function(e) {
+
     // user might decide to drag from here
     // watch for mouse move
     if (!isTouchDevice) {
       document.onmousemove = function(e) {
         // should be boundary-checked, really (eg. move 3px first?)
         self.mouseDown(e);
-      }
+      };
     } else {
       self.addEventHandler(document,'touchmove',self.mouseDown);
     }
     self.stopEvent(e);
     return false;
-  }
+
+  };
 
   this.mouseDown = function(e) {
+
     if (!isTouchDevice && e.button > 1) {
       return true; // ignore non-left-click
     }
+
     if (!self.lastSound) {
       self.stopEvent(e);
       return false;
     }
-    var evt = e?e:event;
+
+    var evt = e?e:window.event,
+        target, thisSound, oData;
+
     if (isTouchDevice && evt.touches) {
       evt = evt.touches[0];
     }
-    var target = (evt.target||evt.srcElement);
-    var thisSound = self.getSoundByURL(self.getElementsByClassName('sm2_link','a',self.getParentByClassName(target,'ui360'))[0].href); // self.lastSound; // TODO: In multiple sound case, figure out which sound is involved etc.
+    target = (evt.target||evt.srcElement);
+
+    thisSound = self.getSoundByURL(self.getElementsByClassName('sm2_link','a',self.getParentByClassName(target,'ui360'))[0].href); // self.lastSound; // TODO: In multiple sound case, figure out which sound is involved etc.
     // just in case, update coordinates (maybe the element moved since last time.)
     self.lastTouchedSound = thisSound;
     self.refreshCoords(thisSound);
-    var oData = thisSound._360data;
+    oData = thisSound._360data;
     self.addClass(oData.oUIBox,'sm2_dragging');
     oData.pauseCount = (self.lastTouchedSound.paused?1:0);
     // self.lastSound.pause();
-    self.mmh(e?e:event);
+    self.mmh(e?e:window.event);
+
     if (isTouchDevice) {
       self.removeEventHandler(document,'touchmove',self.mouseDown);
       self.addEventHandler(document,'touchmove',self.mmh);
       self.addEventHandler(document,'touchend',self.mouseUp);
     } else {
+      // incredibly old-skool. TODO: Modernize.
       document.onmousemove = self.mmh;
       document.onmouseup = self.mouseUp;
     }
+
     self.stopEvent(e);
     return false;
-  }
+
+  };
 
   this.mouseUp = function(e) {
+
     var oData = self.lastTouchedSound._360data;
     self.removeClass(oData.oUIBox,'sm2_dragging');
-    if (oData.pauseCount == 0) {
+    if (oData.pauseCount === 0) {
       self.lastTouchedSound.resume();
     }
     if (!isTouchDevice) {
@@ -611,25 +682,27 @@ function ThreeSixtyPlayer() {
       self.removeEventHandler(document,'touchmove',self.mmh);
       self.removeEventHandler(document,'touchend',self.mouseUP);
     }
-  }
 
-  var fullCircle = 360;
+  };
 
   this.mmh = function(e) {
-    if (typeof e == 'undefined') {
-      var e = event;
+
+    if (typeof e === 'undefined') {
+      e = window.event;
     }
-    var oSound = self.lastTouchedSound;
-    var coords = self.getMouseXY(e);
-    var x = coords[0];
-    var y = coords[1];
-    var deltaX = x-oSound._360data.canvasMidXY[0];
-    var deltaY = y-oSound._360data.canvasMidXY[1];
-    var angle = Math.floor(fullCircle-(self.rad2deg(Math.atan2(deltaX,deltaY))+180));
+    var oSound = self.lastTouchedSound,
+        coords = self.getMouseXY(e),
+        x = coords[0],
+        y = coords[1],
+        deltaX = x-oSound._360data.canvasMidXY[0],
+        deltaY = y-oSound._360data.canvasMidXY[1],
+        angle = Math.floor(fullCircle-(self.rad2deg(Math.atan2(deltaX,deltaY))+180));
+
     oSound.setPosition(oSound.durationEstimate*(angle/fullCircle));
     self.stopEvent(e);
     return false;
-  }
+
+  };
 
   // assignMouseDown();
 
@@ -637,18 +710,18 @@ function ThreeSixtyPlayer() {
 
     // thank you, http://www.snipersystems.co.nz/community/polarclock/tutorial.html
 
-    var x = radius;
-    var y = radius;
-
-    var canvas = oCanvas;
+    var x = radius,
+        y = radius,
+        canvas = oCanvas,
+        ctx, innerRadius, doesntLikeZero, endPoint;
 
     if (canvas.getContext){
       // use getContext to use the canvas for drawing
-      var ctx = canvas.getContext('2d');
+      ctx = canvas.getContext('2d');
     }
 
-    // var startAngle = 0;
-    var oCanvas = ctx;
+    // re-assign canvas as the actual context
+    oCanvas = ctx;
 
     if (!noClear) {
       self.clearCanvas(canvas);
@@ -657,8 +730,6 @@ function ThreeSixtyPlayer() {
 
     if (color) {
       ctx.fillStyle = color;
-    } else {
-      // ctx.fillStyle = 'black';
     }
 
     oCanvas.beginPath();
@@ -667,60 +738,67 @@ function ThreeSixtyPlayer() {
       radians = 0;
     }
 
-    var innerRadius = radius-width;
-    var doesntLikeZero = (isOpera || isSafari); // safari 4 doesn't actually seem to mind.
+    innerRadius = radius-width;
+    doesntLikeZero = (isOpera || isSafari); // safari 4 doesn't actually seem to mind.
 
     if (!doesntLikeZero || (doesntLikeZero && radius > 0)) {
       oCanvas.arc(0, 0, radius, startAngle, radians, false);
-      var endPoint = self.getArcEndpointCoords(innerRadius, radians);
+      endPoint = self.getArcEndpointCoords(innerRadius, radians);
       oCanvas.lineTo(endPoint.x, endPoint.y);
       oCanvas.arc(0, 0, innerRadius, radians, startAngle, true);
       oCanvas.closePath();
       oCanvas.fill();
     }
 
-  }
+  };
 
   this.getArcEndpointCoords = function(radius, radians) {
+
     return {
       x: radius * Math.cos(radians), 
       y: radius * Math.sin(radians)
     };
-  }
+
+  };
 
 
   this.deg2rad = function(nDeg) {
     return (nDeg * Math.PI/180);
-  }
+  };
 
   this.rad2deg = function(nRad) {
     return (nRad * 180/Math.PI);
-  }
+  };
 
   this.getTime = function(nMSec,bAsString) {
+
     // convert milliseconds to mm:ss, return as object literal or string
-    var nSec = Math.floor(nMSec/1000);
-    var min = Math.floor(nSec/60);
-    var sec = nSec-(min*60);
-    // if (min == 0 && sec == 0) return null; // return 0:00 as null
+    var nSec = Math.floor(nMSec/1000),
+        min = Math.floor(nSec/60),
+        sec = nSec-(min*60);
+    // if (min === 0 && sec === 0) return null; // return 0:00 as null
     return (bAsString?(min+':'+(sec<10?'0'+sec:sec)):{'min':min,'sec':sec});
-  }
+
+  };
 
   this.clearCanvas = function(oCanvas) {
-    var canvas = oCanvas;
-    var ctx = null;
+
+    var canvas = oCanvas,
+        ctx = null,
+        width, height;
     if (canvas.getContext){
       // use getContext to use the canvas for drawing
       ctx = canvas.getContext('2d');
     }
-    var width = canvas.offsetWidth;
-    var height = canvas.offsetHeight;
+    width = canvas.offsetWidth;
+    height = canvas.offsetHeight;
     ctx.clearRect(-(width/2), -(height/2), width, height);
-  }
 
-  var fullCircle = (isOpera||isChrome?359.9:360); // I dunno what Opera doesn't like about this.
+  };
 
   this.updatePlaying = function() {
+
+    var timeNow = (this._360data.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000, 10));
 
     if (this.bytesLoaded) {
       this._360data.lastValues.bytesLoaded = this.bytesLoaded;
@@ -740,8 +818,8 @@ function ThreeSixtyPlayer() {
     self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.loadRingColorMetadata:self.config.loadRingColor),this._360data.width,this._360data.radius,self.deg2rad(fullCircle*(this._360data.lastValues.bytesLoaded/this._360data.lastValues.bytesTotal)),0,true);
 
     // don't draw if 0 (full black circle in Opera)
-    if (this._360data.lastValues.position != 0) {
-      self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.playRingColorMetadata:self.config.playRingColor),this._360data.width,this._360data.radius,self.deg2rad((this._360data.didFinish==1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
+    if (this._360data.lastValues.position !== 0) {
+      self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.playRingColorMetadata:self.config.playRingColor),this._360data.width,this._360data.radius,self.deg2rad((this._360data.didFinish===1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
     }
 
     // metadata goes here
@@ -749,9 +827,7 @@ function ThreeSixtyPlayer() {
       this._360data.metadata.events.whileplaying();
     }
 
-    var timeNow = (this._360data.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000));
-
-    if (timeNow != this._360data.lastTime) {
+    if (timeNow !== this._360data.lastTime) {
       this._360data.lastTime = timeNow;
       this._360data.oTiming.innerHTML = timeNow;
     }
@@ -765,7 +841,7 @@ function ThreeSixtyPlayer() {
       self.vuMeter.updateVU(this);
     }
 
-  }
+  };
 
   this.updateWaveform = function(oSound) {
 
@@ -786,29 +862,30 @@ function ThreeSixtyPlayer() {
      }
     */
 
-    var oCanvas = oSound._360data.oCanvas.getContext('2d');
-    var offX = 0;
-    var offY = parseInt(oSound._360data.circleDiameter/2);
-    var scale = offY/2; // Y axis (+/- this distance from 0)
-    var lineWidth = Math.floor(oSound._360data.circleDiameter-(oSound._360data.circleDiameter*0.175)/(oSound._360data.circleDiameter/255)); // width for each line
-    lineWidth = 1;
-    var lineHeight = 1;
-    var thisY = 0;
-    var offset = offY;
+    var oCanvas = oSound._360data.oCanvas.getContext('2d'),
+        offX = 0,
+        offY = parseInt(oSound._360data.circleDiameter/2, 10),
+        scale = offY/2, // Y axis (+/- this distance from 0)
+        // lineWidth = Math.floor(oSound._360data.circleDiameter-(oSound._360data.circleDiameter*0.175)/(oSound._360data.circleDiameter/255)); // width for each line
+        lineWidth = 1,
+        lineHeight = 1,
+        thisY = 0,
+        offset = offY,
+        i, j, direction, downSample, dataLength, sampleCount, startAngle, endAngle, waveData, innerRadius, perItemAngle, yDiff, eqSamples, playedAngle, iAvg, nPeak;
 
     if (self.config.useWaveformData) {
       // raw waveform
-      var downSample = self.config.waveformDataDownsample; // only sample X in 256 (greater number = less sample points)
+      downSample = self.config.waveformDataDownsample; // only sample X in 256 (greater number = less sample points)
       downSample = Math.max(1,downSample); // make sure it's at least 1
-      var dataLength = 256;
-      var sampleCount = (dataLength/downSample);
-      var startAngle = 0;
-      var endAngle = 0;
-      var waveData = null;
-      var innerRadius = (self.config.waveformDataOutside?1:(self.config.waveformDataConstrain?0.5:0.565));
-      var scale = (self.config.waveformDataOutside?0.7:0.75);
-      var perItemAngle = self.deg2rad((360/sampleCount)*self.config.waveformDataLineRatio); // 0.85 = clean pixel lines at 150? // self.deg2rad(360*(Math.max(1,downSample-1))/sampleCount);
-      for (var i=0; i<dataLength; i+=downSample) {
+      dataLength = 256;
+      sampleCount = (dataLength/downSample);
+      startAngle = 0;
+      endAngle = 0;
+      waveData = null;
+      innerRadius = (self.config.waveformDataOutside?1:(self.config.waveformDataConstrain?0.5:0.565));
+      scale = (self.config.waveformDataOutside?0.7:0.75);
+      perItemAngle = self.deg2rad((360/sampleCount)*self.config.waveformDataLineRatio); // 0.85 = clean pixel lines at 150? // self.deg2rad(360*(Math.max(1,downSample-1))/sampleCount);
+      for (i=0; i<dataLength; i+=downSample) {
         startAngle = self.deg2rad(360*(i/(sampleCount)*1/downSample)); // +0.67 - counter for spacing
         endAngle = startAngle+perItemAngle;
         waveData = oSound.waveformData.left[i];
@@ -821,21 +898,21 @@ function ThreeSixtyPlayer() {
 
     if (self.config.useEQData) {
       // EQ spectrum
-      var downSample = self.config.eqDataDownsample; // only sample N in 256
-      var yDiff = 0;
+      downSample = self.config.eqDataDownsample; // only sample N in 256
+      yDiff = 0;
       downSample = Math.max(1,downSample); // make sure it's at least 1
-      var eqSamples = 192; // drop the last 25% of the spectrum (>16500 Hz), most stuff won't actually use it.
-      var sampleCount = (eqSamples/downSample);
-      var innerRadius = (self.config.eqDataOutside?1:0.565);
-      var direction = (self.config.eqDataOutside?-1:1);
-      var scale = (self.config.eqDataOutside?0.5:0.75);
-      var startAngle = 0;
-      var endAngle = 0;
-      var perItemAngle = self.deg2rad((360/sampleCount)*self.config.eqDataLineRatio); // self.deg2rad(360/(sampleCount+1));
-      var playedAngle = self.deg2rad((oSound._360data.didFinish==1?360:360*(oSound._360data.lastValues.position/oSound._360data.lastValues.durationEstimate)));
-      var j=0;
-      var iAvg = 0;
-      for (var i=0; i<eqSamples; i+=downSample) {
+      eqSamples = 192; // drop the last 25% of the spectrum (>16500 Hz), most stuff won't actually use it.
+      sampleCount = (eqSamples/downSample);
+      innerRadius = (self.config.eqDataOutside?1:0.565);
+      direction = (self.config.eqDataOutside?-1:1);
+      scale = (self.config.eqDataOutside?0.5:0.75);
+      startAngle = 0;
+      endAngle = 0;
+      perItemAngle = self.deg2rad((360/sampleCount)*self.config.eqDataLineRatio); // self.deg2rad(360/(sampleCount+1));
+      playedAngle = self.deg2rad((oSound._360data.didFinish===1?360:360*(oSound._360data.lastValues.position/oSound._360data.lastValues.durationEstimate)));
+      j=0;
+      iAvg = 0;
+      for (i=0; i<eqSamples; i+=downSample) {
         startAngle = self.deg2rad(360*(i/eqSamples));
         endAngle = startAngle+perItemAngle;
         self.drawSolidArc(oSound._360data.oCanvas,(endAngle>playedAngle?self.config.eqDataColor:self.config.playRingColor),oSound._360data.width*innerRadius,oSound._360data.radius*scale*(oSound.eqData.left[i]*direction),endAngle,startAngle,true);
@@ -844,104 +921,95 @@ function ThreeSixtyPlayer() {
 
     if (self.config.usePeakData) {
       if (!oSound._360data.animating) {
-        var nPeak = (oSound.peakData.left||oSound.peakData.right);
+        nPeak = (oSound.peakData.left||oSound.peakData.right);
         // GIANT HACK: use EQ spectrum data for bass frequencies
-        var eqSamples = 3;
-        for (var i=0; i<eqSamples; i++) {
+        eqSamples = 3;
+        for (i=0; i<eqSamples; i++) {
           nPeak = (nPeak||oSound.eqData[i]);
         }
         oSound._360data.amplifier = (self.config.useAmplifier?(0.9+(nPeak*0.1)):1);
         oSound._360data.radiusMax = oSound._360data.circleDiameter*0.175*oSound._360data.amplifier;
         oSound._360data.widthMax = oSound._360data.circleDiameter*0.4*oSound._360data.amplifier;
-        oSound._360data.radius = parseInt(oSound._360data.radiusMax*oSound._360data.amplifier);
-        oSound._360data.width = parseInt(oSound._360data.widthMax*oSound._360data.amplifier);
+        oSound._360data.radius = parseInt(oSound._360data.radiusMax*oSound._360data.amplifier, 10);
+        oSound._360data.width = parseInt(oSound._360data.widthMax*oSound._360data.amplifier, 10);
       }
     }
 
-  }
-
-  this.callbackCount = 0;
-  this.peakDataHistory = [];
+  };
 
   this.getUIHTML = function(diameter) {
+
     return [
      '<canvas class="sm2-canvas" width="'+diameter+'" height="'+diameter+'"></canvas>',
      ' <span class="sm2-360btn sm2-360btn-default"></span>', // note use of imageMap, edit or remove if you use a different-size image.
      ' <div class="sm2-timing'+(navigator.userAgent.match(/safari/i)?' alignTweak':'')+'"></div>', // + Ever-so-slight Safari horizontal alignment tweak
      ' <div class="sm2-cover"></div>'
     ];
-  }
+
+  };
 
   this.uiTest = function(sClass) {
 
     // fake a 360 UI so we can get some numbers from CSS, etc.
 
-    var oTemplate = document.createElement('div');
+    var oTemplate = document.createElement('div'),
+        oFakeUI, oFakeUIBox, oTemp, fakeDiameter, uiHTML, circleDiameter, circleRadius, fontSizeMax, oTiming;
+
     oTemplate.className = 'sm2-360ui';
 
-    var oFakeUI = document.createElement('div');
+    oFakeUI = document.createElement('div');
     oFakeUI.className = 'ui360'+(sClass?' '+sClass:''); // ui360 ui360-vis
 
-    var oFakeUIBox = oFakeUI.appendChild(oTemplate.cloneNode(true));
+    oFakeUIBox = oFakeUI.appendChild(oTemplate.cloneNode(true));
 
     oFakeUI.style.position = 'absolute';
     oFakeUI.style.left = '-9999px';
 
-    var oTemp = document.body.appendChild(oFakeUI);
+    oTemp = document.body.appendChild(oFakeUI);
 
-    var fakeDiameter = oFakeUIBox.offsetWidth;
+    fakeDiameter = oFakeUIBox.offsetWidth;
 
-    var uiHTML = self.getUIHTML(fakeDiameter);
+    uiHTML = self.getUIHTML(fakeDiameter);
 
     oFakeUIBox.innerHTML = uiHTML[1]+uiHTML[2]+uiHTML[3];
-    delete uiHTML;
 
-    var circleDiameter, circleRadius, fontSizeMax;
+    circleDiameter = parseInt(oFakeUIBox.offsetWidth, 10);
+    circleRadius = parseInt(circleDiameter/2, 10);
 
-    circleDiameter = parseInt(oFakeUIBox.offsetWidth);
-    circleRadius = parseInt(circleDiameter/2);
-
-    var oTiming = self.getElementsByClassName('sm2-timing','div',oTemp)[0];
-    fontSizeMax = parseInt(self.getStyle(oTiming,'font-size'));
+    oTiming = self.getElementsByClassName('sm2-timing','div',oTemp)[0];
+    fontSizeMax = parseInt(self.getStyle(oTiming,'font-size'), 10);
     if (isNaN(fontSizeMax)) {
       // getStyle() etc. didn't work.
       fontSizeMax = null;
     }
 
-    soundManager._writeDebug('diameter, font size: '+circleDiameter+','+fontSizeMax);
+    // soundManager._writeDebug('diameter, font size: '+circleDiameter+','+fontSizeMax);
 
     oFakeUI.parentNode.removeChild(oFakeUI);
-    delete oFakeUI;
-    delete oFakeUIBox;
-    delete oTemp;
+
+    uiHTML = oFakeUI = oFakeUIBox = oTemp = null;
 
     return {
       circleDiameter: circleDiameter,
       circleRadius: circleRadius,
       fontSizeMax: fontSizeMax
-    }
+    };
 
-  }
+  };
 
   this.init = function() {
+
     sm._writeDebug('threeSixtyPlayer.init()');
-    var oItems = self.getElementsByClassName('ui360','div');
-    var oLinks = [];
 
-    var is_vis = false;
+    var oItems = self.getElementsByClassName('ui360','div'),
+        i, j, oLinks = [], is_vis = false, foundItems = 0, oCanvas, oCanvasCTX, oCover, diameter, radius, uiData, uiDataVis, oUI, oBtn, o, o2, oID;
 
-    for (var i=0,j=oItems.length; i<j; i++) {
+    for (i=0,j=oItems.length; i<j; i++) {
       oLinks.push(oItems[i].getElementsByTagName('a')[0]);
       // remove "fake" play button (unsupported case)
       oItems[i].style.backgroundImage = 'none';
     }
     // grab all links, look for .mp3
-    var foundItems = 0;
-    var oCanvas = null;
-    var oCanvasCTX = null;
-    var oCover = null;
-    var diameter = null;
-    var radius = null;
 
     self.oUITemplate = document.createElement('div');
     self.oUITemplate.className = 'sm2-360ui';
@@ -949,13 +1017,13 @@ function ThreeSixtyPlayer() {
     self.oUITemplateVis = document.createElement('div');
     self.oUITemplateVis.className = 'sm2-360ui';
 
-    var uiData = self.uiTest();
+    uiData = self.uiTest();
 
     self.config.circleDiameter = uiData.circleDiameter;
     self.config.circleRadius = uiData.circleRadius;
     // self.config.fontSizeMax = uiData.fontSizeMax;
 
-    var uiDataVis = self.uiTest('ui360-vis');
+    uiDataVis = self.uiTest('ui360-vis');
 
     self.config.fontSizeMax = uiDataVis.fontSizeMax;
 
@@ -977,25 +1045,25 @@ function ThreeSixtyPlayer() {
         radius = (is_vis ? uiDataVis : uiData).circleRadius;
 
         // add canvas shiz
-        var oUI = oLinks[i].parentNode.insertBefore((is_vis?self.oUITemplateVis:self.oUITemplate).cloneNode(true),oLinks[i]);
+        oUI = oLinks[i].parentNode.insertBefore((is_vis?self.oUITemplateVis:self.oUITemplate).cloneNode(true),oLinks[i]);
 
-        if (isIE && typeof G_vmlCanvasManager != 'undefined') { // IE only
-          var o = oLinks[i].parentNode;
-          var o2 = document.createElement('canvas');
+        if (isIE && typeof window.G_vmlCanvasManager !== 'undefined') { // IE only
+          o = oLinks[i].parentNode;
+          o2 = document.createElement('canvas');
           o2.className = 'sm2-canvas';
-          var oID = 'sm2_canvas_'+parseInt(Math.random()*1048576);
+          oID = 'sm2_canvas_'+parseInt(Math.random()*1048576, 10);
           o2.id = oID;
           o2.width = diameter;
           o2.height = diameter;
           oUI.appendChild(o2);
-          G_vmlCanvasManager.initElement(o2); // Apply ExCanvas compatibility magic
+          window.G_vmlCanvasManager.initElement(o2); // Apply ExCanvas compatibility magic
           oCanvas = document.getElementById(oID);
         } else { 
           // add a handler for the button
           oCanvas = oLinks[i].parentNode.getElementsByTagName('canvas')[0];
         }
         oCover = self.getElementsByClassName('sm2-cover','div',oLinks[i].parentNode)[0];
-        var oBtn = oLinks[i].parentNode.getElementsByTagName('span')[0];
+        oBtn = oLinks[i].parentNode.getElementsByTagName('span')[0];
         self.addEventHandler(oBtn,'click',self.buttonClick);
         if (!isTouchDevice) {
           self.addEventHandler(oCover,'mousedown',self.mouseDown);
@@ -1015,11 +1083,11 @@ function ThreeSixtyPlayer() {
     }
     sm._writeDebug('threeSixtyPlayer.init(): Found '+foundItems+' relevant items.');
 
-    if (self.config.useFavIcon && typeof this.VUMeter != 'undefined') {
+    if (self.config.useFavIcon && typeof this.VUMeter !== 'undefined') {
       this.vuMeter = new this.VUMeter(this);
     }
 
-  }
+  };
 
 }
 
@@ -1027,13 +1095,14 @@ function ThreeSixtyPlayer() {
 
 ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
 
-  var self = oParent;
-  var me = this;
+  var self = oParent,
+      me = this,
+      _head = document.getElementsByTagName('head')[0],
+      isOpera = (navigator.userAgent.match(/opera/i)),
+      isFirefox = (navigator.userAgent.match(/firefox/i));
+
   this.vuMeterData = [];
   this.vuDataCanvas = null;
-  var _head = document.getElementsByTagName('head')[0];
-  var isOpera = (navigator.userAgent.match(/opera/i));
-  var isFirefox = (navigator.userAgent.match(/firefox/i));
 
   this.setPageIcon = function(sDataURL) {
 
@@ -1054,9 +1123,11 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
       link.href = sDataURL;
       document.getElementsByTagName('head')[0].appendChild(link);
     }
-  }
+
+  };
 
   this.resetPageIcon = function() {
+
     if (!self.config.useFavIcon) {
       return false;
     }
@@ -1064,31 +1135,35 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
     if (link) {
       link.href = '/favicon.ico';
     }
-  }
+
+  };
 
   this.updateVU = function(oSound) {
+
     if (soundManager.flashVersion >= 9 && self.config.useFavIcon && self.config.usePeakData) {
-      me.setPageIcon(me.vuMeterData[parseInt(16*oSound.peakData.left)][parseInt(16*oSound.peakData.right)]);
+      me.setPageIcon(me.vuMeterData[parseInt(16*oSound.peakData.left, 10)][parseInt(16*oSound.peakData.right, 10)]);
     }
-  }
+
+  };
 
   this.createVUData = function() {
-    var i=0;
-    var j=0;
-    var canvas = me.vuDataCanvas.getContext('2d');
-    var vuGrad = canvas.createLinearGradient(0, 16, 0, 0);
+
+    var i=0, j=0,
+        canvas = me.vuDataCanvas.getContext('2d'),
+        vuGrad = canvas.createLinearGradient(0, 16, 0, 0),
+        bgGrad = canvas.createLinearGradient(0, 16, 0, 0),
+        outline = 'rgba(0,0,0,0.2)';
+
     vuGrad.addColorStop(0,'rgb(0,192,0)');
     vuGrad.addColorStop(0.30,'rgb(0,255,0)');
     vuGrad.addColorStop(0.625,'rgb(255,255,0)');
     vuGrad.addColorStop(0.85,'rgb(255,0,0)');
-    var bgGrad = canvas.createLinearGradient(0, 16, 0, 0);
-    var outline = 'rgba(0,0,0,0.2)';
     bgGrad.addColorStop(0,outline);
     bgGrad.addColorStop(1,'rgba(0,0,0,0.5)');
     for (i=0; i<16; i++) {
       me.vuMeterData[i] = [];
     }
-    for (var i=0; i<16; i++) {
+    for (i=0; i<16; i++) {
       for (j=0; j<16; j++) {
         // reset/erase canvas
         me.vuDataCanvas.setAttribute('width',16);
@@ -1120,31 +1195,35 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
         */
       }
     }
+
   };
 
   this.testCanvas = function() {
+
     // canvas + toDataURL();
-    var c = document.createElement('canvas');
-    var ctx = null;
-    if (!c || typeof c.getContext == 'undefined') {
+    var c = document.createElement('canvas'),
+        ctx = null, ok;
+    if (!c || typeof c.getContext === 'undefined') {
       return null;
     }
     ctx = c.getContext('2d');
-    if (!ctx || typeof c.toDataURL != 'function') {
+    if (!ctx || typeof c.toDataURL !== 'function') {
       return null;
     }
     // just in case..
     try {
-      var ok = c.toDataURL('image/png');
+      ok = c.toDataURL('image/png');
     } catch(e) {
       // no canvas or no toDataURL()
       return null;
     }
     // assume we're all good.
     return c;
-  }
+
+  };
 
   this.init = function() {
+
     if (self.config.useFavIcon) {
       me.vuDataCanvas = me.testCanvas();
       if (me.vuDataCanvas && (isFirefox || isOpera)) {
@@ -1155,79 +1234,90 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
         self.config.useFavIcon = false;
       }
     }
-  }
+
+  };
 
   this.init();
 
-}
+};
 
 // completely optional: Metadata/annotations/segments code
 
 ThreeSixtyPlayer.prototype.Metadata = function(oSound, oParent) {
+
   soundManager._wD('Metadata()');
-  var me = this;
-  var oBox = oSound._360data.oUI360;
-  var o = oBox.getElementsByTagName('ul')[0];
-  var oItems = o.getElementsByTagName('li');
-  var isFirefox = (navigator.userAgent.match(/firefox/i));
+
+  var me = this,
+      oBox = oSound._360data.oUI360,
+      o = oBox.getElementsByTagName('ul')[0],
+      oItems = o.getElementsByTagName('li'),
+      isFirefox = (navigator.userAgent.match(/firefox/i)),
+      isAlt = false, i, oDuration;
+
   this.lastWPExec = 0;
   this.refreshInterval = 250;
-
-  var isAlt = false;
+  this.totalTime = 0;
 
   this.events = {
+
     whileplaying: function() {
-      var width = oSound._360data.width;
-      var radius = oSound._360data.radius;
-      var fullDuration = (oSound.durationEstimate||(me.totalTime*1000));
-      var isAlt = null;
-      for (var i=0,j=me.data.length; i<j; i++) {
-        isAlt = (i%2==0);
+
+      var width = oSound._360data.width,
+          radius = oSound._360data.radius,
+          fullDuration = (oSound.durationEstimate||(me.totalTime*1000)),
+          isAlt = null, i, j, d;
+
+      for (i=0,j=me.data.length; i<j; i++) {
+        isAlt = (i%2===0);
         oParent.drawSolidArc(oSound._360data.oCanvas,(isAlt?oParent.config.segmentRingColorAlt:oParent.config.segmentRingColor),isAlt?width:width, isAlt?radius/2:radius/2, oParent.deg2rad(360*(me.data[i].endTimeMS/fullDuration)), oParent.deg2rad(360*((me.data[i].startTimeMS||1)/fullDuration)), true);
       }
-      var d = new Date();
+      d = new Date();
       if (d-me.lastWPExec>me.refreshInterval) {
         me.refresh();
         me.lastWPExec = d;
       }
+
     }
-  }
+
+  };
 
   this.refresh = function() {
+
     // Display info as appropriate
-    var index = null;
-    var now = oSound.position;
-    var metadata = oSound._360data.metadata.data;
-    for (var i=0, j=metadata.length; i<j; i++) {
+    var i, j, index = null,
+        now = oSound.position,
+        metadata = oSound._360data.metadata.data;
+
+    for (i=0, j=metadata.length; i<j; i++) {
       if (now >= metadata[i].startTimeMS && now <= metadata[i].endTimeMS) {
         index = i;
         break;
       }
     }
-    if (index != metadata.currentItem && index < metadata.length) {
+    if (index !== metadata.currentItem && index < metadata.length) {
       // update
       oSound._360data.oLink.innerHTML = metadata.mainTitle+' <span class="metadata"><span class="sm2_divider"> | </span><span class="sm2_metadata">'+metadata[index].title+'</span></span>';
       // self.setPageTitle(metadata[index].title+' | '+metadata.mainTitle);
       metadata.currentItem = index;
     }
-  }
 
-  this.totalTime = 0;
+  };
 
   this.strToTime = function(sTime) {
-    var segments = sTime.split(':');
-    var seconds = 0;
-    for (var i=segments.length; i--;) {
-      seconds += parseInt(segments[i])*Math.pow(60,segments.length-1-i,10); // hours, minutes
+    var segments = sTime.split(':'),
+        seconds = 0, i;
+    for (i=segments.length; i--;) {
+      seconds += parseInt(segments[i], 10)*Math.pow(60,segments.length-1-i); // hours, minutes
     }
     return seconds;
-  }
+  };
 
   this.data = [];
   this.data.givenDuration = null;
   this.data.currentItem = null;
   this.data.mainTitle = oSound._360data.oLink.innerHTML;
-  for (var i=0; i<oItems.length; i++) {
+
+  for (i=0; i<oItems.length; i++) {
     this.data[i] = {
       o: null,
       title: oItems[i].getElementsByTagName('p')[0].innerHTML,
@@ -1238,20 +1328,19 @@ ThreeSixtyPlayer.prototype.Metadata = function(oSound, oParent) {
       startTimeMS: null,
       endTimeMS: null,
       oNote: null
-    }
+    };
   }
-  var oDuration = oParent.getElementsByClassName('duration','div',oBox);
+  oDuration = oParent.getElementsByClassName('duration','div',oBox);
   this.data.givenDuration = (oDuration.length?me.strToTime(oDuration[0].innerHTML)*1000:0);
   for (i=0; i<this.data.length; i++) {
-    this.data[i].duration = parseInt(this.data[i+1]?this.data[i+1].startSeconds:(me.data.givenDuration?me.data.givenDuration:oSound.durationEstimate)/1000)-this.data[i].startSeconds;
+    this.data[i].duration = parseInt(this.data[i+1]?this.data[i+1].startSeconds:(me.data.givenDuration?me.data.givenDuration:oSound.durationEstimate)/1000, 10)-this.data[i].startSeconds;
     this.data[i].startTimeMS = this.data[i].startSeconds*1000;
     this.data[i].durationMS = this.data[i].duration*1000;
     this.data[i].endTimeMS = this.data[i].startTimeMS+this.data[i].durationMS;
     this.totalTime += this.data[i].duration;
   }
-}
 
-var threeSixtyPlayer = null;
+};
 
 if (navigator.userAgent.match(/webkit/i) && navigator.userAgent.match(/mobile/i)) {
   // iPad, iPhone etc.
@@ -1268,13 +1357,18 @@ soundManager.useFlashBlock = true;
 
 // FPS data, testing/debug only
 if (soundManager.debugMode) {
-  var t = window.setInterval(function(){
-    if (threeSixtyPlayer && threeSixtyPlayer.lastSound && threeSixtyPlayer.lastSound._360data.fps && typeof window.isHome === 'undefined') {
-      soundManager._writeDebug('fps: ~'+threeSixtyPlayer.lastSound._360data.fps);
-      threeSixtyPlayer.lastSound._360data.fps = 0;
+  window.setInterval(function() {
+    var p = window.threeSixtyPlayer;
+    if (p && p.lastSound && p.lastSound._360data.fps && typeof window.isHome === 'undefined') {
+      soundManager._writeDebug('fps: ~'+p.lastSound._360data.fps);
+      p.lastSound._360data.fps = 0;
     }
   },1000);
 }
+
+window.ThreeSixtyPlayer = ThreeSixtyPlayer; // constructor
+
+}(window));
 
 threeSixtyPlayer = new ThreeSixtyPlayer();
 
