@@ -38,7 +38,7 @@ function SoundManager(smURL, smID) {
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = false;        // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio().canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
-  this.useGlobalHTML5Audio = true;   // true = reuse single HTML5 audio object across all sounds on mobile devices.
+  this.useGlobalHTML5Audio = true;   // (experimental) if true, re-use single HTML5 audio object across all sounds. Enabled by default on mobile devices/iOS.
   this.requireFlash = false;         // (experimental) if true, prevents "HTML5-only" mode when flash present. Allows flash to handle RTMP/serverURL, but HTML5 for other cases
 
   this.audioFormats = {
@@ -90,8 +90,7 @@ function SoundManager(smURL, smID) {
     'pan': 0,                      // "pan" settings, left-to-right, -100 to 100
     'type': null,                  // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     'usePolicyFile': false,        // enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)
-    'volume': 100,                 // self-explanatory. 0-100, the latter being the max.
-    'playOnSeek': false            // play the sound when the position changes
+    'volume': 100                  // self-explanatory. 0-100, the latter being the max.
   };
 
   this.flash9Options = {      // flash 9-only options, merged into defaultOptions if flash 9 is being used
@@ -100,7 +99,7 @@ function SoundManager(smURL, smID) {
     'useWaveformData': false, // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
     'useEQData': false,       // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
     'onbufferchange': null,   // callback for "isBuffering" property change
-    'ondataerror': null      // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
+    'ondataerror': null       // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
   };
 
   this.movieStarOptions = { // flash 9.0r115+ MPEG4 audio options, merged into defaultOptions if flash 9+movieStar mode is enabled
@@ -1245,15 +1244,7 @@ function SoundManager(smURL, smID) {
       _t._iO.position = offset;
       if (!_t.isHTML5) {
         position = _fV === 9 ? _t.position : position1K;
-        // Play on seek?  A progressive download that is loaded has paused == false so resuming won't work. Handle here.
-        if (_t._iO.playOnSeek && _t.playState === 0) {
-          _t.play({ position: position });
-        } else {
-          _s.o._setPosition(_t.sID, position, (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
-          if (_t._iO.playOnSeek && _t.paused) {
-           _t.resume();
-          }
-        }
+        _s.o._setPosition(_t.sID, position, (_t.paused || !_t.playState)); // if paused or not playing, will not resume (by playing)
       } else if (_t._a) {
         // Set the position in the canplay handler if the sound is not ready yet
         if (_t._html5_canplay) {
@@ -1276,13 +1267,6 @@ function SoundManager(smURL, smID) {
       if (_t.isHTML5) {
         if (_t.paused) { // if paused, refresh UI right away
           _t._onTimer(true); // force update
-        }
-        if (_t._iO.playOnSeek) {
-          if (_t.playState === 0) {
-            _t.play();
-          } else if (_t.paused) {
-            _t.resume();
-          }
         }
       }
       return _t;
