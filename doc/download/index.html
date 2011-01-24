@@ -128,12 +128,12 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p><b>Latest changes:</b> Simplified <code>onready()</code> behaviour (see <a href="#sm2-20110101-api" class="warning">potential <code>onready()</code> regression note</a>), new <code>ontimeout()</code> handler, Webkit + MovieStar 30-second-pause fix. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> HTML5 audio improvements for desktop + mobile (iOS), 360&deg; UI demo improvements, MovieStar scrubbing. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110101.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110101</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110123.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110123</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
-				<p><b>Performance tip:</b> SM2's code size varies from 100 KB (debug) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
-				<p><b>Side reading:</b> <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>, an article written for 24ways.org touching on some of the current issues and future promise of audio in HTML.</p>
+				<p><b>Performance tip:</b> SM2's code size varies from 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
+				<p><b>Side reading:</b> <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>, an article written for 24ways.org touching on some of the issues and future promise of audio in HTML.</p>
 			</div>
 			
 		</div>
@@ -156,8 +156,47 @@
 
 			  <ul id="revision-list" class="standard">
 
-			   <li class="in">
-			    <h3><b>V2.97a.20110101</b> - Simplified <code>onready()</code> behaviour (see <a href="#sm2-20110101-api" class="warning">potential <code>onready()</code> regression note</a>), new <code>ontimeout()</code> handler, Webkit + MovieStar 30-second-pause fix</h3>
+			   <li id="sm2-20110123" class="in">
+			    <h3><b>V2.97a.20110123</b> - HTML5 audio improvements for desktop + mobile (iOS), 360&deg; UI demo tweaks</h3>
+
+				<p>Tweaks to HTML5 features, "mixed-mode" HTML5 + flash cases, desktop and iOS tweaks. Improved sound re-use and "play-through" on iOS (believed previously working, may have regressed with iOS 4.2.1.) Code clean-up and shuffling of homepage, 360&deg; demo (jslinted and improved functionality), <code>load({options})</code> fix, better handling of broken Safari/Snow Leopard audio case.</p>
+				
+			    <ul class="double">
+			
+			     <li class="in">
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+                   <li>Fix for <code>soundManager.load({options})</code> / <code>SMSound.load({options})</code>-specific case (regular <code>load()</code> sans-parameters was fine), where <code>load({onload:...})</code> would fail if a URL parameter was not specified. <code>load({url:...,onload:...})</code> was OK. If unspecified, load now takes URL from SMSound.url.</li>
+                   <li>Fixed unload/replay case on iOS: play sound #1, interrupt it by starting sound #2, then play sound #1 again - previously, #1 would fail on replay due to interrupted state since iOS only allows one sound at a time. Should now restart OK. (This applies to the new <code>soundManager.useGlobalHTML5Audio</code> stuff.) Playlist auto-advance looks to be OK as well.</li>
+				  </ul>
+			     </li>
+
+			     <li id="sm2-20110123-api" class="in">
+				  <p class="compact">API Updates</p>
+				  <ul class="nested compact flat">
+				   <li>New (experimental) <code>soundManager.useGlobalHTML5Audio</code> property - if true (default for iOS/mobile), reuses a single <code>Audio()</code> object for loading sound. Helps make playlist / <code>onfinish()</code>-&gt;<code>play()</code> work on iOS without user interaction.</li>
+				   <li>New (experimental) <code>soundManager.requireFlash</code> property (default: false.) If true, prevents HTML5-only mode on devices with both HTML5 and Flash. May be useful when HTML5 is enabled (and can play MP3), but Flash is desired to play RTMP content etc. As of this version, will only use Flash for RTMP.</li>
+				   <li>HTML5: Fix for <code>type:'audio/mp3'</code> returning false on <code>canPlay()</code>. Timer update-while-paused tweak.</li>
+                   <li>HTML5: More event listeners, ignore events on destroyed sounds, improved event clean-up, "seek before load" fix</li>
+				  </ul>
+				 </li>
+
+			     <li class="in">
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+				   <li>Improved broken Safari/Snow Leopard HTML5 audio situation: HTML5 mode is no longer disabled - and if available, Flash is used to play MP3/MP4 content to work around known playback issues with native HTML5 audio.</li>
+				   <li>(Finally) report "true" position of MovieStar (MPEG4/AAC) content while scrubbing a playing/paused sound. Previously did not fire updates while scrubbing. Imperfect on resume due to buffer, but should be negligible and an improvement vs. old behaviour.</li>
+                   <li>360&deg; player refresh, works with multiple types (eg. small 48x48 square vs. large 256x256 square w/spectrum + EQ visualizations) on the same page now. Can play and seek simultaneously, as well. More configurable. Removed old empty.gif + imageRoot junk. Core JS now appeases the jslint gods.</li>
+                   <li>Code clean-up, removed undocumented/experimental <code>playOnSeek</code> and related methods from a prior fork.</li>
+                   <li>Fresh homepage demo design/layout, should be nicer for new users.</li>
+			      </ul>
+			     </li>
+
+			    </ul>
+		       </li>
+
+			   <li id="sm2-20110101" class="in">
+			    <h3><b>V2.97a.20110101</b> - Simplified <code>onready()</code> behaviour (see <a href="#sm2-20110101-api" class="warning">potential <code>onready()</code> regression note</a>), new <code>ontimeout()</code> handler, Webkit + MovieStar 30-second-pause fix (<a href="../../download/soundmanagerv297a-20110101.zip" title="Download SoundManager 2" class="norewrite">Download archived version</a>)</h3>
 				<p><code>onready()</code> is now called only for SM2 init success (makes default case easier, no need for "supported" check) - new <code>ontimeout()</code> is called only for failure case, ie., flash blocked/missing. Special Webkit/MovieStar won't-resume-after-30-seconds-paused fix. <code>soundManager.supported()</code> renamed to <code>soundManager.ok()</code> (old method aliased for the time being.)</p>
 				
 			    <ul class="double">

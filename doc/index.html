@@ -317,46 +317,58 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			<p>iPad and iPhone require user interaction to start a sound, eg. the createSound() and play() call should happen within an onclick() handler on a link, etc. The "security" model here seems to be implemented similarly to the way pop-up blockers work. You may "chain" sounds (eg. create and play a new one) provided it is done via the onfinish() event of a sound initiated by a user, however. The Muxtape-style demo on the SM2 homepage uses this, and will advance the playlist on the iPad/iPhone if allowed.</p>
 			<p>iPad 3.2 gets hung up on the "BC quail" HE-AAC example sound for some reason, and endlessly loops it rather than finishing and moving on to the next item. May be an iPad playback bug, as other formats are fine. iPhone OS 4 (iOS 4) does not show this issue.</p>
 			<p>iPhone OS version &lt; 3.1 doesn't work, but 3.1 (and possibly earlier versions, not verified) have a native <code>Audio()</code> object. However, they seem to simply not play sound when <code>play()</code> is called, so SM2 looks for and ignores the iPhone with these OS revisions.</p>
-			<p>The Palm Pre <a href="http://developer.palm.com/index.php?option=com_content&view=article&id=1741&Itemid=265#using_html_5_audio_objects" title="Palm Developer Center: Audio">supports</a> a number of MP3, MP4 and WAV formats (WebOS 1.4.1 was tested; it didn't seem to like MP3s at 192kbps, but 128kbps was fine.)</p>
+			<p>The Palm Pre <a href="http://developer.palm.com/index.php?option=com_content&amp;view=article&amp;id=1741&amp;Itemid=265#using_html_5_audio_objects" title="Palm Developer Center: Audio">supports</a> a number of MP3, MP4 and WAV formats (WebOS 1.4.1 was tested; it didn't seem to like MP3s at 192kbps, but 128kbps was fine.)</p>
 				
 
                         <div id="html5-knownissues">
 
 			 <h5>HTML5 Audio: Notes, bugs, quirks and annoyances</h5>
+			
+			
+			 <p><b>As of the V2.97.20110123 release of SM2:</b></p>
+			
+			 <ul>
+			  <li><p>New (experimental) <code>soundManager.useGlobalHTML5Audio</code> attribute, enabled by default for mobile + iOS. Enables use of a single audio object, re-used for loading and playing all sounds. iOS currently can only play one sound at a time, so this limitation is safe for now. The global object fixes previous regression of play-through/playNext()-style behaviours.</p></li>
+			  <li><p>Sound recycling with new global audio feature should work better than in prior (development) versions.</p></li>
+			  <li><p>Improved broken Safari/Snow Leopard HTML5 audio situation: HTML5 mode is no longer disabled - and if available, Flash is used to play MP3/MP4 content to work around known playback issues with native HTML5 audio.</p></li>
+			  <li><p>New (experimental) <code>soundManager.requireFlash</code> property (default: false.) If true, prevents HTML5-only mode on devices with both HTML5 and Flash. May be useful when HTML5 is enabled (and can play MP3), but Flash is desired to play RTMP content etc. As of this version, will only use Flash for RTMP.</p></li>
+			  <li><p>Fix for <code>type:'audio/mp3'</code> returning false on <code>canPlay()</code>. Timer update-while-paused tweak.</p></li>
+			  <li><p>More event listeners, ignore events on destroyed sounds, improved event clean-up, "seek before load" fix</p></li>
+			 </ul>
 
- 			 <p>As of the January, 2011 (V2.97a.20110101) and December, 2010 releases of SM2 (V2.97a.20101221):</p>
+ 			 <p><b>As of the January 1, 2011 (V2.97a.20110101) and December, 2010 releases of SM2 (V2.97a.20101221):</b></p>
                          <ul>
-                          <li>The <code>bytesLoaded</code> and <code>bytesTotal</code> properties may become less-relevant under HTML5 due to non-linear HTTP downloading (using ranges and partials), but they are still provided under Firefox at this time.</li>
-                          <li>Related to bytes loading/total, a sound's <code>onload</code> event may not always be fired (Mozilla currently discourage use of the DOM <code>loaded</code> event), again because of range requests and the ability to arbitrarily seek within a file.</li>
-                          <li>Basic support for the W3 <code>TimeRanges</code> implementation of sound buffering (ie., loaded data) has been implemented. This gives an idea of "total time loaded", but again, is not necessarily sequential.</li>
-                          <li>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 - 10.6.5) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>. HTML5 audio in Safari on Windows (provided QuickTime is installed) does not have the same fatal bug.</li>
+                          <li><p>The <code>bytesLoaded</code> and <code>bytesTotal</code> properties may become less-relevant under HTML5 due to non-linear HTTP downloading (using ranges and partials), but they are still provided under Firefox at this time.</p></li>
+                          <li><p>Related to bytes loading/total, a sound's <code>onload</code> event may not always be fired (Mozilla currently discourage use of the DOM <code>loaded</code> event), again because of range requests and the ability to arbitrarily seek within a file.</p></li>
+                          <li><p>Basic support for the W3 <code>TimeRanges</code> implementation of sound buffering (ie., loaded data) has been implemented. This gives an idea of "total time loaded", but again, is not necessarily sequential.</p></li>
+                          <li><p>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 - 10.6.5) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>. HTML5 audio in Safari on Windows (provided QuickTime is installed) does not have the same fatal bug.</p></li>
                          </ul>
 
-             <p>As of the October, 2010 release of SM2 (V2.97a.20101010):</p>
+             <p><b>As of the October, 2010 release of SM2 (V2.97a.20101010):</b></p>
 			 <ul>
-			  <li>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 and 10.6.4) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</li>
+			  <li><p>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 and 10.6.4) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</p></li>
 		         </ul>
 
-			 <p>As of the August, 2010 release of SM2 (V2.96a.20100822):</p>
+			 <p><b>As of the August, 2010 release of SM2 (V2.96a.20100822):</b></p>
 			 <ul>
-			  <li>Safari 5.0.1 (533.17.18) on Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour. Apple are aware of the regression, which began with Safari 4.0 on Snow Leopard (perhaps with the new QuickTime.) See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</li>
-			  <li>iPad/iPhone iOS4 will now play a sequence of sounds if using <code>onfinish()</code> to create/start the next (eg., the Muxtape-style playlist on the SM2 homepage will play through once the user starts it.) In any event, user interaction is always required to start the first sound.</li>
+			  <li><p>Safari 5.0.1 (533.17.18) on Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour. Apple are aware of the regression, which began with Safari 4.0 on Snow Leopard (perhaps with the new QuickTime.) See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</p></li>
+			  <li><p>iPad/iPhone iOS4 will now play a sequence of sounds if using <code>onfinish()</code> to create/start the next (eg., the Muxtape-style playlist on the SM2 homepage will play through once the user starts it.) In any event, user interaction is always required to start the first sound.</p></li>
 		         </ul>
 			
-			 <p>As of the June, 2010 release of SM2 (V2.96a.20100624):</p>
+			 <p><b>As of the June, 2010 release of SM2 (V2.96a.20100624):</b></p>
 			 <ul>
-			  <li>Safari 5.0 (533.16) on OS X Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour, same as with Safari 4.0.5 on Snow Leopard only - may be related to underlying QuickTime implementation (a guess, at this point.) SM2 will disable HTML5 audio support by default for this specific browser + OS combo. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases.</li>
+			  <li><p>Safari 5.0 (533.16) on OS X Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour, same as with Safari 4.0.5 on Snow Leopard only - may be related to underlying QuickTime implementation (a guess, at this point.) SM2 will disable HTML5 audio support by default for this specific browser + OS combo. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases.</p></li>
 			 </ul>
 			
-			 <p>As of the May, 2010 release of SM2 (V2.96a.20100520):</p>
+			 <p><b>As of the May, 2010 release of SM2 (V2.96a.20100520):</b></p>
 			 <ul>
-			  <li>Safari 4.0.5 on OS X Snow Leopard (10.6.x) appears to have an annoying bug where audio inconsistently fails to load / play; SM2 will currently disable or ignore the HTML5 feature on this exact browser + OS version. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases. Note that Safari on OS X 10.5 "Leopard" and on Windows <i>do not</i> appear to have this bug; it seems to be limited to Snow Leopard, seen on OS X 10.6.3.</li>
-			  <li>Some browsers (and iPad 3.2?) do not fire <code>progress</code> events, and/or do not implement bytesLoaded/bytesTotal-style attributes.</li>
-			  <li>iPad 3.2 appears to be able to only play one sound at a time, and will terminate other sounds.</li>
-			  <li>iPad 3.2 may also loop AAC+ (HE-AAC) and WAV sounds, perhaps not firing onfinish() and resetting the position to 0 each time, but is fine with MP3s. This has been observed, but not fully-tested.</li>
-			  <li>Looping in HTML5 is either "infinite" or "none". A wrapper may be created for SM2 so that a number of loops can be specified, as with Flash. This is not yet implemented.</li>
-			  <li>Panning (left/right channel balance) does not appear to be in HTML5.</li>
-			  <li>Flash-only features such as ID3 tag reading, waveform and spectrum data will simply be ignored, and their related events will not fire on SMSound objects which are using HTML5.</li>
+			  <li><p>Safari 4.0.5 on OS X Snow Leopard (10.6.x) appears to have an annoying bug where audio inconsistently fails to load / play; SM2 will currently disable or ignore the HTML5 feature on this exact browser + OS version. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases. Note that Safari on OS X 10.5 "Leopard" and on Windows <i>do not</i> appear to have this bug; it seems to be limited to Snow Leopard, seen on OS X 10.6.3.</p></li>
+			  <li><p>Some browsers (and iPad 3.2?) do not fire <code>progress</code> events, and/or do not implement bytesLoaded/bytesTotal-style attributes.</p></li>
+			  <li><p>iPad 3.2 appears to be able to only play one sound at a time, and will terminate other sounds.</p></li>
+			  <li><p>iPad 3.2 may also loop AAC+ (HE-AAC) and WAV sounds, perhaps not firing onfinish() and resetting the position to 0 each time, but is fine with MP3s. This has been observed, but not fully-tested.</p></li>
+			  <li><p>Looping in HTML5 is either "infinite" or "none". A wrapper may be created for SM2 so that a number of loops can be specified, as with Flash. This is not yet implemented.</p></li>
+			  <li><p>Panning (left/right channel balance) does not appear to be in HTML5.</p></li>
+			  <li><p>Flash-only features such as ID3 tag reading, waveform and spectrum data will simply be ignored, and their related events will not fire on SMSound objects which are using HTML5.</p></li>
 			 </ul>
 
                         </div>
