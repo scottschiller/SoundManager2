@@ -1535,7 +1535,7 @@ function SoundManager(smURL, smID) {
          * Fixes case with devices that can only play one sound at a time
          * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
          */
-        if (_is_iDevice && _a._t.playState && _a._t) {
+        if (_useGlobalHTML5Audio && _a._t.playState && _a._t && _a._t.url && _a._t.url !== _iO.url) {
           _a._t.stop();
         }
         _a.src = _iO.url;
