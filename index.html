@@ -17,18 +17,18 @@
 <link rel="stylesheet" type="text/css" href="demo/mp3-player-button/css/mp3-player-button.css"/>
 <link rel="stylesheet" type="text/css" href="demo/flashblock/flashblock.css"/>
 <link rel="stylesheet" type="text/css" media="screen" href="demo/index.css"/>
-<script src="script/soundmanager2.js"></script>
-<script src="demo/mp3-player-button/script/mp3-player-button.js"></script>
-<script src="demo/page-player/script/page-player.js"></script>
-<script src="demo/play-mp3-links/script/inlineplayer.js"></script>
+<script type="text/javascript" src="script/soundmanager2.js"></script>
+<script type="text/javascript" src="demo/mp3-player-button/script/mp3-player-button.js"></script>
+<script type="text/javascript" src="demo/page-player/script/page-player.js"></script>
+<script type="text/javascript" src="demo/play-mp3-links/script/inlineplayer.js"></script>
 <!-- 360 UI demo, canvas magic for IE -->
-<!--[if IE]><script src="demo/360-player/script/excanvas.js"></script><![endif]-->
+<!--[if IE]><script type="text/javascript" src="demo/360-player/script/excanvas.js"></script><![endif]-->
 <!-- 360 UI demo, Apache-licensed animation library -->
-<script src="demo/360-player/script/berniecode-animator.js"></script>
-<script src="demo/360-player/script/360player.js"></script>
+<script type="text/javascript" src="demo/360-player/script/berniecode-animator.js"></script>
+<script type="text/javascript" src="demo/360-player/script/360player.js"></script>
 <!-- SM2 demo/homepage stuff -->
-<script>var is_home = true;</script>
-<script src="demo/index.js"></script>
+<script type="text/javascript">var is_home = true;</script>
+<script type="text/javascript" src="demo/index.js"></script>
 </head>
 
 <body class="home">
@@ -218,7 +218,7 @@
 								<li><a href="http://freshly-ground.com/data/audio/sm2/quail-64kbps-he-aac-from-itunes-renamed-from-mp4.aac" title="48 kbps MPEG4 High-Efficiency AAC test sound: BC Quail" class="button-exclude inline-exclude threesixty-exclude">BC Quail <span class="sidenote">(HE-AAC)</span></a></li>
 							</ul>
 							<ul id="muxtape-html5" class="playlist" style="clear:both;margin-top:0px;padding-top:0px">
-								<li><a href="http://freshly-ground.com/data/audio/sm2/20060924%20-%20Ghosts%20&%20Goblins%20Reconstructed.ogg" title="OGG sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">Ghosts+Goblins Reconstructed <span class="sidenote">(OGG)</span></a></li>
+								<li><a href="http://freshly-ground.com/data/audio/sm2/20060924%20-%20Ghosts%20&amp;%20Goblins%20Reconstructed.ogg" title="OGG sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">Ghosts+Goblins Reconstructed <span class="sidenote">(OGG)</span></a></li>
 								<li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" title="WAV sound format, requires HTML5 Audio() support to play" class="button-exclude inline-exclude threesixty-exclude" style="font-size:0.8em">A corked beer bottle <span class="sidenote">(WAV)</span></a></li>
 							</ul>
 							<div class="demo-more">
@@ -240,7 +240,7 @@
 					</div>
 
 					<h3 style="margin-top:0px">Big&nbsp;features, small footprint.</h3>
-					<p style="clear:left;min-width:30em">SoundManager 2 packs a full-featured API (100 KB of raw code) into as little as 10 KB over the wire. The source is provided in fully-commented, -no-debug and compiler-optimized "minified" versions appropriate for development and production use.</p>
+					<p style="clear:left;min-width:30em">SoundManager 2 packs a full-featured API (100 KB of code) into <a href="doc/getstarted/#basic-inclusion" title="SoundManager 2: Build options">as little as 10 KB</a> over the wire. The source is provided in fully-commented, -no-debug and compiler-optimized "minified" versions appropriate for development and production use.</p>
 
 					<h3>Technical details</h3>
 
@@ -251,7 +251,7 @@
 						<li>Seamless flash fallback for MP3/MP4 content, if needed</li>
 						<li>HTML5/Flash API switching is transparent, handled internally</li>
 						<li>WAV + OGG playback possible via HTML5, if supported</li>
-						<li>See <a href="doc/#soundmanager-usehtml5audio" title="soundManager.useHTML5Audio HTML5 Audio() support feature documentation">soundManager<wbr>.useHTML5Audio</a> for implementation details</li>
+						<li>See <a href="doc/#soundmanager-usehtml5audio" title="soundManager.useHTML5Audio HTML5 Audio() support feature documentation">useHTML5Audio</a> for implementation details</li>
 					</ul>
 
 					<div style="margin-right:4em">
@@ -398,7 +398,7 @@ soundManager.onload = function() {
 					<span id="options-divider-with-html5" class="options-divider">&nbsp;|&nbsp;</span>
 					<span id="without-html5"><a href="?sm2-usehtml5audio=0" title="View this page with HTML5 audio support disabled">-html5</a></span>
 					<span id="options-divider-without-html5" class="options-divider">&nbsp;|&nbsp;</span>
-					<span id="with-debug"><a href="#debug=1" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a>
+					<span id="with-debug"><a href="#debug=1" title="View this page with debug output mode enabled (console.log() or HTML-based)" onclick="document.location.href=this.href;document.location.reload()">+debug</a></span>
 				</p>
 			</div>
 
@@ -408,7 +408,7 @@ soundManager.onload = function() {
 		<!-- /content -->
 	</div>
 
-	<script>
+	<script type="text/javascript">
 	// <![CDATA[
 	if (document.location.href.match(/debug=1/i)) {
 	  document.getElementById('with-debug').style.display = 'none';
