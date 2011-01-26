@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20110123
+ * V2.97a.20110123+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -110,7 +110,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20110123';
+  this.versionNumber = 'V2.97a.20110123+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -2311,7 +2311,8 @@ function SoundManager(smURL, smID) {
       'bgcolor': _s.bgColor,
       'pluginspage': 'http://www.macromedia.com/go/getflashplayer',
       'type': 'application/x-shockwave-flash',
-      'wmode': _s.wmode
+      'wmode': _s.wmode,
+      'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
     };
 
     if (_s.debugFlash) {
@@ -2356,8 +2357,7 @@ function SoundManager(smURL, smID) {
               // >= 6px for flash to run fast, >= 8px to start up under Firefox/win32 in some cases. odd? yes.
               'bottom': '0px',
               'left': '0px',
-              'overflow': 'hidden',
-              'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
+              'overflow': 'hidden'
             };
           } else {
             s = {
@@ -2365,8 +2365,7 @@ function SoundManager(smURL, smID) {
               'width': '6px',
               'height': '6px',
               'top': '-9999px',
-              'left': '-9999px',
-              'hasPriority': 'true'
+              'left': '-9999px'
             };
             if (isRTL) {
               s.left = Math.abs(parseInt(s.left,10))+'px';
