@@ -1538,6 +1538,7 @@ function SoundManager(smURL, smID) {
         if (_useGlobalHTML5Audio && _a._t.playState && _a._t && _a._t.url && d(_a._t.url) !== d(_iO.url)) {
           _a._t.stop();
         }
+        _resetProperties(); // new URL, so reset load/playstate and so on
         _a.src = _iO.url;
       } else {
         //_s._wD('creating HTML5 Audio() element with URL: '+_iO.url);
