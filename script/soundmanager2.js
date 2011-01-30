@@ -1306,11 +1306,11 @@ function SoundManager(smURL, smID) {
       _t.paused = false;
       _t.playState = 1;
       if (!_t.isHTML5) {
-        _s.o._pause(_t.sID); // flash method is toggle-based (pause/resume)
-        if (_t._iO.isMovieStar && _isWebkit) {
+        if (_t._iO.isMovieStar) {
           // Bizarre Webkit bug (Chrome reported via 8tracks.com dudes): AAC content paused for 30+ seconds(?) will not resume without a reposition.
           _t.setPosition(_t.position);
         }
+        _s.o._pause(_t.sID); // flash method is toggle-based (pause/resume)
       } else {
         _t._setup_html5().play();
         _start_html5_timer();
