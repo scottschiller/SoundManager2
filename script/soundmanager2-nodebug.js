@@ -1524,24 +1524,26 @@ function SoundManager(smURL, smID) {
 
     this._setup_html5 = function(oOptions) {
       var _iO = _mixin(_t._iO, oOptions), d = decodeURI,
-          _a = _useGlobalHTML5Audio ? _s._global_a : _t._a;
+          _a = _useGlobalHTML5Audio ? _s._global_a : _t._a,
+          _dURL = d(_iO.url),
+          _oldIO = (_a && _a._t ? _a._t.instanceOptions : null);
       if (_a) {
-        if (_a._t && d(_a.src) === d(_iO.url)) {
+        if (_a._t && _oldIO.url === _iO.url) {
           return _a; // same url, ignore request
         }
-        //_s._wD('setting new URL on existing object: '+_iO.url);
+        //_s._wD('setting new URL on existing object: '+_dURL+', old URL: '+d(_oldIO.url));
         /*
          * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
          * Fixes case with devices that can only play one sound at a time
          * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
          */
-        if (_useGlobalHTML5Audio && _a._t.playState && _a._t && _a._t.url && d(_a._t.url) !== d(_iO.url)) {
+        if (_useGlobalHTML5Audio && _a._t.playState && _a._t && _iO.url !== _oldIO.url) {
           _a._t.stop();
         }
         _resetProperties(); // new URL, so reset load/playstate and so on
         _a.src = _iO.url;
       } else {
-        //_s._wD('creating HTML5 Audio() element with URL: '+_iO.url);
+        //_s._wD('creating HTML5 Audio() element with URL: '+_dURL);
         _a = new Audio(_iO.url);
         if (_useGlobalHTML5Audio) {
           _s._global_a = _a;
@@ -1587,33 +1589,6 @@ function SoundManager(smURL, smID) {
         }
       }
 
-      /*
-      // Debug issues with HTML5 streams.  Look for changes in audio object
-      // attributes every few milliseconds.
-      if (!_t._a._debug_interval) {
-        _t._a._debug_last_values = {};
-        _t._a._debug_interval = setInterval(function() {
-          var _a = _t._a, rs, ns, ec;
-          if (_a && _a._t) {
-            rs = _a.readyState;
-            ns = _a.networkState;
-            if (_a._debug_last_values.readyState !== rs) {
-              _a._debug_last_values.readyState = rs;
-              //_s._wD(_h5+'readyState '+ (_HTML5_readyStates[rs] || rs)+', sound '+_t.sID);
-            }
-            if (_a._debug_last_values.networkState !== ns) {
-              _a._debug_last_values.networkState = ns;
-              //_s._wD(_h5+'networkState '+ (_HTML5_networkStates[ns] || ns)+', sound '+_t.sID);
-            }
-            if (_a.error && _a._debug_last_values.errorCode !== _a.error.code) {
-              ec = _a.error.code;
-              _a._debug_last_values.errorCode = ec;
-              //_s._wD(_h5+'errorCode '+ (_HTML5_errorCodes[ec] || ec)+', sound '+_t.sID);
-            }
-          }
-        }, 50);
-      }
-      */
       return true;
     };
 
@@ -1631,14 +1606,6 @@ function SoundManager(smURL, smID) {
           remove(f, _s._html5_events[f]);
         }
       }
-
-      /*
-      // Clear the extra HTML5 logging interval
-      if (_t._a._debug_interval) {
-        clearInterval(_t._a._debug_interval);
-        _t._a._debug_interval = undefined;
-      }
-      */
     };
 
     // --- "private" methods called by Flash ---
@@ -2759,7 +2726,7 @@ function SoundManager(smURL, smID) {
       return _hasFlash;
     }
 
-    var hasPlugin = false, i, n = navigator, nP = n.plugins, mime, obj, type, types, axBase, axNames, getAX, AX = _win.ActiveXObject;
+    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = _win.ActiveXObject;
 
     if (nP && nP.length) {
 
@@ -2779,6 +2746,8 @@ function SoundManager(smURL, smID) {
       hasPlugin = (!!obj);
 
     }
+
+    _hasFlash = hasPlugin;
 
     return hasPlugin;
 
@@ -2804,9 +2773,8 @@ function SoundManager(smURL, smID) {
         _s.hasHTML5 = true;
       }
       if (_isBadSafari) {
-        _hasFlash = _detectFlash();
-        //_s._wD(_smc+'Note: Buggy HTML5 Audio in Safari on OS X 10.6.[3|4|5], see https://bugs.webkit.org/show_bug.cgi?id=32159 - '+(!_hasFlash?' would use flash fallback for MP3/MP4, but none detected.':'will use flash fallback for MP3/MP4, if available'),1);
-        if (_hasFlash) {
+        //_s._wD(_smc+'Note: Buggy HTML5 Audio in Safari on this OS X release, see https://bugs.webkit.org/show_bug.cgi?id=32159 - '+(!_hasFlash?' would use flash fallback for MP3/MP4, but none detected.':'will use flash fallback for MP3/MP4, if available'),1);
+        if (_detectFlash()) {
           return true;
         }
       }
@@ -2825,7 +2793,7 @@ function SoundManager(smURL, smID) {
       needsFlash = false;
     }
     _html5Only = (_s.useHTML5Audio && _s.hasHTML5 && !needsFlash && !_s.requireFlash);
-    return needsFlash;
+    return (_detectFlash() && needsFlash);
   };
 
   _init = function() {
@@ -2905,6 +2873,12 @@ function SoundManager(smURL, smID) {
     }
     _didDCLoaded = true;
     _initDebug();
+    if (!_s.useHTML5Audio) {
+      if (!_detectFlash()) {
+        //_s._wD('SoundManager: No Flash detected, trying HTML5');
+        _s.useHTML5Audio = true;
+      }
+    }
     _testHTML5();
     _s.html5.usingFlash = _featureCheck();
     _needsFlash = _s.html5.usingFlash;
@@ -2937,7 +2911,7 @@ function SoundManager(smURL, smID) {
 
   _badSafariFix = function() {
     // special case: "bad" Safari can fall back to flash for MP3/MP4
-    if (!_isBadSafari || !_hasFlash) {
+    if (!_isBadSafari || !_detectFlash()) {
       return false; // doesn't apply
     }
     var aF = _s.audioFormats, i, item;
