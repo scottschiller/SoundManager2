@@ -46,6 +46,8 @@
  height:1px;
 }
 
+#sm2-container.swf_loaded object,
+#sm2-container.swf_loaded embed,
 #sm2-container.swf_unblocked object,
 #sm2-container.swf_unblocked embed {
  /* hide flash off-screen (relative to container) when it has loaded OK */
