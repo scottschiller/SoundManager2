@@ -1628,13 +1628,11 @@ body.home #sm2-container.swf_loaded {
 }
 
 body.home #sm2-container.swf_unblocked,
-body.home #sm2-container.swf_loaded,
-body.home #sm2-container.swf_unblocked embed,
-body.home #sm2-container.swf_loaded embed {
+body.home #sm2-container.swf_loaded {
+ top:auto;
  left:0px;
- top:0px;
+ bottom:0px;
  margin:0px;
- bottom:auto;
 }
 
 /*
