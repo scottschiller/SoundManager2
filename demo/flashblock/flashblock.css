@@ -64,6 +64,7 @@
  /* "high performance" case: keep on-screen at all times */
  position:absolute;
  position:fixed;
+ overflow:hidden;
  _top:-9999px; /* IE 6 hax, no position:fixed */
  _left:-9999px;
  bottom:0px;
@@ -77,10 +78,13 @@
  z-index:99; /* try to stay on top */
 }
 
+#sm2-container.high_performance.swf_loaded,
 #sm2-container.high_performance.swf_unblocked {
  z-index:auto;
 }
 
+
+#sm2-container.high_performance.swf_loaded,
 #sm2-container.high_performance.swf_unblocked,
 #sm2-container.high_performance.swf_unblocked object,
 #sm2-container.high_performance.swf_unblocked embed {
@@ -89,6 +93,15 @@
  height:8px;
 }
 
+#sm2-container.high_performance.swf_loaded {
+ /* stay bottom/left */
+ top:auto;
+ bottom:0px;
+ left:0px;
+}
+
+#sm2-container.high_performance.swf_loaded object,
+#sm2-container.high_performance.swf_loaded embed,
 #sm2-container.high_performance.swf_unblocked object,
 #sm2-container.high_performance.swf_unblocked embed {
  /* high-performance case must stay on-screen */
