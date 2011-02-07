@@ -1751,6 +1751,7 @@ function SoundManager(smURL, smID) {
 
     this._onfinish = function() {
       // //_s._wD('SMSound._onfinish(): "' + _t.sID + '" got instanceCount '+_t.instanceCount);
+      var _io_onfinish = _t._iO.onfinish; // store local copy before it gets trashed..
       _t._onbufferchange(0);
       _t.resetOnPosition(0);
       if (_t._iO.onbeforefinishcomplete) {
@@ -1767,13 +1768,14 @@ function SoundManager(smURL, smID) {
           _t.paused = false;
           _t.instanceCount = 0;
           _t.instanceOptions = {};
+          _t._iO = {};
           _stop_html5_timer();
         }
         if (!_t.instanceCount || _t._iO.multiShotEvents) {
           // fire onfinish for last, or every instance
-          if (_t._iO.onfinish) {
+          if (_io_onfinish) {
             //_s._wD('SMSound._onfinish(): "' + _t.sID + '"');
-            _t._iO.onfinish.apply(_t);
+            _io_onfinish.apply(_t);
           }
         }
       }
