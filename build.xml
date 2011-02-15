@@ -38,6 +38,12 @@
 
 <project name="SoundManager 2" default="build" basedir=".">
 
+  <property file='${basedir}/.build.properties'/>
+  <property name='mxmlc' value='mxmlc'/>
+  <property name='mtasc' value='mtasc'/>
+  <property name='closure-compiler.jar' value="${user.home}/compiler.jar"/>
+  <echo>${closure-compiler.jar}</echo>
+
 <target name="build">
 
 <echo>Compressing minified JS...</echo>
@@ -55,7 +61,7 @@
 <!-- Google Closure Compiler -->
 
 <exec executable="/bin/sh">
- <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js script/soundmanager2.js --js_output_file tmp/soundmanager2-jsmin-temp.js"'/>
+ <arg line='-c "java -jar ${closure-compiler.jar} --compilation_level SIMPLE_OPTIMIZATIONS --js script/soundmanager2.js --js_output_file tmp/soundmanager2-jsmin-temp.js"'/>
 </exec>
 
 <!-- Retain license comment through further closure compiler minification -->
@@ -109,7 +115,7 @@
 -->
 
 <exec executable="/bin/sh">
- <arg line='-c "java -jar ~/compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js tmp/sm2-nodebug-temp6.js --js_output_file tmp/soundmanager2-nodebug-jsmin.js"'/>
+ <arg line='-c "java -jar ${closure-compiler.jar} --compilation_level SIMPLE_OPTIMIZATIONS --js tmp/sm2-nodebug-temp6.js --js_output_file tmp/soundmanager2-nodebug-jsmin.js"'/>
 </exec>
 
 <!-- Retain license comment through further closure compiler minification -->
@@ -140,13 +146,13 @@
 <echo>Building debug version, Flash 8/AS2...</echo>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/mtasc/mtasc -swf swf/soundmanager2_debug.swf -main -header 16:16:30 src/SoundManager2.as -version 8"'/>
+ <arg line='-c "${mtasc} -swf swf/soundmanager2_debug.swf -main -header 16:16:30 src/SoundManager2.as -version 8"'/>
 </exec>
 
 <echo>Building debug version, Flash 9/AS3...</echo>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/flexsdk/bin/mxmlc -debug=true -static-link-runtime-shared-libraries=true -optimize=true -o swf/soundmanager2_flash9_debug.swf -file-specs src/SoundManager2_AS3.as"'/>
+ <arg line='-c "${mxmlc} -debug=true -static-link-runtime-shared-libraries=true -optimize=true -o swf/soundmanager2_flash9_debug.swf -file-specs src/SoundManager2_AS3.as"'/>
 </exec>
 
 <echo>Making no-debug .AS...</echo>
@@ -259,31 +265,31 @@
 
 <exec executable="/bin/sh">
 
- <arg line='-c "/Applications/mtasc/mtasc -swf swf/soundmanager2.swf -main -header 16:16:30 tmp/soundmanager2_flash_nodebug/SoundManager2.as -version 8"'/>
+ <arg line='-c "${mtasc} -swf swf/soundmanager2.swf -main -header 16:16:30 tmp/soundmanager2_flash_nodebug/SoundManager2.as -version 8"'/>
 </exec>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/flexsdk/bin/mxmlc -static-link-runtime-shared-libraries=true -optimize=true -o swf/soundmanager2_flash9.swf -file-specs tmp/soundmanager2_flash_nodebug/SoundManager2_AS3.as"'/>
+ <arg line='-c "${mxmlc} -static-link-runtime-shared-libraries=true -optimize=true -o swf/soundmanager2_flash9.swf -file-specs tmp/soundmanager2_flash_nodebug/SoundManager2_AS3.as"'/>
 </exec>
 
 <echo>Building debug cross-domain SWFs...</echo>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/mtasc/mtasc -swf tmp/soundmanager2_flash_xdomain/soundmanager2_debug.swf -main -header 16:16:30 tmp/soundmanager2_flash_xdomain/SoundManager2.as -version 8"'/>
+ <arg line='-c "${mtasc} -swf tmp/soundmanager2_flash_xdomain/soundmanager2_debug.swf -main -header 16:16:30 tmp/soundmanager2_flash_xdomain/SoundManager2.as -version 8"'/>
 </exec>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/flexsdk/bin/mxmlc -debug=true -static-link-runtime-shared-libraries=true -optimize=true -o tmp/soundmanager2_flash_xdomain/soundmanager2_flash9_debug.swf -file-specs tmp/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
+ <arg line='-c "${mxmlc} -debug=true -static-link-runtime-shared-libraries=true -optimize=true -o tmp/soundmanager2_flash_xdomain/soundmanager2_flash9_debug.swf -file-specs tmp/soundmanager2_flash_xdomain/SoundManager2_AS3.as"'/>
 </exec>
 
 <echo>Building no-debug cross-domain SWFs...</echo>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/mtasc/mtasc -swf tmp/soundmanager2_flash_xdomain/soundmanager2.swf -main -header 16:16:30 tmp/soundmanager2_flash_xdomain/nodebug/SoundManager2.as -version 8"'/>
+ <arg line='-c "${mtasc} -swf tmp/soundmanager2_flash_xdomain/soundmanager2.swf -main -header 16:16:30 tmp/soundmanager2_flash_xdomain/nodebug/SoundManager2.as -version 8"'/>
 </exec>
 
 <exec executable="/bin/sh">
- <arg line='-c "/Applications/flexsdk/bin/mxmlc -static-link-runtime-shared-libraries=true -optimize=true -o tmp/soundmanager2_flash_xdomain/soundmanager2_flash9.swf -file-specs tmp/soundmanager2_flash_xdomain/nodebug/SoundManager2_AS3.as"'/>
+ <arg line='-c "${mxmlc} -static-link-runtime-shared-libraries=true -optimize=true -o tmp/soundmanager2_flash_xdomain/soundmanager2_flash9.swf -file-specs tmp/soundmanager2_flash_xdomain/nodebug/SoundManager2_AS3.as"'/>
 </exec>
 
 <!-- remove existing .zip, if found -->
