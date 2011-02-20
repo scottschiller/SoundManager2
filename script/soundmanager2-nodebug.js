@@ -863,18 +863,22 @@ function SoundManager(smURL, smID) {
         }
         */
 
-        if (isProgress) {
+        if (isProgress && !isNaN(loaded)) {
           //_s._wD(_h5+'progress: '+this._t.sID+': ' + Math.floor(loaded*100)+'% loaded');
         }
 
       }
 
-      this._t._onbufferchange(0); // if progress, likely not buffering
-      this._t._whileloading(loaded, total, this._t._get_html5_duration());
+      if (!isNaN(loaded)) {
 
-      if (loaded && total && loaded === total) {
-        // in case "onload" doesn't fire (eg. gecko 1.9.2)
-        _s._html5_events.load.call(this, e);
+        this._t._onbufferchange(0); // if progress, likely not buffering
+        this._t._whileloading(loaded, total, this._t._get_html5_duration());
+
+        if (loaded && total && loaded === total) {
+          // in case "onload" doesn't fire (eg. gecko 1.9.2)
+          _s._html5_events.load.call(this, e);
+        }
+
       }
 
     }),
@@ -2272,7 +2276,7 @@ function SoundManager(smURL, smID) {
     if (_isIE) {
       // IE is "special".
       oMovie = _doc.createElement('div');
-      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '<!-- --></object>';
+      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '</object>';
     } else {
       oMovie = _doc.createElement('embed');
       for (tmp in oEmbed) {
