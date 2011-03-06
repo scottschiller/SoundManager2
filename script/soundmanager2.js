@@ -110,7 +110,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20110123+DEV';
+  this.versionNumber = 'V2.97a.20110306';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
