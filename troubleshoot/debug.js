@@ -128,7 +128,7 @@ function SM2Debugger() {
   this.doSoundTest = function() {
     var foo = soundManager.createSound({
 	  id: 'sm2TestSound',
-	  url: ('http://schillmania.com/projects/soundmanager2/demo/_mp3/mouseover.mp3')
+	  url: ('http://www.schillmania.com/projects/soundmanager2/demo/_mp3/mouseover.mp3')
     });
     if (!soundManager._disabled) {
       foo.play();
