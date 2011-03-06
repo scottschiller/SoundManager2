@@ -8,7 +8,7 @@
  Code provided under the BSD License:
  http://schillmania.com/projects/soundmanager2/license.txt
 
- V2.97a.20110123+DEV
+ V2.97a.20110306
 */
 (function(W){function ya(Pa,Qa){function r(c){return function(a){if(!this._t||!this._t._a){this._t&&this._t.sID?b._wD(o+"ignoring "+a.type+": "+this._t.sID):b._wD(o+"ignoring "+a.type);return null}else return c.call(this,a)}}function za(){if(b.debugURLParam.test(H))b.debugMode=true;if(v(b.debugID))return false;var c,a,f,h;if(b.debugMode&&!v(b.debugID)&&(!ha||!b.useConsole||b.useConsole&&ha&&!b.consoleOnly)){c=j.createElement("div");c.id=b.debugID+"-toggle";a={position:"fixed",bottom:"0px",right:"0px",
 width:"1.2em",height:"1.2em",lineHeight:"1.2em",margin:"2px",textAlign:"center",border:"1px solid #999",cursor:"pointer",background:"#fff",color:"#333",zIndex:10001};c.appendChild(j.createTextNode("-"));c.onclick=Aa;c.title="Toggle SM2 debug console";if(w.match(/msie 6/i)){c.style.position="absolute";c.style.cursor="hand"}for(h in a)if(a.hasOwnProperty(h))c.style[h]=a[h];a=j.createElement("div");a.id=b.debugID;a.style.display=b.debugMode?"block":"none";if(b.debugMode&&!v(c.id)){try{f=X();f.appendChild(c)}catch(e){throw Error(q("appXHTML"));
