@@ -323,8 +323,17 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
                         <div id="html5-knownissues">
 
 			 <h5>HTML5 Audio: Notes, bugs, quirks and annoyances</h5>
-			
-			
+
+			 <p><b>As of the V2.97.20110306 release of SM2:</b></p>
+
+			 <ul>
+              <li>Testing suggests that auto-play ("auto-annoy?") does work on iOS 4.1, but are aggressively blocked as of iOS 4.2.</li>
+              <li><code>_resetProperties()</code> when setting Audio().src, fix sound1.play() -&gt; sound2.play() -&gt; sound1.play() case on iOS 4.1 not correctly re-assigning original sound URL (related to global audio object.)</li>
+              <li>If no flash is detected, try forcing <code>useHTML5Audio = true</code> (eg. desktop safari on new Macs which don't come with Flash.) Related: flash detection code tweak.</li>
+              <li>isNaN() check for HTML5 loading (saw one under Safari, in testing).</li>
+              <li>Use new Audio(null) vs (), Opera 9.64 expects URL argument; throws WRONG_ARGUMENTS_ERR otherwise. Doesn't implement canPlayType() either, but both are fixed in future releases.</li>
+			 </ul>
+
 			 <p><b>As of the V2.97.20110123 release of SM2:</b></p>
 			
 			 <ul>

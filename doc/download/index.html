@@ -128,9 +128,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p><b>Latest changes:</b> HTML5 audio improvements for desktop + mobile (iOS), 360&deg; UI demo improvements, MovieStar scrubbing. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> HTML5 audio updates, Flash/HTML5 mode detection, IE flash init tweaks, reuse and instance options fixes. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110123.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110123</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110306.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110306</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
 				<p><b>Performance tip:</b> SM2's code size varies from 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 				<p><b>Side reading:</b> <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>, an article written for 24ways.org touching on some of the issues and future promise of audio in HTML.</p>
@@ -156,8 +156,44 @@
 
 			  <ul id="revision-list" class="standard">
 
+			   <li id="sm2-20110306" class="in">
+			    <h3><b>V2.97a.20110306</b> - HTML5 audio updates, Flash/HTML5 mode detection, IE flash init tweaks, reuse and instance options fixes</h3>
+
+				<p>Bug fixes and improvements for HTML5 audio (object reuse on iOS), improved URL comparison. <code>onfinish()</code> -&gt; <code>this.play()</code> instance option fix. IE flash wmode initialization tweak. Flash/NetStream (MP4) unpause()/resume() hack now applies to everyone. If no flash found (eg., new Mac desktops), HTML5 audio will now be tried. Make <code>hasPriority</code> actually work (d'oh!)</p>
+				
+			    <ul class="double">
+			
+			     <li class="in">
+				  <p class="compact">Bug fixes</p>
+				  <ul class="nested compact flat">
+                   <li>HTML5: <code>_resetProperties()</code> when setting Audio().src, fix sound1.play() -&gt; sound2.play() -&gt; sound1.play() case on iOS 4.1 not correctly re-assigning original sound URL (related to global audio object.)</li>
+                   <li>HTML5 audio: If no flash, try forcing <code>useHTML5Audio = true</code> (eg. desktop safari on new Macs which don't come with Flash.) Related: flash detection code tweak.</li>
+                   <li>Improved _iO vs. old _iO URL comparison, rather than .src which gets translated from local paths to file:// etc.</li>
+				   <li>Correctly trash instanceOptions (and _iO) before calling onfinish(), but maintain local copy of onfinish() so it still works. Fix play({onfinish:this.play}) bug where _iO was being incorrectly remembered.</li>
+                   <li>Flash 9/movieStar: <code>setPosition()</code> unpause hack for everyone, not just Webkit (via 8tracks dudes, reported now in Firefox? Should not cause regressions.)</li>
+                   <li>Special wmode tweak for <a href="http://getsatisfaction.com/schillmania/topics/internet_explorer_security_error_preventing_soundmanager2_from_running">reports</a> of SM2 start-up failures, may be admin/non-admin account related, IE 8-only on Windows 7 (possibly Vista, too?) as of late January, 2011.</li>
+                   <li>Apply <code>hasPriority</code> to object/embed, not its style. D'oh. :P</li>
+                   <li>HTML5: use new Audio(null) vs new Audio(), Opera 9.64 expects URL argument; throws WRONG_ARGUMENTS_ERR otherwise. Doesn't implement canPlayType() either, but both are fixed in future releases.</li>
+				  </ul>
+			     </li>
+
+			     <li class="in">
+				  <p class="compact">Miscellaneous</p>
+				  <ul class="nested compact flat">
+                   <li>Don't actually apply new value in <code>setPosition()</code> if a sound has not yet loaded (and if so, hasn't errored out.)</li>
+                   <li>isNaN() check for HTML5 loading (saw one under Safari, in testing).</li>
+                   <li>Added CLSID and codebase attributes for IE <code>&lt;object&gt;</code> (same as used in SWFObject), just to be safe.</li>
+                   <li>Removed some HTML5 debug bits, unused _HTML5_states/codes block.</li>
+				   <li>Flashblock CSS: Correctly hide the SWF via left/top:-9999em when it hits <code>.swf_loaded {}</code>, ie., never blocked in the first place. Minor flashblock regression fixes after .swf_loaded / .swf_unblocked changes with last release.</li>
+				   <li>Ant build script parameter change, now uses .build.properties file (<a href="https://github.com/scottschiller/SoundManager2/pull/8">related pull request</a>)</li>
+			      </ul>
+			     </li>
+
+			    </ul>
+		       </li>
+
 			   <li id="sm2-20110123" class="in">
-			    <h3><b>V2.97a.20110123</b> - HTML5 audio improvements for desktop + mobile (iOS), 360&deg; UI demo tweaks</h3>
+			    <h3><b>V2.97a.20110123</b> - HTML5 audio improvements for desktop + mobile (iOS), 360&deg; UI demo tweaks (<a href="../../download/soundmanagerv297a-20110123.zip" title="Download SoundManager 2" class="norewrite">Download archived version</a>)</h3>
 
 				<p>Tweaks to HTML5 features, "mixed-mode" HTML5 + flash cases, desktop and iOS tweaks. Improved sound re-use and "play-through" on iOS (believed previously working, may have regressed with iOS 4.2.1.) Code clean-up and shuffling of homepage, 360&deg; demo (jslinted and improved functionality), <code>load({options})</code> fix, better handling of broken Safari/Snow Leopard audio case.</p>
 				
