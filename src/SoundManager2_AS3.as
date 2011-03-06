@@ -743,6 +743,7 @@ package {
       s.checkPolicyFile = checkPolicyFile;
       s.lastValues = {
         bytes: 0,
+        duration: 0,
         position: 0,
         loops: loops||1,
         leftPeak: 0,

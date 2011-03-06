@@ -61,6 +61,7 @@ package {
     public var lastValues: Object = {
       bytes: 0,
       position: 0,
+      duration: 0,
       volume: 100,
       pan: 0,
       loops: 1,
