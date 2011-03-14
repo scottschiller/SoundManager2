@@ -956,7 +956,7 @@ function SoundManager(smURL, smID) {
     this.load = function(oOptions) {
       var oS = null;
       if (typeof oOptions !== 'undefined') {
-        _t._iO = _mixin(oOptions);
+        _t._iO = _mixin(oOptions, _t.options);
         _t.instanceOptions = _t._iO;
       } else {
         oOptions = _t.options;
