@@ -2906,7 +2906,7 @@ function SoundManager(smURL, smID) {
           _s.html5[item] = false;
           // assign result to related formats, too
           if (aF[item] && aF[item].related) {
-            for (i<aF[item].related.length; i--;) {
+            for (i = aF[item].related.length; i--;) {
               _s.html5[aF[item].related[i]] = false;
             }
           }
