@@ -1346,7 +1346,7 @@ function SoundManager(smURL, smID) {
       if (!_t.isHTML5) {
         _s.o._setVolume(_t.sID, (_s.muted && !_t.muted) || _t.muted?0:nVol);
       } else if (_t._a) {
-        _t._a.volume = nVol/100;
+        _t._a.volume = Math.max(0, Math.min(1, nVol/100)); // valid range: 0-1
       }
       _t._iO.volume = nVol;
       if (!bInstanceOnly) {
