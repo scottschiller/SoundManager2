@@ -192,6 +192,7 @@ function SoundManager(smURL, smID) {
 
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
   this._overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null);
+  this._http = (!this._overHTTP ? 'http:' : '');
   this.useAltURL = !this._overHTTP; // use altURL if not "online"
   this._global_a = null;
 
@@ -906,6 +907,7 @@ function SoundManager(smURL, smID) {
       // playback faster than download rate, etc.
       this._t._onbufferchange(1);
     })
+
   };
 
   // --- SMSound (sound object) instance ---
@@ -1507,28 +1509,31 @@ function SoundManager(smURL, smID) {
           _dURL = d(_iO.url),
           _oldIO = (_a && _a._t ? _a._t.instanceOptions : null);
       if (_a) {
-        if (_a._t && _oldIO.url === _iO.url) {
+        if (_a._t && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
           return _a; // same url, ignore request
         }
-        _s._wD('setting new URL on existing object: '+_dURL+', old URL: '+d(_oldIO.url));
+        _s._wD('setting new URL on existing object: ' + _dURL + (_t.lastURL ? ', old URL: ' + _t.lastURL : ''));
         /*
          * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
          * Fixes case with devices that can only play one sound at a time
          * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
          */
-        if (_useGlobalHTML5Audio && _a._t.playState && _a._t && _iO.url !== _oldIO.url) {
+        if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
           _a._t.stop();
         }
         _resetProperties(); // new URL, so reset load/playstate and so on
         _a.src = _iO.url;
+        _t.url = _iO.url;
+        _t._lastURL = _iO.url;
+        _a._called_load = false;
       } else {
         _s._wD('creating HTML5 Audio() element with URL: '+_dURL);
         _a = new Audio(_iO.url);
+        _a._called_load = false;
         if (_useGlobalHTML5Audio) {
           _s._global_a = _a;
         }
       }
-      _a._called_load = false;
       _t.isHTML5 = true;
       _t._a = _a; // store a ref on the track
       _a._t = _t; // store a ref on the audio
@@ -1538,6 +1543,7 @@ function SoundManager(smURL, smID) {
         _a.autobuffer = 'auto'; // early HTML5 implementation (non-standard)
         _a.preload = 'auto'; // standard
         _t.load();
+        _a._called_load = true;
       } else {
         _a.autobuffer = false; // early HTML5 implementation (non-standard)
         _a.preload = 'none'; // standard
@@ -2260,7 +2266,7 @@ function SoundManager(smURL, smID) {
       'quality': 'high',
       'allowScriptAccess': _s.allowScriptAccess,
       'bgcolor': _s.bgColor,
-      'pluginspage': 'http://www.macromedia.com/go/getflashplayer',
+      'pluginspage': _s._http+'//www.macromedia.com/go/getflashplayer',
       'type': 'application/x-shockwave-flash',
       'wmode': _s.wmode,
       'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
@@ -2277,7 +2283,7 @@ function SoundManager(smURL, smID) {
     if (_isIE) {
       // IE is "special".
       oMovie = _doc.createElement('div');
-      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '</object>';
+      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="'+_s._http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '</object>';
     } else {
       oMovie = _doc.createElement('embed');
       for (tmp in oEmbed) {
