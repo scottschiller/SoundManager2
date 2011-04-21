@@ -1334,6 +1334,7 @@ function SoundManager(smURL, smID) {
       _t._iO.pan = nPan;
       if (!bInstanceOnly) {
         _t.pan = nPan;
+        _t.options.pan = nPan;
       }
       return _t;
     };
@@ -1353,6 +1354,7 @@ function SoundManager(smURL, smID) {
       _t._iO.volume = nVol;
       if (!bInstanceOnly) {
         _t.volume = nVol;
+        _t.options.volume = nVol;
       }
       return _t;
     };
@@ -1512,7 +1514,7 @@ function SoundManager(smURL, smID) {
         if (_a._t && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
           return _a; // same url, ignore request
         }
-        _s._wD('setting new URL on existing object: ' + _dURL + (_t.lastURL ? ', old URL: ' + _t.lastURL : ''));
+        _s._wD('setting new URL on existing object: ' + _dURL + (_t._lastURL ? ', old URL: ' + _t._lastURL : ''));
         /*
          * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
          * Fixes case with devices that can only play one sound at a time
