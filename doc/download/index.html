@@ -128,10 +128,10 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p><b>Latest changes:</b> HTML5 audio updates, Flash/HTML5 mode detection, IE flash init tweaks, reuse and instance options fixes. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> HTML5 bulletproofing, <code>Audio(null)</code> tweaks, options inheritance fixes and build process improvements. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110306.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110306</a></p>
-				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">http://github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110424.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110424</a></p>
+				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
 				<p><b>Performance tip:</b> SM2's code size varies from 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 				<p><b>Side reading:</b> <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>, an article written for 24ways.org touching on some of the issues and future promise of audio in HTML.</p>
 			</div>
@@ -150,14 +150,60 @@
 				
 			  <div class="f-block c-revision-history">
 
-			  <h3 id="revision-history">Revision History</h3>
+			  	<h3 id="revision-history">Revision History</h3>
 			
-			  <p>A changelog of sorts.</p>
+			  	<p>A changelog of sorts.</p>
 
-			  <ul id="revision-list" class="standard">
+			  	<ul id="revision-list" class="standard">
+
+			   		<li id="sm2-20110424" class="in">
+
+			   			<h3><b>V2.97a.20110424</b> - Minor HTML5 tweaks, option inheritance fixes, improved build.xml file</h3>
+
+			    			<p>HTML5 bulletproofing, <code>Audio(null)</code> argument fix for iOS + Opera, <code>load()</code> vs. <code>createSound()</code> and <code>setVolume()</code>/<code>setPan()</code> options/inheritance correction</p>
+				
+			    			<ul class="double">
+			
+			    				<li class="in">
+
+				  				<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+				               				<li>HTML5: <code>new Audio(null)</code> fix for differences between iOS (which would try to load <code>null</code>) and Opera 9.64, which would throw a WRONG_ARGUMENTS_ERR if <code>null</code> was not passed.</li>
+				               				<li>HTML5: Restrict internal volume value range to 0..1, avoid DOM exceptions.</li>
+				               				<li>HTML5: <code>load{url:x})</code> improvements for desktop, better old vs. new URL comparison.</li>
+				               				<li>Flash <code>object</code>/<code>embed</code> <code>pluginspage</code>/<code>codebase</code> attribute now uses http:// when being used from file:// (offline), and http/https-agnostic //macromedia.com syntax to avoid SSL mixed-content warnings.</li>
+				               				<li>Fix <code>setVolume()</code> / <code>setPan()</code> to properly update <code>SMSound.options</code> (when not "instance-only"), so settings are retained for future <code>play()</code> calls. Bug was that original volume/pan were incorrectly restored after the first instance completed.</li>
+				               			</ul>
+				               		</li>
+
+				               		<li class="in">
+
+				               			<p class="compact">Miscellaneous</p>
+
+				               			<ul class="nested compact flat">
+				               				<li>
+<p class="compact">New and improved (nearly platform-independent) build.xml file, thanks to github user "dolmen". A <code>.build.properties</code> file is now needed, defining "mxmlc", "mtasc", and "closure-compiler.jar" paths. e.g.:</p>
+<pre class="compact block"><code><span>&lt;!-- .build.properties file in SM2 root --&gt;</span>
+mxmlc=/Applications/flexsdk/bin/mxmlc
+mtasc=/Applications/mtasc/mtasc
+closure-compiler.jar=${user.home}/compiler.jar</code></pre>
+
+<p>Running <code>ant</code> from the SM2 root will build the no-debug and minified versions of the script, as well as the SWF files.</p>
+
+									</li>
+
+				               			</ul>
+				               		</li>
+
+				               	</ul>
+					</li>
+
+
+<!-- 20110306 -->
 
 			   <li id="sm2-20110306" class="in">
-			    <h3><b>V2.97a.20110306</b> - HTML5 audio updates, Flash/HTML5 mode detection, IE flash init tweaks, reuse and instance options fixes</h3>
+			    <h3><b>V2.97a.20110306</b> - HTML5 audio updates, Flash/HTML5 mode detection, IE flash init tweaks, reuse and instance options fixes (<a href="../../download/soundmanagerv297a-20110306.zip" title="Download SoundManager 2" class="norewrite">Download archived version</a>)</h3>
 
 				<p>Bug fixes and improvements for HTML5 audio (object reuse on iOS), improved URL comparison. <code>onfinish()</code> -&gt; <code>this.play()</code> instance option fix. IE flash wmode initialization tweak. Flash/NetStream (MP4) unpause()/resume() hack now applies to everyone. If no flash found (eg., new Mac desktops), HTML5 audio will now be tried. Make <code>hasPriority</code> actually work (d'oh!)</p>
 				
