@@ -60,8 +60,6 @@ function PagePlayer() {
     sPaused: 'sm2_paused'
   };
 
-  sm.debugMode = (window.location.href.toString().match(/debug=1/i)?true:false); // enable with #debug=1 for example
-
   this.sounds = [];
   this.soundsByObject = [];
   this.lastSound = null;
