@@ -833,7 +833,7 @@ function ThreeSixtyPlayer() {
     }
 
     // draw spectrum, if applicable
-    if (this.instanceOptions.useWaveformData && hasRealCanvas) { // IE <9 can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
+    if ((this.instanceOptions.useWaveformData || this.instanceOptions.useEQData) && hasRealCanvas) { // IE <9 can render maybe 3 or 4 FPS when including the wave/EQ, so don't bother.
       self.updateWaveform(this);
     }
 
