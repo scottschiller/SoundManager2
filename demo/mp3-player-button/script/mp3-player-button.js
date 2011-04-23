@@ -29,7 +29,7 @@ function BasicMP3Player() {
 
   this.config = {
     playNext: false, // stop after one sound, or play through list until end
-	autoPlay: false  // start playing the first sound right away
+    autoPlay: false  // start playing the first sound right away
   }
 
   this.css = {
@@ -52,7 +52,7 @@ function BasicMP3Player() {
   }
 
   this.classContains = function(o,cStr) {
-	return (typeof(o.className)!='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false);
+    return (typeof(o.className)!='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false);
   }
 
   this.addClass = function(o,cStr) {
@@ -139,8 +139,8 @@ function BasicMP3Player() {
   this.handleClick = function(e) {
     // a sound link was clicked
     if (typeof e.button != 'undefined' && e.button>1) {
-	  // ignore right-click
-	  return true;
+      // ignore right-click
+      return true;
     }
     var o = self.getTheDamnLink(e);
     if (o.nodeName.toLowerCase() != 'a') {
@@ -188,8 +188,8 @@ function BasicMP3Player() {
       self.sounds.push(thisSound);
       if (self.lastSound) {
         // stop last sound
-	    self.stopSound(self.lastSound);
-	  }
+        self.stopSound(self.lastSound);
+      }
       thisSound.play();
     }
 
@@ -223,9 +223,9 @@ function BasicMP3Player() {
     }
     if (foundItems>0) {
       self.addEventHandler(document,'click',self.handleClick);
-	  if (self.config.autoPlay) {
-	    self.handleClick({target:self.links[0],preventDefault:function(){}});
-	  }
+      if (self.config.autoPlay) {
+        self.handleClick({target:self.links[0],preventDefault:function(){}});
+      }
     }
     sm._writeDebug('basicMP3Player.init(): Found '+foundItems+' relevant items.');
   }
