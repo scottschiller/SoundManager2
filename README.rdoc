@@ -48,9 +48,6 @@ A few nifty sites that have implemented SM2 for driving audio:
 
 http://www.schillmania.com/projects/soundmanager2/
 
-Project home, documentation, live demos etc.:
-http://www.schillmania.com/projects/soundmanager2/
-
 == Versioning / Development Notes
 
 Releases are versioned by date, e.g., V2.97a.20110424 and are tagged as such.
