@@ -1366,6 +1366,14 @@ h4 .scratched-out {
  overflow:hidden;
  margin:1em 1em 0.5em 1em;
  padding:0px;
+ -moz-border-radius: 0px;
+ -webkit-border-radius: 0px;
+ border-radius: 0px;
+ background: transparent url(../demo/_image/logo-sprite.png) no-repeat 0px 0px;
+}
+
+.inthewild a:hover {
+ background-color: transparent;
 }
 
 .inthewild a:first-child {
@@ -1377,51 +1385,86 @@ h4 .scratched-out {
  text-indent:-9999em;
 }
 
-#favtape:hover {
- background:#ff0066;
- border-color:#ff0066;
- color:#fff;
+#eight-tracks {
+ background-position: 0 0;
+ width: 64px;
+ height: 20px;
+}
+ 
+#audiogalaxy {
+ width: 100px;
+ height: 22px;
+ background-position: 0 -24px;
 }
 
-#soundcloud {
- width:83px;
- height:58px;
- background:transparent url(../demo/_image/soundcloud-thecloudplayer-logo.png) no-repeat 0px -59px;
- margin-right:3px;
+#audiogalaxy:hover {
+ background-position: 0 -46px;
+}
+ 
+#discogs {
+ background-position: 0 -72px;
+ width: 55px;
+ height: 20px;
 }
 
-#soundcloud:hover {
- background-position:0px 0px;
+#hypem {
+ background-position: 0 -96px;
+ width: 80px;
+ height: 38px;
 }
 
+#hypem:hover {
+ background-position: 0 -134px;
+}
+ 
 #lastfm {
- width:80px;
- height:28px;
- background:transparent url(../demo/_image/lastfm.png) no-repeat 0px -28px;
+ background-position: 0 -204px;
+ width: 80px;
+ height: 28px;
 }
 
 #lastfm:hover {
- background-position:0px 0px;
-}
+ background-position: 0 -176px;
+} 
 
 #mixcrate {
- width:80px;
- height:16px;
- background:transparent url(../demo/_image/mixcrate.png) no-repeat 0px 0px;
+ background-position: 0 -236px;
+ width: 80px;
+ height: 16px;
 }
 
 #mixcrate:hover {
- background-position:0px -16px;
+ background-position: 0 -252px;
+}
+
+#nyancat {
+ background-position: 0 -272px;
+ width: 64px;
+ height: 40px;
+}
+
+#nyancat:hover {
+ background-position: 0 -312px;
 }
 
 #opera {
- width:79px;
- height:32px;
- background:transparent url(../demo/_image/opera.png) no-repeat 0px 0px;
+ background-position: 0 -356px;
+ width: 79px;
+ height: 32px;
 }
 
 #opera:hover {
- background-position:0px -32px;
+ background-position: 0 -388px;
+}
+ 
+#soundcloud {
+ background-position: 0 -483px;
+ width: 83px;
+ height: 58px;
+} 
+
+#soundcloud:hover {
+ background-position: 0 -424px;
 }
 
 /* homepage-specific demo shiz */
