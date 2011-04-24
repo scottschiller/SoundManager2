@@ -413,6 +413,7 @@ function ThreeSixtyPlayer() {
     thisSound = self.getSoundByURL(soundURL);
 
     if (thisSound) {
+
       // already exists
       if (thisSound === self.lastSound) {
         // and was playing (or paused)
@@ -425,6 +426,7 @@ function ThreeSixtyPlayer() {
           self.stopSound(self.lastSound);
         }
       }
+
     } else {
 
       // append some dom shiz, make noise
@@ -595,7 +597,9 @@ function ThreeSixtyPlayer() {
 
     soundManager._writeDebug('stopSound: '+oSound.sID);
     soundManager.stop(oSound.sID);
-    soundManager.unload(oSound.sID);
+    if (!isTouchDevice) { // iOS 4.2+ security blocks onfinish() -> playNext() if we set a .src in-between(?)
+      soundManager.unload(oSound.sID);
+    }
 
   };
 
