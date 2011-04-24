@@ -172,6 +172,7 @@
 				               				<li>HTML5: <code>new Audio(null)</code> fix for differences between iOS (which would try to load <code>null</code>) and Opera 9.64, which would throw a WRONG_ARGUMENTS_ERR if <code>null</code> was not passed.</li>
 				               				<li>HTML5: Restrict internal volume value range to 0..1, avoid DOM exceptions.</li>
 				               				<li>HTML5: <code>load{url:x})</code> improvements for desktop, better old vs. new URL comparison.</li>
+											<li>HTML5, iOS 4.2/4.3+, SM2 Muxtape/inline/link demos: <code>onfinish()</code>-&gt;<code>unload()</code>-&gt;<code>playNext()</code> was breaking on newer iOS versions, "play through" affected. Removing <code>unload()</code> for iOS fixed issue.</li>
 				               				<li>Flash <code>object</code>/<code>embed</code> <code>pluginspage</code>/<code>codebase</code> attribute now uses http:// when being used from file:// (offline), and http/https-agnostic //macromedia.com syntax to avoid SSL mixed-content warnings.</li>
 				               				<li>Fix <code>setVolume()</code> / <code>setPan()</code> to properly update <code>SMSound.options</code> (when not "instance-only"), so settings are retained for future <code>play()</code> calls. Bug was that original volume/pan were incorrectly restored after the first instance completed.</li>
 				               			</ul>
