@@ -14,10 +14,15 @@
 
 */
 
+/*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
+/*global document, window, soundManager, navigator */
+
 function BasicMP3Player() {
-  var self = this;
-  var pl = this;
-  var sm = soundManager; // soundManager instance
+  var self = this,
+      pl = this,
+      sm = soundManager, // soundManager instance
+      isTouchDevice = (navigator.userAgent.match(/ipad|iphone/i)),
+      isIE = (navigator.userAgent.match(/msie/i));
   this.excludeClass = 'button-exclude'; // CSS class for ignoring MP3 links
   this.links = [];
   this.sounds = [];
@@ -25,12 +30,11 @@ function BasicMP3Player() {
   this.indexByURL = [];
   this.lastSound = null;
   this.soundCount = 0;
-  var isIE = (navigator.userAgent.match(/msie/i));
 
   this.config = {
     playNext: false, // stop after one sound, or play through list until end
     autoPlay: false  // start playing the first sound right away
-  }
+  };
 
   this.css = {
     // CSS class names appended to link during various states
@@ -38,36 +42,40 @@ function BasicMP3Player() {
     sLoading: 'sm2_loading',
     sPlaying: 'sm2_playing',
     sPaused: 'sm2_paused'
-  }
+  };
 
   this.includeClass = this.css.sDefault;
 
 
   this.addEventHandler = function(o,evtName,evtHandler) {
-    typeof(attachEvent)=='undefined'?o.addEventListener(evtName,evtHandler,false):o.attachEvent('on'+evtName,evtHandler);
-  }
+    return (typeof(window.attachEvent)==='undefined' ? o.addEventListener(evtName,evtHandler,false) : o.attachEvent('on'+evtName,evtHandler));
+  };
 
   this.removeEventHandler = function(o,evtName,evtHandler) {
-    typeof(attachEvent)=='undefined'?o.removeEventListener(evtName,evtHandler,false):o.detachEvent('on'+evtName,evtHandler);
-  }
+    return (typeof(window.attachEvent)==='undefined' ? o.removeEventListener(evtName,evtHandler,false) : o.detachEvent('on'+evtName,evtHandler));
+  };
 
   this.classContains = function(o,cStr) {
-    return (typeof(o.className)!='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false);
-  }
+    return (typeof(o.className)!=='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false);
+  };
 
   this.addClass = function(o,cStr) {
-    if (!o || !cStr || self.classContains(o,cStr)) return false;
+    if (!o || !cStr || self.classContains(o,cStr)) {
+      return false;
+    }
     o.className = (o.className?o.className+' ':'')+cStr;
-  }
+  };
 
   this.removeClass = function(o,cStr) {
-    if (!o || !cStr || !self.classContains(o,cStr)) return false;
+    if (!o || !cStr || !self.classContains(o,cStr)) {
+      return false;
+    }
     o.className = o.className.replace(new RegExp('( '+cStr+')|('+cStr+')','g'),'');
-  }
+  };
 
   this.getSoundByURL = function(sURL) {
-    return (typeof self.soundsByURL[sURL] != 'undefined'?self.soundsByURL[sURL]:null);
-  }
+    return (typeof self.soundsByURL[sURL] !== 'undefined' ? self.soundsByURL[sURL] : null);
+  };
 
   this.isChildOfNode = function(o,sNodeName) {
     if (!o || !o.parentNode) {
@@ -76,9 +84,9 @@ function BasicMP3Player() {
     sNodeName = sNodeName.toLowerCase();
     do {
       o = o.parentNode;
-    } while (o && o.parentNode && o.nodeName.toLowerCase() != sNodeName);
-    return (o.nodeName.toLowerCase() == sNodeName?o:null);
-  }
+    } while (o && o.parentNode && o.nodeName.toLowerCase() !== sNodeName);
+    return (o.nodeName.toLowerCase() === sNodeName ? o : null);
+  };
 
   this.events = {
 
@@ -118,36 +126,41 @@ function BasicMP3Player() {
       }
     }
 
-  }
+  };
 
   this.stopEvent = function(e) {
-   if (typeof e != 'undefined' && typeof e.preventDefault != 'undefined') {
+   if (typeof e !== 'undefined' && typeof e.preventDefault !== 'undefined') {
       e.preventDefault();
-    } else if (typeof event != 'undefined' && typeof event.returnValue != 'undefined') {
-      event.returnValue = false;
+    } else if (typeof window.event !== 'undefined' && typeof window.event.returnValue !== 'undefined') {
+      window.event.returnValue = false;
     }
     return false;
-  }
+  };
 
-  this.getTheDamnLink = (isIE)?function(e) {
+  this.getTheDamnLink = (isIE) ? function(e) {
     // I really didn't want to have to do this.
-    return (e && e.target?e.target:window.event.srcElement);
-  }:function(e) {
+    return (e && e.target ? e.target : window.event.srcElement);
+  } : function(e) {
     return e.target;
-  }
+  };
 
   this.handleClick = function(e) {
     // a sound link was clicked
-    if (typeof e.button != 'undefined' && e.button>1) {
+    if (typeof e.button !== 'undefined' && e.button>1) {
       // ignore right-click
       return true;
     }
-    var o = self.getTheDamnLink(e);
-    if (o.nodeName.toLowerCase() != 'a') {
+    var o = self.getTheDamnLink(e),
+        sURL,
+        soundURL,
+        thisSound;
+    if (o.nodeName.toLowerCase() !== 'a') {
       o = self.isChildOfNode(o,'a');
-      if (!o) return true;
+      if (!o) {
+        return true;
+      }
     }
-    var sURL = o.getAttribute('href');
+    sURL = o.getAttribute('href');
     if (!o.href || !soundManager.canPlayLink(o) || self.classContains(o,self.excludeClass)) {
       return true; // pass-thru for non-MP3/non-links
     }
@@ -155,18 +168,20 @@ function BasicMP3Player() {
       return true;
     }
     sm._writeDebug('handleClick()');
-    var soundURL = (o.href);
-    var thisSound = self.getSoundByURL(soundURL);
+    soundURL = (o.href);
+    thisSound = self.getSoundByURL(soundURL);
     if (thisSound) {
       // already exists
-      if (thisSound == self.lastSound) {
+      if (thisSound === self.lastSound) {
         // and was playing (or paused)
         thisSound.togglePause();
       } else {
         // different sound
         thisSound.togglePause(); // start playing current
         sm._writeDebug('sound different than last sound: '+self.lastSound.sID);
-        if (self.lastSound) self.stopSound(self.lastSound);
+        if (self.lastSound) {
+          self.stopSound(self.lastSound);
+        }
       }
     } else {
       // create sound
@@ -195,25 +210,28 @@ function BasicMP3Player() {
 
     self.lastSound = thisSound; // reference for next call
 
-    if (typeof e != 'undefined' && typeof e.preventDefault != 'undefined') {
+    if (typeof e !== 'undefined' && typeof e.preventDefault !== 'undefined') {
       e.preventDefault();
     } else {
-      event.returnValue = false;
+      window.event.returnValue = false;
     }
     return false;
-  }
+  };
 
   this.stopSound = function(oSound) {
     soundManager.stop(oSound.sID);
-    soundManager.unload(oSound.sID);
-  }
+    if (!isTouchDevice) { // iOS 4.2+ security blocks onfinish() -> playNext() if we set a .src in-between(?)
+      soundManager.unload(oSound.sID);
+    }
+  };
 
   this.init = function() {
     sm._writeDebug('basicMP3Player.init()');
-    var oLinks = document.getElementsByTagName('a');
+    var i, j,
+        foundItems = 0,
+        oLinks = document.getElementsByTagName('a');
     // grab all links, look for .mp3
-    var foundItems = 0;
-    for (var i=0, j=oLinks.length; i<j; i++) {
+    for (i=0, j=oLinks.length; i<j; i++) {
       if (self.classContains(oLinks[i],self.css.sDefault) && !self.classContains(oLinks[i],self.excludeClass)) {
         // self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration - good if you're lazy and want ALL MP3/playable links to do this
         self.links[foundItems] = (oLinks[i]);
@@ -228,7 +246,7 @@ function BasicMP3Player() {
       }
     }
     sm._writeDebug('basicMP3Player.init(): Found '+foundItems+' relevant items.');
-  }
+  };
 
   this.init();
 
