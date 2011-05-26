@@ -38,7 +38,7 @@ function SoundManager(smURL, smID) {
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = false;        // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio().canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
-  this.useGlobalHTML5Audio = true;   // (experimental) if true, re-use single HTML5 audio object across all sounds. Enabled by default on mobile devices/iOS.
+  this.useGlobalHTML5Audio = true;   // (experimental) if true, re-use single HTML5 audio object across all sounds. Force-enabled on mobile devices/iOS.
   this.requireFlash = false;         // (experimental) if true, prevents "HTML5-only" mode when flash present. Allows flash to handle RTMP/serverURL, but HTML5 for other cases
 
   this.audioFormats = {
@@ -200,9 +200,9 @@ function SoundManager(smURL, smID) {
     // during HTML5 beta period (off by default), may as well force it on Apple + Palm, flash support unlikely
     _s.useHTML5Audio = true;
     _s.ignoreFlash = true;
-    if (_s.useGlobalHTML5Audio) {
-      _useGlobalHTML5Audio = true;
-    }
+    // by default, use global feature. iOS onfinish() -> next may fail otherwise.
+    _s.useGlobalHTML5Audio = true;
+    _useGlobalHTML5Audio = true;
   }
 
   if (_is_pre || this._use_maybe) {
@@ -2908,7 +2908,6 @@ function SoundManager(smURL, smID) {
     var aF = _s.audioFormats, i, item;
     for (item in aF) {
       if (aF.hasOwnProperty(item)) {
-        // special case: "bad" Safari can fall back to flash for MP3/MP4
         if (item === 'mp3' || item === 'mp4') {
           //_s._wD(_sm+': Using flash fallback for '+item+' format');
           _s.html5[item] = false;
