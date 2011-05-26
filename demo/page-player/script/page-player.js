@@ -250,6 +250,37 @@ function PagePlayer() {
     return (typeof self.soundsByObject[o.id] !== 'undefined'?self.soundsByObject[o.id]:null);
   };
 
+  this.getPreviousItem = function(o) {
+    // given <li> playlist item, find previous <li> and then <a>
+    if (o.previousElementSibling) {
+      o = o.previousElementSibling;
+    } else {
+      o = o.previousSibling; // move from original node..
+      while (o && o.previousSibling && o.previousSibling.nodeType !== 1) {
+        o = o.previousSibling;
+      }
+    }
+    if (o.nodeName.toLowerCase() !== 'li') {
+      return null;
+    } else {
+      return o.getElementsByTagName('a')[0];
+    }
+  };
+
+  this.playPrevious = function(oSound) {
+    if (!oSound) {
+      oSound = self.lastSound;
+    }
+    if (!oSound) {
+      return false;
+    }
+    var previousItem = self.getPreviousItem(oSound._data.oLI);
+    if (previousItem) {
+      pl.handleClick({target:previousItem}); // fake a click event - aren't we sneaky. ;)
+    }
+    return previousItem;
+  };
+
   this.getNextItem = function(o) {
     // given <li> playlist item, find next <li> and then <a>
     if (o.nextElementSibling) {
