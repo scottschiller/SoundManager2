@@ -588,7 +588,7 @@ function SoundManager(smURL, smID) {
     var sType = 'onready';
     if (oMethod && oMethod instanceof Function) {
       if (_didInit) {
-        //_wDS('queue', sType);
+        //_wDS(_str('queue', sType));
       }
       if (!oScope) {
         oScope = _win;
@@ -605,7 +605,7 @@ function SoundManager(smURL, smID) {
     var sType = 'ontimeout';
     if (oMethod && oMethod instanceof Function) {
       if (_didInit) {
-        //_wDS('queue', sType);
+        //_wDS(_str('queue', sType));
       }
       if (!oScope) {
         oScope = _win;
