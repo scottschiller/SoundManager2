@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20110424
+ * V2.97a.20110424+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -110,7 +110,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20110424';
+  this.versionNumber = 'V2.97a.20110424+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -605,7 +605,7 @@ function SoundManager(smURL, smID) {
     var sType = 'ontimeout';
     if (oMethod && oMethod instanceof Function) {
       if (_didInit) {
-        //_wDS('queue');
+        //_wDS('queue', sType);
       }
       if (!oScope) {
         oScope = _win;
