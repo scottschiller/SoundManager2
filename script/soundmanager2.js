@@ -588,7 +588,7 @@ function SoundManager(smURL, smID) {
     var sType = 'onready';
     if (oMethod && oMethod instanceof Function) {
       if (_didInit) {
-        _wDS(_str('queue', sType));
+        _s._wD(_str('queue', sType));
       }
       if (!oScope) {
         oScope = _win;
@@ -605,7 +605,7 @@ function SoundManager(smURL, smID) {
     var sType = 'ontimeout';
     if (oMethod && oMethod instanceof Function) {
       if (_didInit) {
-        _wDS(_str('queue', sType));
+        _s._wD(_str('queue', sType));
       }
       if (!oScope) {
         oScope = _win;
@@ -2661,6 +2661,10 @@ function SoundManager(smURL, smID) {
     }
     if (!_didInit && oOptions && !oOptions.ignoreInit) {
       // not ready yet.
+      return false;
+    }
+    if (oOptions.type === 'ontimeout' && _s.ok()) {
+      // invalid case
       return false;
     }
     var status = {
