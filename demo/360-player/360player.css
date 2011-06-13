@@ -102,6 +102,7 @@
  height:100%;
  z-index:2;
  display:none;
+ background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==); /* old-skool bug: IE 9 won't catch mouse events otherwise. /smash */
 }
 
 .ui360 .sm2-360btn {
