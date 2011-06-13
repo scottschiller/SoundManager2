@@ -688,11 +688,11 @@ function setBackgroundRingColor(sColor) {
 }
 
 function addEvent(o,evtName,evtHandler) {
-  typeof(attachEvent)=='undefined'?o.addEventListener(evtName,evtHandler,false):o.attachEvent('on'+evtName,evtHandler);
+  typeof window.addEventListener !== 'undefined' ? o.addEventListener(evtName,evtHandler,false) : o.attachEvent('on'+evtName,evtHandler);
 }
 
 function removeEvent(o,evtName,evtHandler) {
-  typeof(attachEvent)=='undefined'?o.removeEventListener(evtName,evtHandler,false):o.detachEvent('on'+evtName,evtHandler);
+  typeof window.removeEventListener !== 'undefined' ? o.removeEventListener(evtName,evtHandler,false) : o.detachEvent('on'+evtName,evtHandler);
 }
 
 if (window.location.toString().match(/#customize/i)) {
