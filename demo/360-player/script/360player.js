@@ -113,13 +113,17 @@ function ThreeSixtyPlayer() {
 
   };
 
-  this.addEventHandler = function(o,evtName,evtHandler) {
-    return typeof(window.attachEvent)==='undefined'?o.addEventListener(evtName,evtHandler,false):o.attachEvent('on'+evtName,evtHandler);
-  };
+  this.addEventHandler = (typeof window.addEventListener !== 'undefined' ? function(o, evtName, evtHandler) {
+    return o.addEventListener(evtName,evtHandler,false);
+  } : function(o, evtName, evtHandler) {
+    o.attachEvent('on'+evtName,evtHandler);
+  });
 
-  this.removeEventHandler = function(o,evtName,evtHandler) {
-    return typeof(window.attachEvent)==='undefined'?o.removeEventListener(evtName,evtHandler,false):o.detachEvent('on'+evtName,evtHandler);
-  };
+  this.removeEventHandler = (typeof window.removeEventListener !== 'undefined' ? function(o, evtName, evtHandler) {
+    return o.removeEventListener(evtName,evtHandler,false);
+  } : function(o, evtName, evtHandler) {
+    return o.detachEvent('on'+evtName,evtHandler);
+  });
 
   this.hasClass = function(o,cStr) {
     return typeof(o.className)!=='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false;
@@ -764,7 +768,6 @@ function ThreeSixtyPlayer() {
     };
 
   };
-
 
   this.deg2rad = function(nDeg) {
     return (nDeg * Math.PI/180);
