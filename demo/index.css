@@ -1427,16 +1427,6 @@ h4 .scratched-out {
  background-position: 0 -176px;
 } 
 
-#mixcrate {
- background-position: 0 -236px;
- width: 80px;
- height: 16px;
-}
-
-#mixcrate:hover {
- background-position: 0 -252px;
-}
-
 #nyancat {
  background-position: 0 -272px;
  width: 64px;
@@ -1465,6 +1455,17 @@ h4 .scratched-out {
 
 #soundcloud:hover {
  background-position: 0 -424px;
+}
+
+#turntable-dot-fm {
+ background-position: 0 -232px;
+ width: 100px;
+ height: 20px;
+ margin-top: 0.45em;
+}
+
+#turntable-dot-fm:hover {
+ background-position: 0 -252px;
 }
 
 /* homepage-specific demo shiz */
