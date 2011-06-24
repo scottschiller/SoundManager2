@@ -765,11 +765,15 @@ function SoundManager(smURL, smID) {
 
     // enough has loaded to play
     canplay: _html5_event(function(e) {
+      if (this._t._html5_canplay) {
+        // this event has already fired. ignore.
+        return true;
+      }
+      this._t._html5_canplay = true;
       _s._wD(_h5+'canplay: '+this._t.sID+', '+this._t.url);
       this._t._onbufferchange(0);
       var position1K = (!isNaN(this._t.position)?this._t.position/1000:null);
       // set the position if position was set before the sound loaded
-      this._t._html5_canplay = true;
       if (this._t.position && this.currentTime !== position1K) {
         _s._wD(_h5+'canplay: setting position to '+position1K+'');
         try {
@@ -987,6 +991,7 @@ function SoundManager(smURL, smID) {
         oS = _t._setup_html5(_t._iO);
         if (!oS._called_load) {
           _s._wD(_h5+'load: '+_t.sID);
+          _t._html5_canplay = false;
           oS.load();
           oS._called_load = true;
           if (_t._iO.autoPlay) {
@@ -1064,7 +1069,7 @@ function SoundManager(smURL, smID) {
     };
 
     this.play = function(oOptions, _updatePlayState) {
-      var fN = 'SMSound.play(): ', allowMulti;
+      var fN = 'SMSound.play(): ', allowMulti, a;
       _updatePlayState = _updatePlayState === undefined ? true : _updatePlayState; // default true
       if (!oOptions) {
         oOptions = {};
@@ -1092,10 +1097,6 @@ function SoundManager(smURL, smID) {
           return _t;
         } else {
           _s._wD(fN + '"' + _t.sID + '" already playing (multi-shot)', 1);
-          if (_t.isHTML5) {
-            // TODO: BUG?
-            _t.setPosition(_t._iO.position);
-          }
         }
       }
       if (!_t.loaded) {
@@ -1147,7 +1148,9 @@ function SoundManager(smURL, smID) {
           _s.o._start(_t.sID, _t._iO.loops || 1, (_fV === 9?_t.position:_t.position / 1000));
         } else {
           _start_html5_timer();
-          _t._setup_html5().play();
+          a = _t._setup_html5();
+          _t.setPosition(_t.position);
+          a.play();
         }
       }
       return _t;
@@ -1238,6 +1241,10 @@ function SoundManager(smURL, smID) {
             _s._wD('setPosition('+position1K+'): setting position');
             try {
               _t._a.currentTime = position1K;
+              if (_t.playState === 0 || _t.paused) {
+                // allow seek without auto-play/resume
+                _t._a.pause();
+              }
             } catch(e) {
               _s._wD('setPosition('+position1K+'): setting position failed: '+e.message, 2);
             }
