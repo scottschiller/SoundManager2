@@ -1,0 +1,22 @@
+<html>
+<head>
+<title>XBM image test</title>
+</head>
+
+<body>
+	
+<h1>XBM (X-Bitmap) Support Test</h1>
+
+<p>Firefox 3.6 dropped support for XBM images citing lack of use (and a security hole or two), so SoundManager 2 has moved to using canvas for rendering favicon images on-the-fly.</p>
+
+<p>
+XBM with data URI (may be broken image, invalid etc.):<br>
+<img src="data:image/x-bitmap,#define%20img14x14_width%2016%0A#define%20img14x14_height%2016%0Astatic%20char%20img14x14_bits%5B%5D%20=%20%7B%0A0x00,0x00,0x00,0x00,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe,0x7f,0xfe%7D;" title="This should be an XBM image" />
+</p>
+
+<p>See the SoundManager 2 demo with <a href="http://www.schillmania.com/projects/soundmanager2/demo/page-player/#experimental">experimental</a> favicon animation feature enabled, and the <a href="http://www.flickr.com/photos/schill/4143933545/">related screenshot</a> showing the different states.</p>
+
+<p>XBM (X-Bitmap) is neat in that it's an ASCII, C-style declarative image format, and is quite old. See <a href="http://en.wikipedia.org/wiki/XBM">XBM on Wikipedia</a> for more.</p>
+
+</body>
+</html>
