@@ -39,7 +39,8 @@ function SoundManager(smURL, smID) {
   this.useHTML5Audio = false;        // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^probably$/i;    // HTML5 Audio().canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
   this.useGlobalHTML5Audio = true;   // (experimental) if true, re-use single HTML5 audio object across all sounds. Force-enabled on mobile devices/iOS.
-  this.requireFlash = false;         // (experimental) if true, prevents "HTML5-only" mode when flash present. Allows flash to handle RTMP/serverURL, but HTML5 for other cases
+  this.preferFlash = true;           // (experimental) if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
+  this.requireFlash = false;         // (experimental) if true, prevents "HTML5-only" mode when flash present. Allows flash to handle RTMP/serverURL, but HTML5 for other cases unless flash is preferred
 
   this.audioFormats = {
     // determines HTML5 support, flash requirements
@@ -180,6 +181,10 @@ function SoundManager(smURL, smID) {
     // mp4: boolean
     'usingFlash': null // set if/when flash fallback is needed
   };
+  this.flash = { // format support
+    // mp3: boolean
+    // mp4: boolean
+  };
   this.ignoreFlash = false; // used for special cases (eg. iPad/iPhone/palm OS?)
 
   // --- private SM2 internals ---
@@ -188,7 +193,7 @@ function SoundManager(smURL, smID) {
   _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix,
   _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus;
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i;
 
   this.html5Only = false; // determined at init time
   this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
@@ -1913,6 +1918,9 @@ function SoundManager(smURL, smID) {
       return false;
     }
     var result, mime, offset, fileExt, item, aF = _s.audioFormats;
+    function supportCheck() {
+      return (_s.html5[fileExt] && (typeof _s.flash[fileExt] === 'undefined' || !_s.flash[fileExt]));
+    }
     if (!_html5Ext) {
       _html5Ext = [];
       for (item in aF) {
@@ -1940,11 +1948,11 @@ function SoundManager(smURL, smID) {
     }
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
       // result known
-      return _s.html5[fileExt];
+      return supportCheck();
     } else {
       if (!mime) {
         if (fileExt && _s.html5[fileExt]) {
-          return _s.html5[fileExt];
+          return supportCheck();
         } else {
           // best-case guess, audio/whatever-dot-filename-format-you're-playing
           mime = 'audio/'+fileExt;
@@ -1953,7 +1961,7 @@ function SoundManager(smURL, smID) {
       result = _s.html5.canPlayType(mime);
       _s.html5[fileExt] = result;
       // //_s._wD('canPlayType, found result: '+result);
-      return result;
+      return supportCheck();
     }
   };
 
@@ -1974,12 +1982,14 @@ function SoundManager(smURL, smID) {
           if (_s.html5[m[i]] || a.canPlayType(m[i]).match(_s.html5Test)) {
             isOK = true;
             _s.html5[m[i]] = true;
+            // if flash can play and preferred, also mark it for use.
+            _s.flash[m[i]] = !!(_s.preferFlash && m[i].match(_flashMIME));
           }
         }
         return isOK;
       } else {
         canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m) : false);
-        return (canPlay && (canPlay.match(_s.html5Test)?true:false));
+        return !!(canPlay && (canPlay.match(_s.html5Test)));
       }
     }
     // test all registered formats + codecs
@@ -1987,10 +1997,17 @@ function SoundManager(smURL, smID) {
     for (item in aF) {
       if (aF.hasOwnProperty(item)) {
         support[item] = _cp(aF[item].type);
+        // assign flash
+        if (_s.preferFlash && !_s.ignoreFlash && item.match(_flashMIME)) {
+          _s.flash[item] = true;
+        } else {
+          _s.flash[item] = false;
+        }
         // assign result to related formats, too
         if (aF[item] && aF[item].related) {
           for (i=aF[item].related.length; i--;) {
             _s.html5[aF[item].related[i]] = support[item];
+            _s.flash[aF[item].related[i]] = support[item];
           }
         }
       }
@@ -2434,7 +2451,7 @@ function SoundManager(smURL, smID) {
   };
 
   _delayWaitForEI = function() {
-    setTimeout(_waitForEI, 500);
+    setTimeout(_waitForEI, (_s.flashLoadTimeout || 500));
   };
 
   _waitForEI = function() {
@@ -2786,9 +2803,11 @@ function SoundManager(smURL, smID) {
       return true;
     }
     for (item in _s.audioFormats) {
-      if (_s.audioFormats.hasOwnProperty(item) && _s.audioFormats[item].required && !_s.html5.canPlayType(_s.audioFormats[item].type)) {
-        // may need flash for this format?
-        needsFlash = true;
+      if (_s.audioFormats.hasOwnProperty(item)) {
+        if ( (_s.audioFormats[item].required && !_s.html5.canPlayType(_s.audioFormats[item].type)) || _s.flash[item] || _s.flash[_s.audioFormats[item].type]) {
+          // flash may be required, or preferred for this format
+          needsFlash = true;
+        }
       }
     }
     // sanity check..
@@ -2816,7 +2835,7 @@ function SoundManager(smURL, smID) {
     if (_s.hasHTML5) {
       for (item in _s.audioFormats) {
         if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item+': '+_s.html5[item]);
+          tests.push(item+': '+_s.html5[item] + (_s.preferFlash && _s.flash[item] ? ' (using flash)':''));
         }
       }
       //_s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
