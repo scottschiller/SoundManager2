@@ -560,7 +560,7 @@ function SoundManager(smURL, smID) {
   this.canPlayURL = function(sURL) {
     var result;
     if (_s.hasHTML5) {
-      result = _html5CanPlay(sURL);
+      result = _html5CanPlay({url: sURL});
     }
     if (!_needsFlash || result) {
       // no flash, or OK
@@ -1909,18 +1909,42 @@ function SoundManager(smURL, smID) {
   }());
 
   _html5OK = function(iO) {
-    return (!iO.serverURL && (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay(iO.url)||_s.html5Only)); // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
+    return (!iO.serverURL && (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay({url:iO.url})||_s.html5Only)); // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
   };
 
-  _html5CanPlay = function(sURL) {
-    // try to find MIME, test and return truthiness
+  _html5CanPlay = function(o) {
+
+    /*
+     * try to find MIME, test and return truthiness
+     * both are optional
+     * o = {
+     *  url: 'audio/mp3',
+     *  type: 'audio/mp3'
+     * }
+    */
+
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
-    var result, mime, offset, fileExt, item, aF = _s.audioFormats;
-    function supportCheck() {
-      return (_s.html5[fileExt] && (typeof _s.flash[fileExt] === 'undefined' || !_s.flash[fileExt]));
+
+    var url = (o.url || null),
+        mime = (o.type || null),
+        aF = _s.audioFormats,
+        result,
+        offset,
+        fileExt,
+        item;
+
+    function preferFlashCheck(kind) {
+      // whether flash should play a given type
+      return (_s.preferFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
     }
+
+    // account for known cases like audio/mp3
+    if (mime && _s.html5[mime] !== 'undefined') {
+      return (_s.html5[mime] && !preferFlashCheck(mime));
+    }
+
     if (!_html5Ext) {
       _html5Ext = [];
       for (item in aF) {
@@ -1933,8 +1957,9 @@ function SoundManager(smURL, smID) {
       }
       _html5Ext = new RegExp('\\.('+_html5Ext.join('|')+')','i');
     }
-    mime = (typeof sURL.type !== 'undefined'?sURL.type:null);
-    fileExt = (typeof sURL === 'string'?sURL.toLowerCase().match(_html5Ext):null); // TODO: Strip URL queries, etc.
+
+    fileExt = (url ? url.toLowerCase().match(_html5Ext) : null); // TODO: Strip URL queries, etc.
+
     if (!fileExt || !fileExt.length) {
       if (!mime) {
         return false;
@@ -1946,23 +1971,18 @@ function SoundManager(smURL, smID) {
     } else {
       fileExt = fileExt[0].substr(1); // "mp3", for example
     }
+
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
       // result known
-      return supportCheck();
+      return (_s.html5[fileExt] && !preferFlashCheck(fileExt));
     } else {
-      if (!mime) {
-        if (fileExt && _s.html5[fileExt]) {
-          return supportCheck();
-        } else {
-          // best-case guess, audio/whatever-dot-filename-format-you're-playing
-          mime = 'audio/'+fileExt;
-        }
-      }
-      result = _s.html5.canPlayType(mime);
+      mime = 'audio/'+fileExt;
+      result = _s.html5.canPlayType({type:mime});
       _s.html5[fileExt] = result;
       // //_s._wD('canPlayType, found result: '+result);
-      return supportCheck();
+      return (result && _s.html5[mime] && !preferFlashCheck(mime));
     }
+
   };
 
   _testHTML5 = function() {
@@ -1997,6 +2017,7 @@ function SoundManager(smURL, smID) {
     for (item in aF) {
       if (aF.hasOwnProperty(item)) {
         support[item] = _cp(aF[item].type);
+        support['audio/'+item] = support[item]; // write back generic type too, eg. audio/mp3
         // assign flash
         if (_s.preferFlash && !_s.ignoreFlash && item.match(_flashMIME)) {
           _s.flash[item] = true;
@@ -2006,6 +2027,7 @@ function SoundManager(smURL, smID) {
         // assign result to related formats, too
         if (aF[item] && aF[item].related) {
           for (i=aF[item].related.length; i--;) {
+            support['audio/'+aF[item].related[i]] = support[item]; // eg. audio/m4a
             _s.html5[aF[item].related[i]] = support[item];
             _s.flash[aF[item].related[i]] = support[item];
           }
@@ -2276,10 +2298,12 @@ function SoundManager(smURL, smID) {
     _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
 
     if (_s.wmode !== null && (_ua.match(/msie 8/i) || (!_isIE && !_s.useHighPerformance)) && navigator.platform.match(/win32|win64/i)) {
+      /*
+       * extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
+       * does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
+       * wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)
+      */
       _s.specialWmodeCase = true;
-      // extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
-      // does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
-      // wmode breaks IE 8 on Vista + Win7 too in some cases, as of Jan.2011 (?)
       //_wDS('spcWmode');
       _s.wmode = null;
     }
@@ -2451,7 +2475,7 @@ function SoundManager(smURL, smID) {
   };
 
   _delayWaitForEI = function() {
-    setTimeout(_waitForEI, (_s.flashLoadTimeout || 500));
+    setTimeout(_waitForEI, 1000);
   };
 
   _waitForEI = function() {
