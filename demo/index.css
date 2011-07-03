@@ -102,7 +102,6 @@ body.home #about-sm2 h3 {
 body.home #about-sm2 h3 {
  color:#333;
  padding-bottom:3px;
- border-bottom:1px solid #eee;
 }
 
 body.home h4 {
@@ -1397,6 +1396,7 @@ h4 .scratched-out {
  background-position: 0 -24px;
 }
 
+.inthewild:hover #audiogalaxy,
 #audiogalaxy:hover {
  background-position: 0 -46px;
 }
@@ -1413,6 +1413,7 @@ h4 .scratched-out {
  height: 38px;
 }
 
+.inthewild:hover #hypem,
 #hypem:hover {
  background-position: 0 -134px;
 }
@@ -1423,6 +1424,7 @@ h4 .scratched-out {
  height: 28px;
 }
 
+.inthewild:hover #lastfm,
 #lastfm:hover {
  background-position: 0 -176px;
 } 
@@ -1433,6 +1435,7 @@ h4 .scratched-out {
  height: 40px;
 }
 
+.inthewild:hover #nyancat,
 #nyancat:hover {
  background-position: 0 -312px;
 }
@@ -1443,6 +1446,7 @@ h4 .scratched-out {
  height: 32px;
 }
 
+.inthewild:hover #opera,
 #opera:hover {
  background-position: 0 -388px;
 }
@@ -1453,6 +1457,7 @@ h4 .scratched-out {
  height: 58px;
 } 
 
+.inthewild:hover #soundcloud,
 #soundcloud:hover {
  background-position: 0 -424px;
 }
@@ -1464,6 +1469,7 @@ h4 .scratched-out {
  margin-top: 0.45em;
 }
 
+.inthewild:hover #turntable-dot-fm,
 #turntable-dot-fm:hover {
  background-position: 0 -252px;
 }
@@ -1640,12 +1646,11 @@ body.home .ie6sucks {
 body.home #sm2-container {
  display:block;
  overflow:hidden;
- width:48px;
- height:48px;
+ /* try to pass as an "invisible" SWF (ClickToFlash) at this size */
+ width:8px;
+ height:8px;
  margin:1em 0px 0px 1px;
  /* IE 6 hax, unlikely to have flashblock anyway... */
- _width:8px;
- _height:8px;
  _margin:-8px 0px 0px 0px;
 }
 
@@ -1657,6 +1662,8 @@ body.home #sm2-container.swf_timedout {
  border:1px solid #ff3333;
  border-bottom:none;
  margin:1em 0px 0px 0px;
+ width:48px;
+ height:48px;
  z-index:2;
 }
 
