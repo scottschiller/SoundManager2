@@ -77,8 +77,8 @@ a.sm2_button {
  -webkit-transition-property: hover;
  -webkit-transition: all 0.2s ease-in-out;
  -moz-transition: all 0.2s ease-in-out 0s; /* firefox 4 (couldn't sort out -moz-transform vs. MozTransform, so, "all" for now) */
-  -o-transition-property: background-color; /* opera 10.5 */
-  -o-transition-duration: 0.15s;
+ -o-transition-property: background-color; /* opera 10.5 */
+ -o-transition-duration: 0.15s;
  /* weird IE 6/7 display fixes, and/or I'm doing it wrong */
  *text-indent:0px;
  *line-height:99em;
@@ -111,6 +111,7 @@ a.sm2_button.sm2_playing,
 a.sm2_button.sm2_playing:hover {
  -moz-transform:rotate(90deg);
  -webkit-transform:rotate(90deg);
+ -ms-transform:rotate(90deg);
 }
 
 a.sm2_button.sm2_paused,
