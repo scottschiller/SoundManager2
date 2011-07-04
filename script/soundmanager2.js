@@ -2061,7 +2061,7 @@ function SoundManager(smURL, smID) {
     docLoaded: _sm + ': Document already loaded',
     onload: _smc + 'initComplete(): calling soundManager.onload()',
     onloadOK: _sm + '.onload() complete',
-    init: '-- ' + _smc + 'init() --',
+    init: _smc + 'init()',
     didInit: _smc + 'init(): Already called?',
     flashJS: _sm + ': Attempting to call Flash from JS..',
     noPolling: _sm + ': Polling (whileloading()/whileplaying() support) is disabled.',
@@ -2457,7 +2457,6 @@ function SoundManager(smURL, smID) {
       _s.o = _s.getMovie(_s.id);
     }
     if (_s.o) {
-      _s._wD(_smc+'initMovie(): Got '+_s.o.nodeName+' element ('+(_didAppend?'created via JS':'static HTML')+')');
       _wDS('waitEI');
     }
     if (_s.oninitmovie instanceof Function) {
@@ -2859,7 +2858,7 @@ function SoundManager(smURL, smID) {
     if (_s.hasHTML5) {
       for (item in _s.audioFormats) {
         if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item+': '+_s.html5[item] + (_s.preferFlash && _s.flash[item] ? ' (using flash)':''));
+          tests.push(item+': '+_s.html5[item] + (_s.preferFlash && _s.flash[item] ? ' (preferring flash)':''));
         }
       }
       _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
