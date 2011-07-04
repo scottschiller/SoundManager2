@@ -107,6 +107,224 @@
 
  <div id="main" class="triple">
 
+  <div id="col3" class="c3">
+ 
+  <!--
+  <div id="get-satisfaction" class="box">
+   <div id="gsfn_list_widget">
+    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
+    <div id="gsfn_content"></div>
+    <div class="powered_by"><a href="http://getsatisfaction.com/">Get Satisfaction support network</a></div>
+   </div>
+  </div>
+  -->
+
+ <div id="shortcuts">
+
+<!--
+  <div class="box">
+
+  <h2>Shortcuts<span class="l"></span><span class="r"></span></h2>
+
+  <ul class="first">
+   <li onclick="setFilter(event,'c-')" class="ignore">
+
+    <ul>
+
+     <li>Demos</li>
+     <li>Getting Started</li>
+     <li>Basic Use</li>
+     <li>Download</li>
+     <li>Requirements</li>
+     <li>Limitations</li>
+
+     <li>Debug Output</li>
+     <li>Revision History</li>
+     <li>About</li>
+    </ul>
+
+   </li>
+  </ul>
+
+  </div>
+-->
+ 
+  <div class="box">
+
+  <h2>API Elements<span class="l"></span><span class="r"></span></h2>
+
+  <p>SoundManager and SMSound API</p>
+
+  <ul id="shortcuts-list" class="first">
+   <li onclick="return setFilter(event,'f-')" class="ignore">
+
+    <h3 class="wedge">SoundManager<span class="l"></span><span class="r"></span></h3>
+	
+    <h4>Properties</h4>
+	<ul>
+	 <li>allowPolling</li>
+	 <li>allowScriptAccess</li>
+     <li><a href="#soundmanager-alturl">altURL</a></li>
+	 <li>consoleOnly</li>
+	 <li><a href="#soundmanager-debugflash">debugFlash</a></li>
+	 <li><a href="#soundmanager-debugmode">debugMode</a></li>
+	 <li><a href="#smdefaults">defaultOptions</a></li>
+	 <li class="flash9" title="Flash 9-only"><a href="#sound-properties-flash9">flash9Options</a></li>
+     <li><a href="#soundmanager-features">features</a></li>
+     <li><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
+     <li><a href="#soundmanager-flashversion">flashVersion</a></li>
+     <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
+	 <li>nullURL</li>
+	 <li><a href="#soundmanager-url">url</a></li>
+	 <li>useConsole</li>
+	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
+	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-flashpollinginterval">flashPollingInterval</a></li>
+     <li><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
+	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
+     <li class="recent" title="Beta-ish feature">useHTML5Audio</li>
+     <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
+	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>
+	 <li>waitForWindowLoad</li>
+	</ul>
+
+    <h4>Methods</h4>
+    <ul>
+	 <li><a href="#soundmanager-canplaylink">canPlayLink()</a></li>
+	 <li><a href="#soundmanager-canplaymime">canPlayMIME()</a></li>
+     <li><a href="#soundmanager-canplayurl">canPlayURL()</a></li>
+     <li><a href="#soundmanager-createsound">createSound()</a></li>
+     <li><a href="#soundmanager-destroysound">destroySound()</a></li>
+	 <li class="flash9" title="Flash 9.0+ only"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
+     <li><a href="#soundmanager-getsoundbyid">getSoundById()</a></li>
+     <li><a href="#soundmanager-load">load()</a></li>
+     <li><a href="#soundmanager-mute">mute()</a></li>
+     <li><a href="#soundmanager-ok">ok()</a></li>
+     <li><a href="#soundmanager-pause">pause()</a></li>
+     <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
+     <li><a href="#soundmanager-play">play()</a></li>
+     <li><a href="#soundmanager-reboot">reboot()</a></li>
+     <li><a href="#soundmanager-resume">resume()</a></li>
+  	 <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
+     <li><a href="#soundmanager-setpan" title="Flash-only feature">setPan()</a></li>
+     <li><a href="#soundmanager-setposition">setPosition()</a></li>
+     <li><a href="#soundmanager-setvolume">setVolume()</a></li>
+     <li><a href="#soundmanager-supported">supported()</a></li>
+     <li><a href="#soundmanager-stop">stop()</a></li>
+     <li><a href="#soundmanager-stopall">stopAll()</a></li>
+	 <li><a href="#soundmanager-togglemute">toggleMute()</a></li>
+     <li><a href="#soundmanager-togglepause">togglePause()</a></li>
+     <li><a href="#soundmanager-unload">unload()</a></li>
+     <li><a href="#soundmanager-unmute">unmute()</a></li>
+    </ul>
+
+    <h4>Events</h4>
+    <ul>
+     <li><a href="#soundmanager-onerror">onerror()</a></li>
+     <li><a href="#soundmanager-oninitmovie">oninitmovie()</a></li>
+     <li><a href="#soundmanager-onload">onload()</a></li>
+     <li><a href="#soundmanager-onready">onready()</a></li>
+     <li><a href="#soundmanager-ontimeout">ontimeout()</a></li>
+    </ul>
+
+   </li>
+
+   <li onclick="setFilter(event,'s-')" class="ignore">
+
+    <h3 class="wedge">SMSound <span class="archive">(Sound Object)</span><span class="l"></span><span class="r"></span></h3>
+
+    <h4>Properties (Instance Options)</h4>
+    <ul>
+     <li>autoLoad</li>
+     <li>autoPlay</li>
+     <li title="Flash 9.0r115+ only" class="flash9">bufferTime</li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
+     <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
+     <li title="Recently-updated feature" class="recent">loops</li>
+     <li>multiShot</li>
+     <li>multiShotEvents</li>
+     <li>onbeforefinishtime</li>
+     <li>onjustbeforefinishtime</li>
+     <li>pan</li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-peakdata">peakData</a></li>
+     <li><a href="#smsound-position">position</a></li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-serverurl">serverURL</a></li>
+     <li><a href="#smsound-sid">sID</a></li>
+     <li>stream</li>
+     <li title="Recently-added feature" class="recent"><a href="#smsound-type">type</a></li>
+     <li><a href="#smsound-url">url</a></li>
+     <li><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
+     <li>volume</li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-waveformdata">waveformData</a></li>
+    </ul>
+
+    <h4>Dynamic Properties</h4>
+    <ul>
+     <li><a href="#smsound-bytesloaded">bytesLoaded</a></li>
+     <li><a href="#smsound-bytestotal">bytesTotal</a></li>
+	 <li title="Flash 9+ only" class="flash9"><a href="#smsound-isbuffering">isBuffering</a></li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-connected">connected</a></li>
+     <li><a href="#smsound-didbeforefinish">didBeforeFinish</a></li>
+     <li><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</a></li>
+     <li><a href="#smsound-duration">duration</a></li>
+     <li><a href="#smsound-durationestimate">durationEstimate</a></li>
+     <li><a href="#smsound-loaded">loaded</a></li>
+	 <li><a href="#smsound-muted">muted</a></li>
+     <li><a href="#smsound-paused">paused</a></li>
+     <li><a href="#smsound-playstate">playState</a></li>
+     <li><a href="#smsound-position">position</a></li>
+     <li><a href="#smsound-readystate">readyState</a></li>
+    </ul>
+
+    <h4>Events</h4>
+    <ul>
+	 <li title="Flash 9+ only" class="flash9"><a href="#smsound-onbufferchange">onbufferchange()</a></li>
+     <li title="Flash 9+ only" class="flash9"><a href="#smsound-onconnect">onconnect()</a></li>
+	 <li title="Flash 9.0.r115+" class="flash9"><a href="#smsound-ondataerror">ondataerror()</a></li>
+     <li><a href="#smsound-onfinish">onfinish()</a></li>
+     <li><a href="#smsound-onload">onload()</a></li>
+     <li><a href="#smsound-onpause">onpause()</a></li>
+     <li><a href="#smsound-onplay">onplay()</a></li>
+     <li><a href="#smsound-onposition">onposition()</a></li>
+     <li><a href="#smsound-onresume">onresume()</a></li>
+     <li><a href="#smsound-onstop">onstop()</a></li>
+     <li><a href="#smsound-onbeforefinishcomplete">onbeforefinishcomplete()</a></li>
+     <li><a href="#smsound-onbeforefinish">onbeforefinish()</a></li>
+     <li><a href="#smsound-onjustbeforefinish">onjustbeforefinish()</a></li>
+     <li><a href="#smsound-onid3">onid3()</a></li>
+     <li><a href="#smsound-whileloading">whileloading()</a></li>
+     <li><a href="#smsound-whileplaying">whileplaying()</a></li>
+    </ul>
+
+    <h4>Methods</h4>
+    <ul>
+     <li><a href="#smsound-destruct">destruct()</a></li>
+     <li><a href="#smsound-load">load()</a></li>
+     <li><a href="#smsound-mute">mute()</a></li>
+     <li><a href="#smsound-pause">pause()</a></li>
+     <li><a href="#smsound-play">play()</a></li>
+     <li><a href="#smsound-resume">resume()</a></li>
+     <li><a href="#smsound-setpan">setPan()</a></li>
+     <li><a href="#smsound-setposition">setPosition()</a></li>
+     <li><a href="#smsound-setvolume">setVolume()</a></li>
+     <li><a href="#smsound-stop">stop()</a></li>
+     <li><a href="#smsound-togglemute">toggleMute()</a></li>
+     <li><a href="#smsound-togglepause">togglePause()</a></li>
+     <li><a href="#smsound-unload">unload()</a></li>
+     <li><a href="#smsound-unmute">unmute()</a></li>
+    </ul>
+
+   </li>
+  </ul>
+  
+  <!-- /.box -->
+  </div>
+
+  </div>
+
+	</div>
+	
+	<div class="clear"></div>
+
 
 	<div id="filter-box" class="columnar">
 
@@ -324,22 +542,32 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 			 <h5>HTML5 Audio: Notes, bugs, quirks and annoyances</h5>
 
+			 <p><b>As of the V2.97.20110705 release of SM2:</b></p>
+
+             <ul>
+              <li><p>HTML5 audio appears to have been <i>fixed</i> in Safari with Snow Leopard 10.6.8, the "pre-Lion release", from 06/2011. SM2 will now only blacklist Safari + OS X 10.6.3 through 10.6.7 as having broken HTML5 audio (intermittent load/playback failures), and falling back to Flash where available.</p></li>
+              <li>
+               <p>New, experimental <code>soundManager.preferFlash</code> for handling "mixed-mode" HTML5 + flash cases. In the event HTML5 supports MP3/MP4 and <code>preferFlash</code> is true (and flash is installed), flash will be used for MP3/MP4 content while allowing HTML5 to play OGG, WAV and other formats etc.</p>
+               <p><b>Important note:</b> Because HTML5 audio is still quirky and has bugs, <code>preferFlash</code> is <code>true</code> by default to help ensure MP3/MP4 play consistently. If set to <code>false</code> or flash is not available, "HTML5-only" mode will kick in and will apply to all formats.</p>
+              </li>
+             </ul>
+
 			 <p><b>As of the V2.97.20110424 release of SM2:</b></p>
 
              <ul>
-              <li>HTML5 audio in Safari on Snow Leopard 10.6.3 through 10.6.9 (10.6.7 was released 03/2011) are blacklisted and will fall back to Flash. 10.6.8 and 10.6.9 are preemptive guesses. According to beta testers, OS X 10.7 ("Lion") has fixed the intermittent <a href="https://bugs.webkit.org/show_bug.cgi?id=32159">HTML5 audio load/playback issue</a>.</li>
-              <li><code>new Audio(null)</code> is no longer used for iOS, as iOS would attempt to load a URL called "null".</li>
-              <li>iOS 4.2 or 4.3 may have introduced new security restrictions around <code>onfinish()</code>-&gt;<code>unload()</code>-&gt;<code>play()</code> that prevents the "play-through" behaviour previously allowed in certain cases. The <code>unload()</code> attempts to nullify the audio's <code>src</code> attribute, breaking the future <code>play()</code> request. The Muxtape/button/link demos were affected by this, and have been fixed with this release. To prevent this issue in your own apps, avoid <code>unload()</code> and simply use <code>onfinish()</code>-&gt;<code>play()</code> for iOS.</li>
+              <li><p>HTML5 audio in Safari on Snow Leopard 10.6.3 through 10.6.9 (10.6.7 was released 03/2011) are blacklisted and will fall back to Flash. 10.6.8 and 10.6.9 are preemptive guesses. According to beta testers, OS X 10.7 ("Lion") has fixed the intermittent <a href="https://bugs.webkit.org/show_bug.cgi?id=32159">HTML5 audio load/playback issue</a>.</p></li>
+              <li><p><code>new Audio(null)</code> is no longer used for iOS, as iOS would attempt to load a URL called "null".</p></li>
+              <li><p>iOS 4.2 or 4.3 may have introduced new security restrictions around <code>onfinish()</code>-&gt;<code>unload()</code>-&gt;<code>play()</code> that prevents the "play-through" behaviour previously allowed in certain cases. The <code>unload()</code> attempts to nullify the audio's <code>src</code> attribute, breaking the future <code>play()</code> request. The Muxtape/button/link demos were affected by this, and have been fixed with this release. To prevent this issue in your own apps, avoid <code>unload()</code> and simply use <code>onfinish()</code>-&gt;<code>play()</code> for iOS.</p></li>
              </ul>
 
 			 <p><b>As of the V2.97.20110306 release of SM2:</b></p>
 
 			 <ul>
-              <li>Testing suggests that auto-play ("auto-annoy?") does work on iOS 4.1, but are aggressively blocked as of iOS 4.2.</li>
-              <li><code>_resetProperties()</code> when setting Audio().src, fix sound1.play() -&gt; sound2.play() -&gt; sound1.play() case on iOS 4.1 not correctly re-assigning original sound URL (related to global audio object.)</li>
-              <li>If no flash is detected, try forcing <code>useHTML5Audio = true</code> (eg. desktop safari on new Macs which don't come with Flash.) Related: flash detection code tweak.</li>
-              <li>isNaN() check for HTML5 loading (saw one under Safari, in testing).</li>
-              <li>Use new Audio(null) vs (), Opera 9.64 expects URL argument; throws WRONG_ARGUMENTS_ERR otherwise. Doesn't implement canPlayType() either, but both are fixed in future releases.</li>
+              <li><p>Testing suggests that auto-play ("auto-annoy?") does work on iOS 4.1, but are aggressively blocked as of iOS 4.2.</p></li>
+              <li><p><code>_resetProperties()</code> when setting Audio().src, fix sound1.play() -&gt; sound2.play() -&gt; sound1.play() case on iOS 4.1 not correctly re-assigning original sound URL (related to global audio object.)</p></li>
+              <li><p>If no flash is detected, try forcing <code>useHTML5Audio = true</code> (eg. desktop safari on new Macs which don't come with Flash.) Related: flash detection code tweak.</p></li>
+              <li><p>isNaN() check for HTML5 loading (saw one under Safari, in testing).</p></li>
+              <li><p>Use new Audio(null) vs (), Opera 9.64 expects URL argument; throws WRONG_ARGUMENTS_ERR otherwise. Doesn't implement canPlayType() either, but both are fixed in future releases.</p></li>
 			 </ul>
 
 			 <p><b>As of the V2.97.20110123 release of SM2:</b></p>
@@ -578,7 +806,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 }</span></code></pre>
 	   </dd>
 	   <dd>This method may be helpful when trying to gracefully recover from FlashBlock-type situations where the user has prevented the SWF from loading, but is able to whitelist it. For more ideas, see <a href="../demo/flashblock/">Flashblock demo</a>.</dd>
-	   <dd>When using this method also consider <a href="#flashloadtimeout" onclick="resetFilter()">flashLoadTimeout</a>, which can have SM2 wait indefinitely for the flash to load if desired.</dd>
+	   <dd>When using this method also consider <a href="#soundmanager-flashloadtimeout" onclick="resetFilter()">flashLoadTimeout</a>, which can have SM2 wait indefinitely for the flash to load if desired.</dd>
 	   </dl>
 
 	   <dl id="soundmanager-resume" class="f-block f-resume">
@@ -1475,229 +1703,7 @@ soundManager.movieStarOptions = {<span>
 
 		</div>
 	
-	<div id="col3" class="c3">
 
- 
-  <!--
-  <div id="get-satisfaction" class="box">
-   <div id="gsfn_list_widget">
-    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
-    <div id="gsfn_content"></div>
-    <div class="powered_by"><a href="http://getsatisfaction.com/">Get Satisfaction support network</a></div>
-   </div>
-  </div>
-  -->
-
- <div id="shortcuts">
-
-<!--
-  <div class="box">
-
-  <h2>Shortcuts<span class="l"></span><span class="r"></span></h2>
-
-  <ul class="first">
-   <li onclick="setFilter(event,'c-')" class="ignore">
-
-    <ul>
-
-     <li>Demos</li>
-     <li>Getting Started</li>
-     <li>Basic Use</li>
-     <li>Download</li>
-     <li>Requirements</li>
-     <li>Limitations</li>
-
-     <li>Debug Output</li>
-     <li>Revision History</li>
-     <li>About</li>
-    </ul>
-
-   </li>
-  </ul>
-
-  </div>
--->
- 
-  <div class="box">
-
-  <h2>API Elements<span class="l"></span><span class="r"></span></h2>
-
-  <p>SoundManager and SMSound API</p>
-
-  <ul id="shortcuts-list" class="first">
-   <li onclick="return setFilter(event,'f-')" class="ignore">
-
-    <h3 class="wedge">SoundManager<span class="l"></span><span class="r"></span></h3>
-	
-    <h4>Properties</h4>
-	<ul>
-
-	 <li>allowPolling</li>
-	 <li>allowScriptAccess</li>
-     <li><a href="#soundmanager-alturl">altURL</a></li>
-	 <li>consoleOnly</li>
-	 <li><a href="#soundmanager-debugflash">debugFlash</a></li>
-	 <li><a href="#soundmanager-debugmode">debugMode</a></li>
-	 <li><a href="#smdefaults">defaultOptions</a></li>
-	 <li class="flash9" title="Flash 9-only"><a href="#sound-properties-flash9">flash9Options</a></li>
-     <li><a href="#soundmanager-features">features</a></li>
-     <li><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
-     <li><a href="#soundmanager-flashversion">flashVersion</a></li>
-     <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
-	 <li>nullURL</li>
-	 <li><a href="#soundmanager-url">url</a></li>
-	 <li>useConsole</li>
-	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
-	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-flashpollinginterval">flashPollingInterval</a></li>
-     <li><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
-	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
-     <li class="recent" title="Recently-added, beta feature">useHTML5Audio</li>
-     <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
-	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>
-	 <li>waitForWindowLoad</li>
-	</ul>
-
-    <h4>Methods</h4>
-
-    <ul>
-	 <li class="recent"><a href="#soundmanager-canplaylink" title="Recently-added feature">canPlayLink()</a></li>
-	 <li class="recent"><a href="#soundmanager-canplaymime" title="Recently-added feature">canPlayMIME()</a></li>
-     <li><a href="#soundmanager-canplayurl">canPlayURL()</a></li>
-     <li><a href="#soundmanager-createsound">createSound()</a></li>
-     <li><a href="#soundmanager-destroysound">destroySound()</a></li>
-	 <li class="flash9" title="Flash 9.0+ only"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
-     <li><a href="#soundmanager-getsoundbyid">getSoundById()</a></li>
-     <li><a href="#soundmanager-load">load()</a></li>
-     <li><a href="#soundmanager-mute">mute()</a></li>
-     <li><a href="#soundmanager-ok" class="new">ok()</a></li>
-     <li><a href="#soundmanager-pause">pause()</a></li>
-     <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
-     <li><a href="#soundmanager-play">play()</a></li>
-     <li><a href="#soundmanager-reboot">reboot()</a></li>
-     <li><a href="#soundmanager-resume">resume()</a></li>
-  	 <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
-     <li><a href="#soundmanager-setpan">setPan()</a></li>
-     <li><a href="#soundmanager-setposition">setPosition()</a></li>
-     <li><a href="#soundmanager-setvolume">setVolume()</a></li>
-     <li><a href="#soundmanager-supported">supported()</a></li>
-     <li><a href="#soundmanager-stop">stop()</a></li>
-
-     <li><a href="#soundmanager-stopall">stopAll()</a></li>
-	 <li><a href="#soundmanager-togglemute">toggleMute()</a></li>
-     <li><a href="#soundmanager-togglepause">togglePause()</a></li>
-     <li><a href="#soundmanager-unload">unload()</a></li>
-     <li><a href="#soundmanager-unmute">unmute()</a></li>
-    </ul>
-
-    <h4>Events</h4>
-    <ul>
-     <li><a href="#soundmanager-onerror">onerror()</a></li>
-     <li><a href="#soundmanager-oninitmovie">oninitmovie()</a></li>
-     <li><a href="#soundmanager-onload">onload()</a></li>
-     <li><a href="#soundmanager-onready">onready()</a></li>
-     <li class="new" title="Newly-added feature"><a href="#soundmanager-ontimeout">ontimeout()</a></li>
-    </ul>
-
-   </li>
-
-   <li onclick="setFilter(event,'s-')" class="ignore">
-
-    <h3 class="wedge">SMSound <span class="archive">(Sound Object)</span><span class="l"></span><span class="r"></span></h3>
-
-    <h4>Properties (Instance Options)</h4>
-    <ul>
-     <li>autoLoad</li>
-     <li>autoPlay</li>
-     <li title="Flash 9.0r115+ only" class="flash9">bufferTime</li>
-     <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
-     <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
-     <li title="Recently-updated feature" class="recent">loops</li>
-     <li>multiShot</li>
-     <li>multiShotEvents</li>
-     <li>onbeforefinishtime</li>
-     <li>onjustbeforefinishtime</li>
-     <li>pan</li>
-     <li title="Flash 9+ only" class="flash9"><a href="#smsound-peakdata">peakData</a></li>
-     <li><a href="#smsound-position">position</a></li>
-     <li title="Flash 9+ only, new feature" class="flash9 new"><a href="#smsound-serverurl">serverURL</a></li>
-     <li><a href="#smsound-sid">sID</a></li>
-     <li>stream</li>
-     <li title="Recently-added feature" class="recent"><a href="#smsound-type">type</a></li>
-     <li><a href="#smsound-url">url</a></li>
-     <li title="New feature" class="new"><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
-     <li>volume</li>
-     <li title="Flash 9+ only" class="flash9"><a href="#smsound-waveformdata">waveformData</a></li>
-    </ul>
-
-    <h4>Dynamic Properties</h4>
-    <ul>
-
-     <li><a href="#smsound-bytesloaded">bytesLoaded</a></li>
-     <li><a href="#smsound-bytestotal">bytesTotal</a></li>
-	 <li title="Flash 9+" class="flash9"><a href="#smsound-isbuffering">isBuffering</a></li>
-     <li title="Flash 9+, new feature" class="flash9 new"><a href="#smsound-connected">connected</a></li>
-     <li><a href="#smsound-didbeforefinish">didBeforeFinish</a></li>
-     <li><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</a></li>
-     <li><a href="#smsound-duration">duration</a></li>
-     <li><a href="#smsound-durationestimate">durationEstimate</a></li>
-     <li><a href="#smsound-loaded">loaded</a></li>
-	 <li><a href="#smsound-muted">muted</a></li>
-     <li><a href="#smsound-paused">paused</a></li>
-     <li><a href="#smsound-playstate">playState</a></li>
-     <li><a href="#smsound-position">position</a></li>
-     <li><a href="#smsound-readystate">readyState</a></li>
-    </ul>
-
-    <h4>Events</h4>
-    <ul>
-	 <li title="Flash 9+ required, recently-added feature" class="recent"><a href="#smsound-onbufferchange">onbufferchange()</a></li>
-     <li title="Flash 9+ required, new feature" class="new"><a href="#smsound-onconnect">onconnect()</a></li>
-	 <li title="Flash 9.0.r115+" class="flash9"><a href="#smsound-ondataerror">ondataerror()</a></li>
-     <li><a href="#smsound-onfinish">onfinish()</a></li>
-     <li><a href="#smsound-onload">onload()</a></li>
-     <li><a href="#smsound-onpause">onpause()</a></li>
-     <li><a href="#smsound-onplay">onplay()</a></li>
-     <li class="new"><a href="#smsound-onposition">onposition()</a></li>
-     <li><a href="#smsound-onresume">onresume()</a></li>
-     <li><a href="#smsound-onstop">onstop()</a></li>
-     <li><a href="#smsound-onbeforefinishcomplete">onbeforefinishcomplete()</a></li>
-     <li><a href="#smsound-onbeforefinish">onbeforefinish()</a></li>
-     <li><a href="#smsound-onjustbeforefinish">onjustbeforefinish()</a></li>
-     <li><a href="#smsound-onid3">onid3()</a></li>
-     <li><a href="#smsound-whileloading">whileloading()</a></li>
-     <li><a href="#smsound-whileplaying">whileplaying()</a></li>
-    </ul>
-
-    <h4>Methods</h4>
-
-    <ul>
-	 <li><a href="#smsound-destruct">destruct()</a></li>
-	 <li><a href="#smsound-load">load()</a></li>
-     <li><a href="#smsound-mute">mute()</a></li>
-     <li><a href="#smsound-pause">pause()</a></li>
-     <li><a href="#smsound-play">play()</a></li>
-     <li><a href="#smsound-resume">resume()</a></li>
-     <li><a href="#smsound-setpan">setPan()</a></li>
-     <li><a href="#smsound-setposition">setPosition()</a></li>
-     <li><a href="#smsound-setvolume">setVolume()</a></li>
-     <li><a href="#smsound-stop">stop()</a></li>
-	 <li><a href="#smsound-togglemute">toggleMute()</a></li>
-     <li><a href="#smsound-togglepause">togglePause()</a></li>
-     <li><a href="#smsound-unload">unload()</a></li>
-     <li><a href="#smsound-unmute">unmute()</a></li>
-    </ul>
-
-   </li>
-  </ul>
-  
-  <!-- /.box -->
-  </div>
-
-  </div>
-
-	</div>
-	
-	<div class="clear"></div>
 
  <!-- /main -->
  </div>

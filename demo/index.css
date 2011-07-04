@@ -112,7 +112,7 @@ body.home h4 {
 
 body.home #about-sm2 h4 {
  font-size:1.3em;
- color:#444;
+ color:#333;
  margin-bottom: 0.5em;
  margin-top: 1.5em;
 }
@@ -358,7 +358,7 @@ h2 {
  padding:1em 1em 0px 1em;
  background:#222;
  color:#fff;
- z-index:1;
+ z-index:2;
 }
 
 #top,
@@ -514,6 +514,7 @@ h2 {
  margin-right:0px;
  margin-left:16px;
  left:1.25em;
+ z-index: 1;
 }
 
 #nav {
@@ -1338,45 +1339,60 @@ h4 .scratched-out {
 }
 
 .inthewild {
+ position: relative;
  margin-top:1em;
+}
+
+.inthewild ul {
+ list-style-type: none;
+}
+
+.inthewild ul,
+.inthewild li {
+ position: relative;
+ margin: 0px;
+ padding: 0px;
+}
+
+.inthewild li {
+ display: inline-block;
+ *float: left;
+ *display: inline;
+ width: 128px;
+ height: 64px;
+ vertical-align: middle;
+ text-align: center;
+ border: 1px solid #eee;
+ margin: 2px;
 }
 
 .inthewild a,
 .inthewild a img {
  border:none;
-}
-
-.inthewild a {
- margin-right:1em;
-}
-
-.inthewild a:last-child {
- margin-right:0px;
-}
-
-.inthewild a,
-.inthewild a img {
  vertical-align:middle;
 }
 
 .inthewild a {
+/*
  display:inline-block;
  display:-moz-inline-box;
+*/
+ position: absolute;
+ left: 50%;
+ top: 50%;
  overflow:hidden;
- margin:1em 1em 0.5em 1em;
- padding:0px;
+ margin: 0px;
+ padding: 0px;
  -moz-border-radius: 0px;
  -webkit-border-radius: 0px;
  border-radius: 0px;
  background: transparent url(../demo/_image/logo-sprite.png) no-repeat 0px 0px;
+ line-height: 96px;
+ vertical-align: middle;
 }
 
 .inthewild a:hover {
  background-color: transparent;
-}
-
-.inthewild a:first-child {
- margin-left:0.5em;
 }
 
 .inthewild a span {
@@ -1388,12 +1404,14 @@ h4 .scratched-out {
  background-position: 0 0;
  width: 64px;
  height: 20px;
+ margin: -10px 0px 0px -32px;
 }
  
 #audiogalaxy {
  width: 100px;
  height: 22px;
  background-position: 0 -24px;
+ margin: -11px 0px 0px -50px;
 }
 
 .inthewild:hover #audiogalaxy,
@@ -1405,12 +1423,14 @@ h4 .scratched-out {
  background-position: 0 -72px;
  width: 55px;
  height: 20px;
+ margin: -10px 0px 0px -27px;
 }
 
 #hypem {
  background-position: 0 -96px;
  width: 80px;
  height: 38px;
+ margin: -19px 0px 0px -40px;
 }
 
 .inthewild:hover #hypem,
@@ -1422,6 +1442,7 @@ h4 .scratched-out {
  background-position: 0 -204px;
  width: 80px;
  height: 28px;
+ margin: -14px 0px 0px -40px;
 }
 
 .inthewild:hover #lastfm,
@@ -1433,6 +1454,7 @@ h4 .scratched-out {
  background-position: 0 -272px;
  width: 64px;
  height: 40px;
+ margin: -20px 0px 0px -32px;
 }
 
 .inthewild:hover #nyancat,
@@ -1444,6 +1466,7 @@ h4 .scratched-out {
  background-position: 0 -356px;
  width: 79px;
  height: 32px;
+ margin: -16px 0px 0px -40px;
 }
 
 .inthewild:hover #opera,
@@ -1455,6 +1478,7 @@ h4 .scratched-out {
  background-position: 0 -483px;
  width: 83px;
  height: 58px;
+ margin: -29px 0px 0px -42px;
 } 
 
 .inthewild:hover #soundcloud,
@@ -1466,7 +1490,7 @@ h4 .scratched-out {
  background-position: 0 -232px;
  width: 100px;
  height: 20px;
- margin-top: 0.45em;
+ margin: -10px 0px 0px -50px;
 }
 
 .inthewild:hover #turntable-dot-fm,
@@ -1635,8 +1659,12 @@ body.home .c2 ul.standard {
 }
 
 body.home .ie6sucks {
- _background:transparent !important;
- _display:none !important;
+ _background: transparent !important;
+ _display: none !important;
+}
+
+body.home .ie7sucks {
+ *display: none !important;
 }
 
 /* Flash positioning and flashblock / clicktoflash handling */
@@ -1769,7 +1797,8 @@ body.home #inline-playlist {
  margin-top:-4px;
  background:#fff;
  padding-left:2em;
-width:256px;
+ width:256px;
+ z-index: 1;
 }
 
 hr {
