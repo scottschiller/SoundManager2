@@ -92,6 +92,10 @@ pre.block {
  max-width:100%;
 }
 
+.ui360 span {
+ vertical-align: top;
+}
+
 </style>
 
 <!-- demo configuration stuff, you don't need this -->
@@ -106,7 +110,7 @@ pre.block {
 
  <h1><a href="http://www.schillmania.com/projects/soundmanager2/" title="Javascript MP3 player project home">SoundManager 2</a> / <a href="http://schillmania.com/projects/soundmanager2/demo/360-player/">360&deg; Player Demo</a>: JS + Canvas Visualization</h1>
 
- <p class="note" style="color:#666;margin-top:0.5em;margin-bottom:0.5em">Canvas-based UI with visualization options. <b>Note: Spectrum/EQ visualizations disabled for IE (too slow.) Data is not currently available under HTML5.</b></p>
+ <p class="note" style="color:#666;margin-top:0.5em;margin-bottom:0.5em">Canvas-based UI with visualization options. <b>Note: Spectrum/EQ visualizations disabled for IE &lt; 9 (too slow.) Data is not implemented under HTML5.</b></p>
  <p class="note" style="color:#666;margin-bottom:0.5em">You can also <a href="#debug=1" onclick="window.location.href = this.href;window.location.reload()" title="Enable debug mode, show frames per second">show FPS</a><span id="config-link"> or <a href="#customize" onclick="window.location.href=this.href;window.location.reload()">customize the UI</a></span><span id="hifi">, or see the <a href="#hifi=1" onclick="window.location.href=this.href;window.location.reload()">hi-fi version</a></span>. Check the <a href="canvas-visualization-basic.html">basic template</a> for a minimal code example; also see the <a href="../360-player/" title="360&deg; player UI">default 360&deg; UI</a>.</p>
 
 	<!-- customization crap -->
@@ -260,12 +264,13 @@ pre.block {
 
 		<div>
 	     	<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/mpc/20090207%20-%20Loverman.mp3">20090207 - Loverman</a></div>
+		 	<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/dialup.mp3">56K Modem dial-up sound (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 		 	<div class="ui360 ui360-vis"><a href="../../demo/_mp3/1hz-10khz-sweep.mp3">1-10 Khz Sweep (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 			<div class="ui360 ui360-vis"><a href="../../demo/_mp3/sine,%20square,%20sawtooth,%20rando.mp3">Sine, Square, Sawtooth, Wave (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 		</div>
-		
 
-		<div style="clear:left"></div>
+		<p class="note medium-note" style="clear:left">56K Modem sound (Creative Commons license) via <a href="http://www.freesound.org/samplesViewSingle.php?id=16475">dialup.mp3</a>, from freesound.org user <a href="http://www.freesound.org/usersViewSingle.php?id=54447">Jlew</a>.</p>
+
 		
 		<h2 style="clear:left;padding-top:1em">Variant: Annotations/meta-data</h2>
 
