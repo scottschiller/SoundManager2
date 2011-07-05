@@ -128,12 +128,12 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p><b>Latest changes:</b> HTML5 bulletproofing, <code>Audio(null)</code> tweaks, options inheritance fixes and build process improvements. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> Improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110424.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110424</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110705.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110705</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
 				<p><b>Performance tip:</b> SM2's code size varies from 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
-				<p><b>Side reading:</b> <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>, an article written for 24ways.org touching on some of the issues and future promise of audio in HTML.</p>
+				<p><b>Side reading + video:</b> An article on the issues, promise and future, <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>. There is also a <a href="http://www.yuiblog.com/blog/2011/06/29/video-f2esummit2011-schiller/" title="Yahoo!/YUI Blog, video presentation: Scott Schiller on the State of HTML5 Audio">video presentation + turntable demo</a> (with slides) given at a Yahoo! Front-end Engineering summit.</p>
 			</div>
 			
 		</div>
@@ -142,12 +142,14 @@
 		<div id="history" class="columnar">
 			
 			<div class="c1">
+
 				<h2>Revision History</h2>
 				<p>Latest changes and archived notes from bug fixes, API updates, feature development etc.</p>
+
 			</div>
-			
+
 			<div class="c2">
-				
+
 			  <div class="f-block c-revision-history">
 
 			  	<h3 id="revision-history">Revision History</h3>
@@ -156,9 +158,85 @@
 
 			  	<ul id="revision-list" class="standard">
 
+			   		<li id="sm2-20110705" class="in">
+
+			   			<h3><b>V2.97a.20110705</b> - improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks</h3>
+
+						<p>Improved "mixed mode" HTML5/flash handling via new (experimental) <code>preferFlash</code> option, enabled by default. (If present, MP3/MP4 get flash for stability; HTML5 is used for other formats.) OS X 10.6.8 (finally?) fixes HTML5 audio in Safari. SoundManager 2 SWF adjusted to fall under ClickToFlash's "invisible" rules, may lower chance of blocking.</p>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>ClickToFlash (Safari/Mac flashblock-style extension) compatibility improvement: Use <code>width/height: auto</code> on SWF instead of 100%. The latter is not recognized as being within ClickToFlash's &lt;= 8x8px "invisible flash" rules, almost guaranteed to be blocked. (When considered "invisible", SWF is allowed to load normally if user has the invisibles option enabled.)</li>
+
+									<li>Flash blocking/handling improvements: Default <code>#sm2-container</code> size now always 8x8px to fall under "invisible" flash rules, better chance of load being allowed. If blocked and using flashblock.css, <code>#sm2-container</code> reverts to 48x48px at <code>ontimeout()</code> for visibility (so user can see, and unblock the flash bit.)</li>
+
+									<li>OS X 10.6.8 "pre-Lion release" update <i>finally</i> appears to have fixed the broken Safari HTML5 audio issue. Thus, audio was broken from OS X 10.6.3 to 10.6.7 and SM2 will use Flash for these known cases. Related: <a href="http://isflashdeadyet.com/tests/safari-html5/">Testcase</a> and Webkit bug <a href="https://bugs.webkit.org/show_bug.cgi?id=32159">#32159</a>.</li>
+
+									<li>HTML5 audio: Playback now does not start after a <code>setPosition()</code> call (if the sound was not already playing), or if it was paused - matching the existing Flash API behaviour.</li>
+
+									<li>Fix <code>ontimeout()</code> queue incorrectly processing after <code>onload()</code> and successful startup.</li>
+
+									<li>Debug output: extraneous "%s" fixes for <code>onready()</code> / <code>ontimeout()</code></li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>Added experimental <code>soundManager.preferFlash</code> (default:<code>true</code>) for a more consistent MP3/MP4 playback option in certain HTML5 cases. If using <code>soundManager.useHTML5Audio</code> + <code>preferFlash</code> and flash is available, flash will be used for MP3/MP4.</p>
+										<p> HTML5 is still new and relatively unstable, and bugs are yet to be found and fixed across a growing number of browsers/platforms etc. (consider that it was broken on Safari between OS X 10.6.3 and 10.6.7.) If flash is not installed or <code>preferFlash = false</code>, 100% HTML5 mode can still apply. In any event, HTML5 will still be used (if enabled) for all other formats.</p>
+									</li>
+
+									<li>Moved internal html5Only to (experimental) <code>soundManager.html5Only</code>, for detecting "HTML5-only mode" - eg., iOS, Safari without <code>preferFlash</code> or other environments where SM2 is operating without the flash portion of SM2.</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>Improved "can play" detection (<code>canPlayURL()</code> + <code>canPlayMIME()</code>) for HTML5 + flash cases. Increased "getting impatient, waiting for flash" message to 1 second.</li>
+
+									<li>360&deg;, inline, MP3 button players: Event add/remove: use addEventListener based on typeof attachEvent === null (old IE behaviour)</li>
+
+									<li>MP3 player button demo: Fix IE 6/7 display issue on button (d'oh!)</li>
+
+									<li>Muxtape-style demo: Added <code>pagePlayer.playPrevious()</code>, to match <code>pagePlayer.playNext()</code> (call when a sound is currently playing.)</li>
+
+									<li>Fixed 360&deg; player basic visualization demo (missing class in HTML), clarified canvas support (no eq/spectrum) re: IE &lt;9.</li>
+
+									<li>360&deg; UI: Old "empty element doesn't catch mouse events" bug apparently still applies to IE 9. Fix with invisible background image.</li>
+
+									<li>Minor homepage stylistic updates, source code order change for API docs (CTRL-F search now hits left column first)</li>
+									<li>Small debug output clean-up in SM2, object/embed, init etc.</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+						
+					</li>
+					
 			   		<li id="sm2-20110424" class="in">
 
-			   			<h3><b>V2.97a.20110424</b> - Minor HTML5 tweaks, option inheritance fixes, improved build.xml file</h3>
+			   			<h3><b>V2.97a.20110424</b> - Minor HTML5 tweaks, option inheritance fixes, improved build.xml file (<a href="../../download/soundmanagerv297a-20110424.zip" title="Download SoundManager 2" class="norewrite">Download archived version</a>)</h3>
 
 			    			<p>HTML5 bulletproofing, <code>Audio(null)</code> argument fix for iOS + Opera, <code>load()</code> vs. <code>createSound()</code> and <code>setVolume()</code>/<code>setPan()</code> options/inheritance correction</p>
 				
