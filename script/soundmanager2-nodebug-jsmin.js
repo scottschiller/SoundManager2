@@ -8,7 +8,7 @@
  Code provided under the BSD License:
  http://schillmania.com/projects/soundmanager2/license.txt
 
- V2.97a.20110424+DEV
+ V2.97a.20110705
 */
 (function(X){function L(L,W){function i(b){return function(a){return!this._t||!this._t._a?null:b.call(this,a)}}function oa(){if(b.debugURLParam.test(M))b.debugMode=!0}this.flashVersion=8;this.debugFlash=this.debugMode=!1;this.useConsole=!0;this.waitForWindowLoad=this.consoleOnly=!1;this.nullURL="about:blank";this.allowPolling=!0;this.useFastPolling=!1;this.useMovieStar=!0;this.bgColor="#ffffff";this.useHighPerformance=!1;this.flashPollingInterval=null;this.flashLoadTimeout=1E3;this.wmode=null;this.allowScriptAccess=
 "always";this.useHTML5Audio=this.useFlashBlock=!1;this.html5Test=/^probably$/i;this.preferFlash=this.useGlobalHTML5Audio=!0;this.requireFlash=!1;this.audioFormats={mp3:{type:['audio/mpeg; codecs="mp3"',"audio/mpeg","audio/mp3","audio/MPA","audio/mpa-robust"],required:!0},mp4:{related:["aac","m4a"],type:['audio/mp4; codecs="mp4a.40.2"',"audio/aac","audio/x-m4a","audio/MP4A-LATM","audio/mpeg4-generic"],required:!0},ogg:{type:["audio/ogg; codecs=vorbis"],required:!1},wav:{type:['audio/wav; codecs="1"',
