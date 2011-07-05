@@ -28,9 +28,6 @@ h1 {
 }
 
 h2 {
-/*
- font-family:"helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
-*/
  font-size:1.5em;
 }
 
@@ -188,10 +185,6 @@ pre.specialcommentblock span span {
  *line-height:1.75em;
 }
 
-pre span span {
- /* font-size:x-small; */
-}
-
 pre.small {
  font-size:90%;
 }
@@ -260,10 +253,6 @@ body.home #soundmanager-debug div {
 dd pre,
 dd code {
  background:transparent;
-/*
- font-size:1.15em;
- *font-size:1em;
-*/
 }
 
 pre code {
@@ -279,7 +268,7 @@ pre {
 pre span,
 code span,
 dt span {
- color:#339933;	
+ color:#339933;
 }
 
 pre span span,
@@ -534,12 +523,6 @@ ul {
  list-style-type:none;
 }
 
-#nav>ul {
-/*
- border-top:1px solid #333;
-*/
-}
-
 #nav ul li {
  position:relative;
  margin:0px;
@@ -566,7 +549,6 @@ ul {
 #nav ul li:last-child ul {
  right:1px;
 }
-
 
 #nav ul li:hover ul,
 #nav ul li ul:hover {
@@ -856,9 +838,6 @@ ul.standard ul {
  text-indent:0.5em;
  padding:0.25em 0.25em 0.25em 0.25em;
  cursor:hand;
-/*
- font-smooth:never;
-*/
 }
 
 .c3 ul li ul li.alt {
@@ -888,7 +867,6 @@ ul.standard ul {
  height:1.67em;
  padding:0.25em 0.5em;
  padding:0px;
- 
 }
 
 .c3 h4 {
@@ -1017,13 +995,6 @@ span.nevermind,
  padding:0.1em 0.35em 0.1em 0.35em;
  color:#3399cc;
 }
-
-/*
-.c2 .option a:hover {
- background-color:#3399cc;
- color:#fff;
-}
-*/
 
 #filter-box {
  position:relative;
@@ -1192,8 +1163,8 @@ a.cta:hover,
 }
 
 .c2 a.sm2_button:hover {
-	/* arg. not specific enough, redefine here. */
-	background-color:#cc3333;
+ /* arg. not specific enough, redefine here. */
+ background-color:#cc3333;
 }
 
 a.cta-more {
@@ -1327,15 +1298,12 @@ a.warning:hover {
 }
 
 h4 .scratched-out {
-	text-decoration:line-through;
-	color:#999;
-	/*
-	font-size:xx-small;
-	*/
-	font-size:0.9em;
-	margin-top:-0.75em;
-	-webkit-transform:rotate(-15deg);
-	-moz-transform:rotate(-15deg);
+ text-decoration:line-through;
+ color:#999;
+ font-size:0.9em;
+ margin-top:-0.75em;
+ -webkit-transform:rotate(-15deg);
+ -moz-transform:rotate(-15deg);
 }
 
 .inthewild {
@@ -1373,10 +1341,6 @@ h4 .scratched-out {
 }
 
 .inthewild a {
-/*
- display:inline-block;
- display:-moz-inline-box;
-*/
  position: absolute;
  left: 50%;
  top: 50%;
@@ -1594,7 +1558,6 @@ ul.graphic li a {
  _background-image:url(../demo/play-mp3-links/image/icon_play.gif);
 }
 
-
 ul.graphic li a:hover,
 ul.graphic li a.sm2_paused:hover,
 ul.graphic li a.sm2_link:hover,
@@ -1633,12 +1596,6 @@ ul.inline-playlist li {
 body.home .sm2-inline-list .ui360-vis {
  margin-right:0px;
 }
-
-/*
-body.home ul.standard {
- color:#666;
-}
-*/
 
 body.home .columnar .c2 p {
  line-height:1.6em;
@@ -1714,20 +1671,6 @@ body.home #sm2-container.swf_loaded {
  margin:0px;
 }
 
-/*
-body.home #sm2-container.high_performance {
- bottom:auto;
- left:auto;
- top:auto;
-}
-
-
-body.home #sm2-container.swf_unblocked {
- width:1px;
- height:1px;
-}
-*/
-
 #sm2-support-warning {
  display:none;
  border:1px solid #ff9999;
@@ -1750,8 +1693,8 @@ body.home #sm2-container.swf_unblocked {
 }
 
 body.home #about-sm2 #sm2-support h3 {
-	border-color:#ff9999;
-	margin-top:0.25em;
+ border-color:#ff9999;
+ margin-top:0.25em;
 }
 
 body.home #special-demo-left {
@@ -1909,9 +1852,6 @@ body.fast .xlsf-light {
  margin:0.5em 0px 0.5em 0px;
 }
 
-.figure .code {
-}
-
 .figure .code span {
  padding:0.25em;
  border:1px solid #f0f9ff;
@@ -1941,100 +1881,103 @@ body.fast .xlsf-light {
 }
 
 ul.file-structure ul {
-	padding-left:1.5em;
+ padding-left:1.5em;
 }
 
 ul.file-structure li {
-	list-style-type:square;
-	margin-top:0.25em;
-	margin-left:0px;
+ list-style-type:square;
+ margin-top:0.25em;
+ margin-left:0px;
 }
 
 ul.file-structure li span {
-	color:#999;
+ color:#999;
 }
 
 #sm2-filesizes {
-	border:1px solid #ddd;
+ border:1px solid #ddd;
 }
 
 #sm2-filesizes tr:nth-child(2n+1) {
-	background:#f9f9f9;
+ background:#f9f9f9;
 }
 
 #sm2-filesizes th {
-	background:#eee;
-	font-weight:bold;
-	text-align:left;
+ background:#eee;
+ font-weight:bold;
+ text-align:left;
 }
 
 #sm2-filesizes th {
-	padding:4px 6px;
+ padding:4px 6px;
 }
 
 #sm2-filesizes td {
-	padding:0px 6px;
-	border:1px solid #eee;
+ padding:0px 6px;
+ border:1px solid #eee;
 }
 
 #sm2-filesizes p {
-	margin-top:0.5em;
-	margin-bottom:0px;
+ margin-top:0.5em;
+ margin-bottom:0px;
 }
 
 #sm2-filesizes pre {
-	border-left:none;
-	margin-top:0.5em;
-	margin-bottom:0.5em;
+ border-left:none;
+ margin-top:0.5em;
+ margin-bottom:0.5em;
 }
 
 #sm2-filesizes .nw {
-	white-space:nowrap;
+ white-space:nowrap;
 }
 
 #sm2-filesizes .booyaa {
-	/* in the words of Paris Hilton, "that's hot." (in the nerdy sense, I suppose.) */
-	background:#fff9f9;
-	color:#990000;
+ /* in the words of Paris Hilton, "that's hot." (in the nerdy sense, I suppose.) */
+ background:#fff9f9;
+ color:#990000;
 }
 
 #history li.in > p.compact {
-	font-weight:bold;
+ font-weight:bold;
 }
 
 #sm2-options {
-	/* -html5, -debug etc. */
-	position: relative;
-	clear: both;
-	color: #666;
-	margin: 0.33em 0.75em 0px 0.75em;
-	border-top: 1px solid #e6e6e6;
+ /* -html5, -debug etc. */
+ position: relative;
+ clear: both;
+ color: #666;
+ margin: 0.33em 0.75em 0px 0.75em;
+ border-top: 1px solid #e6e6e6;
 }
 
 #sm2-options .options-divider {
-	font-size: xx-small;
-	color: #ccc;
+ font-size: xx-small;
+ color: #ccc;
 }
 
 #sm2-options p {
-	font-size: x-small;
-	padding-left: 0px;
+ font-size: x-small;
+ padding-left: 0px;
 }
 
 #sm2-options p:first-child {
-	margin-top: 0.75em;
+ margin-top: 0.75em;
 }
 
 #sm2-options a {
-	color: #3399cc;
-	text-decoration: none;
-	padding: 1px;
-	margin-top: -2px 0px 0px -2px;
-}
-
-#sm2-options a:hover {
+ color: #3399cc;
+ text-decoration: none;
+ padding: 1px;
+ margin-top: -2px 0px 0px -2px;
 }
 
 #without-html5 {
-	display: none;
+ display: none;
+}
+
+body.home #about-sm2 #inline-demo-header {
+ margin-top: 1em;
+ border-bottom: 1px solid #eee;
+ padding-bottom: 0.5em;
 }
