@@ -130,7 +130,7 @@
 				<h3>Download SoundManager 2</h3>
 				<p><b>Latest changes:</b> Improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110705.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110705</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110706.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110706</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
 				<p><b>Performance tip:</b> SM2's code size varies from 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 				<p><b>Side reading + video:</b> An article on the issues, promise and future, <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>. There is also a <a href="http://www.yuiblog.com/blog/2011/06/29/video-f2esummit2011-schiller/" title="Yahoo!/YUI Blog, video presentation: Scott Schiller on the State of HTML5 Audio">video presentation + turntable demo</a> (with slides) given at a Yahoo! Front-end Engineering summit.</p>
@@ -158,9 +158,11 @@
 
 			  	<ul id="revision-list" class="standard">
 
-			   		<li id="sm2-20110705" class="in">
+			   		<li id="sm2-20110706" class="in">
 
-			   			<h3><b>V2.97a.20110705</b> - improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks</h3>
+			   			<h3><b>V2.97a.20110706</b> - improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks</h3>
+			
+						<p class="note">Special note: This <i>was</i> <b>V2.97a.20110705</b>, but the latest Flex SDK (4.5.1.21328) was downloaded and used for this build, and it compiled a Flash 9 SWF that wouldn't fully-start on <i>some</i> Windows machines running Firefox and IE 7, possibly others - thus, SM2 would fail to start up. The Flash 9 SWFs are now compiled with an older, working SDK version 4.1.0.16076, used in previous working releases. See <a href="http://getsatisfaction.com/schillmania/topics/flashversion_9_fails_to_initialize_but_only_on_windows">discussion</a> for more details.</p>
 
 						<p>Improved "mixed mode" HTML5/flash handling via new (experimental) <code>preferFlash</code> option, enabled by default. (If present, MP3/MP4 get flash for stability; HTML5 is used for other formats.) OS X 10.6.8 (finally?) fixes HTML5 audio in Safari. SoundManager 2 SWF adjusted to fall under ClickToFlash's "invisible" rules, may lower chance of blocking.</p>
 
