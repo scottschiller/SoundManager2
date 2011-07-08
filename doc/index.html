@@ -762,9 +762,11 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dl id="soundmanager-ontimeout" class="f-block f-ontimeout">
 	   <dt>ontimeout(<span>callback:function, [scope]</span>)</dt>
 	   <dd title="callback:function">Queues an event callback/handler for SM2 init failure, processed at (or immediately, if added after) SM2 initialization has failed, just before <code>soundManager.onerror()</code> is called. An optional scope parameter can be specified; if none, the callback is scoped to the window.</dd>
+       <dd>Additionally, a <code>status</code> object containing <code>success</code> and <code>error-&gt;type</code> parameters is passed as an argument to your callback.</dd>
 	   <dd>Example:
-<pre class="block"><code>soundManager.ontimeout(<span>function() {
-  alert('SM2 failed to start. Flash missing, blocked or security error?');	
+<pre class="block"><code>soundManager.ontimeout(<span>function(status) {
+  alert('SM2 failed to start. Flash missing, blocked or security error?');
+  alert('The status is ' + status.success + ', the error type is ' + status.error.type);
 }</span>);</code></pre>
 	   </dd>
 	   <dd>Queueing multiple handlers: <code>soundManager.ontimeout(<span>myOnTimeoutHandler</span>); soundManager.ontimeout(<span>myOtherHandler</span>);</code></dd>
@@ -1613,11 +1615,12 @@ soundManager.movieStarOptions = {<span>
 			  <dl>
 
 
-			   <dt id="soundmanager-onerror" title="object:function">onerror()</dt>
+			   <dt id="soundmanager-onerror" title="object:function">onerror(status)</dt>
 			   <dd>Function called when SoundManager fails to successfully initialise after Flash attempts an init call via ExternalInterface.</dd>
-			   <dd>Example: <code>soundManager.onerror = <span>function() { alert('SoundManager failed to load'); }</span></code></dd>
+			   <dd>Example: <code>soundManager.onerror = <span>function(status) { alert('SoundManager failed to load: ' + status.type); }</span></code></dd>
 			   <dd>This handler should be called if there is an ExternalInterface problem or other exceptions that fire when the initialisation function is called.</dd>
-			   <dd>If you want multiple listeners for this event, see <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a>.</dd>
+			   <dd>If a specific type of error occurred, it will be provided in the status object as a <code>type</code> parameter.</dd>
+			   <dd>If you want multiple listeners for this event, see <a href="#soundmanager-ontimeout" onclick="resetFilter()">soundManager.ontimeout()</a>.</dd>
 
 	   		   <dt id="soundmanager-oninitmovie" title="object:function">oninitmovie()</dt>
 	   		   <dd>Function called immediately after the SWF is either written to (or retrieved from) the DOM as part of the start-up process. This event can be useful if you wish to implement your own start-up time-out, eg. for handling flash blockers, start-up failures or other custom messaging.</dd>

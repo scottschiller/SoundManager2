@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20110706
+ * V2.97a.20110706+DEV
  */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -111,7 +111,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20110706';
+  this.versionNumber = 'V2.97a.20110706+DEV';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -190,7 +190,7 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _die, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix,
+  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix,
   _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i;
@@ -1016,7 +1016,7 @@ function SoundManager(smURL, smID) {
         } catch(e) {
           //_wDS('smError', 2);
           //_debugTS('onload', false);
-          _die();
+          _catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
         }
       }
       return _t;
@@ -2645,7 +2645,7 @@ function SoundManager(smURL, smID) {
 
   _flashBlockHandler = function() {
     // *possible* flash block situation.
-    var name = _str('fbHandler'), p = _s.getMoviePercent(), css = _s.swfCSS;
+    var name = _str('fbHandler'), p = _s.getMoviePercent(), css = _s.swfCSS, error = {type:'FLASHBLOCK'};
     if (!_s.ok()) {
       if (_needsFlash) {
         // make the movie more visible, so user can fix
@@ -2653,10 +2653,8 @@ function SoundManager(smURL, smID) {
         //_s._wD(name+': '+_str('fbTimeout')+(p?' ('+_str('fbLoaded')+')':''));
       }
       _s.didFlashBlock = true;
-      _processOnEvents({type:'ontimeout',ignoreInit:true}); // fire onready(), complain lightly
-      if (_s.onerror instanceof Function) {
-        _s.onerror.apply(_win);
-      }
+      _processOnEvents({type:'ontimeout', ignoreInit:true, error:error}); // fire onready(), complain lightly
+      _catchError(error);
     } else {
       // SM2 loaded OK (or recovered)
       if (_s.didFlashBlock) {
@@ -2703,20 +2701,22 @@ function SoundManager(smURL, smID) {
       return true;
     }
     var sClass = _s.oMC.className,
-    wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent());
+    wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent()),
+    error;
     if (!wasTimeout) {
       _didInit = true;
+      if (_disabled) {
+        error = {type: 'INIT_TIMEOUT'};
+      }
     }
     //_s._wD('-- SoundManager 2 ' + (_disabled?'failed to load':'loaded') + ' (' + (_disabled?'security/load error':'OK') + ') --', 1);
     if (_disabled || bNoDisable) {
       if (_s.useFlashBlock) {
         _s.oMC.className = _getSWFCSS() + ' ' + (_s.getMoviePercent() === null?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
       }
-      _processOnEvents({type:'ontimeout'});
+      _processOnEvents({type:'ontimeout', error:error});
       //_debugTS('onload', false);
-      if (_s.onerror instanceof Function) {
-        _s.onerror.apply(_win);
-      }
+      _catchError(error);
       return false;
     } else {
       //_debugTS('onload', true);
@@ -2765,7 +2765,11 @@ function SoundManager(smURL, smID) {
     },
     srcQueue = (oOptions && oOptions.type?_on_queue[oOptions.type]||[]:[]), // queue specified by type, or none
     queue = [], i, j,
+    args = [status],
     canRetry = (_needsFlash && _s.useFlashBlock && !_s.ok());
+    if (oOptions.error) {
+      args[0].error = oOptions.error;
+    }
     for (i = 0; i < srcQueue.length; i++) {
       if (srcQueue[i].fired !== true) {
         queue.push(srcQueue[i]);
@@ -2775,9 +2779,9 @@ function SoundManager(smURL, smID) {
       //_s._wD(_sm + ': Firing ' + queue.length + ' '+oOptions.type+'() item' + (queue.length === 1?'':'s'));
       for (i = 0, j = queue.length; i < j; i++) {
         if (queue[i].scope) {
-          queue[i].method.apply(queue[i].scope, [status]);
+          queue[i].method.apply(queue[i].scope, args);
         } else {
-          queue[i].method(status);
+          queue[i].method.apply(this, args);
         }
         if (!canRetry) { // flashblock case doesn't count here
           queue[i].fired = true;
@@ -3004,11 +3008,14 @@ function SoundManager(smURL, smID) {
     }
   };
 
-  _die = function() {
+  _catchError = function(options) {
+    options = (typeof options !== 'undefined' ? options : {});
     if (_s.onerror instanceof Function) {
-      _s.onerror();
+      _s.onerror.apply(_win, [{type:(typeof options.type !== 'undefined' ? options.type : null)}]);
     }
-    _s.disable();
+    if (typeof options.fatal !== 'undefined' && options.fatal) {
+      _s.disable();
+    }
   };
 
   _badSafariFix = function() {
@@ -3104,7 +3111,7 @@ function SoundManager(smURL, smID) {
   } else {
     // no add/attachevent support - safe to assume no JS -> Flash either
     //_debugTS('onload', false);
-    _die();
+    _catchError({type:'NO_DOM2_EVENTS', fatal:true});
   }
 
   if (_doc.readyState === 'complete') {
