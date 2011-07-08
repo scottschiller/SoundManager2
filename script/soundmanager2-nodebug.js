@@ -1955,7 +1955,7 @@ function SoundManager(smURL, smID) {
           }
         }
       }
-      _html5Ext = new RegExp('\\.('+_html5Ext.join('|')+')','i');
+      _html5Ext = new RegExp('\\.('+_html5Ext.join('|')+')(\\?.*)?$','i');
     }
 
     fileExt = (url ? url.toLowerCase().match(_html5Ext) : null); // TODO: Strip URL queries, etc.
@@ -1969,7 +1969,7 @@ function SoundManager(smURL, smID) {
         fileExt = (offset !== -1?mime.substr(0,offset):mime).substr(6); // strip "audio/X; codecs.."
       }
     } else {
-      fileExt = fileExt[0].substr(1); // "mp3", for example
+      fileExt = fileExt[1]; // match the raw extension name - "mp3", for example
     }
 
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
