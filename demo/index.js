@@ -343,7 +343,9 @@ function doChristmasLights() {
     loadScript('http://yui.yahooapis.com/combo?2.6.0/build/yahoo-dom-event/yahoo-dom-event.js&2.6.0/build/animation/animation-min.js',function(){
       loadScript('demo/christmas-lights/christmaslights-home.js',function(){
         if (typeof smashInit != 'undefined') {
-          setTimeout(smashInit,20);
+          setTimeout(function() {
+            smashInit()
+          },20);
         }
       });
     });

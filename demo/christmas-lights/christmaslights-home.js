@@ -43,7 +43,7 @@ function XLSF(oTarget,urlBase,lightClass) {
     var screenY = (document.documentElement.clientHeight||document.body.clientHeight||document.body.scrollHeight);
   }
 
-  this.lightClass = (screenX>1280?'small':'pico'); // kind of light to show (32px to 96px square)
+  this.lightClass = (screenX>1600?'small':'pico'); // kind of light to show (32px to 96px square)
 
   if (typeof lightClass != 'undefined') {
 	// hack: override
@@ -64,7 +64,7 @@ function XLSF(oTarget,urlBase,lightClass) {
   }
   this.lightSmashCounter = 0;
   this.lightIndex = 0;
-  this.lightInterval = 250;
+  this.lightInterval = 500;
   this.timer = null;
   this.bgBaseX = 0;
   this.bgBaseY = 0;
@@ -392,7 +392,7 @@ function XLSF(oTarget,urlBase,lightClass) {
 
   
   this.destroyLights = function() {
-    self.startSequence(self.destroyLight,20);    
+    self.startSequence(self.destroyLight,20);
   }
 
   this.destroyLight = function() {
