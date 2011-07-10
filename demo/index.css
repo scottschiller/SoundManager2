@@ -373,7 +373,7 @@ h2 {
  padding:0px 0px 2em 0px;
  padding-top:1px;
  margin:0px auto;
- max-width:106em;
+ max-width:110em;
  *padding:0px 1em 2em 1em;
  zoom:1;
 }
@@ -1739,7 +1739,7 @@ body.home #inline-playlist {
  display:inline;
  margin-top:-4px;
  background:#fff;
- padding-left:2em;
+ padding-left:3em;
  width:256px;
  z-index: 1;
 }
