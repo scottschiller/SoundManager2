@@ -2118,7 +2118,7 @@ function SoundManager(smURL, smID) {
 
   _policyFix = function(sOpt, sPre) {
     if (sOpt && !sOpt.usePolicyFile && (sOpt.onid3 || sOpt.usePeakData || sOpt.useWaveformData || sOpt.useEQData)) {
-      _s._wD((sPre?sPre+':':'') + _str('policy'));
+      _s._wD((sPre?sPre:'') + _str('policy'));
       sOpt.usePolicyFile = true;
     }
     return sOpt;
@@ -2916,7 +2916,7 @@ function SoundManager(smURL, smID) {
     if (_s.hasHTML5) {
       for (item in _s.audioFormats) {
         if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item+': '+_s.html5[item] + (_s.preferFlash && _s.flash[item] ? ' (preferring flash)':''));
+          tests.push(item+': '+_s.html5[item] + (!_s.html5[item] && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] ? ' (preferring flash)':'')));
         }
       }
       _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
