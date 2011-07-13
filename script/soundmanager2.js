@@ -37,7 +37,7 @@ function SoundManager(smURL, smID) {
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = false;        // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
-  this.html5Test = /^probably$/i;    // HTML5 Audio().canPlayType() test. /^(probably|maybe)$/i if you want to be more liberal/risky.
+  this.html5Test = /^(probably|maybe)$/i; // HTML5 Audio().canPlayType() test. Use /^probably$/i; if you want to be more conservative.
   this.useGlobalHTML5Audio = true;   // (experimental) if true, re-use single HTML5 audio object across all sounds. Force-enabled on mobile devices/iOS.
   this.preferFlash = true;           // (experimental) if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
   this.requireFlash = false;         // (experimental) if true, prevents "HTML5-only" mode when flash present. Allows flash to handle RTMP/serverURL, but HTML5 for other cases unless flash is preferred
@@ -190,16 +190,15 @@ function SoundManager(smURL, smID) {
   // --- private SM2 internals ---
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _go, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _beginInit, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix,
+  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events,
   _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (typeof _doc.hasFocus === 'undefined' && _isSafari), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i;
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
+  _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
+  _http = (!_overHTTP ? 'http:' : '');
 
+  this.useAltURL = !_overHTTP; // use altURL if not "online"
   this.html5Only = false; // determined at init time
-  this._use_maybe = (_wl.match(/sm2\-useHTML5Maybe\=1/i)); // temporary feature: #sm2-useHTML5Maybe=1 forces loose canPlay() check
-  this._overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null);
-  this._http = (!this._overHTTP ? 'http:' : '');
-  this.useAltURL = !this._overHTTP; // use altURL if not "online"
   this._global_a = null;
 
   if (_is_iDevice || _is_pre) {
@@ -209,11 +208,6 @@ function SoundManager(smURL, smID) {
     // by default, use global feature. iOS onfinish() -> next may fail otherwise.
     _s.useGlobalHTML5Audio = true;
     _useGlobalHTML5Audio = true;
-  }
-
-  if (_is_pre || this._use_maybe) {
-    // less-strict canPlayType() checking option
-    _s.html5Test = /^(probably|maybe)$/i;
   }
 
   // Temporary feature: allow force of HTML5 via URL: #sm2-usehtml5audio=0 or 1
@@ -738,8 +732,16 @@ function SoundManager(smURL, smID) {
 
   this.beginDelayedInit = function() {
     _windowLoaded = true;
-   _dcLoaded();
-    setTimeout(_beginInit, 20);
+    _dcLoaded();
+    setTimeout(function() {
+      if (_initPending) {
+        return false;
+      }
+      _createMovie();
+      _initMovie();
+      _initPending = true;
+      return true;
+    }, 20);
     _delayWaitForEI();
   };
 
@@ -759,7 +761,7 @@ function SoundManager(smURL, smID) {
     };
   }
 
-  this._html5_events = {
+  _html5_events = {
 
     // HTML5 event-name-to-handler map
     abort: _html5_event(function(e) {
@@ -885,7 +887,7 @@ function SoundManager(smURL, smID) {
 
         if (loaded && total && loaded === total) {
           // in case "onload" doesn't fire (eg. gecko 1.9.2)
-          _s._html5_events.load.call(this, e);
+          _html5_events.load.call(this, e);
         }
 
       }
@@ -899,7 +901,7 @@ function SoundManager(smURL, smID) {
     suspend: _html5_event(function(e) {
       // download paused/stopped, may have finished (eg. onload)
       _s._wD(_h5+'suspend: '+this._t.sID);
-      _s._html5_events.progress.call(this, e);
+      _html5_events.progress.call(this, e);
     }),
 
     stalled: _html5_event(function(e) {
@@ -1063,6 +1065,8 @@ function SoundManager(smURL, smID) {
           if (!_useGlobalHTML5Audio) {
             _t._remove_html5_events();
           }
+          _t._a._t = null; // break potential circular reference
+          _t._a = null;
         }
       }
       if (!_bFromSM) {
@@ -1580,9 +1584,9 @@ function SoundManager(smURL, smID) {
       _s._wD(_h5+'adding event listeners: '+_t.sID);
       _t._a._added_events = true;
 
-      for (f in _s._html5_events) {
-        if (_s._html5_events.hasOwnProperty(f)) {
-          add(f, _s._html5_events[f]);
+      for (f in _html5_events) {
+        if (_html5_events.hasOwnProperty(f)) {
+          add(f, _html5_events[f]);
         }
       }
 
@@ -1590,7 +1594,6 @@ function SoundManager(smURL, smID) {
 
     };
 
-    // Keep this externally accessible
     this._remove_html5_events = function() {
 
       // Remove event listeners
@@ -1601,9 +1604,9 @@ function SoundManager(smURL, smID) {
       _s._wD(_h5+'removing event listeners: '+_t.sID);
       _t._a._added_events = false;
 
-      for (var f in _s._html5_events) {
-        if (_s._html5_events.hasOwnProperty(f)) {
-          remove(f, _s._html5_events[f]);
+      for (var f in _html5_events) {
+        if (_html5_events.hasOwnProperty(f)) {
+          remove(f, _html5_events[f]);
         }
       }
 
@@ -2266,325 +2269,7 @@ function SoundManager(smURL, smID) {
     // </d>
   }
 
-  _createMovie = function(smID, smURL) {
-
-    var specialCase = null,
-    remoteURL = (smURL?smURL:_s.url),
-    localURL = (_s.altURL?_s.altURL:remoteURL),
-    oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(), s, x, sClass, side = 'auto', isRTL = null, html = _doc.getElementsByTagName('html')[0];
-    isRTL = (html && html.dir && html.dir.match(/rtl/i));
-    smID = (typeof smID === 'undefined'?_s.id:smID);
-
-    if (_didAppend && _appendSuccess) {
-      return false; // ignore if already succeeded
-    }
-
-    function _initMsg() {
-      _s._wD('-- SoundManager 2 ' + _s.version + (!_s.html5Only && _s.useHTML5Audio?(_s.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') + (!_s.html5Only ? (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + (( _s.flashPollingInterval ? 'custom (' + _s.flashPollingInterval + 'ms)' : (_s.useFastPolling?'fast':'normal')) + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') : '') + ' --', 1);
-    }
-
-    if (_s.html5Only) {
-      _setVersionInfo();
-      _initMsg();
-      _s.oMC = _id(_s.movieID);
-      _init();
-      // prevent multiple init attempts
-      _didAppend = true;
-      _appendSuccess = true;
-      return false;
-    }
-
-    _didAppend = true;
-
-    // safety check for legacy (change to Flash 9 URL)
-    _setVersionInfo();
-    _s.url = _normalizeMovieURL(_s._overHTTP?remoteURL:localURL);
-    smURL = _s.url;
-
-    _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
-
-    if (_s.wmode !== null && (_ua.match(/msie 8/i) || (!_isIE && !_s.useHighPerformance)) && navigator.platform.match(/win32|win64/i)) {
-      /*
-       * extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
-       * does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
-       * wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)
-      */
-      _s.specialWmodeCase = true;
-      _wDS('spcWmode');
-      _s.wmode = null;
-    }
-
-    oEmbed = {
-      'name': smID,
-      'id': smID,
-      'src': smURL,
-      'width': side,
-      'height': side,
-      'quality': 'high',
-      'allowScriptAccess': _s.allowScriptAccess,
-      'bgcolor': _s.bgColor,
-      'pluginspage': _s._http+'//www.macromedia.com/go/getflashplayer',
-      'type': 'application/x-shockwave-flash',
-      'wmode': _s.wmode,
-      'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
-    };
-
-    if (_s.debugFlash) {
-      oEmbed.FlashVars = 'debug=1';
-    }
-
-    if (!_s.wmode) {
-      delete oEmbed.wmode; // don't write empty attribute
-    }
-
-    if (_isIE) {
-      // IE is "special".
-      oMovie = _doc.createElement('div');
-      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="'+_s._http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '</object>';
-    } else {
-      oMovie = _doc.createElement('embed');
-      for (tmp in oEmbed) {
-        if (oEmbed.hasOwnProperty(tmp)) {
-          oMovie.setAttribute(tmp, oEmbed[tmp]);
-        }
-      }
-    }
-
-    _initDebug();
-    extraClass = _getSWFCSS();
-    oTarget = _getDocument();
-
-    if (oTarget) {
-
-      _s.oMC = _id(_s.movieID)?_id(_s.movieID):_doc.createElement('div');
-
-      if (!_s.oMC.id) {
-
-        _s.oMC.id = _s.movieID;
-        _s.oMC.className = _s.swfCSS.swfDefault + ' ' + extraClass;
-        // "hide" flash movie
-        s = null;
-        oEl = null;
-
-        if (!_s.useFlashBlock) {
-          if (_s.useHighPerformance) {
-            s = {
-              'position': 'fixed',
-              'width': '8px',
-              'height': '8px',
-              // >= 6px for flash to run fast, >= 8px to start up under Firefox/win32 in some cases. odd? yes.
-              'bottom': '0px',
-              'left': '0px',
-              'overflow': 'hidden'
-            };
-          } else {
-            s = {
-              'position': 'absolute',
-              'width': '6px',
-              'height': '6px',
-              'top': '-9999px',
-              'left': '-9999px'
-            };
-            if (isRTL) {
-              s.left = Math.abs(parseInt(s.left,10))+'px';
-            }
-          }
-        }
-
-        if (_isWebkit) {
-          _s.oMC.style.zIndex = 10000; // soundcloud-reported render/crash fix, safari 5
-        }
-
-        if (!_s.debugFlash) {
-          for (x in s) {
-            if (s.hasOwnProperty(x)) {
-              _s.oMC.style[x] = s[x];
-            }
-          }
-        }
-
-        try {
-          if (!_isIE) {
-            _s.oMC.appendChild(oMovie);
-          }
-          oTarget.appendChild(_s.oMC);
-          if (_isIE) {
-            oEl = _s.oMC.appendChild(_doc.createElement('div'));
-            oEl.className = _s.swfCSS.swfBox;
-            oEl.innerHTML = movieHTML;
-          }
-          _appendSuccess = true;
-        } catch(e) {
-          throw new Error(_str('appXHTML'));
-        }
-
-      } else {
-
-        // it's already in the document.
-        sClass = _s.oMC.className;
-        _s.oMC.className = (sClass?sClass+' ':_s.swfCSS.swfDefault) + (extraClass?' '+extraClass:'');
-        _s.oMC.appendChild(oMovie);
-        if (_isIE) {
-          oEl = _s.oMC.appendChild(_doc.createElement('div'));
-          oEl.className = _s.swfCSS.swfBox;
-          oEl.innerHTML = movieHTML;
-        }
-        _appendSuccess = true;
-
-      }
-
-    }
-
-    if (specialCase) {
-      _s._wD(specialCase);
-    }
-
-    _initMsg();
-    _s._wD(_smc+'createMovie(): Trying to load ' + smURL + (!_s._overHTTP && _s.altURL?' (alternate URL)':''), 1);
-
-    return true;
-
-  };
-
   _idCheck = this.getSoundById;
-
-  _initMovie = function() {
-
-    if (_s.html5Only) {
-      _createMovie();
-      return false;
-    }
-
-    // attempt to get, or create, movie
-    if (_s.o) {
-      return false; // may already exist
-    }
-
-    _s.o = _s.getMovie(_s.id); // inline markup
-
-    if (!_s.o) {
-      if (!_oRemoved) {
-        // try to create
-        _createMovie(_s.id, _s.url);
-      } else {
-        // try to re-append removed movie after reboot()
-        if (!_isIE) {
-          _s.oMC.appendChild(_oRemoved);
-        } else {
-          _s.oMC.innerHTML = _oRemovedHTML;
-        }
-        _oRemoved = null;
-        _didAppend = true;
-      }
-      _s.o = _s.getMovie(_s.id);
-    }
-
-    if (_s.o) {
-      _wDS('waitEI');
-    }
-
-    if (_s.oninitmovie instanceof Function) {
-      setTimeout(_s.oninitmovie, 1);
-    }
-
-    return true;
-
-  };
-
-  _go = function(sURL) {
-    // where it all begins.
-    if (sURL) {
-      _s.url = sURL;
-    }
-    _initMovie();
-  };
-
-  _delayWaitForEI = function() {
-    setTimeout(_waitForEI, 1000);
-  };
-
-  _waitForEI = function() {
-
-    if (_waitingForEI) {
-      return false;
-    }
-
-    _waitingForEI = true;
-    _event.remove(_win, 'load', _delayWaitForEI);
-
-    if (_tryInitOnFocus && !_isFocused) {
-      _wDS('waitFocus');
-      return false;
-    }
-
-    var p;
-    if (!_didInit) {
-      p = _s.getMoviePercent();
-      _s._wD(_str('waitImpatient', (p === 100?' (SWF loaded)':(p > 0?' (SWF ' + p + '% loaded)':''))));
-    }
-
-    setTimeout(function() {
-
-      p = _s.getMoviePercent();
-
-      if (!_didInit) {
-
-        _s._wD(_sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0?'Loading ' + _s.movieURL + ' may have failed (and/or Flash ' + _fV + '+ not present?), ':'') + 'Flash blocked or JS-Flash security error.' + (_s.debugFlash?' ' + _str('checkSWF'):''), 2);
-        if (!_s._overHTTP && p) {
-          _wDS('localFail', 2);
-          if (!_s.debugFlash) {
-            _wDS('tryDebug', 2);
-          }
-        }
-
-        if (p === 0) {
-          // if 0 (not null), probably a 404.
-          _s._wD(_str('swf404', _s.url));
-        }
-
-        _debugTS('flashtojs', false, ': Timed out' + _s._overHTTP?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
-
-      }
-
-      // give up / time-out, depending
-      if (!_didInit && _okToDisable) {
-
-        if (p === null) {
-          // SWF failed. Maybe blocked.
-          if (_s.useFlashBlock || _s.flashLoadTimeout === 0) {
-            if (_s.useFlashBlock) {
-              _flashBlockHandler();
-            }
-            _wDS('waitForever');
-          } else {
-            // old SM2 behaviour, simply fail
-            _failSafely(true);
-          }
-
-        } else {
-
-          // flash loaded? Shouldn't be a blocking issue, then.
-          if (_s.flashLoadTimeout === 0) {
-             _wDS('waitForever');
-          } else {
-            _failSafely(true);
-          }
-
-        }
-
-      }
-
-    }, _s.flashLoadTimeout);
-
-  };
-
-  _go = function(sURL) {
-    // where it all begins.
-    if (sURL) {
-      _s.url = sURL;
-    }
-    _initMovie();
-  };
 
   // <d>
   _wDS = function(o, errorLevel) {
@@ -2664,75 +2349,6 @@ function SoundManager(smURL, smID) {
         _s.oMC.className = [_getSWFCSS(), css.swfDefault, css.swfLoaded + (_s.didFlashBlock?' '+css.swfUnblocked:'')].join(' ');
       }
     }
-  };
-
-  _handleFocus = function() {
-    function cleanup() {
-      _event.remove(_win, 'focus', _handleFocus);
-      _event.remove(_win, 'load', _handleFocus);
-    }
-    if (_isFocused || !_tryInitOnFocus) {
-      cleanup();
-      return true;
-    }
-    _okToDisable = true;
-    _isFocused = true;
-    _s._wD(_smc+'handleFocus()');
-    if (_isSafari && _tryInitOnFocus) {
-      // giant Safari 3.1 hack - assume mousemove = focus given lack of focus event
-      _event.remove(_win, 'mousemove', _handleFocus);
-    }
-    // allow init to restart
-    _waitingForEI = false;
-    cleanup();
-    return true;
-  };
-
-  _initComplete = function(bNoDisable) {
-    if (_didInit) {
-      return false;
-    }
-    if (_s.html5Only) {
-      // all good.
-      _s._wD('-- SoundManager 2: loaded --');
-      _didInit = true;
-      _processOnEvents();
-      _initUserOnload();
-      return true;
-    }
-    var sClass = _s.oMC.className,
-    wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent()),
-    error;
-    if (!wasTimeout) {
-      _didInit = true;
-      if (_disabled) {
-        error = {type: 'INIT_TIMEOUT'};
-      }
-    }
-    _s._wD('-- SoundManager 2 ' + (_disabled?'failed to load':'loaded') + ' (' + (_disabled?'security/load error':'OK') + ') --', 1);
-    if (_disabled || bNoDisable) {
-      if (_s.useFlashBlock) {
-        _s.oMC.className = _getSWFCSS() + ' ' + (_s.getMoviePercent() === null?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
-      }
-      _processOnEvents({type:'ontimeout', error:error});
-      _debugTS('onload', false);
-      _catchError(error);
-      return false;
-    } else {
-      _debugTS('onload', true);
-    }
-    _event.add(_win, 'unload', _doNothing); // prevent browser from showing cached state via back button, because flash will be dead
-    if (_s.waitForWindowLoad && !_windowLoaded) {
-      _wDS('waitOnload');
-      _event.add(_win, 'load', _initUserOnload);
-      return false;
-    } else {
-      if (_s.waitForWindowLoad && _windowLoaded) {
-        _wDS('docLoaded');
-      }
-      _initUserOnload();
-    }
-    return true;
   };
 
   _addOnEvent = function(sType, oMethod, oScope) {
@@ -2894,106 +2510,9 @@ function SoundManager(smURL, smID) {
     }
 
     _s.html5Only = (_s.useHTML5Audio && _s.hasHTML5 && !needsFlash && !_s.requireFlash);
+
     return (_detectFlash() && needsFlash);
 
-  };
-
-  _init = function() {
-
-    var item, tests = [];
-    _wDS('init');
-
-    // called after onload()
-    if (_didInit) {
-      _wDS('didInit');
-      return false;
-    }
-
-    function _cleanup() {
-      _event.remove(_win, 'load', _s.beginDelayedInit);
-    }
-
-    if (_s.hasHTML5) {
-      for (item in _s.audioFormats) {
-        if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item+': '+_s.html5[item] + (!_s.html5[item] && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] ? ' (preferring flash)':'')));
-        }
-      }
-      _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
-    }
-
-    if (_s.html5Only) {
-      if (!_didInit) {
-        // we don't need no steenking flash!
-        _cleanup();
-        _s.enabled = true;
-        _initComplete();
-      }
-      return true;
-    }
-
-    // flash path
-    _initMovie();
-
-    try {
-      _wDS('flashJS');
-      _s.o._externalInterfaceTest(false); // attempt to talk to Flash
-      if (!_s.allowPolling) {
-        _wDS('noPolling', 1);
-      } else {
-        _setPolling(true, _s.flashPollingInterval ? _s.flashPollingInterval : (_s.useFastPolling ? 10 : 50));
-      }
-      if (!_s.debugMode) {
-        _s.o._disableDebug();
-      }
-      _s.enabled = true;
-      _debugTS('jstoflash', true);
-    } catch(e) {
-      _s._wD('js/flash exception: ' + e.toString());
-      _debugTS('jstoflash', false);
-      _failSafely(true); // don't disable, for reboot()
-      _initComplete();
-      return false;
-    }
-
-    _initComplete();
-    // event cleanup
-    _cleanup();
-    return true;
-
-  };
-
-  _beginInit = function() {
-    if (_initPending) {
-      return false;
-    }
-    _createMovie();
-    _initMovie();
-    _initPending = true;
-    return true;
-  };
-
-  _dcLoaded = function() {
-    if (_didDCLoaded) {
-      return false;
-    }
-    _didDCLoaded = true;
-    _initDebug();
-    if (!_s.useHTML5Audio) {
-      if (!_detectFlash()) {
-        _s._wD('SoundManager: No Flash detected, trying HTML5');
-        _s.useHTML5Audio = true;
-      }
-    }
-    _testHTML5();
-    _s.html5.usingFlash = _featureCheck();
-    _needsFlash = _s.html5.usingFlash;
-    _didDCLoaded = true;
-    if (_doc.removeEventListener) {
-      _doc.removeEventListener('DOMContentLoaded', _dcLoaded, false);
-    }
-    _go();
-    return true;
   };
 
   _startTimer = function(oSound) {
@@ -3085,6 +2604,463 @@ function SoundManager(smURL, smID) {
     }
   };
 
+  // initialization helpers
+
+  _createMovie = function(smID, smURL) {
+
+    var remoteURL = (smURL?smURL:_s.url),
+    localURL = (_s.altURL?_s.altURL:remoteURL),
+    oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(), s, x, sClass, side = 'auto', isRTL = null, html = _doc.getElementsByTagName('html')[0];
+    isRTL = (html && html.dir && html.dir.match(/rtl/i));
+    smID = (typeof smID === 'undefined'?_s.id:smID);
+
+    if (_didAppend && _appendSuccess) {
+      return false; // ignore if already succeeded
+    }
+
+    function _initMsg() {
+      _s._wD('-- SoundManager 2 ' + _s.version + (!_s.html5Only && _s.useHTML5Audio?(_s.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') + (!_s.html5Only ? (_s.useMovieStar?', MovieStar mode':'') + (_s.useHighPerformance?', high performance mode, ':', ') + (( _s.flashPollingInterval ? 'custom (' + _s.flashPollingInterval + 'ms)' : (_s.useFastPolling?'fast':'normal')) + ' polling') + (_s.wmode?', wmode: ' + _s.wmode:'') + (_s.debugFlash?', flash debug mode':'') + (_s.useFlashBlock?', flashBlock mode':'') : '') + ' --', 1);
+    }
+
+    if (_s.html5Only) {
+      _setVersionInfo();
+      _initMsg();
+      _s.oMC = _id(_s.movieID);
+      _init();
+      // prevent multiple init attempts
+      _didAppend = true;
+      _appendSuccess = true;
+      return false;
+    }
+
+    _didAppend = true;
+
+    // safety check for legacy (change to Flash 9 URL)
+    _setVersionInfo();
+    _s.url = _normalizeMovieURL(_overHTTP?remoteURL:localURL);
+    smURL = _s.url;
+
+    _s.wmode = (!_s.wmode && _s.useHighPerformance && !_s.useMovieStar?'transparent':_s.wmode);
+
+    if (_s.wmode !== null && (_ua.match(/msie 8/i) || (!_isIE && !_s.useHighPerformance)) && navigator.platform.match(/win32|win64/i)) {
+      /*
+       * extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
+       * does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
+       * wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)
+      */
+      _s.specialWmodeCase = true;
+      _wDS('spcWmode');
+      _s.wmode = null;
+    }
+
+    oEmbed = {
+      'name': smID,
+      'id': smID,
+      'src': smURL,
+      'width': side,
+      'height': side,
+      'quality': 'high',
+      'allowScriptAccess': _s.allowScriptAccess,
+      'bgcolor': _s.bgColor,
+      'pluginspage': _http+'//www.macromedia.com/go/getflashplayer',
+      'type': 'application/x-shockwave-flash',
+      'wmode': _s.wmode,
+      'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
+    };
+
+    if (_s.debugFlash) {
+      oEmbed.FlashVars = 'debug=1';
+    }
+
+    if (!_s.wmode) {
+      delete oEmbed.wmode; // don't write empty attribute
+    }
+
+    if (_isIE) {
+      // IE is "special".
+      oMovie = _doc.createElement('div');
+      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="'+_http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '</object>';
+    } else {
+      oMovie = _doc.createElement('embed');
+      for (tmp in oEmbed) {
+        if (oEmbed.hasOwnProperty(tmp)) {
+          oMovie.setAttribute(tmp, oEmbed[tmp]);
+        }
+      }
+    }
+
+    _initDebug();
+    extraClass = _getSWFCSS();
+    oTarget = _getDocument();
+
+    if (oTarget) {
+
+      _s.oMC = _id(_s.movieID)?_id(_s.movieID):_doc.createElement('div');
+
+      if (!_s.oMC.id) {
+
+        _s.oMC.id = _s.movieID;
+        _s.oMC.className = _s.swfCSS.swfDefault + ' ' + extraClass;
+        // "hide" flash movie
+        s = null;
+        oEl = null;
+
+        if (!_s.useFlashBlock) {
+          if (_s.useHighPerformance) {
+            s = {
+              'position': 'fixed',
+              'width': '8px',
+              'height': '8px',
+              // >= 6px for flash to run fast, >= 8px to start up under Firefox/win32 in some cases. odd? yes.
+              'bottom': '0px',
+              'left': '0px',
+              'overflow': 'hidden'
+            };
+          } else {
+            s = {
+              'position': 'absolute',
+              'width': '6px',
+              'height': '6px',
+              'top': '-9999px',
+              'left': '-9999px'
+            };
+            if (isRTL) {
+              s.left = Math.abs(parseInt(s.left,10))+'px';
+            }
+          }
+        }
+
+        if (_isWebkit) {
+          _s.oMC.style.zIndex = 10000; // soundcloud-reported render/crash fix, safari 5
+        }
+
+        if (!_s.debugFlash) {
+          for (x in s) {
+            if (s.hasOwnProperty(x)) {
+              _s.oMC.style[x] = s[x];
+            }
+          }
+        }
+
+        try {
+          if (!_isIE) {
+            _s.oMC.appendChild(oMovie);
+          }
+          oTarget.appendChild(_s.oMC);
+          if (_isIE) {
+            oEl = _s.oMC.appendChild(_doc.createElement('div'));
+            oEl.className = _s.swfCSS.swfBox;
+            oEl.innerHTML = movieHTML;
+          }
+          _appendSuccess = true;
+        } catch(e) {
+          throw new Error(_str('appXHTML'));
+        }
+
+      } else {
+
+        // it's already in the document.
+        sClass = _s.oMC.className;
+        _s.oMC.className = (sClass?sClass+' ':_s.swfCSS.swfDefault) + (extraClass?' '+extraClass:'');
+        _s.oMC.appendChild(oMovie);
+        if (_isIE) {
+          oEl = _s.oMC.appendChild(_doc.createElement('div'));
+          oEl.className = _s.swfCSS.swfBox;
+          oEl.innerHTML = movieHTML;
+        }
+        _appendSuccess = true;
+
+      }
+
+    }
+
+    _initMsg();
+    _s._wD(_smc+'createMovie(): Trying to load ' + smURL + (!_overHTTP && _s.altURL?' (alternate URL)':''), 1);
+
+    return true;
+
+  };
+
+  _initMovie = function() {
+
+    if (_s.html5Only) {
+      _createMovie();
+      return false;
+    }
+
+    // attempt to get, or create, movie
+    if (_s.o) {
+      return false; // may already exist
+    }
+
+    _s.o = _s.getMovie(_s.id); // inline markup
+
+    if (!_s.o) {
+      if (!_oRemoved) {
+        // try to create
+        _createMovie(_s.id, _s.url);
+      } else {
+        // try to re-append removed movie after reboot()
+        if (!_isIE) {
+          _s.oMC.appendChild(_oRemoved);
+        } else {
+          _s.oMC.innerHTML = _oRemovedHTML;
+        }
+        _oRemoved = null;
+        _didAppend = true;
+      }
+      _s.o = _s.getMovie(_s.id);
+    }
+
+    if (_s.o) {
+      _wDS('waitEI');
+    }
+
+    if (_s.oninitmovie instanceof Function) {
+      setTimeout(_s.oninitmovie, 1);
+    }
+
+    return true;
+
+  };
+
+  _delayWaitForEI = function() {
+    setTimeout(_waitForEI, 1000);
+  };
+
+  _waitForEI = function() {
+
+    if (_waitingForEI) {
+      return false;
+    }
+
+    _waitingForEI = true;
+    _event.remove(_win, 'load', _delayWaitForEI);
+
+    if (_tryInitOnFocus && !_isFocused) {
+      // giant Safari 3.1 hack - assume mousemove = focus given lack of focus event
+      _wDS('waitFocus');
+      return false;
+    }
+
+    var p;
+    if (!_didInit) {
+      p = _s.getMoviePercent();
+      _s._wD(_str('waitImpatient', (p === 100?' (SWF loaded)':(p > 0?' (SWF ' + p + '% loaded)':''))));
+    }
+
+    setTimeout(function() {
+
+      p = _s.getMoviePercent();
+
+      if (!_didInit) {
+
+        _s._wD(_sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0?'Loading ' + _s.movieURL + ' may have failed (and/or Flash ' + _fV + '+ not present?), ':'') + 'Flash blocked or JS-Flash security error.' + (_s.debugFlash?' ' + _str('checkSWF'):''), 2);
+        if (!_overHTTP && p) {
+          _wDS('localFail', 2);
+          if (!_s.debugFlash) {
+            _wDS('tryDebug', 2);
+          }
+        }
+
+        if (p === 0) {
+          // if 0 (not null), probably a 404.
+          _s._wD(_str('swf404', _s.url));
+        }
+
+        _debugTS('flashtojs', false, ': Timed out' + _overHTTP?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
+
+      }
+
+      // give up / time-out, depending
+      if (!_didInit && _okToDisable) {
+
+        if (p === null) {
+          // SWF failed. Maybe blocked.
+          if (_s.useFlashBlock || _s.flashLoadTimeout === 0) {
+            if (_s.useFlashBlock) {
+              _flashBlockHandler();
+            }
+            _wDS('waitForever');
+          } else {
+            // old SM2 behaviour, simply fail
+            _failSafely(true);
+          }
+
+        } else {
+
+          // flash loaded? Shouldn't be a blocking issue, then.
+          if (_s.flashLoadTimeout === 0) {
+             _wDS('waitForever');
+          } else {
+            _failSafely(true);
+          }
+
+        }
+
+      }
+
+    }, _s.flashLoadTimeout);
+
+  };
+
+  _handleFocus = function() {
+    function cleanup() {
+      _event.remove(_win, 'focus', _handleFocus);
+      _event.remove(_win, 'load', _handleFocus);
+    }
+    if (_isFocused || !_tryInitOnFocus) {
+      cleanup();
+      return true;
+    }
+    _okToDisable = true;
+    _isFocused = true;
+    _s._wD(_smc+'handleFocus()');
+    if (_isSafari && _tryInitOnFocus) {
+      _event.remove(_win, 'mousemove', _handleFocus);
+    }
+    // allow init to restart
+    _waitingForEI = false;
+    cleanup();
+    return true;
+  };
+
+  _initComplete = function(bNoDisable) {
+    if (_didInit) {
+      return false;
+    }
+    if (_s.html5Only) {
+      // all good.
+      _s._wD('-- SoundManager 2: loaded --');
+      _didInit = true;
+      _processOnEvents();
+      _initUserOnload();
+      _debugTS('onload', true);
+      return true;
+    }
+    var sClass = _s.oMC.className,
+    wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent()),
+    error;
+    if (!wasTimeout) {
+      _didInit = true;
+      if (_disabled) {
+        error = {type: 'INIT_TIMEOUT'};
+      }
+    }
+    _s._wD('-- SoundManager 2 ' + (_disabled?'failed to load':'loaded') + ' (' + (_disabled?'security/load error':'OK') + ') --', 1);
+    if (_disabled || bNoDisable) {
+      if (_s.useFlashBlock) {
+        _s.oMC.className = _getSWFCSS() + ' ' + (_s.getMoviePercent() === null?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
+      }
+      _processOnEvents({type:'ontimeout', error:error});
+      _debugTS('onload', false);
+      _catchError(error);
+      return false;
+    } else {
+      _debugTS('onload', true);
+    }
+    _event.add(_win, 'unload', _doNothing); // prevent browser from showing cached state via back button, because flash will be dead
+    if (_s.waitForWindowLoad && !_windowLoaded) {
+      _wDS('waitOnload');
+      _event.add(_win, 'load', _initUserOnload);
+      return false;
+    } else {
+      if (_s.waitForWindowLoad && _windowLoaded) {
+        _wDS('docLoaded');
+      }
+      _initUserOnload();
+    }
+    return true;
+  };
+
+  _init = function() {
+
+    var item, tests = [];
+    _wDS('init');
+
+    // called after onload()
+    if (_didInit) {
+      _wDS('didInit');
+      return false;
+    }
+
+    function _cleanup() {
+      _event.remove(_win, 'load', _s.beginDelayedInit);
+    }
+
+    if (_s.hasHTML5) {
+      for (item in _s.audioFormats) {
+        if (_s.audioFormats.hasOwnProperty(item)) {
+          tests.push(item+': '+_s.html5[item] + (!_s.html5[item] && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] ? ' (preferring flash)':'')));
+        }
+      }
+      _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
+    }
+
+    if (_s.html5Only) {
+      if (!_didInit) {
+        // we don't need no steenking flash!
+        _cleanup();
+        _s.enabled = true;
+        _initComplete();
+      }
+      return true;
+    }
+
+    // flash path
+    _initMovie();
+
+    try {
+      _wDS('flashJS');
+      _s.o._externalInterfaceTest(false); // attempt to talk to Flash
+      if (!_s.allowPolling) {
+        _wDS('noPolling', 1);
+      } else {
+        _setPolling(true, _s.flashPollingInterval ? _s.flashPollingInterval : (_s.useFastPolling ? 10 : 50));
+      }
+      if (!_s.debugMode) {
+        _s.o._disableDebug();
+      }
+      _s.enabled = true;
+      _debugTS('jstoflash', true);
+    } catch(e) {
+      _s._wD('js/flash exception: ' + e.toString());
+      _debugTS('jstoflash', false);
+      _failSafely(true); // don't disable, for reboot()
+      _initComplete();
+      return false;
+    }
+
+    _initComplete();
+    // event cleanup
+    _cleanup();
+    return true;
+
+  };
+
+  _dcLoaded = function() {
+    if (_didDCLoaded) {
+      return false;
+    }
+    _didDCLoaded = true;
+    _initDebug();
+    if (!_s.useHTML5Audio) {
+      if (!_detectFlash()) {
+        _s._wD('SoundManager: No Flash detected, trying HTML5');
+        _s.useHTML5Audio = true;
+      }
+    }
+    _testHTML5();
+    _s.html5.usingFlash = _featureCheck();
+    _needsFlash = _s.html5.usingFlash;
+    _didDCLoaded = true;
+    if (_doc.removeEventListener) {
+      _doc.removeEventListener('DOMContentLoaded', _dcLoaded, false);
+    }
+    _initMovie();
+    return true;
+  };
+
   _dcIE = function() {
     if (_doc.readyState === 'complete') {
       _dcLoaded();
@@ -3094,13 +3070,14 @@ function SoundManager(smURL, smID) {
   };
 
   // focus and window load, init
+
   if (!_s.hasHTML5 || _needsFlash) {
     // only applies to Flash mode
     _event.add(_win, 'focus', _handleFocus);
     _event.add(_win, 'load', _handleFocus);
     _event.add(_win, 'load', _delayWaitForEI);
     if (_isSafari && _tryInitOnFocus) {
-      _event.add(_win, 'mousemove', _handleFocus); // massive Safari focus hack
+      _event.add(_win, 'mousemove', _handleFocus); // massive Safari 3.1 focus hack
     }
   }
 
