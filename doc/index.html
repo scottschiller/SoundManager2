@@ -504,9 +504,13 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 			<h4 id="soundmanager-usehtml5audio">soundManager.useHTML5Audio</h4>
 			
-			<p><em><b style="color:#993333">Warning: Beta-ish, in-progress feature</b>; subject to bugs, API changes etc. By default, special check to enable feature for the Apple iPad 3.2+ (which does not support Flash) and Palm Pre, otherwise currently disabled by default. Works on iPhone OS 4.0 / iOS 4.0+.</em></p>
-			<p>Determines whether HTML5 <code>Audio()</code> support is used to play sound, if available, with Flash as the fallback for playing MP3/MP4 (AAC) formats. Browser support for HTML5 Audio varies, and format support (eg. MP3, MP4/AAC, OGG, WAV) can vary by browser/platform.</p>
-			<p>The SM2 API is effectively transparent, consistent whether using Flash or HTML5 <code>Audio()</code> for sound playback behind the scenes. The HTML5 Audio API is roughly equivalent to the Flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available.)</p>
+			<p><em><b style="color:#993333">Beta notice</b>: HTML5 support is under active development; the API may change between versions, but should remain forward-compatible.</em></p>
+			
+			<p><code>soundManager.useHTML5Audio</code> determines whether HTML5 <code>Audio()</code> support is used (as available) to play sound, with flash as the fallback for playing MP3 and MP4 (AAC) formats. Browser support for HTML5 Audio varies, and format support (eg. MP3, MP4/AAC, OGG, WAV) can vary by browser/platform.</p>
+
+			<p>The SM2 API is effectively transparent, consistent whether using flash or HTML5 <code>Audio()</code> for sound playback behind the scenes. The HTML5 Audio API is roughly equivalent to the flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available in HTML5 mode.)</p>
+
+			<p>By default, "100% HTML5 mode" applies to Apple iPad 3.2+, iPhone / iOS 4.0+ devices and others without flash; otherwise, flash is the preferred playback method for MP3/MP4. If HTML5 support is also present and enabled in SM2, it will be used for formats that flash does not support. (You can also have HTML5 play MP3/MP4 instead of using flash where supported, by setting <code>soundManager.preferFlash = false</code>.)</p>
 
 			<h5>SoundManager 2 + useHTML5Audio: Init Process</h5>
 
@@ -520,9 +524,13 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			
 			<p>At this time, only Safari and Chrome (excluding Chromium?) support MP3 and MP4 formats. Other browsers have excluded them because MP3 and MP4 are not "free" formats. For these cases, Flash is used as the fallback support for MP3/MP4 as needed.</p>
 			
-			<h5>Bonus HTML5 formats: OGG, WAV</h5>
+			<h5>Additional HTML5 formats: OGG, WAV</h5>
 			
-			<p>WAVe (an old standard) and OGG (a MP3-like codec, except free) are both supported in a majority of browsers via HTML5, so SoundManager 2 will also test for support for these formats. A Flash fallback for these formats has not been implemented.</p>
+			<p>WAVe (uncompressed audio) and OGG (a free/open-source alternative to MP3) are both supported in a majority of browsers via HTML5, so SoundManager 2 will also test for support for these formats. A Flash fallback for these formats has not been implemented. Adobe have indicated they will support OGG audio and video (combined, the "WebM" format) in a future release of flash. As of July 2011, no official date has been set.</p>
+			
+			<p>If you plan on serving OGG media to HTML5, you may need to make a few server configuration updates given the importance of MIME types and the use of certain HTTP headers when serving these files. See Mozilla's <a href="https://developer.mozilla.org/en/Configuring_servers_for_Ogg_media">Configuring Servers For Ogg Media</a> for more.</p>
+			
+			<p>HTML5 is not limited to OGG and WAV, of course, as the system is designed to be extensible. Support for other formats may exist, depending on what built-in support exists, and plug-ins or codecs the user has installed on their system.</p>
 			
 			<h5>Testing audio format support</h5>
 			
@@ -1613,7 +1621,6 @@ soundManager.movieStarOptions = {<span>
 			  <p>For a more flexible queue-based, addListener-style approach to the onload event, see <code><a href="#soundmanager-onready" title="soundManager.onready() event queueing" onclick="resetFilter()">soundManager.onready()</a></code>.</p>
 
 			  <dl>
-
 
 			   <dt id="soundmanager-onerror" title="object:function">onerror(status)</dt>
 			   <dd>Function called when SoundManager fails to successfully initialise after Flash attempts an init call via ExternalInterface.</dd>
