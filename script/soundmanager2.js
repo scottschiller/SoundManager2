@@ -813,6 +813,10 @@ function SoundManager(smURL, smID) {
 
     loadeddata: _html5_event(function(e) {
       _s._wD(_h5+'loadeddata: '+this._t.sID);
+      if (!this._t_.loaded) {
+        this._t.duration = this._t.get_html5_duration();
+        this._t._onload(true);
+      }
     }),
 
     loadedmetadata: _html5_event(function(e) {
