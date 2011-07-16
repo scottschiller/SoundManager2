@@ -211,13 +211,13 @@ function SoundManager(smURL, smID) {
   }
 
   /*
-   * Temporary feature: allow force of HTML5 via URL params: #sm2-usehtml5audio=0 or 1
-   * Ditto for #sm2-preferFlash, too.
+   * Temporary feature: allow force of HTML5 via URL params: sm2-usehtml5audio=0 or 1
+   * Ditto for sm2-preferFlash, too.
   */
   // <d>
   (function(){
-    var a = '#sm2-usehtml5audio=', l = _wl.toLowerCase(), b = null,
-    a2 = '#sm2-preferflash=', b2 = null, hasCon = (typeof console !== 'undefined' && typeof console.log !== 'undefined');
+    var a = 'sm2-usehtml5audio=', l = _wl.toLowerCase(), b = null,
+    a2 = 'sm2-preferflash=', b2 = null, hasCon = (typeof console !== 'undefined' && typeof console.log !== 'undefined');
     if (l.indexOf(a) !== -1) {
       b = (l.charAt(l.indexOf(a)+a.length) === '1');
       if (hasCon) {
