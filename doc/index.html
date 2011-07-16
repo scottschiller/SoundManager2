@@ -510,23 +510,25 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 			<p>The SM2 API is effectively transparent, consistent whether using flash or HTML5 <code>Audio()</code> for sound playback behind the scenes. The HTML5 Audio API is roughly equivalent to the flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available in HTML5 mode.)</p>
 
-			<p>By default, "100% HTML5 mode" applies to Apple iPad 3.2+, iPhone / iOS 4.0+ devices and others without flash; otherwise, flash is the preferred playback method for MP3/MP4. If HTML5 support is also present and enabled in SM2, it will be used for formats that flash does not support. (You can also have HTML5 play MP3/MP4 instead of using flash where supported, by setting <code>soundManager.preferFlash = false</code>.)</p>
+			<p>By default, "100% HTML5 mode" applies to Apple iPad 3.2+, iPhone / iOS 4.0+ devices and others without flash; otherwise, flash is the preferred playback method for MP3/MP4. If HTML5 support is also present and enabled in SM2, it will be used for formats that flash does not support. (You can also have HTML5 play MP3/MP4 where supported instead of preferring flash, by setting <code>soundManager.preferFlash = false</code>.)</p>
 
 			<h5>SoundManager 2 + useHTML5Audio: Init Process</h5>
 
-			<p>At DOM ready (if useHTML5Audio = true), a test for <code>Audio()</code> is done followed by a series of <code>canPlayType()</code> tests to see if MP3, MP4, WAV and OGG formats are supported. If none of the "required" formats (MP3 + MP4, by default) are supported natively, then Flash is also added as a requirement for SM2 to start.</p>
-			<p><code>soundManager.audioFormats</code> currently defines the list of formats to check (MP3, MP4 and so on), their possible <code>canPlayType()</code> strings (long story short, it's complicated) and whether or not they are "required" - that is, whether Flash should be loaded if they don't work under HTML5. (Again, only MP3 + MP4 are supported by Flash.) If you had a page solely using OGG, you could make MP3/MP4 non-required, but many browsers would not play them inline.</p>
-			<p>SM2 will indicate its state (HTML 5 support or not, using Flash or not) in <code>console.log()</code>-style debug output messages when <code>debugMode = true</code>.</p>
+			<p>At DOM ready (if <code>useHTML5Audio</code> = <code>true</code>), a test for <code>Audio()</code> is done followed by a series of <code>canPlayType()</code> tests to see if MP3, MP4, WAV and OGG formats are supported. If any of the "required" formats (by default, MP3 + MP4) are supported via HTML5, or if <code>preferFlash</code> = <code>true</code> and MP3/MP4 are required, then flash is also added as a requirement for SM2 to start.</p>
+
+			<p><code>soundManager.audioFormats</code> currently defines the list of formats to check (MP3, MP4 and so on), their possible <code>canPlayType()</code> strings (long story short, it's complicated) and whether or not they are "required" - that is, whether flash should be loaded if they don't work under HTML5. (Again, only MP3 + MP4 are supported by flash.) If you had a page solely using OGG, you could make MP3/MP4 non-required, but many browsers would not play them inline.</p>
+
+			<p>SM2 will indicate its state (HTML 5 support or not, using flash or not) in <code>console.log()</code>-style debug output messages when <code>debugMode = true</code>.</p>
 			
 			<h5>"My browser does HTML5, why not MP3"?</h5>
 
-			<p>Despite best efforts, some browsers eg. Chrome on Windows may only return "maybe" for <code>Audio().canPlayType('audio/mpeg; codecs=mp3')</code> and variants; by default, SoundManager 2 will only assume a format is supported if a "probably" response is given. You can modify <code>soundManager.html5Test</code> to something like <code>/(probably|maybe)/i</code> if you want to be a bit riskier, but you should consider potential false positives.</p>
+			<p>Despite best efforts, some browsers eg. Chrome on Windows may only return "maybe" for <code>Audio().canPlayType('audio/mpeg; codecs=mp3')</code> and variants; SoundManager 2 will presently assume a format is supported if a "probably" or "maybe" response is given. You can modify <code>soundManager.html5Test</code> to be <code>/probably/i</code> if you want to be more strict, for example.</p>
 			
-			<p>At this time, only Safari and Chrome (excluding Chromium?) support MP3 and MP4 formats. Other browsers have excluded them because MP3 and MP4 are not "free" formats. For these cases, Flash is used as the fallback support for MP3/MP4 as needed.</p>
+			<p>At this time, only Safari and Chrome (excluding Chromium?) support MP3 and MP4 formats. Other browsers have excluded them because MP3 and MP4 are not "free" formats. For these cases, flash is used as the fallback support for MP3/MP4 as needed. Additionally, if flash support is present, <code>soundManager.preferFlash</code> means that MP3/MP4 get flash by default as HTML5 is still a bit unstable and subject to bugs across many devices and OSes.</p>
 			
 			<h5>Additional HTML5 formats: OGG, WAV</h5>
 			
-			<p>WAVe (uncompressed audio) and OGG (a free/open-source alternative to MP3) are both supported in a majority of browsers via HTML5, so SoundManager 2 will also test for support for these formats. A Flash fallback for these formats has not been implemented. Adobe have indicated they will support OGG audio and video (combined, the "WebM" format) in a future release of flash. As of July 2011, no official date has been set.</p>
+			<p>WAVe (uncompressed audio) and OGG (a free/open-source alternative to MP3) are both supported in a majority of browsers via HTML5, so SoundManager 2 will also test for support for these formats. A flash fallback for these formats has not been implemented. Adobe have indicated they will support OGG audio and video (combined, the "WebM" format) in a future release of flash. As of July 2011, no official date has been set.</p>
 			
 			<p>If you plan on serving OGG media to HTML5, you may need to make a few server configuration updates given the importance of MIME types and the use of certain HTTP headers when serving these files. See Mozilla's <a href="https://developer.mozilla.org/en/Configuring_servers_for_Ogg_media">Configuring Servers For Ogg Media</a> for more.</p>
 			
