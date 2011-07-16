@@ -457,6 +457,32 @@ if (window.is_home) {
 
 	  doChristmasLights();
 
+    // hat tip: Flash Detect library (BSD, (C) 2007) by Carl "DocYes" S. Yestrau - http://featureblend.com/javascript-flash-detection-library.html / http://featureblend.com/license.txt
+
+    var _hasFlash;
+    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = window.ActiveXObject;
+
+    if (nP && nP.length) {
+
+      type = 'application/x-shockwave-flash';
+      types = n.mimeTypes;
+      if (types && types[type] && types[type].enabledPlugin && types[type].enabledPlugin.description) {
+        hasPlugin = true;
+      }
+
+    } else if (typeof AX !== 'undefined') {
+
+      try {
+        obj = new AX('ShockwaveFlash.ShockwaveFlash');
+      } catch(e) {
+        // oh well
+      }
+      hasPlugin = (!!obj);
+
+    }
+
+    _hasFlash = hasPlugin;
+
 	  // if using HTML5, show some additional format support info
 	  // written while watching The Big Lebowski for the Nth time. Donny, you're out of your element!
 	  var s = soundManager;
@@ -473,7 +499,14 @@ if (window.is_home) {
 	      }
 	    }
 
-	    li.innerHTML = 'This browser\'s <em class="true">&lt;HTML5&gt;</em> vs. <em class="partial">Flash</em> support (best guess):<p style="margin:0.5em 0px 0.5em 0px">' + items.join('') + (!soundManager._use_maybe ? '&nbsp; (Try <a href="#sm2-useHTML5Maybe=1" onclick="window.location.href=this.href;window.location.reload()" title="Try using probably|maybe for HTML5 Audio().canPlayType(), more buggy but may get HTML5 support on Chrome/OS X and other browsers.">less-strict HTML5 checking</a>?)' : '&nbsp; (allowing <b>"maybe"</b> for <code>canPlayType()</code>, less-strict HTML5 audio support tests)' + '</p>');
+	    li.innerHTML = [
+          '<b>This browser\'s <em class="true">&lt;HTML5&gt;</em> vs. <em class="partial">Flash</em> support (best guess):<p style="margin:0.5em 0px 0.5em 0px"></b>',
+          items.join(''),
+          '<br />',
+          '<i>',
+          (soundManager.html5.mp3 || soundManager.html5.mp4 ? (_hasFlash && soundManager.preferFlash ? '(Preferring flash for MP3/MP4; try <a href="?sm2-preferFlash=0" title="Try using soundManager.preferFlash=false to have HTML5 actually play MP3/MP4 formats and depending on support, run SM2 entirely without flash.">preferFlash=false</a> for 100% HTML5 mode)' : (soundManager.html5Only ? '(SM2 is running in 100% HTML5 mode.)' : '&nbsp; (Some flash required; allowing HTML5 to play MP3/MP4, as supported.)' + '</p>')) : '(Flash is required for this browser to play MP3/MP4.)'),
+          '</i>'
+        ].join('');
 	    _id('html5-audio-notes').appendChild(li);
 	    _id('without-html5').style.display = 'inline';
 
@@ -508,7 +541,7 @@ if (window.is_home) {
 	  var o = _id('sm2-support');
 	  var o2 = _id('sm2-support-warning');
 	  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>' + (soundManager.hasHTML5 ? 'The flash portion of ' : '') + 'SoundManager 2 was unable to start. ' + (soundManager.useHTML5Audio ? (soundManager.hasHTML5 ? '</p><p>Partial HTML5 Audio() is present, but flash is needed for MP3 and/or MP4 support.' : '<br>(No HTML5 Audio() support found, either.)') : '') + '<br>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it should be visible above.</p><p id="flash-offline">' + (!soundManager._overHTTP ? '<b>Viewing offline</b>? You may need to change a Flash security setting.' : 'Other possible causes: Missing .SWF, or no Flash?') + ' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot" style="display:inline-block;margin-left:0px">Troubleshooting</a></p></div>';
-	  var hatesFlash = (navigator.userAgent.match(/(ipad|iphone)/i));
+	  var hatesFlash = (navigator.userAgent.match(/(ipad|iphone|ipod)/i));
 	  o.innerHTML = smLoadFailWarning;
 	  o2.innerHTML = '<p style="margin:0px">SoundManager 2 could not start. <a href="#inline-demos">See below</a> for details.</p>';
 	  if (hatesFlash || soundManager.getMoviePercent()) {
