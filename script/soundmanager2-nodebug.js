@@ -2633,7 +2633,13 @@ function SoundManager(smURL, smID) {
       return false;
     }
 
-    _didAppend = true;
+    /*
+     * flash init path
+    */
+
+    function param(name, value) {
+      return '<param name="'+name+'" value="'+value+'" />';
+    }
 
     // safety check for legacy (change to Flash 9 URL)
     _setVersionInfo();
@@ -2677,16 +2683,30 @@ function SoundManager(smURL, smID) {
     }
 
     if (_isIE) {
+
       // IE is "special".
       oMovie = _doc.createElement('div');
-      movieHTML = '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="'+_http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '"><param name="movie" value="' + smURL + '" /><param name="AllowScriptAccess" value="' + _s.allowScriptAccess + '" /><param name="quality" value="' + oEmbed.quality + '" />' + (_s.wmode?'<param name="wmode" value="' + _s.wmode + '" /> ':'') + '<param name="bgcolor" value="' + _s.bgColor + '" />' + (_s.debugFlash?'<param name="FlashVars" value="' + oEmbed.FlashVars + '" />':'') + '</object>';
+      movieHTML = [
+        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '">',
+        param('movie', smURL),
+        param('AllowScriptAccess', _s.allowScriptAccess),
+        param('quality', oEmbed.quality),
+        (_s.wmode? param('wmode', _s.wmode): ''),
+        param('bgcolor', _s.bgColor),
+        param('hasPriority', 'true'),
+        (_s.debugFlash ? param('FlashVars', oEmbed.FlashVars) : ''),
+        '</object>'
+      ].join('');
+
     } else {
+
       oMovie = _doc.createElement('embed');
       for (tmp in oEmbed) {
         if (oEmbed.hasOwnProperty(tmp)) {
           oMovie.setAttribute(tmp, oEmbed[tmp]);
         }
       }
+
     }
 
     _initDebug();
@@ -2707,6 +2727,7 @@ function SoundManager(smURL, smID) {
 
         if (!_s.useFlashBlock) {
           if (_s.useHighPerformance) {
+            // on-screen at all times
             s = {
               'position': 'fixed',
               'width': '8px',
@@ -2717,6 +2738,7 @@ function SoundManager(smURL, smID) {
               'overflow': 'hidden'
             };
           } else {
+            // hide off-screen, lower priority
             s = {
               'position': 'absolute',
               'width': '6px',
@@ -2759,7 +2781,7 @@ function SoundManager(smURL, smID) {
 
       } else {
 
-        // it's already in the document.
+        // SM2 container is already in the document (eg. flashblock use case)
         sClass = _s.oMC.className;
         _s.oMC.className = (sClass?sClass+' ':_s.swfCSS.swfDefault) + (extraClass?' '+extraClass:'');
         _s.oMC.appendChild(oMovie);
@@ -2774,6 +2796,7 @@ function SoundManager(smURL, smID) {
 
     }
 
+    _didAppend = true;
     _initMsg();
     //_s._wD(_smc+'createMovie(): Trying to load ' + smURL + (!_overHTTP && _s.altURL?' (alternate URL)':''), 1);
 
@@ -2876,6 +2899,7 @@ function SoundManager(smURL, smID) {
       if (!_didInit && _okToDisable) {
 
         if (p === null) {
+
           // SWF failed. Maybe blocked.
           if (_s.useFlashBlock || _s.flashLoadTimeout === 0) {
             if (_s.useFlashBlock) {
