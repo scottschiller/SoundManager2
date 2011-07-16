@@ -210,16 +210,27 @@ function SoundManager(smURL, smID) {
     _useGlobalHTML5Audio = true;
   }
 
-  // Temporary feature: allow force of HTML5 via URL: #sm2-usehtml5audio=0 or 1
+  /*
+   * Temporary feature: allow force of HTML5 via URL params: #sm2-usehtml5audio=0 or 1
+   * Ditto for #sm2-preferFlash, too.
+  */
   // <d>
   (function(){
-    var a = '#sm2-usehtml5audio=', l = _wl, b = null;
+    var a = '#sm2-usehtml5audio=', l = _wl.toLowerCase(), b = null,
+    a2 = '#sm2-preferflash=', b2 = null, hasCon = (typeof console !== 'undefined' && typeof console.log !== 'undefined');
     if (l.indexOf(a) !== -1) {
       b = (l.charAt(l.indexOf(a)+a.length) === '1');
-      if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+      if (hasCon) {
         console.log((b?'Enabling ':'Disabling ')+'useHTML5Audio via URL parameter');
       }
       _s.useHTML5Audio = b;
+    }
+    if (l.indexOf(a2) !== -1) {
+      b2 = (l.charAt(l.indexOf(a2)+a2.length) === '1');
+      if (hasCon) {
+        console.log((b2?'Enabling ':'Disabling ')+'preferFlash via URL parameter');
+      }
+      _s.preferFlash = b2;
     }
   }());
   // </d>
@@ -815,8 +826,8 @@ function SoundManager(smURL, smID) {
 
     loadeddata: _html5_event(function(e) {
       _s._wD(_h5+'loadeddata: '+this._t.sID);
-      if (!this._t_.loaded) {
-        this._t.duration = this._t.get_html5_duration();
+      if (!this._t._loaded) {
+        this._t.duration = this._t._get_html5_duration();
         this._t._onload(true);
       }
     }),
