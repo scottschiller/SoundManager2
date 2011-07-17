@@ -81,7 +81,7 @@ body.home #about-sm2 h2.special,
 body.home #about-sm2 h3,
 body.home #about-sm2 h4 {
  font-weight:300;
- font-size:1.75em;
+ font-size:1.65em;
  border-bottom:none;
  padding-bottom:0px;
 }
@@ -97,7 +97,8 @@ body.home #about-sm2 h3 {
 }
 
 body.home #about-sm2 h3 {
- color:#333;
+ color:#222;
+ font-weight: 300;
  padding-bottom:3px;
 }
 
@@ -108,7 +109,7 @@ body.home h4 {
 }
 
 body.home #about-sm2 h4 {
- font-size:1.3em;
+ font-size:1.2em;
  color:#333;
  margin-bottom: 0.5em;
  margin-top: 1.5em;
@@ -472,7 +473,7 @@ h2 {
 }
 
 .columnar .c2 p {
- line-height:1.5em;
+ line-height:1.65em;
 }
 
 .three .columnar {
@@ -644,7 +645,7 @@ ul.standard {
  padding-left:1.2em;
  *padding-left:0px;
  color:#333;
- margin-top:0.5em;
+ margin-top:1em;
  margin-bottom:1em;
  list-style-type:square;
 }
@@ -1598,6 +1599,7 @@ body.home .sm2-inline-list .ui360-vis {
 }
 
 body.home .columnar .c2 p {
+ font-size: 1.1em;
  line-height:1.6em;
  color:#333;
 }
