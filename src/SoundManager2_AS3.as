@@ -547,7 +547,11 @@ package {
             checkProgress();
             try {
               oSound.ignoreDataError = true; // workaround: avoid data error handling for this manual step..
-              oSound.start(0, 1); // go back to 0
+              /*
+               * commenting out per http://getsatisfaction.com/schillmania/topics/how_do_i_prevent_setposition_0_when_a_sound_finishes
+               * .. will be consistent with flash 8 and HTML5 versions, no large regressions expected (maybe progress bar doesn't "reset")
+              */
+              // oSound.start(0, 1); // go back to 0
               oSound.soundChannel.stop();
             } catch(e: Error) {
               writeDebug('Could not set position on ' + sID + ': ' + e.toString());
