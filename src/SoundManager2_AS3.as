@@ -187,7 +187,9 @@ package {
     // -----------------------------------
 
     public function writeDebug (s:String, bTimestamp: Boolean = false) : Boolean {
-      if (!debugEnabled) return false;
+      if (!debugEnabled) {
+        return false;
+      }
       // <d>
       ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
       // </d>
@@ -361,7 +363,7 @@ package {
             nP = 0;
           }
 
-          if (nP != oSound.lastValues.position) {
+          if (nP != oSound.lastValues.position && nP !== 0) {
             oSound.lastValues.position = nP;
             hasNew = true;
           }
@@ -370,10 +372,12 @@ package {
             oSound.lastValues.duration = nD;
             hasNew = true;
           }
+
           if (bL > oSound.lastValues.bytesLoaded) {
             oSound.lastValues.bytesLoaded = bL;
             hasNew = true;
           }
+
           if (bT > oSound.lastValues.bytes) {
             oSound.lastValues.bytes = bT;
             hasNew = true;
@@ -457,7 +461,7 @@ package {
 
         }
 
-        if (typeof nP != 'undefined' && hasNew) { // && isPlaying - removed to allow updates while paused, eg. from setPosition() calls
+        if (typeof nP != 'undefined' && hasNew && (oSound.soundChannel || oSound.useNetstream)) { // && isPlaying - removed to allow updates while paused, eg. from setPosition() calls. Also be more liberal if we're using netStream.
 
           // oSound.lastValues.position = nP;
           sMethod = baseJSObject + "['" + sounds[i] + "']._whileplaying";
@@ -547,10 +551,9 @@ package {
             checkProgress();
             try {
               oSound.ignoreDataError = true; // workaround: avoid data error handling for this manual step..
-              /*
-               * commenting out per http://getsatisfaction.com/schillmania/topics/how_do_i_prevent_setposition_0_when_a_sound_finishes
-               * .. will be consistent with flash 8 and HTML5 versions, no large regressions expected (maybe progress bar doesn't "reset")
-              */
+              // call onfinish first (with end position)...
+              ExternalInterface.call(baseJSObject + "['" + sID + "']._onfinish");
+              // then reset sound so it can be played again.
               // oSound.start(0, 1); // go back to 0
               oSound.soundChannel.stop();
             } catch(e: Error) {
@@ -558,9 +561,10 @@ package {
             }
             oSound.ignoreDataError = false; // ..and reset
             oSound.handledDataError = false; // reset this flag
+          } else {
+            // safety net
+            ExternalInterface.call(baseJSObject + "['" + sID + "']._onfinish");
           }
-          // checkProgress();
-          ExternalInterface.call(baseJSObject + "['" + sID + "']._onfinish");
         });
       }
     }
