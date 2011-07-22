@@ -10,8 +10,8 @@
  * V2.97a.20110706+DEV
 */
 
-/*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
+/*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
 
 (function(window) {
 
@@ -415,9 +415,10 @@ function SoundManager(smURL, smID) {
   };
 
   this.stopAll = function() {
+    var oSound;
     _s._wD(_sm+'.stopAll()', 1);
-    for (var oSound in _s.sounds) {
-      if (_s.sounds[oSound] instanceof SMSound) {
+    for (oSound in _s.sounds) {
+      if (_s.sounds.hasOwnProperty(oSound)) {
         _s.sounds[oSound].stop(); // apply only to sound objects
       }
     }
@@ -431,7 +432,8 @@ function SoundManager(smURL, smID) {
   };
 
   this.pauseAll = function() {
-    for (var i = _s.soundIDs.length; i--;) {
+    var i;
+    for (i = _s.soundIDs.length; i--;) {
       _s.sounds[_s.soundIDs[i]].pause();
     }
   };
@@ -444,7 +446,8 @@ function SoundManager(smURL, smID) {
   };
 
   this.resumeAll = function() {
-    for (var i = _s.soundIDs.length; i--;) {
+    var i;
+    for (i = _s.soundIDs.length; i--;) {
       _s.sounds[_s.soundIDs[i]].resume();
     }
   };
@@ -539,6 +542,7 @@ function SoundManager(smURL, smID) {
 
   this.disable = function(bNoDisable) {
     // destroy all functions
+    var i;
     if (typeof bNoDisable === 'undefined') {
       bNoDisable = false;
     }
@@ -547,7 +551,7 @@ function SoundManager(smURL, smID) {
     }
     _disabled = true;
     _wDS('shutdown', 1);
-    for (var i = _s.soundIDs.length; i--;) {
+    for (i = _s.soundIDs.length; i--;) {
       _disableObject(_s.sounds[_s.soundIDs[i]]);
     }
     _initComplete(bNoDisable); // fire "complete", despite fail
@@ -692,8 +696,9 @@ function SoundManager(smURL, smID) {
 
   this._debug = function() {
     // <d>
+    var i, j;
     _wDS('currentObj', 1);
-    for (var i = 0, j = _s.soundIDs.length; i < j; i++) {
+    for (i = 0, j = _s.soundIDs.length; i < j; i++) {
       _s.sounds[_s.soundIDs[i]]._debug();
     }
     // </d>
@@ -801,7 +806,7 @@ function SoundManager(smURL, smID) {
       var position1K = (!isNaN(this._t.position)?this._t.position/1000:null);
       // set the position if position was set before the sound loaded
       if (this._t.position && this.currentTime !== position1K) {
-        _s._wD(_h5+'canplay: setting position to '+position1K+'');
+        _s._wD(_h5+'canplay: setting position to '+position1K);
         try {
           this.currentTime = position1K;
         } catch(ee) {
@@ -1148,6 +1153,13 @@ function SoundManager(smURL, smID) {
         }
       } else {
         _s._wD(fN + '"' + _t.sID + '"');
+      }
+      if (!_t.isHTML5 && _t.position > 0 && _t.position === _t.duration) {
+        // flash 9 needs a position reset if play() is called while at the end of a sound.
+        _t.position = 0;
+        if (_t._iO.position) {
+          _t._iO.position = 0;
+        }
       }
       /*
        * Streams will pause when their buffer is full if they are being loaded.
@@ -1623,6 +1635,9 @@ function SoundManager(smURL, smID) {
     this._remove_html5_events = function() {
 
       // Remove event listeners
+
+      var f;
+
       function remove(oEvt, oFn, bCapture) {
         return (_t._a ? _t._a.removeEventListener(oEvt, oFn, bCapture||false) : null);
       }
@@ -1630,7 +1645,7 @@ function SoundManager(smURL, smID) {
       _s._wD(_h5+'removing event listeners: '+_t.sID);
       _t._a._added_events = false;
 
-      for (var f in _html5_events) {
+      for (f in _html5_events) {
         if (_html5_events.hasOwnProperty(f)) {
           remove(f, _html5_events[f]);
         }
@@ -1776,10 +1791,6 @@ function SoundManager(smURL, smID) {
       if (isNaN(nPosition) || nPosition === null) {
         return false; // flash safety net
       }
-      if (_t.playState === 0 && nPosition > 0) {
-        // invalid position edge case for end/stop
-        nPosition = 0;
-      }
       _t.position = nPosition;
       _t.processOnPosition();
       if (_fV > 8 && !_t.isHTML5) {
@@ -1873,7 +1884,7 @@ function SoundManager(smURL, smID) {
   */
 
   _getDocument = function() {
-    return (_doc.body?_doc.body:(_doc._docElement?_doc.documentElement:_doc.getElementsByTagName('div')[0]));
+    return (_doc.body || _doc._docElement || _doc.getElementsByTagName('div')[0] || 9999);
   };
 
   _id = function(sID) {
@@ -2152,7 +2163,7 @@ function SoundManager(smURL, smID) {
 
   _policyFix = function(sOpt, sPre) {
     if (sOpt && !sOpt.usePolicyFile && (sOpt.onid3 || sOpt.usePeakData || sOpt.useWaveformData || sOpt.useEQData)) {
-      _s._wD((sPre?sPre:'') + _str('policy'));
+      _s._wD((sPre || '') + _str('policy'));
       sOpt.usePolicyFile = true;
     }
     return sOpt;
@@ -2171,7 +2182,8 @@ function SoundManager(smURL, smID) {
   };
 
   _disableObject = function(o) {
-    for (var oProp in o) {
+    var oProp;
+    for (oProp in o) {
       if (o.hasOwnProperty(oProp) && typeof o[oProp] === 'function') {
         o[oProp] = _doNothing;
       }
@@ -2667,8 +2679,8 @@ function SoundManager(smURL, smID) {
     }
 
     // flash path
-    var remoteURL = (smURL?smURL:_s.url),
-    localURL = (_s.altURL?_s.altURL:remoteURL),
+    var remoteURL = (smURL || _s.url),
+    localURL = (_s.altURL || remoteURL),
     oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(), s, x, sClass, side = 'auto', isRTL = null, html = _doc.getElementsByTagName('html')[0];
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
@@ -2751,7 +2763,7 @@ function SoundManager(smURL, smID) {
 
     if (oTarget) {
 
-      _s.oMC = _id(_s.movieID)?_id(_s.movieID):_doc.createElement('div');
+      _s.oMC = (_id(_s.movieID) || _doc.createElement('div'));
 
       if (!_s.oMC.id) {
 
@@ -3066,7 +3078,7 @@ function SoundManager(smURL, smID) {
       if (!_s.allowPolling) {
         _wDS('noPolling', 1);
       } else {
-        _setPolling(true, _s.flashPollingInterval ? _s.flashPollingInterval : (_s.useFastPolling ? 10 : 50));
+        _setPolling(true, (_s.flashPollingInterval || (_s.useFastPolling ? 10 : 50)));
       }
       if (!_s.debugMode) {
         _s.o._disableDebug();
