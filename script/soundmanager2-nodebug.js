@@ -1154,7 +1154,7 @@ function SoundManager(smURL, smID) {
       } else {
         //_s._wD(fN + '"' + _t.sID + '"');
       }
-      if (!_t.isHTML5 && _t.position > 0 && _t.position === _t.duration) {
+      if (!_t.isHTML5 && _s.flashVersion === 9 && _t.position > 0 && _t.position === _t.duration) {
         // flash 9 needs a position reset if play() is called while at the end of a sound.
         _t.position = 0;
         if (_t._iO.position) {
