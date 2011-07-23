@@ -1154,12 +1154,10 @@ function SoundManager(smURL, smID) {
       } else {
         //_s._wD(fN + '"' + _t.sID + '"');
       }
-      if (!_t.isHTML5 && _s.flashVersion === 9 && _t.position > 0 && _t.position === _t.duration) {
+      if (!_t.isHTML5 && _fV === 9 && _t.position > 0 && _t.position === _t.duration) {
         // flash 9 needs a position reset if play() is called while at the end of a sound.
-        _t.position = 0;
-        if (_t._iO.position) {
-          _t._iO.position = 0;
-        }
+        //_s._wD(fN + '"' + _t.sID + '": Sound at end, resetting to position:0');
+        _t._iO.position = 0;
       }
       /*
        * Streams will pause when their buffer is full if they are being loaded.
@@ -1189,11 +1187,11 @@ function SoundManager(smURL, smID) {
         _t.setVolume(_t._iO.volume, true);
         _t.setPan(_t._iO.pan, true);
         if (!_t.isHTML5) {
-          _s.o._start(_t.sID, _t._iO.loops || 1, (_fV === 9?_t.position:_t.position / 1000));
+          _s.o._start(_t.sID, _t._iO.loops || 1, (_fV === 9?_t._iO.position:_t._iO.position / 1000));
         } else {
           _start_html5_timer();
           a = _t._setup_html5();
-          _t.setPosition(_t.position);
+          _t.setPosition(_t._iO.position);
           a.play();
         }
       }
@@ -1793,7 +1791,7 @@ function SoundManager(smURL, smID) {
       }
       _t.position = nPosition;
       _t.processOnPosition();
-      if (_fV > 8 && !_t.isHTML5) {
+      if (!_t.isHTML5 && _fV > 8) {
         if (_t._iO.usePeakData && typeof oPeakData !== 'undefined' && oPeakData) {
           _t.peakData = {
             left: oPeakData.leftPeak,
