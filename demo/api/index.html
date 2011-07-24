@@ -299,12 +299,15 @@ soundManager.play('<span>aRimSound</span>');</code></pre>
   url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
 });
 
-s.play({
-  onfinish: function() {
-    this.play();
-    <span><span>// or, soundManager.play('<span>hhCymbal</span>');</span></span>
-  }
-});
+function loopSound(sound) {
+  sound.play({
+    onfinish: function() {
+      loopSound(sound);
+    }
+  });
+}
+
+loopSound(s);
 </code></pre>
 
 <button onclick="return doEval(document.getElementById('demo4c').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
