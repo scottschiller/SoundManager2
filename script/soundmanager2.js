@@ -840,10 +840,14 @@ function SoundManager(smURL, smID) {
     }),
 
     loadeddata: _html5_event(function(e) {
+      var t = this._t,
+          bytesTotal = t.bytesTotal || 1; // at least 1 byte, so math works
       _s._wD(_h5+'loadeddata: '+this._t.sID);
-      if (!this._t._loaded) {
-        this._t.duration = this._t._get_html5_duration();
-        this._t._onload(true);
+      if (!t._loaded && !_isSafari) { // safari seems to nicely report progress events, eventually totalling 100%
+        t.duration = t._get_html5_duration();
+        // fire whileloading() with 100% values
+        t._whileloading(bytesTotal, bytesTotal, t._get_html5_duration());
+        t._onload(true);
       }
     }),
 
@@ -1552,8 +1556,9 @@ function SoundManager(smURL, smID) {
     };
 
     this._get_html5_duration = function() {
-      var d = (_t._a ? _t._a.duration*1000 : (_t._iO ? _t._iO.duration : undefined));
-      return (d && !isNaN(d) && d !== Infinity ? d : (_t._iO ? _t._iO.duration : null));
+      var d = (_t._a ? _t._a.duration*1000 : (_t._iO ? _t._iO.duration : undefined)),
+          result = (d && !isNaN(d) && d !== Infinity ? d : (_t._iO ? _t._iO.duration : null));
+      return result;
     };
 
     this._setup_html5 = function(oOptions) {
