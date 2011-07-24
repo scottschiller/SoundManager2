@@ -126,9 +126,9 @@
 					</div>
 
 					<div style="position:relative;padding-top:0.5em">
-						<h2 class="special" style="margin-top:0.25em">SoundManager 2 makes it easier to play audio using JavaScript.</h2>
+						<h2 class="special" style="margin-top:0.25em">SoundManager 2 gives you more audio in more places.</h2>
 						<p style="margin-top:0.5em;margin-bottom:0px">
-							Using HTML5 and Flash, SoundManager 2 provides reliable cross-platform audio under a single API. <a href="doc/getstarted/#intro" class="cta" style="white-space:nowrap">How it works <span>&raquo;</span></a>
+							Using HTML5 and Flash, SoundManager 2 provides reliable cross-platform audio under a single JavaScript API. <a href="doc/getstarted/#intro" class="cta" style="white-space:nowrap">How it works <span>&raquo;</span></a>
 						</p>
 					</div>
 
@@ -254,7 +254,7 @@
 
 					<h3>Technical details</h3>
 
-					<h4 style="margin-top:1em">HTML5 Audio Support <span style="color:#888">(Beta-ish)</span></h4>
+					<h4 style="margin-top:1.5em">HTML5 Audio Support <span style="color:#888">(Beta-ish)</span></h4>
 
 					<ul id="html5-audio-notes" class="standard">
 						<li>100% Flash-free MP3 + MP4/AAC where supported. Works on iPad, iPhone (iOS4)</li>
@@ -466,6 +466,14 @@ soundManager.onload = function() {
 	init();
 	// 	]]>
 	</script>
+
+   <!-- IE CSS font hax -->
+   <!--[if lte IE 8]>
+   <style>h2.special {
+    /* IE 6-8 font reset, doesn't like sort-of-defined @font-family */
+    font-family:"helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
+   </style>
+   <![endif]-->
 
 </div>
 
