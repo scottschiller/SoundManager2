@@ -71,9 +71,10 @@
 </jscomp>
 
 <!-- Retain license comment through further closure compiler minification -->
+
 <replace file="script/soundmanager2-jsmin.js">
     <replacefilter>
-	<replacetoken>/*</replacetoken>
+	<replacetoken>/**</replacetoken>
 	<replacevalue>/** @license</replacevalue>
     </replacefilter>
 </replace>
@@ -137,6 +138,7 @@
 </jscomp>
 
 <!-- Retain license comment through further closure compiler minification -->
+<replace file="script/soundmanager2-jsmin.js" token="/*" value="/** @license"/>
 <replace file="script/soundmanager2-nodebug-jsmin.js" token="/*" value="/** @license"/>
 
 <!-- show size -->
@@ -147,6 +149,7 @@
 <exec executable="perl">
     <arg line='-e "print qq($_: ), (stat $_)[7], qq(\n) for @ARGV" script/soundmanager2.js script/soundmanager2-jsmin.js script/soundmanager2-nodebug.js script/soundmanager2-nodebug-jsmin.js'/>
 </exec>
+
 <!--
 <exec executable="perl">
  <arg line='-e &#39;printf &#34;%d&#34; ,(stat(shift))[7]; &#39; script/soundmanager2.js'/>
