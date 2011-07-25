@@ -197,7 +197,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events,
-  _is_pre = _ua.match(/pre\//i), _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isMobile = (_ua.match(/mobile/i) || _is_pre || _is_iDevice), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
+  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _likesHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
@@ -206,13 +206,16 @@ function SoundManager(smURL, smID) {
   this.useAltURL = !_overHTTP; // use altURL if not "online"
   this._global_a = null;
 
-  if (_is_iDevice || _is_pre) {
-    // during HTML5 beta period (off by default), may as well force it on Apple + Palm, flash support unlikely
+  if (_likesHTML5) {
+    // prefer HTML5 for mobile + tablet-like devices, probably more reliable vs. flash at this point.
     _s.useHTML5Audio = true;
-    _s.ignoreFlash = true;
-    // by default, use global feature. iOS onfinish() -> next may fail otherwise.
-    _s.useGlobalHTML5Audio = true;
-    _useGlobalHTML5Audio = true;
+    _s.preferFlash = false;
+    if (_is_iDevice) {
+      // by default, use global feature. iOS onfinish() -> next may fail otherwise.
+      _s.ignoreFlash = true;
+      _s.useGlobalHTML5Audio = true;
+      _useGlobalHTML5Audio = true;
+    }
   }
 
   /*
@@ -880,7 +883,7 @@ function SoundManager(smURL, smID) {
         return false;
       }
 
-      var i, j, str, loadSum = 0, buffered = 0,
+      var i, j, str, buffered = 0,
           isProgress = (e.type === 'progress'),
           ranges = e.target.buffered,
           loaded = (e.loaded||0), // firefox 3.6 implements e.loaded/total (bytes)
@@ -1256,7 +1259,7 @@ function SoundManager(smURL, smID) {
       return _t._iO.autoPlay;
     };
 
-    this.setPosition = function(nMsecOffset, bNoDebug) {
+    this.setPosition = function(nMsecOffset) {
       if (nMsecOffset === undefined) {
         nMsecOffset = 0;
       }
@@ -1496,7 +1499,7 @@ function SoundManager(smURL, smID) {
       }
     };
 
-    _resetProperties = function(bLoaded) {
+    _resetProperties = function() {
       _t._onPositionItems = [];
       _t._onPositionFired = 0;
       _t._hasTimer = null;
@@ -1985,7 +1988,7 @@ function SoundManager(smURL, smID) {
 
     function preferFlashCheck(kind) {
       // whether flash should play a given type
-      return (_s.preferFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
+      return (_s.preferFlash && _detectFlash() && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
     }
 
     // account for known cases like audio/mp3
@@ -2040,7 +2043,7 @@ function SoundManager(smURL, smID) {
     }
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
-    var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null), item, support = {}, aF, i, _hasFlash = _detectFlash();
+    var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null), item, support = {}, aF, i;
 
     function _cp(m) {
       var canPlay, i, j, isOK = false;
@@ -2221,6 +2224,9 @@ function SoundManager(smURL, smID) {
   };
 
   _setVersionInfo = function() {
+
+console.log('_setVersionInfo: _s.html5Only: ', _s.html5Only);
+
     if (_fV !== 8 && _fV !== 9) {
       //_s._wD(_str('badFV', _fV, _defaultFlashVersion));
       _s.flashVersion = _defaultFlashVersion;
@@ -2540,7 +2546,7 @@ function SoundManager(smURL, smID) {
         }
       }
     } else {
-      // flash required.
+      // flash needed (or, HTML5 needs enabling.)
       return true;
     }
 
@@ -2558,9 +2564,9 @@ function SoundManager(smURL, smID) {
       needsFlash = false;
     }
 
-    _s.html5Only = (_s.useHTML5Audio && _s.hasHTML5 && !needsFlash && !_s.requireFlash);
+    _s.html5Only = (_s.hasHTML5 && ((_s.useHTML5Audio && !needsFlash && !_s.requireFlash) || !_detectFlash()));
 
-    return (_detectFlash() && needsFlash);
+    return (!_s.html5Only);
 
   };
 
@@ -3003,8 +3009,7 @@ function SoundManager(smURL, smID) {
       //_debugTS('onload', true);
       return true;
     }
-    var sClass = _s.oMC.className,
-        wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent()),
+    var wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent()),
         error;
     if (!wasTimeout) {
       _didInit = true;
@@ -3110,14 +3115,20 @@ function SoundManager(smURL, smID) {
     }
     _didDCLoaded = true;
     _initDebug();
-    if (!_s.useHTML5Audio) {
-      if (!_detectFlash()) {
-        //_s._wD('SoundManager: No Flash detected, trying HTML5');
-        _s.useHTML5Audio = true;
-      }
+
+// TODO: Move this somewhere better
+_s.hasHTML5 = (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+
+    if (!_detectFlash() && _s.hasHTML5) {
+      //_s._wD('SoundManager: No Flash detected, trying HTML5');
+      _s.useHTML5Audio = true;
+    } else {
+      //_s._wD('SoundManager: No flash and no HTML5?');
     }
+
     _testHTML5();
     _s.html5.usingFlash = _featureCheck();
+
     _needsFlash = _s.html5.usingFlash;
     _didDCLoaded = true;
     if (_doc.removeEventListener) {
