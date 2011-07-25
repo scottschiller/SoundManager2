@@ -22,7 +22,7 @@ body {
 
 h1,
 h2.special {
- letter-spacing:-0.025em;
+ letter-spacing:-0.015em;
 }
 
 h2.special {
@@ -80,6 +80,11 @@ h5 {
  padding-bottom:0.25em;
 }
 
+.sub-heading {
+ color: #666;
+ font-weight: 400;
+}
+
 body.home .sm2-speaker {
  float:right;
  display:inline;
@@ -102,13 +107,14 @@ body.home #about-sm2 h2.special,
 body.home #about-sm2 h3,
 body.home #about-sm2 h4 {
  font-weight:500;
- font-size:1.65em;
+ font-size:1.75em;
  border-bottom:none;
  padding-bottom:0px;
 }
 
 body.home #about-sm2 h2.special {
- font-size:2.35em;
+ font-size:2em;
+ color: #333;
  margin-top:0.1em;
 }
 
@@ -118,11 +124,15 @@ body.home #about-sm2 h3 {
 }
 
 body.home #about-sm2 h3 {
- color:#333;
+ color:#555;
  font-weight: bold;
  padding-bottom:3px;
- font-weight: 400;
- letter-spacing: -0.01em;
+ font-weight: 300;
+ letter-spacing: -0.005em;
+}
+
+body.home #about-sm2 h3 b {
+ color:#333;
 }
 
 body.home h4 {
@@ -1360,7 +1370,7 @@ h4 .scratched-out {
  vertical-align: middle;
  text-align: center;
  border: 1px solid #eee;
- margin: 2px;
+ margin: 2px 2px 5px 2px;
 }
 
 .inthewild a,

@@ -144,7 +144,7 @@ body {
 
 #soundmanager-debug div {
  font-size:11px;
- font-family: "lucida console",system,terminal,verdana,arial; /* IE doesn't seem to obey short-hand font family here? */
+ font-family: "lucida console",system,verdana,arial; /* IE doesn't seem to obey short-hand font family here? */
  padding:0px 1em 0.5em 0px;
 }
 
