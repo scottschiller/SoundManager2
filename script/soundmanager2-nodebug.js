@@ -178,7 +178,7 @@ function SoundManager(smURL, smID) {
     */
   };
 
-  this.hasHTML5 = null; // switch for handling logic
+  this.hasHTML5 = (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined'); // switch for handling logic
   this.html5 = {        // stores canPlayType() results, etc. treat as read-only.
     // mp3: boolean
     // mp4: boolean
@@ -2225,8 +2225,6 @@ function SoundManager(smURL, smID) {
 
   _setVersionInfo = function() {
 
-console.log('_setVersionInfo: _s.html5Only: ', _s.html5Only);
-
     if (_fV !== 8 && _fV !== 9) {
       //_s._wD(_str('badFV', _fV, _defaultFlashVersion));
       _s.flashVersion = _defaultFlashVersion;
@@ -3116,14 +3114,9 @@ console.log('_setVersionInfo: _s.html5Only: ', _s.html5Only);
     _didDCLoaded = true;
     _initDebug();
 
-// TODO: Move this somewhere better
-_s.hasHTML5 = (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
-
     if (!_detectFlash() && _s.hasHTML5) {
       //_s._wD('SoundManager: No Flash detected, trying HTML5');
       _s.useHTML5Audio = true;
-    } else {
-      //_s._wD('SoundManager: No flash and no HTML5?');
     }
 
     _testHTML5();
