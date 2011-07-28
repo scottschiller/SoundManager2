@@ -2933,7 +2933,7 @@ function SoundManager(smURL, smID) {
       p = _s.getMoviePercent();
 
     // TODO: We now know when flash is missing. Handle this case also.
-    if (!_hasFlash) {
+    if (!_hasFlash && _needsFlash) {
       _s._wD('SoundManager2: Fatal: Flash not installed/enabled case. TODO: Implement nicer messaging/troubleshooting for this.');
       _catchError({type:'NO_FLASH', fatal:true});
     }
