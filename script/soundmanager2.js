@@ -56,7 +56,7 @@ function SoundManager(smURL, smID) {
     'mp4': {
       'related': ['aac','m4a'], // additional formats under the MP4 container
       'type': ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
-      'required': true
+      'required': false
     },
     'ogg': {
       'type': ['audio/ogg; codecs=vorbis'],
@@ -196,7 +196,7 @@ function SoundManager(smURL, smID) {
   */
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events,
+  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _fV = this.flashVersion, _doc = document, _doNothing, _init, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _dcLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _dcIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _likesHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
@@ -741,6 +741,7 @@ function SoundManager(smURL, smID) {
       }
     }
     _s._wD(_sm + ': Rebooting...');
+    // TODO: direct assignment
     _win.setTimeout(function() {
       _s.beginDelayedInit();
     }, 20);
@@ -1988,7 +1989,7 @@ function SoundManager(smURL, smID) {
 
     function preferFlashCheck(kind) {
       // whether flash should play a given type
-      return (_s.preferFlash && _detectFlash() && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
+      return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
     }
 
     // account for known cases like audio/mp3
@@ -2043,7 +2044,8 @@ function SoundManager(smURL, smID) {
     }
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
-    var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null), item, support = {}, aF, i;
+    var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null),
+        item, support = {}, aF, i;
 
     function _cp(m) {
       var canPlay, i, j, isOK = false;
@@ -2057,7 +2059,7 @@ function SoundManager(smURL, smID) {
             isOK = true;
             _s.html5[m[i]] = true;
             // if flash can play and preferred, also mark it for use.
-            _s.flash[m[i]] = !!(_s.preferFlash && m[i].match(_flashMIME));
+            _s.flash[m[i]] = !!(_s.preferFlash && _hasFlash && m[i].match(_flashMIME));
           }
         }
         return isOK;
@@ -2562,7 +2564,7 @@ function SoundManager(smURL, smID) {
       needsFlash = false;
     }
 
-    _s.html5Only = (_s.hasHTML5 && ((_s.useHTML5Audio && !needsFlash && !_s.requireFlash) || !_detectFlash()));
+    _s.html5Only = (_s.hasHTML5 && ((_s.useHTML5Audio && !needsFlash && !_s.requireFlash)));
 
     return (!_s.html5Only);
 
@@ -2930,6 +2932,13 @@ function SoundManager(smURL, smID) {
 
       p = _s.getMoviePercent();
 
+    // TODO: We now know when flash is missing. Handle this case also.
+    if (!_hasFlash) {
+      _s._wD('SoundManager2: Fatal: Flash not installed/enabled case. TODO: Implement nicer messaging/troubleshooting for this.');
+      _catchError({type:'NO_FLASH', fatal:true});
+    }
+    // --- /TODO ---
+
       if (!_didInit) {
         _s._wD(_sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0?'Loading ' + _s.movieURL + ' may have failed (and/or Flash ' + _fV + '+ not present?), ':'') + 'Flash blocked or JS-Flash security error.' + (_s.debugFlash?' ' + _str('checkSWF'):''), 2);
         if (!_overHTTP && p) {
@@ -3017,7 +3026,7 @@ function SoundManager(smURL, smID) {
     }
     _s._wD('-- SoundManager 2 ' + (_disabled?'failed to load':'loaded') + ' (' + (_disabled?'security/load error':'OK') + ') --', 1);
     if (_disabled || bNoDisable) {
-      if (_s.useFlashBlock) {
+      if (_s.useFlashBlock && _s.oMC) {
         _s.oMC.className = _getSWFCSS() + ' ' + (_s.getMoviePercent() === null?_s.swfCSS.swfTimedout:_s.swfCSS.swfError);
       }
       _processOnEvents({type:'ontimeout', error:error});
@@ -3041,9 +3050,22 @@ function SoundManager(smURL, smID) {
     return true;
   };
 
-  _init = function() {
+  _showSupport = function() {
 
     var item, tests = [];
+    if (_s.useHTML5Audio && _s.hasHTML5) {
+      for (item in _s.audioFormats) {
+        if (_s.audioFormats.hasOwnProperty(item)) {
+          tests.push(item + ': ' + _s.html5[item] + (!_s.html5[item] && _hasFlash && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] && _hasFlash ? ' (preferring flash)': (!_s.html5[item] ? ' (' + (_s.audioFormats[item].required ? 'required, ':'') + 'and no flash)' : ''))));
+        }
+      }
+      _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
+    }
+
+  };
+
+  _init = function() {
+
     _wDS('init');
 
     // called after onload()
@@ -3054,15 +3076,6 @@ function SoundManager(smURL, smID) {
 
     function _cleanup() {
       _event.remove(_win, 'load', _s.beginDelayedInit);
-    }
-
-    if (_s.hasHTML5) {
-      for (item in _s.audioFormats) {
-        if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item+': '+_s.html5[item] + (!_s.html5[item] && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] ? ' (preferring flash)':'')));
-        }
-      }
-      _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
     }
 
     if (_s.html5Only) {
@@ -3114,15 +3127,26 @@ function SoundManager(smURL, smID) {
     _didDCLoaded = true;
     _initDebug();
 
-    if (!_detectFlash() && _s.hasHTML5) {
-      _s._wD('SoundManager: No Flash detected, trying HTML5');
+    if (!_hasFlash && _s.hasHTML5) {
+      _s._wD('SoundManager: No Flash detected'+(!_s.useHTML5Audio?', enabling HTML5.':'. Trying HTML5-only mode.'));
       _s.useHTML5Audio = true;
+      // make sure we aren't preferring flash, either
+      // TODO: preferFlash should not matter if flash is not installed. Currently, stuff breaks without the below tweak.
+      _s.preferFlash = false;
     }
 
     _testHTML5();
     _s.html5.usingFlash = _featureCheck();
-
     _needsFlash = _s.html5.usingFlash;
+
+    _showSupport();
+
+    if (!_hasFlash && _needsFlash) {
+      _s._wD('SoundManager: Fatal error: Flash is needed to play some required formats, but is not available.');
+      // TODO: Fatal here vs. timeout approach, etc.
+      _s.flashLoadTimeout = 1; // hack: fail sooner.
+    }
+
     _didDCLoaded = true;
     if (_doc.removeEventListener) {
       _doc.removeEventListener('DOMContentLoaded', _dcLoaded, false);
@@ -3139,16 +3163,15 @@ function SoundManager(smURL, smID) {
     return true;
   };
 
-  // focus and window load, init
+  // sniff up-front
+  _detectFlash();
 
-  if (!_s.hasHTML5 || _needsFlash) {
-    // only applies to Flash mode
-    _event.add(_win, 'focus', _handleFocus);
-    _event.add(_win, 'load', _handleFocus);
-    _event.add(_win, 'load', _delayWaitForEI);
-    if (_isSafari && _tryInitOnFocus) {
-      _event.add(_win, 'mousemove', _handleFocus); // massive Safari 3.1 focus hack
-    }
+  // focus and window load, init (primarily flash-driven)
+  _event.add(_win, 'focus', _handleFocus);
+  _event.add(_win, 'load', _handleFocus);
+  _event.add(_win, 'load', _delayWaitForEI);
+  if (_isSafari && _tryInitOnFocus) {
+    _event.add(_win, 'mousemove', _handleFocus); // massive Safari 3.1 focus hack
   }
 
   if (_doc.addEventListener) {
