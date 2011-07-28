@@ -210,14 +210,8 @@ function BasicMP3Player() {
       }
       thisSound.play();
     }
-
     self.lastSound = thisSound; // reference for next call
-
-    if (typeof e !== 'undefined' && typeof e.preventDefault !== 'undefined') {
-      e.preventDefault();
-    } else {
-      window.event.returnValue = false;
-    }
+    self.stopEvent(e);
     return false;
   };
 
