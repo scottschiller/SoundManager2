@@ -100,8 +100,10 @@ window.onload = function() {
 <body style="height:100%">
 
 <div style="margin-right:43em">
+
  <h1>SoundManager 2: Lazy Loading Example</h1>
  <p>This is an example of dynamically loading SoundManager 2 using JS, after window.onload() has fired.</p> 
+
  <h2>How it works</h2>
  <p>This page waits until window.onload(), delays 1 second and loads soundmanager2.js, which should then start up.</p>
 
@@ -189,11 +191,7 @@ window.onload = function() {</span>
 <code>soundManager.waitForWindowLoad = true;</code>
 
  <h2 style="margin-top:1em">Preventing auto-init using SM2_DEFER</h2>
- <p>If you want to completely defer the normal start-up of SM2 and call the SoundManager() constructor yourself, you can declare an SM2_DEFER global and set it to true.</p>
- <pre><code>window.SM2_DEFER = true;
-<span>// some time later, manually start SM2...</span>
-soundManager = new SoundManager();
-soundManager.beginDelayedInit(); <span>// ensure SM2 begins its init process, in the event dom ready / window.load() have already passed</span></code></pre> 
+ <p>If you want to completely defer the normal start-up of SM2 and call the SoundManager() constructor yourself, you can declare an SM2_DEFER global and set it to true. See the <a href="sm2_defer-example.html" title="SoundManager 2: SM2_DEFER example">SM2_DEFER example</a> for details.</p>
 
  <h2 style="margin-top:1em">Disabling debug output</h2>
  <p>SoundManager 2 will write to a debug &lt;div&gt; element or a javascript console if available, by default. To disable it, simply set the relevant property to false:</p>
