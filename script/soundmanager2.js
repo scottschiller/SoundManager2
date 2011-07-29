@@ -2102,7 +2102,7 @@ function SoundManager(smURL, smID) {
     // <d>
     notReady: 'Not loaded yet - wait for soundManager.onload()/onready()',
     notOK: 'Audio support is not available.',
-    appXHTML: _smc + 'createMovie(): appendChild/innerHTML set failed. May be app/xhtml+xml DOM-related.',
+    domError: _smc + 'createMovie(): appendChild/innerHTML call failed. DOM not ready or other error.',
     spcWmode: _smc + 'createMovie(): Removing wmode, preventing known SWF loading issue(s)',
     swf404: _sm + ': Verify that %s is a valid path.',
     tryDebug: 'Try ' + _sm + '.debugFlash = true for more security details (output goes to SWF.)',
@@ -2312,7 +2312,7 @@ function SoundManager(smURL, smID) {
           oTarget = _getDocument();
           oTarget.appendChild(oD);
         } catch(e2) {
-          throw new Error(_str('appXHTML'));
+          throw new Error(_str('domError')+' \n'+e2.toString());
         }
         oTarget.appendChild(oDebug);
       }
@@ -2832,7 +2832,7 @@ function SoundManager(smURL, smID) {
           }
           _appendSuccess = true;
         } catch(e) {
-          throw new Error(_str('appXHTML'));
+          throw new Error(_str('domError')+' \n'+e.toString());
         }
 
       } else {
@@ -2932,13 +2932,6 @@ function SoundManager(smURL, smID) {
 
       p = _s.getMoviePercent();
 
-    // TODO: We now know when flash is missing. Handle this case also.
-    if (!_hasFlash && _needsFlash) {
-      _s._wD('SoundManager2: Fatal: Flash not installed/enabled case. TODO: Implement nicer messaging/troubleshooting for this.');
-      _catchError({type:'NO_FLASH', fatal:true});
-    }
-    // --- /TODO ---
-
       if (!_didInit) {
         _s._wD(_sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0?'Loading ' + _s.movieURL + ' may have failed (and/or Flash ' + _fV + '+ not present?), ':'') + 'Flash blocked or JS-Flash security error.' + (_s.debugFlash?' ' + _str('checkSWF'):''), 2);
         if (!_overHTTP && p) {
@@ -3021,7 +3014,7 @@ function SoundManager(smURL, smID) {
     if (!wasTimeout) {
       _didInit = true;
       if (_disabled) {
-        error = {type: 'INIT_TIMEOUT'};
+        error = {type: (!_hasFlash && _needsFlash ? 'NO_FLASH' : 'INIT_TIMEOUT')};
       }
     }
     _s._wD('-- SoundManager 2 ' + (_disabled?'failed to load':'loaded') + ' (' + (_disabled?'security/load error':'OK') + ') --', 1);
