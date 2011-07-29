@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: SM2_DEFER Example</title>
+<meta name="description" content="How to load the SoundManager 2 JavaScript API, and call the SoundManager() constructor yourself." />
+<style type="text/css">
+#soundmanager-debug {
+ /* SM2 debug container (optional, use or customize this as you like - makes in-browser debug output more useable) */
+ position:fixed;_position:absolute;right:1em;bottom:1em;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:monaco,"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);
+}
+</style>
+<!-- some CSS for this demo page, not required for SM2 -->
+<link rel="stylesheet" href="template.css" />
+
+<!-- SM2_DEFER EXAMPLE -->
+
+<script type="text/javascript">
+
+/*
+ * Firstly, define SM2_DEFER and set it to true *before* we load soundmanager2.js.
+ * This prevents the SoundManager() constructor from being called immediately.
+ * SM2_DEFER should be assigned within the global scope.
+*/
+
+window.SM2_DEFER = true;
+
+</script>
+
+<!-- Now, load soundmanager2.js as we normally would. -->
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+
+<!-- "Some time later", window.onload() may have fired and you now want to start SM2, etc... -->
+<script type="text/javascript">
+
+// for example purposes, we'll wait until window.onload before starting things.
+window.onload = function() {
+
+  /*
+   * Now that the SM2 constructor is defined, you can call the constructor,
+   * set the options and "kick-start" SM2's init process, and it should work as normal.
+   * WARNING: Do not call beginDelayedInit() before "DOM ready", or things will fail.
+  */
+
+  // construct the instance (must be named soundManager, and scoped globally)
+  window.soundManager = new SoundManager();
+
+  // assign flash url, flashVersion and other SM2 options as usual
+  soundManager.url = '../../swf/';
+  soundManager.flashVersion = 9;
+  // etc...
+
+  // finally, kick-start init process.
+  // (old IE etc. may miss domloaded/ready/window.load if they've already fired.)
+  soundManager.beginDelayedInit();
+
+}
+
+</script>
+</head>
+
+<body style="height:100%">
+
+<div style="margin-right:43em">
+
+ <h1>SoundManager 2: SM2_DEFER Example</h1>
+
+ <p>This is an example of manually starting SoundManager 2. If you want to pre-load the SM2 script up front and have its onready() events etc. fire much later without delay, this approach makes sense. Otherwise, it's better to <a href="deferred-example.html" title="SoundManager 2: Lazy-loading example">lazy-load</a> or simply load SM2 normally as an external script without deferring.</p>
+
+ <h2>How it works</h2>
+ <p>By default, SM2 will call its own SoundManager() constructor inline and will try to initialize ASAP. This page defines a global boolean - <code>window.SM2_DEFER = true;</code> - before loading soundmanager2.js, preventing the constructor from being called.</p>
+
+ <p>Some time later, you must call <code>soundManager = new SoundManager();</code> manually and set things like <code>soundManager.url</code> etc. Finally, you may then call <code>soundManager.beginDelayedInit()</code> to kick off the initialization process. SM2 should then start as usual.</p>
+
+ <h2>Example code</h2>
+
+<pre>
+&lt;script type="text/javascript"&gt;
+
+<span>/*
+ * Firstly, define SM2_DEFER and set it to true *before* we load soundmanager2.js.
+ * This prevents the SoundManager() constructor from being called immediately.
+ * SM2_DEFER should be assigned within the global scope.
+*/</span>
+
+window.SM2_DEFER = true;
+
+&lt;/script&gt;
+
+<span>&lt;!-- Now, load soundmanager2.js as we normally would. --&gt;</span>
+&lt;script type="text/javascript" src="../../script/soundmanager2.js"&gt;&lt;/script&gt;
+
+<span>&lt;!-- "Some time later", window.onload() may have fired and you now want to start SM2, etc... --&gt;</span>
+&lt;script type="text/javascript"&gt;
+
+<span>// for example purposes, we'll wait until window.onload before starting things.</span>
+window.onload = function() {
+
+  <span>/*
+   * Now that the SM2 constructor is defined, you can call the constructor,
+   * set the options and "kick-start" SM2's init process, and it should work as normal.
+   * WARNING: Do not call beginDelayedInit() before "DOM ready", or things will fail.
+  */</span>
+
+  <span>// construct the instance (must be named soundManager, and scoped globally)</span>
+  window.soundManager = new SoundManager();
+
+  <span>// assign flash url, flashVersion and other SM2 options as usual</span>
+  soundManager.url = '../../swf/';
+  soundManager.flashVersion = 9;
+  <span>// etc...</span>
+
+  <span>// finally, kick-start the init process.</span>
+  <span>// (old IE etc. may miss domloaded/ready/window.load if they've already fired.)</span>
+  soundManager.beginDelayedInit();
+
+}
+
+&lt;/script&gt;
+
+</pre>
+
+</div>
+
+</body>
+</html>
