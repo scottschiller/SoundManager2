@@ -19,7 +19,7 @@
 #sm2-container object,
 #sm2-container embed {
  /*
-  * she actual SWF movie bit.
+  * the actual SWF movie bit.
   * important: The SWF needs to be able to be moved off-screen without display: or position: changes.
   * changing display: or position: or overflow: here or on parent can cause SWF reload or other weird issues after unblock
   * e.g., SM2 starts but strange errors, no whileplaying() etc.
