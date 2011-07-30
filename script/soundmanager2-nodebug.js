@@ -741,10 +741,7 @@ function SoundManager(smURL, smID) {
       }
     }
     //_s._wD(_sm + ': Rebooting...');
-    // TODO: direct assignment
-    _win.setTimeout(function() {
-      _s.beginDelayedInit();
-    }, 20);
+    _win.setTimeout(_s.beginDelayedInit, 20);
   };
 
   this.getMoviePercent = function() {
@@ -1891,7 +1888,7 @@ function SoundManager(smURL, smID) {
   */
 
   _getDocument = function() {
-    return (_doc.body || _doc._docElement || _doc.getElementsByTagName('div')[0] || 9999);
+    return (_doc.body || _doc._docElement || _doc.getElementsByTagName('div')[0]);
   };
 
   _id = function(sID) {
@@ -2690,7 +2687,9 @@ function SoundManager(smURL, smID) {
     // flash path
     var remoteURL = (smURL || _s.url),
     localURL = (_s.altURL || remoteURL),
+    swfTitle = 'JS/Flash audio component (SoundManager 2)',
     oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(), s, x, sClass, side = 'auto', isRTL = null, html = _doc.getElementsByTagName('html')[0];
+
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
 
@@ -2726,6 +2725,7 @@ function SoundManager(smURL, smID) {
       'allowScriptAccess': _s.allowScriptAccess,
       'bgcolor': _s.bgColor,
       'pluginspage': _http+'//www.macromedia.com/go/getflashplayer',
+      'title': swfTitle,
       'type': 'application/x-shockwave-flash',
       'wmode': _s.wmode,
       'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
@@ -2744,7 +2744,7 @@ function SoundManager(smURL, smID) {
       // IE is "special".
       oMovie = _doc.createElement('div');
       movieHTML = [
-        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '">',
+        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" title="' + oEmbed.title +'" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '">',
         param('movie', smURL),
         param('AllowScriptAccess', _s.allowScriptAccess),
         param('quality', oEmbed.quality),
