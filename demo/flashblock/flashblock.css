@@ -8,29 +8,34 @@
   * where the SM2 flash movie goes. by default, relative container.
   * set relative or absolute here, and don't touch it later or bad things will happen (see below comments.)
  */
- position: relative;
+ position: absolute;
  width: 1px;
  height: 1px;
- _overflow: hidden; /* screw IE 6, just make it display nice */
+ overflow: hidden;
+ /* screw IE 6, just make it display nice */
+ _overflow: hidden;
 }
 
 #sm2-container object,
 #sm2-container embed {
  /*
-  * the actual movie bit.
-  * SWF needs to be able to be moved off-screen without display: or position: changes. important.
+  * she actual SWF movie bit.
+  * important: The SWF needs to be able to be moved off-screen without display: or position: changes.
   * changing display: or position: or overflow: here or on parent can cause SWF reload or other weird issues after unblock
   * e.g., SM2 starts but strange errors, no whileplaying() etc.
  */
- position: absolute;
- left: auto;
- top: auto;
- /* 
-  * at first, stay <= 8px to fly under the radar of some flash blockers as an "invisible" SWF.
-  * dimensions will change with blocked state.
- */
- width: 8px;
- height: 8px;
+ width: 48px;
+ height: 48px;
+ /* some flash blockers may also respect this rule */
+ max-width: 48px;
+ max-height: 48px;
+}
+
+#sm2-container.swf_timedout {
+ /* expand to show the timed-out SWF content */
+ position: relative;
+ width: 48px;
+ height: 48px;
 }
 
 #sm2-container.swf_timedout,
@@ -40,10 +45,8 @@
   * when SM2 didn't start normally, time-out case. flash blocked, missing SWF, no flash?
   * 48px square flash placeholder is typically used by blockers.
  */
- left: auto;
- top: auto;
- width: 48px;
- height: 48px;
+ min-width: 48px;
+ min-height: 48px;
 }
 
 #sm2-container.swf_unblocked {
@@ -66,10 +69,14 @@
  display: none;
 }
 
-#sm2-container.high_performance {
+#sm2-container.high_performance,
+#sm2-container.high_performance.swf_timeout {
  /* "high performance" case: keep on-screen at all times */
  position: absolute;
  position: fixed;
+}
+
+#sm2-container.high_performance {
  overflow: hidden;
  _top: -9999px; /* IE 6 hax, no position:fixed */
  _left: -9999px;
@@ -95,9 +102,10 @@
  /*
   * 8x8px is required minimum to load in fx/win32 in some cases(?)
   * 6x6+ good for fast performance, even better when on-screen via position:fixed
+  * also, clickToFlash (Safari <5.1) may auto-load "invisible" SWFs at this size
  */
- width: 8px;
  height: 8px;
+ width: 8px;
 }
 
 #sm2-container.high_performance.swf_loaded {
