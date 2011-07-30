@@ -1669,12 +1669,6 @@ body.home .ie7sucks {
 /* special-case for the SM2 homepage only */
 
 body.home #sm2-container {
- display:block;
- overflow:hidden;
- /* try to pass as an "invisible" SWF (ClickToFlash) at this size */
- width:8px;
- height:8px;
- margin:1em 0px 0px 1px;
  /* IE 6 hax, unlikely to have flashblock anyway... */
  _margin:-8px 0px 0px 0px;
 }
@@ -1695,12 +1689,7 @@ body.home #sm2-container.swf_timedout {
 body.home #sm2-container.swf_unblocked {
  /* if unblocked, retain relative position so stuff doesn't break. */
  position:relative;
-}
-
-body.home #sm2-container.swf_loaded {
- /* resular, loaded case */
- width:8px;
- height:8px;
+ margin:1em 0px 0px 1px;
 }
 
 body.home #sm2-container.swf_unblocked,
