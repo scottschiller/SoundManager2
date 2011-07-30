@@ -373,12 +373,6 @@ if (window.is_home) {
 	soundManager.debugMode = false;
 	soundManager.url = 'swf/';
 	soundManager.wmode = 'transparent'; // hide initial flash of white on everything except firefox, IE 8 and Safari on Windoze
-        if (navigator.userAgent.match(/safari/i) && navigator.platform.match(/win32|win64/i)) {
-          if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
-            console.log('homepage-specific hack: Safari on win32/64 doesn\'t like wmode for highPerformance + position + flashblock, removing for this page');
-          }
-          soundManager.wmode = null;
-        }
 
 	var PP_CONFIG = {
 	  autoStart: false,      // begin playing first sound when page loads
