@@ -635,6 +635,7 @@ function smashInit() {
 }
 
 soundManager.url = '../../swf/';
+soundManager.preferFlash = true;
 soundManager.flashVersion = 9;
 soundManager.useHighPerformance = true;
 soundManager.wmode = 'transparent';

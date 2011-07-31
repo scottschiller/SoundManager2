@@ -50,6 +50,11 @@ if (threeSixtyPlayer.config.usePeakData) {
   soundManager.flash9Options.usePeakData = true;
 }
 
+if (threeSixtyPlayer.config.useWaveformData || threeSixtyPlayer.flash9Options.useEQData || threeSixtyPlayer.flash9Options.usePeakData) {
+  // even if HTML5 supports MP3, prefer flash so the visualization features can be used.
+  soundManager.preferFlash = true;
+}
+
 // favicon is expensive CPU-wise, but can be used.
 if (window.location.href.match(/hifi/i)) {
   threeSixtyPlayer.config.useFavIcon = true;

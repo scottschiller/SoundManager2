@@ -74,7 +74,6 @@ var MPC = function() {
 
 var mpc = new MPC();
 
-soundManager.useHTML5Audio = true; // why not.
 soundManager.flashVersion = (window.location.toString().match(/#flash8/i)?8:9);
 if (soundManager.flashVersion != 8) {
   soundManager.useHighPerformance = true;

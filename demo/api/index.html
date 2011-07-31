@@ -79,6 +79,7 @@ p {
 
 // flash version URL switch (for this demo page)
 var winLoc = window.location.toString();
+soundManager.preferFlash = (winLoc.match(/usehtml5audio=1/i) ? false : true);
 if (winLoc.match(/flash9/i)) {
   soundManager.flashVersion = 9;
   if (winLoc.match(/highperformance/i)) {
@@ -170,7 +171,7 @@ function getRandomMP3URL() {
 
  <p>Wondering where to start? This page has inline executable code examples using the SoundManager 2 API.</p>
 
- <p>If you're wondering <em>"How to include SM2 in my page?"</em>, the <a href="../template/" title="SoundManager 2 bare-bones template" onclick="if (!document.domain) this.href=this.href+'index.html'">basic template</a> will get you started.</p>
+ <p>If you're wondering <em>"How to include SM2 in my page?"</em>, the <a href="../template/" title="SoundManager 2 bare-bones template" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">basic template</a> will get you started.</p>
 
  <div id="sm2-container">
    <!-- flash is appended here -->

@@ -359,6 +359,9 @@ if (window.is_home) {
 	// by default, enable native audio (with all its potential caveats.)
 	soundManager.useHTML5Audio = true;
 
+    // even if HTML5 supports MP3, prefer flash so the visualization features can be used.
+    soundManager.preferFlash = true;
+
 	// URL overrides for demo/testing..
 	if (document.location.href.match(/sm2-usehtml5audio=1/i)) {
 	  soundManager.useHTML5Audio = true; // w00t.
@@ -379,7 +382,7 @@ if (window.is_home) {
 	  playNext: true,        // stop after one sound, or play through list until end
 	  useThrottling: false,  // try to rate-limit potentially-expensive calls (eg. dragging position around)</span>
 	  usePeakData: true,     // [Flash 9 only] whether or not to show peak data (left/right channel values) - nor noticable on CPU
-	  useWaveformData: false, // [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
+	  useWaveformData: false,// [Flash 9 only] show raw waveform data - WARNING: LIKELY VERY CPU-HEAVY
 	  useEQData: false,      // [Flash 9 only] show EQ (frequency spectrum) data
 	  useFavIcon: false,     // try to apply peakData to address bar (Firefox + Opera) - performance note: appears to make Firefox 3 do some temporary, heavy disk access/swapping/garbage collection at first(?) - may be too heavy on CPU
 	  useMovieStar: true     // Flash 9.0r115+ only: Support for a subset of MPEG4 formats.
@@ -482,7 +485,13 @@ if (window.is_home) {
 	  var s = soundManager;
 
 	  if (s.useHTML5Audio && s.hasHTML5) {
+        var liID = 'html5-support-li';
+        var oldLI = document.getElementById(liID);
+        if (oldLI) {
+          oldLI.parentNode.removeChild(oldLI);
+        }
 	    var li = document.createElement('li');
+        li.id = liID;
 	    li.className = 'html5support';
 	    var items = [];
 	    var needsFlash = false;
@@ -534,8 +543,26 @@ if (window.is_home) {
 
 	  var o = _id('sm2-support');
 	  var o2 = _id('sm2-support-warning');
-	  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>' + (soundManager.hasHTML5 ? 'The flash portion of ' : '') + 'SoundManager 2 was unable to start. ' + (soundManager.useHTML5Audio ? (soundManager.hasHTML5 ? '</p><p>Partial HTML5 Audio() is present, but flash is needed for MP3 and/or MP4 support.' : '<br>(No HTML5 Audio() support found, either.)') : '') + '<br>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it should be visible above.</p><p id="flash-offline">' + (!soundManager._overHTTP ? '<b>Viewing offline</b>? You may need to change a Flash security setting.' : 'Other possible causes: Missing .SWF, or no Flash?') + ' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot" style="display:inline-block;margin-left:0px">Troubleshooting</a></p></div>';
+	  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>' + (soundManager.hasHTML5 ? 'The flash portion of ' : '') + 'SoundManager 2 was unable to start. ' + (soundManager.useHTML5Audio ? (soundManager.hasHTML5 ? '</p><p>Some HTML5 audio support is present, but flash is needed for MP3/MP4 support on this page.' : '</p><p>No HTML5 support was found, so flash is required.') : '' ) + '</p><p>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it may be visible above.</p><p id="flash-offline">' + (soundManager.useAltURL ? '<b>Viewing offline</b>? You may need to change a Flash security setting.' : 'Other possible causes: Missing .SWF, or no Flash?') + ' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot" style="display:inline-block;margin-left:0px">Troubleshooting</a></p></div>';
 	  var hatesFlash = (navigator.userAgent.match(/(ipad|iphone|ipod)/i));
+
+      if (soundManager.html5.mp3 && soundManager.html5.mp4) {
+        // flash portion was blocked, but support exists. We'll "downgrade" to HTML5-only.
+        soundManager._wD('Special homepage case: Flash appears to blocked, HTML5 support for MP3/MP4 exists; trying HTML5-only mode...');
+        soundManager.useHTML5Audio = true;
+        soundManager.preferFlash = false;
+        setTimeout(function() {
+          soundManager.reboot();
+          soundManager.onready(function() {
+            // for when things start up in HTML5-only mode...
+            o.innerHTML = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Support note</h3><p>SoundManager 2 tried to start using HTML5 + Flash, but rebooted in HTML5-only mode as flash was blocked. Visualization demo features will not be shown in this mode. To enable flash, whitelist the blocked movie (and/or see <a href="doc/getstarted/index.html#troubleshooting">troubleshooting</a>) and reload this page.</p></div>';
+            o.style.marginBottom = '1.5em';
+            o.style.display = 'block';
+          });
+         }, 1);
+        return false;
+      }
+
 	  o.innerHTML = smLoadFailWarning;
 	  o2.innerHTML = '<p style="margin:0px">SoundManager 2 could not start. <a href="#inline-demos">See below</a> for details.</p>';
 	  if (hatesFlash || soundManager.getMoviePercent()) {
