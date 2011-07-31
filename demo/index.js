@@ -555,7 +555,7 @@ if (window.is_home) {
           soundManager.reboot();
           soundManager.onready(function() {
             // for when things start up in HTML5-only mode...
-            o.innerHTML = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Support note</h3><p>SoundManager 2 tried to start using HTML5 + Flash, but rebooted in HTML5-only mode as flash was blocked. Visualization demo features will not be shown in this mode. To enable flash, whitelist the blocked movie (and/or see <a href="doc/getstarted/index.html#troubleshooting">troubleshooting</a>) and reload this page.</p></div>';
+            o.innerHTML = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Support note</h3><p>SoundManager 2 tried to start using HTML5 + Flash, but rebooted in HTML5-only mode as flash was blocked. Visualization demo features will not be shown in this mode. To enable flash, whitelist the blocked movie and reload this page.</p>'+(soundManager.useAltURL?'<p><b>Running offline?</b> Flash may be blocked due to security restrictions; see <a href="doc/getstarted/index.html#troubleshooting">troubleshooting</a> for more.':'')+'</div>';
             o.style.marginBottom = '1.5em';
             o.style.display = 'block';
           });
