@@ -7,7 +7,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20110706+DEV
+ * V2.97a.20110801
 */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -38,9 +38,7 @@ function SoundManager(smURL, smID) {
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = true;         // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^(probably|maybe)$/i; // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
-  this.useGlobalHTML5Audio = true;   // (experimental) if true, re-use single HTML5 audio object across all sounds. Force-enabled on mobile devices/iOS.
   this.preferFlash = true;           // (experimental) if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
-  this.requireFlash = false;         // (experimental) if true, prevents "HTML5-only" mode when flash present. Allows flash to handle RTMP/serverURL, but HTML5 for other cases unless flash is preferred
 
   this.audioFormats = {
     /*
@@ -114,7 +112,7 @@ function SoundManager(smURL, smID) {
   };
 
   this.version = null;
-  this.versionNumber = 'V2.97a.20110706+DEV';
+  this.versionNumber = 'V2.97a.20110801';
   this.movieURL = null;
   this.url = (smURL || null);
   this.altURL = null;
@@ -179,15 +177,20 @@ function SoundManager(smURL, smID) {
   };
 
   this.hasHTML5 = (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined'); // switch for handling logic
-  this.html5 = {        // stores canPlayType() results, etc. treat as read-only.
+
+  // stores canPlayType() results, etc. treat as read-only.
+  this.html5 = {
     // mp3: boolean
     // mp4: boolean
-    'usingFlash': null  // set if/when flash fallback is needed
+    'usingFlash': null // set if/when flash fallback is needed
   };
-  this.flash = {        // format support
+
+  // format support
+  this.flash = {
     // mp3: boolean
     // mp4: boolean
   };
+
   this.html5Only = false;   // determined at init time
   this.ignoreFlash = false; // used for special cases (eg. iPad/iPhone/palm OS?)
 
@@ -213,7 +216,6 @@ function SoundManager(smURL, smID) {
     if (_is_iDevice) {
       // by default, use global feature. iOS onfinish() -> next may fail otherwise.
       _s.ignoreFlash = true;
-      _s.useGlobalHTML5Audio = true;
       _useGlobalHTML5Audio = true;
     }
   }
@@ -2564,7 +2566,7 @@ function SoundManager(smURL, smID) {
       needsFlash = false;
     }
 
-    _s.html5Only = (_s.hasHTML5 && ((_s.useHTML5Audio && !needsFlash && !_s.requireFlash)));
+    _s.html5Only = (_s.hasHTML5 && _s.useHTML5Audio && !needsFlash);
 
     return (!_s.html5Only);
 
