@@ -36,13 +36,15 @@ By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reli
 
 A few nifty sites that have implemented SM2 for driving audio:
 
-    * Muxtape
     * SoundCloud / The Cloud Player
-    * 8tracks
-    * Last.fm
+    * last.fm
     * Opera (media player component)
+    * 8tracks
     * Discogs
-    * Mixcrate
+    * The Hype Machine
+    * nyan.cat
+    * turntable.fm
+    * AudioGalaxy
 
 == Project home, documentation, live demos etc.:
 
@@ -52,4 +54,4 @@ http://www.schillmania.com/projects/soundmanager2/
 
 Releases are versioned by date, e.g., V2.97a.20110424 and are tagged as such.
 The latest release is always on trunk/master.
-Post-release development builds may be available on the appropriate -DEV branch, eg., V2.97a.20110424-DEV
+Post-release development builds may be available on the appropriate +DEV branch, eg., V2.97a.20110801+DEV
