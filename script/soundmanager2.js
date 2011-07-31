@@ -221,31 +221,6 @@ function SoundManager(smURL, smID) {
   }
 
   /*
-   * Temporary feature: allow force of HTML5 via URL params: sm2-usehtml5audio=0 or 1
-   * Ditto for sm2-preferFlash, too.
-  */
-  // <d>
-  (function(){
-    var a = 'sm2-usehtml5audio=', l = _wl.toLowerCase(), b = null,
-    a2 = 'sm2-preferflash=', b2 = null, hasCon = (typeof console !== 'undefined' && typeof console.log !== 'undefined');
-    if (l.indexOf(a) !== -1) {
-      b = (l.charAt(l.indexOf(a)+a.length) === '1');
-      if (hasCon) {
-        console.log((b?'Enabling ':'Disabling ')+'useHTML5Audio via URL parameter');
-      }
-      _s.useHTML5Audio = b;
-    }
-    if (l.indexOf(a2) !== -1) {
-      b2 = (l.charAt(l.indexOf(a2)+a2.length) === '1');
-      if (hasCon) {
-        console.log((b2?'Enabling ':'Disabling ')+'preferFlash via URL parameter');
-      }
-      _s.preferFlash = b2;
-    }
-  }());
-  // </d>
-
-  /*
    * public soundManager API
   */
 
@@ -3053,7 +3028,7 @@ function SoundManager(smURL, smID) {
     if (_s.useHTML5Audio && _s.hasHTML5) {
       for (item in _s.audioFormats) {
         if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item + ': ' + _s.html5[item] + (!_s.html5[item] && _hasFlash && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] && _hasFlash ? ' (preferring flash)': (!_s.html5[item] ? ' (' + (_s.audioFormats[item].required ? 'required, ':'') + 'and no flash)' : ''))));
+          tests.push(item + ': ' + _s.html5[item] + (!_s.html5[item] && _hasFlash && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] && _hasFlash ? ' (preferring flash)': (!_s.html5[item] ? ' (' + (_s.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
         }
       }
       _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
@@ -3123,6 +3098,31 @@ function SoundManager(smURL, smID) {
     }
     _didDCLoaded = true;
     _initDebug();
+
+    /*
+     * Temporary feature: allow force of HTML5 via URL params: sm2-usehtml5audio=0 or 1
+     * Ditto for sm2-preferFlash, too.
+    */
+    // <d>
+    (function(){
+      var a = 'sm2-usehtml5audio=', l = _wl.toLowerCase(), b = null,
+      a2 = 'sm2-preferflash=', b2 = null, hasCon = (typeof console !== 'undefined' && typeof console.log !== 'undefined');
+      if (l.indexOf(a) !== -1) {
+        b = (l.charAt(l.indexOf(a)+a.length) === '1');
+        if (hasCon) {
+          console.log((b?'Enabling ':'Disabling ')+'useHTML5Audio via URL parameter');
+        }
+        _s.useHTML5Audio = b;
+      }
+      if (l.indexOf(a2) !== -1) {
+        b2 = (l.charAt(l.indexOf(a2)+a2.length) === '1');
+        if (hasCon) {
+          console.log((b2?'Enabling ':'Disabling ')+'preferFlash via URL parameter');
+        }
+        _s.preferFlash = b2;
+      }
+    }());
+    // </d>
 
     if (!_hasFlash && _s.hasHTML5) {
       _s._wD('SoundManager: No Flash detected'+(!_s.useHTML5Audio?', enabling HTML5.':'. Trying HTML5-only mode.'));
