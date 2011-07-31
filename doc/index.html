@@ -219,9 +219,9 @@
 
     <h4>Events</h4>
     <ul>
-     <li><a href="#soundmanager-onerror">onerror()</a></li>
-     <li><a href="#soundmanager-oninitmovie">oninitmovie()</a></li>
-     <li><a href="#soundmanager-onload">onload()</a></li>
+     <li><a href="#soundmanager-onerror" title="Deprecated in favour of soundManager.ontimeout()" class="deprecated">onerror</a></li>
+     <li><a href="#soundmanager-oninitmovie" title="Deprecated in favour of soundManager.ontimeout()" class="deprecated">oninitmovie</a></li>
+     <li><a href="#soundmanager-onload" title="Deprecated in favour of soundManager.onready()" class="deprecated">onload</a></li>
      <li><a href="#soundmanager-onready">onready()</a></li>
      <li><a href="#soundmanager-ontimeout">ontimeout()</a></li>
     </ul>
@@ -239,7 +239,7 @@
      <li title="Flash 9.0r115+ only" class="flash9">bufferTime</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
-     <li title="Recently-updated feature" class="recent">loops</li>
+     <li>loops</li>
      <li>multiShot</li>
      <li>multiShotEvents</li>
      <li>onbeforefinishtime</li>
@@ -250,7 +250,7 @@
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-serverurl">serverURL</a></li>
      <li><a href="#smsound-sid">sID</a></li>
      <li>stream</li>
-     <li title="Recently-added feature" class="recent"><a href="#smsound-type">type</a></li>
+     <li><a href="#smsound-type">type</a></li>
      <li><a href="#smsound-url">url</a></li>
      <li><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
      <li>volume</li>
@@ -448,7 +448,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 		  <div class="f-block f-usefastpolling f-usehighperformance f-flashpollinginterval">
 			<h4 id="soundmanager-usefastpolling">soundManager.useFastPolling</h4>
-			<p>By default <code>useFastPolling = false</code>, and thus SoundManager uses a 20-milisecond timer inside Flash when polling for updated sound properties such as <code>bytesLoaded</code> and data and event callbacks eg. <code>whileloading()</code>, <code>whileplaying()</code> and so on. With <code>useFastPolling = true</code>, a 1-msec timer is used and callback frequency may noticeably increase. This is best combined with <code>useHighPerformance</code> for optimal results.</p>
+			<p>By default <code>useFastPolling = false</code>, and thus SoundManager uses a 50-milisecond timer inside Flash when polling for updated sound properties such as <code>bytesLoaded</code> and data and event callbacks eg. <code>whileloading()</code>, <code>whileplaying()</code> and so on. With <code>useFastPolling = true</code>, a 10-msec timer is used and callback frequency may noticeably increase. This is best combined with <code>useHighPerformance</code> for optimal results.</p>
 		  </div>
 
 		  <div class="f-block f-flashpollinginterval f-usefastpolling f-usehighperformance">
@@ -465,7 +465,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 		  </div>
 		
 		  <div class="f-block f-useflashblock">
-			<h4 id="soundmanager-useflashblock" title="Recently-added feature" class="recent">soundManager.useFlashBlock</h4>
+			<h4 id="soundmanager-useflashblock">soundManager.useFlashBlock</h4>
 			<p>Flash blockers (eg. FlashBlock, "Click To Flash") can prevent the flash portion of SM2 from loading, which will cause a start-up error with a time-out.</p>
 			<p>SM2 historically has kept the flash movie off-screen and out of view, and thus the user could not click on and unblock it. Now with <code>useFlashBlock = true</code>, the movie positioning can be handled by CSS. The initial state is still off-screen by default, but will change to be in view when a blocking (time-out) situation may be encountered. You can also edit the CSS to taste, of course.</p>
 			<p>When starting up, CSS classes are appended to the <code>#sm2-container</code> DIV (which you can provide, or SM2 will create and append to the document.) The CSS classes change with the state of SM2's start-up, eg. <code>#sm2-container.swf_timedout { border:1px solid red; }</code> could be used to highlight the movie to the user for unblocking and so on.</p>
@@ -474,27 +474,41 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 <pre class="block"><code>#sm2-container {
  <span><span>/* Initial state: position:absolute/off-screen, or left/top:0 */</span></span>
 }
+
 #sm2-container.swf_timedout {
-  <span><span>/* Didn't load before time-out, show to user.
-  Maybe highlight on-screen, red border, etc..? */</span></span>
+  <span><span>/*
+   * Didn't load before time-out, show to user.
+   * Maybe highlight on-screen, red border, etc..? 
+  */</span></span>
 }
+
 #sm2-container.swf_unblocked {
-  <span><span>/* Applied if movie loads successfully
-  (flash started, so move off-screen etc.) */</span></span>
+  <span><span>/*
+   * Applied if movie loads successfully
+   * (flash started, so move off-screen etc.)
+  */</span></span>
 }
+
 #sm2-container.swf_error {
-  <span><span>/* "Fatal" error case: SWF loaded,
-  but SM2 was unable to start for some reason.
-  (Flash security or other error case.) */</span></span>
+  <span><span>/*
+   * "Fatal" error case: SWF loaded, but SM2 was unable to start.
+   * (Flash security or other error case.)
+  */</span></span>
 }
+
 #sm2-container.high_performance {
-  <span><span>/* Additional modifier for "high performance" mode
-  should apply position:fixed and left/bottom 0 to stay on-screen
-  at all times (better flash performance) */</span></span>
+  <span><span>/*
+   * Additional modifier for "high performance" mode
+   * should apply position:fixed and left/bottom 0 to stay on-screen
+   * at all times (better flash performance)
+  */</span></span>
 }
+
 #sm2-container.flash_debug {
-  <span><span>/* Additional modifier for flash debug output mode
-  should use width/height 100% so you can read debug messages */</span></span>
+  <span><span>/*
+   * Additional modifier for flash debug output mode
+   * should use width/height 100% so you can read debug messages
+  */</span></span>
 }</code></pre>
 
 			<p>For a live example, see the <a href="../demo/flashblock/">FlashBlock Demo</a>.</p>
@@ -504,7 +518,7 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 
 			<h4 id="soundmanager-usehtml5audio">soundManager.useHTML5Audio</h4>
 			
-			<p><em><b style="color:#993333">Beta notice</b>: HTML5 support is under active development; the API may change between versions, but should remain forward-compatible.</em></p>
+			<p style="background:#f0f9ff"><b style="color:#993333">Beta notice</b>: HTML5 support is in active development. Experimental API bits will be labeled as such, but should remain largely forward-compatible. See <a href="#html5-audio-notes">HTML5 Audio Notes</a> for the latest details.</p>
 			
 			<p><code>soundManager.useHTML5Audio</code> determines whether HTML5 <code>Audio()</code> support is used (as available) to play sound, with flash as the fallback for playing MP3 and MP4 (AAC) formats. Browser support for HTML5 Audio varies, and format support (eg. MP3, MP4/AAC, OGG, WAV) can vary by browser/platform.</p>
 
@@ -548,9 +562,31 @@ soundManager.defaultOptions.volume = 33; <span>// set global default volume for 
 			<p>The Palm Pre <a href="http://developer.palm.com/index.php?option=com_content&amp;view=article&amp;id=1741&amp;Itemid=265#using_html_5_audio_objects" title="Palm Developer Center: Audio">supports</a> a number of MP3, MP4 and WAV formats (WebOS 1.4.1 was tested; it didn't seem to like MP3s at 192kbps, but 128kbps was fine.)</p>
 				
 
-                        <div id="html5-knownissues">
+                        <div id="html5-audio-notes">
 
-			 <h5>HTML5 Audio: Notes, bugs, quirks and annoyances</h5>
+			 <h5>HTML5 Audio: Support updates, technical notes, quirks, bugs and annoyances</h5>
+
+			 <p><b>As of the V2.97.20110801 release of SM2:</b></p>
+
+             <ul>
+              <li><p>A regression was introduced in V2.97.20110706 where SM2 would fail to start in HTML5-only mode on supported desktop browsers when flash was disabled or not installed, eg., Safari on new Macs or IE 9 without flash. (iOS was not affected.) This has been fixed with the 2.97.20110801 release.</p></li>
+              <li>
+               <p><code>soundManager.useHTML5Audio</code> is now <code>true</code> by default; however, <code>soundManager.preferFlash</code> is also <code>true</code> and HTML5 browsers will still attempt to use flash for playing MP3/MP4 by default, if those formats are marked as "required".</p>
+               <p>If you wish to have 100% HTML5 mode in more cases, set <code>soundManager.preferFlash = false</code>. Presently, the MP3 links and MP3 button SM2 demos are more HTML5-friendly and will serve as a test for exposing bugs that may be in the wild.</p>
+              </li>
+              <li>
+               <p><code>soundManager.html5Test</code> has been relaxed to use <code>(probably|maybe)</code> for Audio's <code>canPlayType()</code> test (previously, was only "probably") - so formats will be more likely to work on HTML5-only devices that conservatively report "maybe" for MIME types like <code>audio/mpeg; codecs="mp3"</code> at this point.</p>
+	          </li>
+              <li>
+               <p>Certain mobile and tablet-like devices are special-cased as preferring HTML5, and will ignore checking for flash altogether; this presently includes the iPad, iPhone and iPod, Palm Pre and Motorola Xoom.</p>
+              </li>
+              <li>
+               <p>The HTML5 audio "loadeddata" event triggers an SMSound <code>onload()</code> event, which now fires <code>whileplaying()</code> and tries to pass identical <code>bytesLoaded, bytesTotal</code> parameters so that UIs will correctly show the sound as fully-"loaded" - even if in truth, not all bytes have actually been fetched (depending on the browser and server, etc.) because of the ability to do arbitrary seeking.</p>
+              </li>
+              <li>
+				<p>The experimental <code>soundManager.useGlobalHTML5Audio</code> and <code>soundManager.requireFlash</code> properties were removed. Internally the global HTML5 audio logic still applies to iOS, but it does not seem to be necessary for other devices at this time.</p>
+			  </li>
+             </ul>
 
 			 <p><b>As of the V2.97.20110706 release of SM2:</b></p>
 
@@ -810,12 +846,12 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dt>reboot()</dt>
 	   <dd title="soundID:string">Destroys any created SMSound objects, unloads the flash movie (removing it from the DOM) and restarts the SM2 init process, retaining all currently-set properties.</dd>
 	   <dd>Example: 
-<pre class="block"><code>soundManager.onerror = function() {<span>
+<pre class="block"><code>soundManager.ontimeout(function() {<span>
   <span>// Something went wrong during init - in this example, we *assume* flashblock etc.</span>
   soundManager.flashLoadTimeout = 0; <span>// When restarting, wait indefinitely for flash</span>
   soundManager.onerror = {}; <span>// Prevent an infinite loop, in case it's not flashblock</span>
   soundManager.reboot(); <span>// and, go!</span>
-}</span></code></pre>
+});</span></code></pre>
 	   </dd>
 	   <dd>This method may be helpful when trying to gracefully recover from FlashBlock-type situations where the user has prevented the SWF from loading, but is able to whitelist it. For more ideas, see <a href="../demo/flashblock/">Flashblock demo</a>.</dd>
 	   <dd>When using this method also consider <a href="#soundmanager-flashloadtimeout" onclick="resetFilter()">flashLoadTimeout</a>, which can have SM2 wait indefinitely for the flash to load if desired.</dd>
@@ -1625,6 +1661,7 @@ soundManager.movieStarOptions = {<span>
 			  <dl>
 
 			   <dt id="soundmanager-onerror" title="object:function">onerror(status)</dt>
+			   <dd class="deprecation-note"><b>Deprecation note:</b> Use the newer <a href="#soundmanager-ontimeout" onclick="resetFilter()">soundManager.ontimeout()</a> instead of this method.</dd>
 			   <dd>Function called when SoundManager fails to successfully initialise after Flash attempts an init call via ExternalInterface.</dd>
 			   <dd>Example: <code>soundManager.onerror = <span>function(status) { alert('SoundManager failed to load: ' + status.type); }</span></code></dd>
 			   <dd>This handler should be called if there is an ExternalInterface problem or other exceptions that fire when the initialisation function is called.</dd>
@@ -1632,11 +1669,13 @@ soundManager.movieStarOptions = {<span>
 			   <dd>If you want multiple listeners for this event, see <a href="#soundmanager-ontimeout" onclick="resetFilter()">soundManager.ontimeout()</a>.</dd>
 
 	   		   <dt id="soundmanager-oninitmovie" title="object:function">oninitmovie()</dt>
+               <dd class="deprecation-note"><b>Deprecation note:</b> Use the newer <a href="#soundmanager-ontimeout" onclick="resetFilter()">soundManager.ontimeout()</a> instead of this method.</dd>
 	   		   <dd>Function called immediately after the SWF is either written to (or retrieved from) the DOM as part of the start-up process. This event can be useful if you wish to implement your own start-up time-out, eg. for handling flash blockers, start-up failures or other custom messaging.</dd>
 	   		   <dd>Example: <code>soundManager.oninitmovie = <span>function(){ alert('SWF init.'); }</span></code></dd>
 
 			   <dt id="soundmanager-onload" title="object:function">onload()</dt>
 			   <dd>Function called when SoundManager has successfully loaded.</dd>
+			   <dd class="deprecation-note"><b>Deprecation note:</b> Use the newer <a href="#soundmanager-onready" onclick="resetFilter()">soundManager.onready()</a> instead of this method.</dd>
 			   <dd>Example: <code>soundManager.onload = <span>function() { alert('SoundManager ready to use'); }</span></code></dd>
 			   <dd>Once this function has been called, all core methods will be available to use.</dd>
 			   <dd>Note that <code>onload()</code> is not called when SoundManager fails to load; instead, <code>onerror()</code> is called.</dd>

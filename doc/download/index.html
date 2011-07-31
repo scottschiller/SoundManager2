@@ -130,9 +130,9 @@
 				<h3>Download SoundManager 2</h3>
 				<p><b>Latest changes:</b> Improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110706.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110706</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110801.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110801</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
-				<p><b>Performance tip:</b> SM2's code size varies from 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
+				<p><b>Performance tip:</b> SM2's code size varies from over 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 				<p><b>Side reading + video:</b> An article on the issues, promise and future, <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>. There is also a <a href="http://www.yuiblog.com/blog/2011/06/29/video-f2esummit2011-schiller/" title="Yahoo!/YUI Blog, video presentation: Scott Schiller on the State of HTML5 Audio">video presentation + turntable demo</a> (with slides) given at a Yahoo! Front-end Engineering summit.</p>
 			</div>
 			
@@ -158,9 +158,119 @@
 
 			  	<ul id="revision-list" class="standard">
 
+
+			   		<li id="sm2-20110801" class="in">
+
+			   			<h3><b>V2.97a.20110801</b> - "100% HTML5 mode" desktop browser (+no flash) fix, <code>useHTML5Audio</code> enabled by default, flash 9 end-of-sound correction, ClickToFlash improvements</h3>
+			
+						<p>Last release introduced a regression with HTML5-only mode on desktops when flash was not installed/present, now fixed; HTM5 audio support is enabled by default, although flash is still preferred for MP3/MP4 by default. <code>probably|maybe</code> is now the default when testing HTML5 format support. Flash 9 now <i>does not</i> reset sound position to 0 at <code>onfinish()</code>, matching flash 8 and HTML5 behaviour. Better ClickToPlugin / ClickToFlash compatibility (CSS tweaks for display of blocked SWF.) Minor internal flash polling loop improvements. soundManager <code>onload</code>, <code>onerror</code> and <code>oninitmovie</code> events have been deprecated in favour of <code>onready()</code> and <code>ontimeout()</code>, but remain functional.</p>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>A regression was introduced in V2.97.20110706 where SM2 would fail to start in HTML5-only mode on supported desktop browsers when flash was disabled or not installed, eg., Safari on new Macs or IE 9 without flash. (iOS was not affected.) This has been fixed with the 2.97.20110801 release.</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+									 <p><code>soundManager.useHTML5Audio</code> is now <code>true</code> by default; however, <code>soundManager.preferFlash</code> is also <code>true</code> and HTML5 browsers will still attempt to use flash for playing MP3/MP4 by default, if those formats are marked as "required".</p>
+									 <p>If you wish to have 100% HTML5 mode in more cases, set <code>soundManager.preferFlash = false</code>. Presently, the MP3 links and MP3 button SM2 demos are more HTML5-friendly and will serve as a test for exposing bugs that may be in the wild.</p>
+									</li>
+
+									<li>
+									 <p><code>soundManager.html5Test</code> has been relaxed to use <code>(probably|maybe)</code> for Audio's <code>canPlayType()</code> test (previously, was only "probably") - so formats will be more likely to work on HTML5-only devices that conservatively report "maybe" for MIME types like <code>audio/mpeg; codecs="mp3"</code> at this point.</p>
+									</li>
+
+									<li>
+									 <p>Certain mobile and tablet-like devices are special-cased as preferring HTML5, and will ignore checking for flash altogether; this presently includes the iPad, iPhone and iPod, Palm Pre and Motorola Xoom.</p>
+									</li>
+
+									<li>
+									 <p>The HTML5 audio "loadeddata" event triggers an SMSound <code>onload()</code> event, which now fires <code>whileplaying()</code> and tries to pass identical <code>bytesLoaded, bytesTotal</code> parameters so that UIs will correctly show the sound as fully-"loaded" - even if in truth, not all bytes have actually been fetched (depending on the browser and server, etc.) because of the ability to do arbitrary seeking.</p>
+									</li>
+
+									<li>
+									 <p>Updated Flash 9 <code>onfinish()</code> / end-of-sound behaviour: Sound objects' <code>position</code> property no longer resets to 0 when a sound ends (and when <code>onfinish()</code> fires.) This now matches both HTML5 and flash 8's existing behaviour; therefore, a sound's <code>position</code> will equal its <code>duration</code> at <code>onfinish()</code> in all cases now. In the event <code>play()</code> is called from the end of a sound at or after <code>onfinish()</code>, the sound's position will be set to 0 before playback begins if using flash 9.</p>
+									<p>Edge case covered: if at internal SOUND_COMPLETE the SMSound.position is &lt; its duration, flash will match position to duration and fire <code>whileplaying()</code> one last time so "100%" is always reached before <code>onfinish()</code> is called.</p>
+									<p><code>multiShot</code> + <code>multiShotEvent</code> case has been verified as working (eg. <code>onfinish()</code> fires 5x if <code>play()</code> called 5x.)</p>
+									</li>
+									
+									<li>
+										<p><a href="../#soundmanager-oninitmovie" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.onload</a>, <a href="../#soundmanager-onerror" onclick="checkDomain(this)">soundManager.onerror</a> and <a href="../#soundmanager-oninitmovie" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.oninitmovie</a> have been deprecated in favour of <a href="../#soundmanager-onready" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.onready()</a> and <a href="../#soundmanager-ontimeout" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.ontimeout()</a>. The deprecated methods are still present and work with this release, but you should migrate to their modern replacements.</p>
+
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>Flash 8 + 9 internal <code>whileplaying()</code> + <code>whileloading()</code> polling improvements: Internal check previously looped through all sounds from onLoad(), registerOnComplete(),  _load() and _setPosition(). Now only the relevant sound is checked.</p>
+									</li>
+									
+									<li>
+										<p>Improved HTML5 support debug ouput/messaging, now right up top. Better messaging and error handling when Flash isn't present, yet required case (Flash plugin either not installed or disabled, but needed in some cases) - eg., Firefox and <code>audioFormats.mp3.required = true;</code> ... Also, only one _detectFlash() call now made.</p>
+									</li>
+
+									<li>
+										<p>Playable MP3 links and MP3 button demos use <code>soundManager.preferFlash = false</code>, so they should be able to run in 100% HTML5 mode. Some HTML5 bugs are anticipated, and these may help to reveal issues via a smaller audience.</p>
+									</li>
+									
+									<li>
+										<p>Initialization code reorganized, minor edits and clean-up, removal of some unused objects and ternary optimizations per jslint</p>
+									</li>
+									
+									<li>
+										<p>Cleaned up IE &lt;<code>object&gt;</code> code, added <a href="http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-8000.html#WS4bebcd66a74275c36cfb8137124318eebc6-7ffd">highPriority</a> flash param (affects flash 10.1+, if at all.)</p>
+									</li>
+
+									<li>
+										<p>Improved flashblock handling / compatibility (CSS layout tweaks) with newer <a href="hoyois.github.com/safariextensions/clicktoplugin/">ClickToPlugin</a>/ClickToFlash Safari (5.0.6 / 5.1+) extensions.</p>
+									</li>
+
+									<li>
+										<p>SM2 homepage demos try HTML5 + Flash if available, with "safe" reboot + fallback to HTML5-only mode (if supported - eg., Safari with flashBlock/ClickToFlash.)</p>
+									</li>
+									
+									<li>
+										<p>Basic MP3 player demo: Fix event JS error when manually calling things like <code>basicMP3Player.handleClick({target:document.getElementById('foo')});</code></p>
+									</li>
+									
+									<li>
+										<p>Flash SWFs, debug versions: Mention right-click -&gt; security panel options when troubleshooting security errors</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+						
+					</li>
+
+
+
 			   		<li id="sm2-20110706" class="in">
 
-			   			<h3><b>V2.97a.20110706</b> - improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks</h3>
+			   			<h3><b>V2.97a.20110706</b> - improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks (<a href="../../download/soundmanagerv297a-20110706.zip" title="Download SoundManager 2" class="norewrite">Download archived version</a>)</h3>
 			
 						<p class="note">Special note: This <i>was</i> <b>V2.97a.20110705</b>, but the latest Flex SDK (4.5.1.21328) was downloaded and used for this build, and it compiled a Flash 9 SWF that wouldn't fully-start on <i>some</i> Windows machines running Firefox and IE 7, possibly others - thus, SM2 would fail to start up. The Flash 9 SWFs are now compiled with an older, working SDK version 4.1.0.16076, used in previous working releases. See <a href="http://getsatisfaction.com/schillmania/topics/flashversion_9_fails_to_initialize_but_only_on_windows">discussion</a> for more details.</p>
 
