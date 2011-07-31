@@ -159,7 +159,11 @@ function SM2Debugger() {
     var flashVersion = fd.major+'.'+fd.minor+'.'+fd.revisionStr;
     var flashInfo = ' version '+(!isSupported?'unsupported ('+flashVersion+', SWF version '+soundManager.flashVersion+')':flashVersion);
     document.getElementById('d-flashversion').innerHTML = 'soundManager.flashVersion = '+soundManager.flashVersion+';';
-    self.handleEvent('hasflash',isSupported,hasFlash?flashInfo:null);
+    if (hasFlash) {
+      self.handleEvent('hasflash',isSupported,hasFlash?flashInfo:null);
+    } else {
+      self.handleEvent('hasflash','default',hasFlash?flashInfo:null);
+    }
   }
 
   soundManager.debugFlash = true; // try to get flash debug output, as well
