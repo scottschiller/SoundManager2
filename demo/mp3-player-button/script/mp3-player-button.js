@@ -251,7 +251,7 @@ function BasicMP3Player() {
 
 var basicMP3Player = null;
 
-// soundManager.url = '../../swf/'; // path to directory containing SM2 SWF files
+soundManager.preferFlash = false; // use HTML5 audio for MP3/MP4, if available
 
 soundManager.onready(function() {
   // soundManager.createSound() etc. may now be called

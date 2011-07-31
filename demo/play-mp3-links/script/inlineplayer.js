@@ -231,11 +231,12 @@ function InlinePlayer() {
 var inlinePlayer = null;
 
 soundManager.debugMode = true; // disable or enable debug output
+
+soundManager.preferFlash = false; // use HTML5 audio for MP3/MP4, if available
 soundManager.useFlashBlock = true;
 soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
 
 // optional: enable MPEG-4/AAC support (requires flash 9)
-
 soundManager.flashVersion = 9;
 soundManager.useMovieStar = true;
 
