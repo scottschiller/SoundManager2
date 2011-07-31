@@ -58,6 +58,11 @@ soundManager.url = '<em><em>/path/to/sm2-flash-files/</em></em>'; <span>// direc
 <span>// Note that SoundManager will determine and append the appropriate .SWF file to the URL,
 // eg. /path/to/sm2-flash-files/soundmanager2.swf automatically.</span>
 
+<span><span>/*
+ * read up on <a href="../../doc/#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.
+ * iPad/iPhone and devices without flash installed will always attempt to use it.
+*/</span></span>
+
 <span>// do this to skip flash block handling for now. See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">flashblock demo</a> when you want to start getting fancy.</span>
 soundManager.useFlashBlock = false;
 
