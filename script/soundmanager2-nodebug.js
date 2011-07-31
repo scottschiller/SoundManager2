@@ -36,7 +36,7 @@ function SoundManager(smURL, smID) {
   this.wmode = null;                 // string: flash rendering mode - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
-  this.useHTML5Audio = false;        // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
+  this.useHTML5Audio = true;         // Beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^(probably|maybe)$/i; // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
   this.useGlobalHTML5Audio = true;   // (experimental) if true, re-use single HTML5 audio object across all sounds. Force-enabled on mobile devices/iOS.
   this.preferFlash = true;           // (experimental) if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
@@ -729,8 +729,8 @@ function SoundManager(smURL, smID) {
       //_wDS('badRemove', 2);
     }
     // actually, force recreate of movie.
-    _oRemovedHTML = _oRemoved = null;
-    _s.enabled = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = _s.swfLoaded = false;
+    _oRemovedHTML = _oRemoved = _needsFlash = null;
+    _s.enabled = _didDCLoaded = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = _s.swfLoaded = false;
     _s.soundIDs = _s.sounds = [];
     _s.o = null;
     for (i in _on_queue) {
@@ -2384,6 +2384,9 @@ function SoundManager(smURL, smID) {
         p = _s.getMoviePercent(),
         css = _s.swfCSS,
         error = {type:'FLASHBLOCK'};
+    if (_s.html5Only) {
+      return false;
+    }
     if (!_s.ok()) {
       if (_needsFlash) {
         // make the movie more visible, so user can fix
@@ -3004,7 +3007,6 @@ function SoundManager(smURL, smID) {
       // all good.
       //_s._wD('-- SoundManager 2: loaded --');
       _didInit = true;
-      _processOnEvents();
       _initUserOnload();
       //_debugTS('onload', true);
       return true;
@@ -3140,7 +3142,6 @@ function SoundManager(smURL, smID) {
       _s.flashLoadTimeout = 1; // hack: fail sooner.
     }
 
-    _didDCLoaded = true;
     if (_doc.removeEventListener) {
       _doc.removeEventListener('DOMContentLoaded', _dcLoaded, false);
     }
