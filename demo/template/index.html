@@ -25,10 +25,16 @@ soundManager.url = '../../swf/'; // path to directory containing SoundManager2 .
 soundManager.flashVersion = 8;
 soundManager.useFlashBlock = false; // skip for now. See the flashblock demo when you want to start getting fancy.
 
-soundManager.onload = function() {
+soundManager.onready(function() {
   // soundManager.createSound() etc. may now be called
-  soundManager._writeDebug('soundManager.onload() - your code executes here');
-}
+  soundManager._writeDebug('soundManager.onready() callback - your code executes here');
+});
+
+soundManager.ontimeout(function() {
+  // SM2 could not start. Flash missing, blocked, no support?
+  soundManager._writeDebug('soundManager.ontimeout() callback - your code executes here');
+});
+
 
 </script>
 
@@ -43,10 +49,9 @@ soundManager.onload = function() {
  <p>This is a basic template for adding SoundManager to your page.</p> 
  <h2>How it works</h2>
  <p>This page includes the SM2 script, which starts up on its own as appropriate. By default it will try to start as soon as possible.</p>
- <p>The minimal code needed to get SoundManager 2 going is below, with <em><em>configurable parts</em></em>:</p>
+ <p>The minimal code needed to get SoundManager 2 going is below, with <em><em>configurable parts</em></em>. You can copy/paste it to get started.</p>
 <code>
 <pre>
-
 <span>&lt;!-- include SM2 library --&gt;</span>
 &lt;script type="text/javascript" src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
 
@@ -55,64 +60,43 @@ soundManager.onload = function() {
 
 soundManager.url = '<em><em>/path/to/sm2-flash-files/</em></em>'; <span>// directory where SM2 .SWFs live</span>
 
-<span>// Note that SoundManager will determine and append the appropriate .SWF file to the URL,
-// eg. /path/to/sm2-flash-files/soundmanager2.swf automatically.</span>
-
 <span><span>/*
- * read up on <a href="../../doc/#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.
+ * Note that SoundManager will determine and append the appropriate .SWF file to the URL,
+ * eg. /path/to/sm2-flash-files/soundmanager2.swf automatically.
+ *
+ * Bonus: Read up on <a href="../../doc/#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.
  * iPad/iPhone and devices without flash installed will always attempt to use it.
+ *
+ * Also, See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">flashblock demo</a> when you want to start getting fancy.
 */</span></span>
-
-<span>// do this to skip flash block handling for now. See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">flashblock demo</a> when you want to start getting fancy.</span>
-soundManager.useFlashBlock = false;
 
 <span>// disable debug mode after development/testing..</span>
 <span>// soundManager.debugMode = false;</span>
 
-<span style="background:#eee;padding:0.25em">// Option 1: Simple onload() + createSound() method</span>
+<span style="background:#ccc;padding:0.25em;color:#333">// The basics: onready() callback</span>
 
-soundManager.onload = function() {
+soundManager.onready(function(){
+
   <span>// SM2 has loaded - now you can create and play sounds!</span>
-  <em><em>soundManager.createSound('helloWorld','/path/to/hello-world.mp3');
-  soundManager.play('helloWorld');</em></em>
-};
-
-<span style="background:#eee;padding:0.25em">// Option 2 (better): More flexible onload() + createSound() method</span>
-
-soundManager.onload = function() {
 
   var mySound = soundManager.createSound({
-    id: 'aSound',
-    url: '/path/to/an.mp3'
-    <span>// onload: <span>[ event handler function object ],</span></span>
+    id: '<em><em>aSound</em></em>',
+    url: '<em><em>/path/to/an.mp3</em></em>'
+    <span>// onload: <span>myOnloadHandler,</span></span>
     <span>// other options here..</span>
   });
 
   mySound.play();
 
-</em></em>}
+</em></em>});
 
-<span style="background:#eee;padding:0.25em">// Option 3 (best): onready() + createSound() / ontimeout() methods for success/failure:</span>
+<span style="background:#ccc;padding:0.25em;color:#333">// Optional: ontimeout() callback for handling start-up failure</span>
 
-soundManager.onready(function() {
+soundManager.ontimeout(function(){
 
-  <span>// SM2 has loaded - now you can create and play sounds!</span>
-  var mySound = soundManager.createSound({
-    id: 'aSound',
-    url: '/path/to/an.mp3'
-    <span>// onload: <span>[ event handler function object ],</span></span>
-    <span>// other options here..</span>
-  });
-  mySound.play();
+  <span>// Hrmm, SM2 could not start. Flash blocker involved? Show an error, etc.?</span>
 
 });
-
-soundManager.ontimeout(function() {
-
-  <span>// (Optional) Hrmm, SM2 could not start. Show an error, etc.?</span>
-
-});
-
 
 &lt;/script&gt;</pre></code>
 
@@ -120,7 +104,7 @@ soundManager.ontimeout(function() {
  <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info on this, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">Flashblock</a> example.</p>
 
  <h2>Making SM2 wait for window.onload()</h2>
- <p>If you prefer to have the library wait for window.onload() before calling soundManager.onload()/onerror() methods, you can modify SM2's "waitForWindowLoad" property:</p>
+ <p>If you prefer to have the library wait for window.onload() before making onready() / ontimeout() callbacks, you can modify SM2's "waitForWindowLoad" property:</p>
 <code>soundManager.waitForWindowLoad = true;</code>
  <h2 style="margin-top:1em">Disabling debug output</h2>
  <p>SoundManager 2 will write to a debug &lt;div&gt; element or a javascript console if available, by default. To disable it, simply set the relevant property to false:</p>
