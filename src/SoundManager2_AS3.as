@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20110706";
+    public var version:String = "V2.97a.20110801";
     public var version_as:String = "(AS3/Flash 9)";
 
     /*
@@ -200,7 +200,7 @@ package {
       var sandboxType:String = flash.system.Security['sandboxType'];
       if (!didSandboxMessage && sandboxType != 'localTrusted' && sandboxType != 'remote') {
         didSandboxMessage = true;
-        flashDebug('<br><b>Fatal: Security sandbox error: Got "' + sandboxType + '", expected "remote" or "localTrusted".<br>Additional security permissions need to be granted.<br>See <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">flash security settings panel</a> for non-HTTP, eg., file:// use.</b><br>http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html');
+        flashDebug('<br><b>Fatal: Security sandbox error: Got "' + sandboxType + '", expected "remote" or "localTrusted".<br>Additional security permissions need to be granted.<br>See <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">flash security settings panel</a> for non-HTTP, eg., file:// use.</b><br>http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html<br><br>You may also be able to right-click this movie and choose from the menu: <br>"Global Settings" -> "Advanced" tab -> "Trusted Location Settings"<br>');
       }
       try {
         if (isFirstCall == true) {
