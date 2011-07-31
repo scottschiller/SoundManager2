@@ -71,8 +71,9 @@ h4 {
 }
 
 h5 {
- font-size:1em;
- color:#666;
+ font-size:1.2em;
+ font-weight: 500;
+ color:#333;
 }
 
 .c2 h5 {
@@ -620,6 +621,11 @@ ul {
  color:#fff;
 }
 
+#nav>ul>li>a {
+ /* top-level links */
+ color:#ccc;
+}
+
 #nav ul li strong a {
  background:#336699;
  background:#;
@@ -718,6 +724,7 @@ ul.standard ul {
 }
 
 .c3 ul li a {
+ display: block;
  text-decoration:none;
  color:#000;
 }
@@ -972,6 +979,10 @@ li.flash9 {
  _background-image:none;
 }
 
+.deprecated {
+ font-style: italic;
+}
+
 .new.active,
 .recent.active {
  background-image:url(../demo/_image/new-dark.png);
@@ -990,6 +1001,11 @@ span.nevermind,
 
 .padded {
  padding:0.5em;
+}
+
+dd.deprecation-note {
+ color: #993333;
+ background-color: #fff6f6;
 }
 
 .c3 p {

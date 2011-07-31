@@ -172,7 +172,7 @@ function setFilter(e,sFilterPrefix) {
   if (oName == 'li') {
     // from shortcuts/filter menu
     var innerText = (o.getElementsByTagName('a').length?o.getElementsByTagName('a')[0].innerHTML:o.innerHTML); // get inner text (minus link, if one is there)
-    sClass = sFilterPrefix+innerText.substr(0,innerText.indexOf('()')!=-1?innerText.indexOf('()'):999).toLowerCase().replace(/\s+/i,'-');
+    sClass = sFilterPrefix+innerText.substr(0,innerText.indexOf('(')!=-1?innerText.indexOf('('):999).toLowerCase().replace(/\s+/i,'-');
     var last = sClass.substr(sClass.length-1);
     if (last == '-' || last == ' ') {
       sClass = sClass.substr(0,sClass.length-1); // IE innerHTML trailing whitespace hack (?)
