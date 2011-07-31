@@ -142,7 +142,7 @@
 					</div>
 
 					<div class="header-demo">
-						<h3>Audio, <b>just about anywhere</b></h3>
+						<h3>More sound, <b>in more places</b></h3>
 						<div class="sm2-speaker">
 							<img src="demo/_image/soundmanager2-speaker.png" alt="SoundManager 2 speaker logo" class="ie6sucks" />
 						</div>
@@ -167,7 +167,7 @@
 
 						<div class="ie6sucks ie7sucks">
 								<p style="margin:1em 0px 0px 0px;padding:0px"><a href="http://wheelsofsteel.net/" title="The Wheels Of Steel: Online turntable / browser-based DJ prototype" style="margin:0px;padding:0px;background:#fff"><img src="demo/_image/wheelsofsteel-single-deck-256.jpg" alt="wheelsofsteel.net: Online turntable demo (screenshot)" style="margin-left:-4px;border:none" /></a></p>
-								<p style="margin:0px;padding:0px;font-size:11px;text-align:left;color:#666;margin-bottom:0.5em;white-space:normal">Experimental demo: The <a href="http://wheelsofsteel.net/" title="The Wheels Of Steel: Online turntable / browser-based DJ prototype">Wheels Of Steel</a>, a browser-based DJ turntable prototype. For the tech details, read <a href="http://www.schillmania.com/content/entries/2011/wheels-of-steel/" title="The making of 'The Wheels Of Steel': An Ode To Turntables (in HTML)">An Ode To Turntables (in HTML)</a>.</p>
+								<p style="margin:0px;padding:0px;font-size:11px;text-align:left;color:#666;margin-bottom:0.5em;white-space:normal">Experimental demo: The <a href="http://wheelsofsteel.net/" title="The Wheels Of Steel: Online turntable / browser-based DJ prototype">Wheels Of Steel</a>, a browser-based DJ turntable prototype. For the tech details, read <a href="http://www.schillmania.com/content/entries/2011/wheels-of-steel/" title="The making of 'The Wheels Of Steel': An Ode To Turntables (in HTML)">An Ode To Turntables (in HTML.)</a></p>
 						</div>
 
 						<div id="inline-demos" class="ie6sucks ie7sucks">
@@ -247,13 +247,13 @@
 							</div>
 
 							<h4 class="home-shopping-network">Not only do you get the ginsu knife...</h4>
-							<p>Even more demos and examples using SoundManager 2's API features.</p>
+							<p style="font-size:11px">Even more demos and examples using the SoundManager 2 API...</p>
 							<ul class="standard">
 								<li><a href="demo/play-mp3-links/" title="Links to MP3 files that play inline">Playable MP3 links</a></li>
 								<li><a href="demo/mpc/" title="MPC sampler/drum machine demo">MPC sampler/drum machine</a></li>
 								<li><a href="demo/animation-1/" title="Bouncing ball animation with sound effects">Basic animation + sound</a></li>
 								<li><a href="demo/christmas-lights/" title="Smashable christmas lights demo (animation and sound)">Smashable christmas lights</a></li>
-								<li><a href="demo/api/" title="Live API demos using test sounds">Live SoundManager 2 API examples</a></li>
+								<li><a href="demo/api/" title="See the code, click the button, watch it run: Live API demos using test sounds">Live API + code examples</a></li>
 							</ul>
 
 						</div>
@@ -299,7 +299,7 @@
 					<h4>General Tech Stuff</h4>
 
 					<ul class="standard">
-						<li>Full <a href="doc/" title="SoundManager 2 documentation">API Documentation</a> with examples and notes</li>
+						<li>Extensive <a href="doc/" title="SoundManager 2 documentation">API Documentation</a> with examples and notes</li>
 						<li>console.log()-style <a href="doc/technotes/#debug-output" title="SoundManager 2 debug output">debug output</a> and <a href="doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool">troubleshooting tools</a></li>
 						<li>Community-based <a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2" title="discussion/support for SoundManager 2 on Get Satisfaction">discussion/support</a></li>
 					</ul>
@@ -399,13 +399,14 @@ mySound.play();</code></pre>
 				</div>
 
 				<div class="c2">
-					<p>Include the SoundManager 2 core script, tell it where to look for the flash .SWF and provide an onload() handler.</p>
+					<p>Include the SoundManager 2 core script, tell it where to look for the flash .SWF and provide an <code>onready()</code> callback.</p>
 <pre class="block"><code>&lt;script src="<span>/path/to/soundmanager2.js</span>"&gt;&lt;/script&gt;
 &lt;script&gt;
 soundManager.url = '<span>/path/to/swfs/</span>';
-soundManager.onload = function() {
+soundManager.onready(function() {
   <span>// SM2 is ready to go!</span>&nbsp;
-  <span>// soundManager.createSound(...) calls can now be made, etc.</span>}
+  <span>// soundManager.createSound(...) calls can now be made, etc.</span>
+});
 &lt;/script&gt;</code></pre>
 					<p>
 						<a href="demo/template/">See a basic template demo</a>
