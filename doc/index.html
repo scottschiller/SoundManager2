@@ -162,7 +162,7 @@
 	
     <h4>Properties</h4>
 	<ul>
-	 <li>allowPolling</li>
+	 <li class="removed" title="Removed after v2.97a.20110801">allowPolling</li>
 	 <li>allowScriptAccess</li>
      <li><a href="#soundmanager-alturl">altURL</a></li>
 	 <li>consoleOnly</li>
@@ -174,7 +174,7 @@
      <li><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
      <li><a href="#soundmanager-flashversion">flashVersion</a></li>
      <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
-	 <li>nullURL</li>
+     <li class="removed" title="Removed after v2.97a.20110801"><a href="#nullurl">nullURL</a></li>
 	 <li><a href="#soundmanager-url">url</a></li>
 	 <li>useConsole</li>
 	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
@@ -242,8 +242,8 @@
      <li>loops</li>
      <li>multiShot</li>
      <li>multiShotEvents</li>
-     <li>onbeforefinishtime</li>
-     <li>onjustbeforefinishtime</li>
+     <li class="removed" title="Removed after v2.97a.20110801">onbeforefinishtime</li>
+     <li class="removed" title="Removed after v2.97a.20110801">onjustbeforefinishtime</li>
      <li>pan</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-peakdata">peakData</a></li>
      <li><a href="#smsound-position">position</a></li>
@@ -263,8 +263,8 @@
      <li><a href="#smsound-bytestotal">bytesTotal</a></li>
 	 <li title="Flash 9+ only" class="flash9"><a href="#smsound-isbuffering">isBuffering</a></li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-connected">connected</a></li>
-     <li><a href="#smsound-didbeforefinish">didBeforeFinish</a></li>
-     <li><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</a></li>
+     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-didbeforefinish">didBeforeFinish</a></li>
+     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</a></li>
      <li><a href="#smsound-duration">duration</a></li>
      <li><a href="#smsound-durationestimate">durationEstimate</a></li>
      <li><a href="#smsound-loaded">loaded</a></li>
@@ -287,9 +287,9 @@
      <li><a href="#smsound-onposition">onposition()</a></li>
      <li><a href="#smsound-onresume">onresume()</a></li>
      <li><a href="#smsound-onstop">onstop()</a></li>
-     <li><a href="#smsound-onbeforefinishcomplete">onbeforefinishcomplete()</a></li>
-     <li><a href="#smsound-onbeforefinish">onbeforefinish()</a></li>
-     <li><a href="#smsound-onjustbeforefinish">onjustbeforefinish()</a></li>
+     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-onbeforefinishcomplete">onbeforefinishcomplete()</a></li>
+     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-onbeforefinish">onbeforefinish()</a></li>
+     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-onjustbeforefinish">onjustbeforefinish()</a></li>
      <li><a href="#smsound-onid3">onid3()</a></li>
      <li><a href="#smsound-whileloading">whileloading()</a></li>
      <li><a href="#smsound-whileplaying">whileplaying()</a></li>
@@ -347,17 +347,17 @@
 			
 		  <h3>SoundManager Properties</h3>
 			
-		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-nullurl f-usemoviestar f-allowscriptaccess">
+		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-usemoviestar f-allowscriptaccess">
 
 		  <p class="in">SoundManager has properties which configure debug mode, flash movie path and other behaviours. At minimum, the <code>soundManager.url</code> property must be assigned a path used to look for the necessary flash movie.</p>
 
-<pre class="small block specialcommentblock"><code><span>allowPolling = true;     <span>// enable flash status updates. Required for whileloading/whileplaying.</span>
+<pre class="small block specialcommentblock"><code><strong class="removed" title="Removed after v2.97a.20110801">allowPolling = true;     <span>// enable flash status updates. Required for whileloading/whileplaying.</strong></span>
 consoleOnly = false;     <span>// if console is being used, do not create/write to #soundmanager-debug</span>
 debugMode = true;        <span>// enable debugging output (div#soundmanager-debug, OR console..)</span>
 debugFlash = false;      <span>// enable debugging output inside SWF, troubleshoot Flash/browser issues</span>
 flashLoadTimeout = 1000; <span>// ms to wait for flash movie to load before failing (0 = infinity)</span>
-flashVersion = 8;        <span>// version of flash to require, either 8 or 9. Some features require 9.</span>
-nullURL = 'about:blank'; <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span>
+flashVersion = 8;        <span>// version of flash to require, either 8 or 9. Some features require 9.</span><strong class="removed" title="Removed after v2.97a.20110801">
+nullURL = 'about:blank'; <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span></strong>
 url = '/path/to/swfs/';  <span>// path (directory) where SM2 .SWF files will be found.</span>
 useConsole = true;       <span>// use firebug/safari console.log()-type debug console if available</span>
 useMovieStar = true;     <span>// enable <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+</a> MPEG4 audio support</span>
@@ -916,7 +916,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dt><span>object:SMSound</span> unload(<span>id:string</span>)</dt>
 	   <dd title="soundID:string">Stops loading the sound specified by ID, canceling any current HTTP request. Returns the related sound object.</dd>
 	   <dd>Example: <code>soundManager.unload('<span>mySound</span>');</code></dd>
-	   <dd>Note that for Flash 8, SoundManager does this by loading a new, tiny "stub" MP3 file, <code class="in">./null.mp3</code>, which replaces the current one from loading. This is defined in the SM2 global object as <code class="in">nullURL</code>, and can be edited.</dd>
+	   <dd>Note that for Flash 8, SoundManager does this by pointing the sound object to <code>about:blank</code>, which replaces the current one from loading.</dd>
 	   </dl>
 
 	   <dl id="soundmanager-unmute" class="f-block f-unmute">
@@ -996,6 +996,16 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   <dd>Registers an event listener, fired when a sound reaches or passes a certain position while playing. Position being "listened" for is passed back to event handler. Will also fire if a sound is "rewound" (eg. via <code>setPosition()</code> to an earlier point) and the given position is reached again. Listeners will be removed if a sound is unloaded. An optional scope can be passed as well.</dd>
 				   <dd>Note that for <code>multiShot</code> cases, only the first play instance's <code>position</code> is tracked in Flash; therefore, subsequent "shots" will not have onposition() events being fired.</dd>
 				   <dd>Example: <code>mySound.onposition(3000, function(eventPosition){<span>console.log(this.sID+' reached '+eventPosition</span>});</code></dd>
+				   <dd>If you need to fire an event relative to the true duration of the sound, reference its duration once the sound has fully-loaded - ie., at or after the <code>onload()</code> event - as the duration will not be completely accurate until that time. <code>durationEstimate</code> may be referenced before <code>onload()</code>, but it should not be relied on when "precise" timings of say, &lt; 1 second are desired.</dd>
+				   <dd>Example:<pre class="block"><code>mySound.load({
+  onload: function() {
+    this.onposition(this.duration - 5000, function() {
+      console.log(<span>'the sound '</span> + this.sID + <span>' is now at position '</span> + this.position);
+    });
+  }
+});</code></pre>
+				   <dd>Again, note that due to the interval / polling-based methods of both HTML5 and flash audio, sound status updates and thus precision can vary between 20 msec to perhaps 0.5 seconds and the sound's position property will reflect this delta when the <code>onposition()</code> callback fires.</dd>
+
 				   </dl>
 
 				   <dl id="smsound-pause" class="f-block s-pause s-paused">
@@ -1058,7 +1068,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   <dt><span>object:SMSound</span> unload()</dt>
 				   <dd>Stops loading the given sound, canceling any current HTTP request.</dd>
 				   <dd>Example: <code>mySound.unload();</code></dd>
-				   <dd>Note that for Flash 8, SoundManager does this by loading a new, tiny "stub" MP3 file, <code class="in">./null.mp3</code>, which replaces the current one from loading. This is defined in the SM2 global object as <code class="in">nullURL</code>, and can be edited.</dd>
+				   <dd>Note that for Flash 8, SoundManager does this by pointing the sound object to <code>about:blank</code>, which replaces the current one from loading.</dd>
 				   </dl>
 
 				   <dl id="smsound-unmute" class="f-block s-unmute">
@@ -1115,11 +1125,13 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 
 				   <dl id="smsound-onbeforefinishcomplete" class="f-block s-onbeforefinishcomplete">
 				   <dt>onbeforefinishcomplete()</dt>
+				   <dd class="deprecation-note"><b>This method has been removed.</b> Use the newer <a href="#smsound-onposition" onclick="resetFilter()">SMSound.onposition()</a> as a replacement.</dd>
 				   <dd>Fires when a sound has finished, <code>onfinish()</code> has been called, but before the sound play state and other meta data (position, etc.) are reset.</dd>
 				   </dl>
 
 				   <dl id="smsound-onbeforefinish" class="f-block s-onbeforefinish">
 				   <dt>onbeforefinish()</dt>
+				   <dd class="deprecation-note"><b>This method has been removed.</b> Use the newer <a href="#smsound-onposition" onclick="resetFilter()">SMSound.onposition()</a> as a replacement.</dd>
 				   <dd>Fires when a playing, fully-loaded sound has reached <code>onbeforefinishtime</code> (eg. 5000 msec) from its end.</dd>
 				   </dl>
 
@@ -1168,6 +1180,7 @@ for (prop in this.id3) {
 
 				   <dl id="smsound-onjustbeforefinish" class="f-block s-onjustbeforefinish">
 				   <dt>onjustbeforefinish()</dt>
+				   <dd class="deprecation-note"><b>This method has been removed.</b> Use the newer <a href="#smsound-onposition" onclick="resetFilter()">SMSound.onposition()</a> as a replacement.</dd>
 				   <dd>Fires approximately <code>justbeforefinishtime</code> before the end of a fully-loaded, playing sound.</dd>
 				   <dd>This is based on a polling approach given SM2 must track the sound's position, and is approximated (eg. a 200 msec value may fire at 187 msec before the end of the sound.)</dd>
 				   </dl>
@@ -1306,11 +1319,13 @@ for (prop in this.id3) {
 						
 						   <dl id="smsound-didbeforefinish" class="f-block s-didbeforefinish">
 						   <dt>didBeforeFinish</dt>
+						   <dd class="deprecation-note"><b>This property has been removed.</b> Use the newer <a href="#smsound-onposition" onclick="resetFilter()">SMSound.onposition()</a> as a replacement.</dd>
 						   <dd>Boolean indicating whether <code>beforeFinish()</code> condition was reached.</dd>
 						   </dl>
 
 						   <dl id="smsound-didjustbeforefinish" class="f-block s-didjustbeforefinish">
 						   <dt>didJustBeforeFinish</dt>
+						   <dd class="deprecation-note"><b>This property has been removed.</b> Use the newer <a href="#smsound-onposition" onclick="resetFilter()">SMSound.onposition()</a> as a replacement.</dd>
 						   <dd>Boolean indicating whether <code>justBeforeFinish()</code> condition was reached.</dd>
 						   </dl>
 						
@@ -1522,11 +1537,11 @@ for (prop in this.id3) {
   onload: null,          <span>// callback function for "load finished"</span>
   onstop: null,          <span>// callback for "user stop"</span>
   onfinish: null,        <span>// callback function for "sound finished playing"</span>
-  onbeforefinish: null,  <span>// callback for "before sound finished playing (at [time])"</span>
-  onbeforefinishtime: 5000,    <span>// offset (milliseconds) from sound end, call beforefinish..</span>
-  onbeforefinishcomplete: null,<span>// function to call when said sound finishes playing</span>
-  onjustbeforefinish: null,    <span>// callback for [n] msec before end of current sound</span>
-  onjustbeforefinishtime: 200, <span>// if unused, set to 0 (or null handler), event will not fire.</span>
+  <strong class="removed" title="Removed after V2.97a.20110801">onbeforefinish: null,  <span>// callback for "before sound finished playing (at [time])"</span></strong>
+  <strong class="removed" title="Removed after V2.97a.20110801">onbeforefinishtime: 5000,    <span>// offset (milliseconds) from sound end, call beforefinish..</span></strong>
+  <strong class="removed" title="Removed after V2.97a.20110801">onbeforefinishcomplete: null,<span>// function to call when said sound finishes playing</span></strong>
+  <strong class="removed" title="Removed after V2.97a.20110801">onjustbeforefinish: null,    <span>// callback for [n] msec before end of current sound</span></strong>
+  <strong class="removed" title="Removed after V2.97a.20110801">onjustbeforefinishtime: 200, <span>// if unused, set to 0 (or null handler), event will not fire.</span></strong>
   onpause: null,        <span>// callback for "pause"</span>
   onplay: null,         <span>// callback for "play" start</span>
   onresume: null,       <span>// callback for "resume" (pause toggle)</span>
@@ -1534,7 +1549,7 @@ for (prop in this.id3) {
   pan: 0,               <span>// "pan" settings, left-to-right, -100 to 100</span>
   stream: true,         <span>// allows playing before entire file has loaded (recommended)</span>
   type: null,           <span>// MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3</span>
-  usePolicyFile: false, <span>// enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)</span>
+  usePolicyFile: false, <span>// enable crossdomain.xml request for remote domains (for ID3/waveform access)</span>
   volume: 100,          <span>// self-explanatory. 0-100, the latter being the max.</span>
   whileloading: null,   <span>// callback function for updating progress (X of Y bytes received)</span>
   whileplaying: null,   <span>// callback during play (position update)</span>

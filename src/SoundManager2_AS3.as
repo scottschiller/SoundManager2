@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20110801";
+    public var version:String = "V2.97a.20110801+DEV";
     public var version_as:String = "(AS3/Flash 9)";
 
     /*
@@ -481,13 +481,6 @@ package {
           leftEQ: eqDataLeft,
           rightEQ: eqDataRight
         } : null));
-        // if position changed, check for near-end
-        if (oSound.didJustBeforeFinish != true && oSound.loaded == true && oSound.justBeforeFinishOffset > 0 && nD - nP <= oSound.justBeforeFinishOffset) {
-          // fully-loaded, near end and haven't done this yet..
-          sMethod = baseJSObject + "['" + oSound.sID + "']._onjustbeforefinish";
-          ExternalInterface.call(sMethod, (nD - nP));
-          oSound.didJustBeforeFinish = true;
-        }
       }
 
       // check isBuffering
@@ -557,7 +550,6 @@ package {
         oSound.didFinish = false; // reset this flag
         oSound.soundChannel.addEventListener(Event.SOUND_COMPLETE, function() : void {
           if (oSound) {
-            oSound.didJustBeforeFinish = false; // reset
             // force progress check, catching special end-of-sound case where position may not match duration.
             checkSoundProgress(oSound, true, true);
             try {
@@ -645,7 +637,6 @@ package {
         var ns:Object = new Object();
         ns.sID = s.sID;
         ns.loops = nLoops||1;
-        ns.justBeforeFinishOffset = s.justBeforeFinishOffset;
         ns.usePeakData = s.usePeakData;
         ns.useWaveformData = s.useWaveformData;
         ns.useEQData = s.useEQData;
@@ -656,7 +647,7 @@ package {
         ns.checkPolicyFile = s.checkPolicyFile;
         ns.useEvents = true;
         _destroySound(s.sID);
-        _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, bAutoPlay, ns.useEvents, bAutoLoad, ns.checkPolicyFile);
+        _createSound(ns.sID, sURL, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, bAutoPlay, ns.useEvents, bAutoLoad, ns.checkPolicyFile);
         s = soundObjects[sID];
         // writeDebug('Sound object replaced');
       }
@@ -686,7 +677,6 @@ package {
         writeDebug('_load: Error loading ' + sURL + '. Flash error detail: ' + e.toString());
       }
 
-      s.didJustBeforeFinish = false;
     }
 
     public function _unload(sID:String) : void {
@@ -730,7 +720,6 @@ package {
       var ns:Object = new Object();
       ns.sID = s.sID;
       ns.loops = s.loops;
-      ns.justBeforeFinishOffset = s.justBeforeFinishOffset;
       ns.usePeakData = s.usePeakData;
       ns.useWaveformData = s.useWaveformData;
       ns.useEQData = s.useEQData;
@@ -742,24 +731,22 @@ package {
       ns.autoLoad = s.autoLoad;
       ns.checkPolicyFile = s.checkPolicyFile;
       _destroySound(s.sID);
-      _createSound(ns.sID, sURL, ns.justBeforeFinishOffset, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, ns.autoPlay, false, ns.autoLoad, ns.checkPolicyFile); // false: don't allow events just yet
+      _createSound(ns.sID, sURL, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, ns.autoPlay, false, ns.autoLoad, ns.checkPolicyFile); // false: don't allow events just yet
       soundObjects[sID].connected = true; // fake it?
       writeDebug(s.sID + '.unload(): ok');
     }
 
-    public function _createSound(sID:String, sURL:String, justBeforeFinishOffset: int, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, autoPlay:Boolean, useEvents:Boolean, autoLoad:Boolean, checkPolicyFile:Boolean) : void {
+    public function _createSound(sID:String, sURL:String, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, autoPlay:Boolean, useEvents:Boolean, autoLoad:Boolean, checkPolicyFile:Boolean) : void {
       var s: SoundManager2_SMSound_AS3 = new SoundManager2_SMSound_AS3(this, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, bufferTime, serverUrl, duration, autoPlay, useEvents, autoLoad, checkPolicyFile);
       if (!soundObjects[sID]) {
         sounds.push(sID);
       }
       soundObjects[sID] = s;
       this.currentObject = s;
-      s.didJustBeforeFinish = false;
       s.sID = sID;
       s.sURL = sURL;
       s.paused = false;
       s.loaded = false;
-      s.justBeforeFinishOffset = justBeforeFinishOffset || 0;
       s.checkPolicyFile = checkPolicyFile;
       s.lastValues = {
         bytes: 0,
@@ -831,7 +818,6 @@ package {
           s.soundChannel.stop();
         }
         s.paused = false;
-        s.didJustBeforeFinish = false;
       }
     }
 
