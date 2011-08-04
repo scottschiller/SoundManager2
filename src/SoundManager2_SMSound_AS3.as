@@ -43,8 +43,6 @@ package {
     public var useEQData: Boolean = false;
     public var sID: String;
     public var sURL: String;
-    public var justBeforeFinishOffset: int;
-    public var didJustBeforeFinish: Boolean;
     public var didFinish: Boolean;
     public var loaded: Boolean;
     public var connected: Boolean;
@@ -95,9 +93,7 @@ package {
       this.useWaveformData = useWaveformData;
       this.useEQData = useEQData;
       this.urlRequest = new URLRequest(sURLArg);
-      this.justBeforeFinishOffset = 0;
-      this.didJustBeforeFinish = false;
-      this.didFinish = false; // non-MP3 formats only
+      this.didFinish = false;
       this.loaded = false;
       this.connected = false;
       this.failed = false;
@@ -441,7 +437,6 @@ package {
         if (!this.useNetstream) {
           // finished playing
           // this.didFinish = true; // will be reset via JS callback
-          this.didJustBeforeFinish = false; // reset
           writeDebug('calling onfinish for a sound');
           // reset the sound? Move back to position 0?
           this.sm.checkProgress();
@@ -479,7 +474,6 @@ package {
           if (this.duration && (this.ns.time * 1000) < (this.duration - 5000)) {
             writeDebug('Ignoring Buffer.Empty because this is too early to be the end of the stream! (sID: '+this.sID+', time: '+(this.ns.time*1000)+', duration: '+this.duration+')');
           } else {
-            this.didJustBeforeFinish = false; // reset
             this.finished = true;
             writeDebug('calling onfinish for sound '+this.sID);
             this.sm.checkProgress();

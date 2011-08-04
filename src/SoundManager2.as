@@ -36,7 +36,7 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "V2.97a.20110801";
+    var version = "V2.97a.20110801+DEV";
     var version_as = "(AS2/Flash 8)";
 
     /*
@@ -184,11 +184,6 @@ class SoundManager2 {
           oSound.lastValues.position = nP;
           ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._whileplaying", nP);
           // if position changed, check for near-end
-          if (oSound.didJustBeforeFinish != true && oSound.loaded == true && oSound.justBeforeFinishOffset > 0 && nD - nP <= oSound.justBeforeFinishOffset) {
-            // fully-loaded, near end and haven't done this yet..
-            ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onjustbeforefinish", (nD - nP));
-            oSound.didJustBeforeFinish = true;
-          }
         }
       }
     }
@@ -223,7 +218,6 @@ class SoundManager2 {
     var registerOnComplete = function(sID) {
       soundObjects[sID].onSoundComplete = function() {
         checkProgress();
-        this.didJustBeforeFinish = false; // reset
         ExternalInterface.call(baseJSObject + "['" + sID + "']._onfinish");
       }
     }
@@ -254,7 +248,6 @@ class SoundManager2 {
       s.loaded = true;
       s.checkPolicyFile = bCheckPolicyFile;
       s.loadSound(sURL, bStream);
-      s.didJustBeforeFinish = false;
       if (bAutoPlay != true) {
         s.stop(); // prevent default auto-play behaviour
       } else {
@@ -274,21 +267,18 @@ class SoundManager2 {
       s.stop();
       s.loadSound(sURL, true);
       s.stop(); // prevent auto-play
-      s.didJustBeforeFinish = false;
     }
 
-    var _createSound = function(sID, justBeforeFinishOffset, loops, checkPolicyFile) {
+    var _createSound = function(sID, loops, checkPolicyFile) {
       var s = new Sound();
       if (!soundObjects[sID]) {
         sounds.push(sID);
       }
       soundObjects[sID] = s;
       s.setVolume(100);
-      s.didJustBeforeFinish = false;
       s.sID = sID;
       s.paused = false;
       s.loaded = false;
-      s.justBeforeFinishOffset = justBeforeFinishOffset || 0;
       s.checkPolicyFile = checkPolicyFile;
       s.lastValues = {
         bytes: 0,
@@ -318,7 +308,6 @@ class SoundManager2 {
       } else {
         soundObjects[sID].stop();
         soundObjects[sID].paused = false;
-        soundObjects[sID].didJustBeforeFinish = false;
       }
     }
 
