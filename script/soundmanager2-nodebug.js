@@ -344,6 +344,13 @@ function SoundManager(smURL, smID) {
     return _s.sounds[sID].unload();
   };
 
+  this.onposition = function(sID, nPosition, oMethod, oScope) {
+    if (!_idCheck(sID)) {
+      return false;
+    }
+    return _s.sounds[sID].onposition(nPosition, oMethod, oScope);
+  };
+
   this.play = function(sID, oOptions) {
     var fN = _sm+'.play(): ';
     if (!_didInit || !_s.ok()) {
@@ -2934,6 +2941,20 @@ function SoundManager(smURL, smID) {
     return true;
   };
 
+  _showSupport = function() {
+
+    var item, tests = [];
+    if (_s.useHTML5Audio && _s.hasHTML5) {
+      for (item in _s.audioFormats) {
+        if (_s.audioFormats.hasOwnProperty(item)) {
+          tests.push(item + ': ' + _s.html5[item] + (!_s.html5[item] && _hasFlash && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] && _hasFlash ? ' (preferring flash)': (!_s.html5[item] ? ' (' + (_s.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
+        }
+      }
+      //_s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
+    }
+
+  };
+
   _initComplete = function(bNoDisable) {
     if (_didInit) {
       return false;
@@ -2978,20 +2999,6 @@ function SoundManager(smURL, smID) {
       _initUserOnload();
     }
     return true;
-  };
-
-  _showSupport = function() {
-
-    var item, tests = [];
-    if (_s.useHTML5Audio && _s.hasHTML5) {
-      for (item in _s.audioFormats) {
-        if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item + ': ' + _s.html5[item] + (!_s.html5[item] && _hasFlash && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] && _hasFlash ? ' (preferring flash)': (!_s.html5[item] ? ' (' + (_s.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
-        }
-      }
-      //_s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
-    }
-
   };
 
   _init = function() {
