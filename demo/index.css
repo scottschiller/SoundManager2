@@ -999,6 +999,10 @@ span.nevermind,
  opacity:0.75;
 }
 
+strong.removed {
+ font-weight: normal;
+}
+
 .padded {
  padding:0.5em;
 }
