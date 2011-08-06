@@ -63,27 +63,27 @@ function SoundManager(smURL, smID) {
   };
 
   this.defaultOptions = {
-    'autoLoad': false,             // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
-    'stream': true,                // allows playing before entire file has loaded (recommended)
-    'autoPlay': false,             // enable playing of file as soon as possible (much faster if "stream" is true)
-    'loops': 1,                    // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >0)
-    'onid3': null,                 // callback function for "ID3 data is added/available"
-    'onload': null,                // callback function for "load finished"
-    'whileloading': null,          // callback function for "download progress update" (X of Y bytes received)
-    'onplay': null,                // callback for "play" start
-    'onpause': null,               // callback for "pause"
-    'onresume': null,              // callback for "resume" (pause toggle)
-    'whileplaying': null,          // callback during play (position update)
-    'onstop': null,                // callback for "user stop"
-    'onfailure': null,             // callback function for when playing fails
-    'onfinish': null,              // callback function for "sound finished playing"
-    'multiShot': true,             // let sounds "restart" or layer on top of each other when played multiple times, rather than one-shot/one at a time
-    'multiShotEvents': false,      // fire multiple sound events (currently onfinish() only) when multiShot is enabled
-    'position': null,              // offset (milliseconds) to seek to within loaded sound data.
-    'pan': 0,                      // "pan" settings, left-to-right, -100 to 100
-    'type': null,                  // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
-    'usePolicyFile': false,        // enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)
-    'volume': 100                  // self-explanatory. 0-100, the latter being the max.
+    'autoLoad': false,        // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
+    'stream': true,           // allows playing before entire file has loaded (recommended)
+    'autoPlay': false,        // enable playing of file as soon as possible (much faster if "stream" is true)
+    'loops': 1,               // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >0)
+    'onid3': null,            // callback function for "ID3 data is added/available"
+    'onload': null,           // callback function for "load finished"
+    'whileloading': null,     // callback function for "download progress update" (X of Y bytes received)
+    'onplay': null,           // callback for "play" start
+    'onpause': null,          // callback for "pause"
+    'onresume': null,         // callback for "resume" (pause toggle)
+    'whileplaying': null,     // callback during play (position update)
+    'onstop': null,           // callback for "user stop"
+    'onfailure': null,        // callback function for when playing fails
+    'onfinish': null,         // callback function for "sound finished playing"
+    'multiShot': true,        // let sounds "restart" or layer on top of each other when played multiple times, rather than one-shot/one at a time
+    'multiShotEvents': false, // fire multiple sound events (currently onfinish() only) when multiShot is enabled
+    'position': null,         // offset (milliseconds) to seek to within loaded sound data.
+    'pan': 0,                 // "pan" settings, left-to-right, -100 to 100
+    'type': null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
+    'usePolicyFile': false,   // enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)
+    'volume': 100             // self-explanatory. 0-100, the latter being the max.
   };
 
   this.flash9Options = {      // flash 9-only options, merged into defaultOptions if flash 9 is being used
@@ -95,11 +95,11 @@ function SoundManager(smURL, smID) {
     'ondataerror': null       // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
   };
 
-  this.movieStarOptions = { // flash 9.0r115+ MPEG4 audio options, merged into defaultOptions if flash 9+movieStar mode is enabled
-    'bufferTime': 3,        // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try increasing.)
-    'serverURL': null,      // rtmp: FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
-    'onconnect': null,      // rtmp: callback for connection to flash media server
-    'duration': null        // rtmp: song duration (msec)
+  this.movieStarOptions = {   // flash 9.0r115+ MPEG4 audio options, merged into defaultOptions if flash 9+movieStar mode is enabled
+    'bufferTime': 3,          // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try increasing.)
+    'serverURL': null,        // rtmp: FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
+    'onconnect': null,        // rtmp: callback for connection to flash media server
+    'duration': null          // rtmp: song duration (msec)
   };
 
   this.version = null;
@@ -137,12 +137,6 @@ function SoundManager(smURL, smID) {
     'flash8': /\.mp3(\?.*)?$/i,
     'flash9': /\.mp3(\?.*)?$/i
   };
-
-  this.baseMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
-  this.netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3, mp4, aac etc.
-  this.netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2']; // Flash v9.0r115+ "moviestar" formats
-  this.netStreamPattern = new RegExp('\\.(' + this.netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
-  this.mimePattern = this.baseMimeTypes;
 
   this.features = {
     'buffering': false,
@@ -195,7 +189,12 @@ function SoundManager(smURL, smID) {
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
-  _http = (!_overHTTP ? 'http:' : '');
+  _http = (!_overHTTP ? 'http:' : ''),
+  _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i, // mp3, mp4, aac etc.
+  _netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2'], // Flash v9.0r115+ "moviestar" formats
+  _netStreamPattern = new RegExp('\\.(' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
+
+  this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
 
   this.useAltURL = !_overHTTP; // use altURL if not "online"
   this._global_a = null;
@@ -266,7 +265,7 @@ function SoundManager(smURL, smID) {
     } else {
       if (_fV > 8) {
         if (_tO.isMovieStar === null) {
-          _tO.isMovieStar = ((_tO.serverURL || (_tO.type?_tO.type.match(_s.netStreamPattern):false)||_tO.url.match(_s.netStreamPattern))?true:false);
+          _tO.isMovieStar = ((_tO.serverURL || (_tO.type?_tO.type.match(_netStreamPattern):false)||_tO.url.match(_netStreamPattern))?true:false);
         }
         if (_tO.isMovieStar) {
           _s._wD(_cs + 'using MovieStar handling');
@@ -2186,8 +2185,8 @@ function SoundManager(smURL, smID) {
     if (_fV > 8) {
       // flash 9+ support for movieStar formats as well as MP3
       _s.defaultOptions = _mixin(_s.defaultOptions, _s.movieStarOptions);
-      _s.filePatterns.flash9 = new RegExp('\\.(mp3|' + _s.netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
-      _s.mimePattern = _s.netStreamMimeTypes;
+      _s.filePatterns.flash9 = new RegExp('\\.(mp3|' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
+      _s.mimePattern = _netStreamMimeTypes;
       _s.features.movieStar = true;
     } else {
       _s.features.movieStar = false;
