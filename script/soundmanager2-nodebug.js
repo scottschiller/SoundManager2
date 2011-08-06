@@ -221,7 +221,8 @@ function SoundManager(smURL, smID) {
   this.supported = this.ok; // legacy
 
   this.getMovie = function(smID) {
-    return _isIE?_win[smID]:(_isSafari?_id(smID) || _doc[smID]:_id(smID));
+    // safety net: some old browsers differ on SWF references, possibly related to ExternalInterface / flash version
+    return _id(smID) || _doc[smID] || _win[smID];
   };
 
   this.createSound = function(oOptions) {
@@ -2461,7 +2462,7 @@ function SoundManager(smURL, smID) {
   _featureCheck = function() {
 
     var needsFlash, item,
-        isSpecial = (_ua.match(/iphone os (1|2|3_0|3_1)/i)?true:false); // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (iPad) + iOS4 works.
+        isSpecial = (_is_iDevice && !!(_ua.match(/os (1|2|3_0|3_1)/i))); // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (iPad) + iOS4 works.
 
     if (isSpecial) {
       _s.hasHTML5 = false; // has Audio(), but is broken; let it load links directly.
