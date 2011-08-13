@@ -8,7 +8,7 @@
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
  * V2.97a.20110801+DEV
-*/
+ */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
 /*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
@@ -42,7 +42,7 @@ function SoundManager(smURL, smID) {
      * if no support for a "required" format, SM2 will fail to start.
      * flash fallback is used for MP3 or MP4 if HTML5 can't play it (or if preferFlash = true)
      * multiple MIME types may be tested while trying to get a positive canPlayType() response.
-    */
+     */
     'mp3': {
       'type': ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
       'required': true
@@ -181,7 +181,7 @@ function SoundManager(smURL, smID) {
 
   /*
    * a few private internals
-  */
+   */
 
   var SMSound,
   _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
@@ -212,7 +212,7 @@ function SoundManager(smURL, smID) {
 
   /*
    * public soundManager API
-  */
+   */
 
   this.ok = function() {
     return (_needsFlash?(_didInit && !_disabled):(_s.useHTML5Audio && _s.hasHTML5));
@@ -745,7 +745,7 @@ function SoundManager(smURL, smID) {
 
   /*
    * internal HTML5 event handling
-  */
+   */
 
   function _html5_event(oFn) {
     // wrap html5 event handlers so we don't call them on destroyed sounds
@@ -932,7 +932,7 @@ function SoundManager(smURL, smID) {
 
   /*
    * SMSound() (sound object) instance
-  */
+   */
 
   SMSound = function(oOptions) {
 
@@ -1145,7 +1145,7 @@ function SoundManager(smURL, smID) {
        * If we just call resume() the onplay() callback will never be called.
        * So only call resume() if the position is > 0.
        * Another reason is because options like volume won't have been applied yet.
-      */
+       */
       if (_t.paused && _t.position && _t.position > 0) { // https://gist.github.com/37b17df75cc4d7a90bf6
         //_s._wD(fN + '"' + _t.sID + '" is resuming from paused state',1);
         _t.resume();
@@ -1257,7 +1257,7 @@ function SoundManager(smURL, smID) {
              * DOM/JS errors/exceptions to watch out for:
              * if seek is beyond (loaded?) position, "DOM exception 11"
              * "INDEX_SIZE_ERR": DOM exception 1
-            */
+             */
             //_s._wD('setPosition('+position1K+'): setting position');
             try {
               _t._a.currentTime = position1K;
@@ -1307,7 +1307,7 @@ function SoundManager(smURL, smID) {
      * When a paused stream is resumed, we need to trigger the onplay() callback if it
      * hasn't been called already. In this case since the sound is being played for the
      * first time, I think it's more appropriate to call onplay() rather than onresume().
-    */
+     */
     this.resume = function() {
       if (!_t.paused) {
         return _t;
@@ -1458,7 +1458,7 @@ function SoundManager(smURL, smID) {
 
     /*
      * private internals
-    */
+     */
 
     _start_html5_timer = function() {
       if (_t.isHTML5) {
@@ -1510,7 +1510,7 @@ function SoundManager(smURL, smID) {
 
     /*
      * pseudo-private SMSound internals
-    */
+     */
 
     this._onTimer = function(bForce) {
       // HTML5-only _whileplaying() etc.
@@ -1549,7 +1549,7 @@ function SoundManager(smURL, smID) {
          * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
          * Fixes case with devices that can only play one sound at a time
          * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
-        */
+         */
         if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
           _a._t.stop();
         }
@@ -1632,7 +1632,7 @@ function SoundManager(smURL, smID) {
 
     /*
      * pseudo-private event internals
-    */
+     */
 
     this._onload = function(nSuccess) {
       var fN = 'SMSound._onload(): ', loadOK = (nSuccess?true:false);
@@ -1676,7 +1676,7 @@ function SoundManager(smURL, smID) {
     /*
      * flash-only method, should fire only once at most
      * at this point we just recreate failed sounds rather than trying to reconnect
-    */
+     */
     this._onfailure = function(msg, level, code) {
       _t.failures++;
       //_s._wD('SMSound._onfailure(): "'+_t.sID+'" count '+_t.failures);
@@ -1830,7 +1830,7 @@ function SoundManager(smURL, smID) {
 
   /*
    * private soundManager internals
-  */
+   */
 
   _getDocument = function() {
     return (_doc.body || _doc._docElement || _doc.getElementsByTagName('div')[0]);
@@ -1915,7 +1915,7 @@ function SoundManager(smURL, smID) {
      *  url: '/path/to/an.mp3',
      *  type: 'audio/mp3'
      * }
-    */
+     */
 
     if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
@@ -2558,7 +2558,7 @@ function SoundManager(smURL, smID) {
 
   /*
    * pseudo-private flash/ExternalInterface methods
-  */
+   */
 
   this._setSandboxType = function(sandboxType) {
     /*
@@ -2605,7 +2605,7 @@ function SoundManager(smURL, smID) {
 
   /*
    * private initialization helpers
-  */
+   */
 
   _createMovie = function(smID, smURL) {
 
@@ -2654,7 +2654,7 @@ function SoundManager(smURL, smID) {
        * extra-special case: movie doesn't load until scrolled into view when using wmode = anything but 'window' here
        * does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
        * wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)
-      */
+       */
       _s.specialWmodeCase = true;
       //_wDS('spcWmode');
       _s.wmode = null;
@@ -3063,7 +3063,7 @@ function SoundManager(smURL, smID) {
     /*
      * Temporary feature: allow force of HTML5 via URL params: sm2-usehtml5audio=0 or 1
      * Ditto for sm2-preferFlash, too.
-    */
+     */
     /*
     (function(){
       var a = 'sm2-usehtml5audio=', l = _wl.toLowerCase(), b = null,
