@@ -40,16 +40,17 @@ class SoundManager2 {
     var version_as = "(AS2/Flash 8)";
 
     /*
-    *  Cross-domain security options
-    *  HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
-    *  // allow_xdomain_scripting = true;
-    *  // xdomain = "foo.com";
-    *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
-    *  When loading from HTTPS, use System.security.allowInsecureDomain();
-    *  See "allowDomain (security.allowDomain method)" in Flash 8/AS2 liveDocs documentation (AS2 reference -> classes -> security)
-    *  download from http://livedocs.macromedia.com/flash/8/
-    *  Related AS3 documentation: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain%28%29
-    */
+     *  Cross-domain security options
+     *  HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
+     *  // allow_xdomain_scripting = true;
+     *  // xdomain = "foo.com";
+     *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
+     *  When loading from HTTPS, use System.security.allowInsecureDomain();
+     *  See "allowDomain (security.allowDomain method)" in Flash 8/AS2 liveDocs documentation (AS2 reference -> classes -> security)
+     *  download from http://livedocs.macromedia.com/flash/8/
+     *  Related AS3 documentation: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain%28%29
+     */
+
     var allow_xdomain_scripting = false;
     var xdomain = "*";
 
@@ -231,14 +232,22 @@ class SoundManager2 {
         s.lastValues.loops = 1;
       }
       s.start(nSecOffset, s.lastValues.nLoops || 1); // start playing at new position
-      if (isPaused) s.stop();
+      if (isPaused) {
+        s.stop();
+      }
     }
 
     var _load = function(sID, sURL, bStream, bAutoPlay, bCheckPolicyFile) {
       // writeDebug('_load(): '+sID+', '+sURL+', '+bStream+', '+bAutoPlay);
-      if (typeof bAutoPlay == 'undefined') bAutoPlay = false;
-      if (typeof bStream == 'undefined') bStream = true;
-      if (typeof bCheckPolicyFile == 'undefined') bCheckPolicyFile = false;
+      if (typeof bAutoPlay == 'undefined') {
+        bAutoPlay = false;
+      }
+      if (typeof bStream == 'undefined') {
+        bStream = true;
+      }
+      if (typeof bCheckPolicyFile == 'undefined') {
+        bCheckPolicyFile = false;
+      }
       // writeDebug('bStream: '+bStream);
       // writeDebug('bAutoPlay: '+bAutoPlay);
       // checkProgress();
@@ -290,7 +299,9 @@ class SoundManager2 {
     var _destroySound = function(sID) {
       // for the power of garbage collection! .. er, Greyskull!
       var s = (soundObjects[sID] || null);
-      if (!s) return false;
+      if (!s) {
+        return false;
+      }
       for (var i = 0; i < sounds.length; i++) {
         if (sounds[i] == sID) {
           sounds.splice(i, 1);
