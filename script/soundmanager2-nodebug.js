@@ -19,6 +19,8 @@ var soundManager = null;
 
 function SoundManager(smURL, smID) {
 
+  // top-level SM2 configuration options
+
   this.flashVersion = 8;             // version of flash to require, either 8 or 9. Some API features require Flash 9.
   this.debugMode = false;             // enable debugging output (div#soundmanager-debug, OR console if available+configured)
   this.debugFlash = false;           // enable debugging output inside SWF, troubleshoot Flash/browser issues
@@ -37,12 +39,14 @@ function SoundManager(smURL, smID) {
   this.preferFlash = true;           // (experimental) if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
 
   this.audioFormats = {
+
     /*
      * determines HTML5 support + flash requirements.
-     * if no support for a "required" format, SM2 will fail to start.
+     * if no support (via flash and/or HTML5) for a "required" format, SM2 will fail to start.
      * flash fallback is used for MP3 or MP4 if HTML5 can't play it (or if preferFlash = true)
      * multiple MIME types may be tested while trying to get a positive canPlayType() response.
      */
+
     'mp3': {
       'type': ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
       'required': true
@@ -51,6 +55,7 @@ function SoundManager(smURL, smID) {
       'related': ['aac','m4a'], // additional formats under the MP4 container
       'type': ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
       'required': false
+
     },
     'ogg': {
       'type': ['audio/ogg; codecs=vorbis'],
@@ -60,9 +65,16 @@ function SoundManager(smURL, smID) {
       'type': ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
       'required': false
     }
+
   };
 
   this.defaultOptions = {
+
+    /*
+     * the default configuration for sound objects
+     * eg., volume, auto-load behaviour and so forth
+     */
+
     'autoLoad': false,        // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
     'stream': true,           // allows playing before entire file has loaded (recommended)
     'autoPlay': false,        // enable playing of file as soon as possible (much faster if "stream" is true)
@@ -84,32 +96,41 @@ function SoundManager(smURL, smID) {
     'type': null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     'usePolicyFile': false,   // enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)
     'volume': 100             // self-explanatory. 0-100, the latter being the max.
+
   };
 
-  this.flash9Options = {      // flash 9-only options, merged into defaultOptions if flash 9 is being used
+  this.flash9Options = {
+
+    /*
+     * flash 9-only options,
+     * merged into defaultOptions if flash 9 is being used
+     */
+
     'isMovieStar': null,      // "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
     'usePeakData': false,     // enable left/right channel peak (level) data
     'useWaveformData': false, // enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.
     'useEQData': false,       // enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.
     'onbufferchange': null,   // callback for "isBuffering" property change
     'ondataerror': null       // callback for waveform/eq data access error (flash playing audio in other tabs/domains)
+
   };
 
-  this.movieStarOptions = {   // flash 9.0r115+ MPEG4 audio options, merged into defaultOptions if flash 9+movieStar mode is enabled
+  this.movieStarOptions = {
+
+    /*
+     * flash 9.0r115+ MPEG4 audio options,
+     * merged into defaultOptions if flash 9+movieStar mode is enabled
+     */
+
     'bufferTime': 3,          // seconds of data to buffer before playback begins (null = flash default of 0.1 seconds - if AAC playback is gappy, try increasing.)
     'serverURL': null,        // rtmp: FMS or FMIS server to connect to, required when requesting media via RTMP or one of its variants
     'onconnect': null,        // rtmp: callback for connection to flash media server
     'duration': null          // rtmp: song duration (msec)
+
   };
 
-  this.version = null;
-  this.versionNumber = 'V2.97a.20110801+DEV';
-  this.movieURL = null;
-  this.url = (smURL || null);
-  this.altURL = null;
-  this.swfLoaded = false;
-  this.enabled = false;
-  this.o = null;
+  // HTML attributes (id + class names) for the SWF container
+
   this.movieID = 'sm2-container';
   this.id = (smID || 'sm2movie');
   this.swfCSS = {
@@ -123,15 +144,26 @@ function SoundManager(smURL, smID) {
     'highPerf': 'high_performance',
     'flashDebug': 'flash_debug'
   };
+
+  this.debugID = 'soundmanager-debug';
+  this.debugURLParam = /([#?&])debug=1/i;
+
+  // dynamic attributes
+
+  this.versionNumber = 'V2.97a.20110801+DEV';
+  this.version = null;
+  this.movieURL = null;
+  this.url = (smURL || null);
+  this.altURL = null;
+  this.swfLoaded = false;
+  this.enabled = false;
+  this.o = null;
   this.oMC = null;
   this.sounds = {};
   this.soundIDs = [];
   this.muted = false;
-  this.debugID = 'soundmanager-debug';
-  this.debugURLParam = /([#?&])debug=1/i;
   this.specialWmodeCase = false;
   this.didFlashBlock = false;
-
   this.filePattern = null;
   this.filePatterns = {
     'flash8': /\.mp3(\?.*)?$/i,
@@ -163,18 +195,19 @@ function SoundManager(smURL, smID) {
 
   this.hasHTML5 = (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined'); // switch for handling logic
 
-  // stores canPlayType() results, etc. treat as read-only.
+
+  /*
+   * format support (html5/flash)
+   * stores canPlayType() results based on audioFormats.
+   * eg. { mp3: boolean, mp4: boolean }
+   * treat as read-only.
+   */
+
   this.html5 = {
-    // mp3: boolean
-    // mp4: boolean
     'usingFlash': null // set if/when flash fallback is needed
   };
 
-  // format support
-  this.flash = {
-    // mp3: boolean
-    // mp4: boolean
-  };
+  this.flash = {};
 
   this.html5Only = false;   // determined at init time
   this.ignoreFlash = false; // used for special cases (eg. iPad/iPhone/palm OS?)
@@ -744,193 +777,6 @@ function SoundManager(smURL, smID) {
   };
 
   /*
-   * internal HTML5 event handling
-   */
-
-  function _html5_event(oFn) {
-    // wrap html5 event handlers so we don't call them on destroyed sounds
-    return function(e) {
-      if (!this._t || !this._t._a) {
-        if (this._t && this._t.sID) {
-          //_s._wD(_h5+'ignoring '+e.type+': '+this._t.sID);
-        } else {
-          //_s._wD(_h5+'ignoring '+e.type);
-        }
-        return null;
-      } else {
-        return oFn.call(this, e);
-      }
-    };
-  }
-
-  _html5_events = {
-
-    // HTML5 event-name-to-handler map
-    abort: _html5_event(function(e) {
-      //_s._wD(_h5+'abort: '+this._t.sID);
-    }),
-
-    // enough has loaded to play
-    canplay: _html5_event(function(e) {
-      if (this._t._html5_canplay) {
-        // this event has already fired. ignore.
-        return true;
-      }
-      this._t._html5_canplay = true;
-      //_s._wD(_h5+'canplay: '+this._t.sID+', '+this._t.url);
-      this._t._onbufferchange(0);
-      var position1K = (!isNaN(this._t.position)?this._t.position/1000:null);
-      // set the position if position was set before the sound loaded
-      if (this._t.position && this.currentTime !== position1K) {
-        //_s._wD(_h5+'canplay: setting position to '+position1K);
-        try {
-          this.currentTime = position1K;
-        } catch(ee) {
-          //_s._wD(_h5+'setting position failed: '+ee.message, 2);
-        }
-      }
-    }),
-
-    load: _html5_event(function(e) {
-      if (!this._t.loaded) {
-        this._t._onbufferchange(0);
-        // should be 1, and the same
-        this._t._whileloading(this._t.bytesTotal, this._t.bytesTotal, this._t._get_html5_duration());
-        this._t._onload(true);
-      }
-    }),
-
-    emptied: _html5_event(function(e) {
-      //_s._wD(_h5+'emptied: '+this._t.sID);
-    }),
-
-    ended: _html5_event(function(e) {
-      //_s._wD(_h5+'ended: '+this._t.sID);
-      this._t._onfinish();
-    }),
-
-    error: _html5_event(function(e) {
-      //_s._wD(_h5+'error: '+this.error.code);
-      // call load with error state?
-      this._t._onload(false);
-    }),
-
-    loadeddata: _html5_event(function(e) {
-      var t = this._t,
-          bytesTotal = t.bytesTotal || 1; // at least 1 byte, so math works
-      //_s._wD(_h5+'loadeddata: '+this._t.sID);
-      if (!t._loaded && !_isSafari) { // safari seems to nicely report progress events, eventually totalling 100%
-        t.duration = t._get_html5_duration();
-        // fire whileloading() with 100% values
-        t._whileloading(bytesTotal, bytesTotal, t._get_html5_duration());
-        t._onload(true);
-      }
-    }),
-
-    loadedmetadata: _html5_event(function(e) {
-      //_s._wD(_h5+'loadedmetadata: '+this._t.sID);
-    }),
-
-    loadstart: _html5_event(function(e) {
-      //_s._wD(_h5+'loadstart: '+this._t.sID);
-      // assume buffering at first
-      this._t._onbufferchange(1);
-    }),
-
-    play: _html5_event(function(e) {
-      //_s._wD(_h5+'play: '+this._t.sID+', '+this._t.url);
-      // once play starts, no buffering
-      this._t._onbufferchange(0);
-    }),
-
-    // TODO: verify if this is actually implemented anywhere yet.
-    playing: _html5_event(function(e) {
-      //_s._wD(_h5+'playing: '+this._t.sID+', '+this._t.url);
-      // once play starts, no buffering
-      this._t._onbufferchange(0);
-    }),
-
-    progress: _html5_event(function(e) {
-
-      if (this._t.loaded) {
-        return false;
-      }
-
-      var i, j, str, buffered = 0,
-          isProgress = (e.type === 'progress'),
-          ranges = e.target.buffered,
-          loaded = (e.loaded||0), // firefox 3.6 implements e.loaded/total (bytes)
-          total = (e.total||1);
-
-      if (ranges && ranges.length) {
-
-        // if loaded is 0, try TimeRanges implementation as % of load
-        // https://developer.mozilla.org/en/DOM/TimeRanges
-        for (i=ranges.length; i--;) {
-          buffered = (ranges.end(i) - ranges.start(i));
-        }
-
-        // linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges
-        loaded = buffered/e.target.duration;
-
-        /*
-        if (isProgress && ranges.length > 1) {
-          str = [];
-          j = ranges.length;
-          for (i=0; i<j; i++) {
-            str.push(e.target.buffered.start(i) +'-'+ e.target.buffered.end(i));
-          }
-          //_s._wD(_h5+'progress: timeRanges: '+str.join(', '));
-        }
-        */
-
-        if (isProgress && !isNaN(loaded)) {
-          //_s._wD(_h5+'progress: '+this._t.sID+': ' + Math.floor(loaded*100)+'% loaded');
-        }
-
-      }
-
-      if (!isNaN(loaded)) {
-
-        this._t._onbufferchange(0); // if progress, likely not buffering
-        this._t._whileloading(loaded, total, this._t._get_html5_duration());
-
-        if (loaded && total && loaded === total) {
-          // in case "onload" doesn't fire (eg. gecko 1.9.2)
-          _html5_events.load.call(this, e);
-        }
-
-      }
-
-    }),
-
-    ratechange: _html5_event(function(e) {
-      //_s._wD(_h5+'ratechange: '+this._t.sID);
-    }),
-
-    suspend: _html5_event(function(e) {
-      // download paused/stopped, may have finished (eg. onload)
-      //_s._wD(_h5+'suspend: '+this._t.sID);
-      _html5_events.progress.call(this, e);
-    }),
-
-    stalled: _html5_event(function(e) {
-      //_s._wD(_h5+'stalled: '+this._t.sID);
-    }),
-
-    timeupdate: _html5_event(function(e) {
-      this._t._onTimer();
-    }),
-
-    waiting: _html5_event(function(e) { // see also: seeking
-      //_s._wD(_h5+'waiting: '+this._t.sID);
-      // playback faster than download rate, etc.
-      this._t._onbufferchange(1);
-    })
-
-  };
-
-  /*
    * SMSound() (sound object) instance
    */
 
@@ -1007,6 +853,9 @@ function SoundManager(smURL, smID) {
       _t.loaded = false;
       _t.readyState = 1;
       _t.playState = 0;
+
+// TODO: If switching from HTML5 -> flash (or vice versa), stop currently-playing audio.
+
       if (_html5OK(_t._iO)) {
         oS = _t._setup_html5(_t._iO);
         if (!oS._called_load) {
@@ -1771,7 +1620,7 @@ function SoundManager(smURL, smID) {
       }
       if (_t.playState === 1) {
         // special case/hack: ensure buffering is false if loading from cache (and not yet started)
-        if (!_t.isHTML5 && _s.flashVersion === 8 && !_t.position && _t.isBuffering) {
+        if (!_t.isHTML5 && _fV === 8 && !_t.position && _t.isBuffering) {
           _t._onbufferchange(0);
         }
         if (_t._iO.whileplaying) {
@@ -1902,6 +1751,193 @@ function SoundManager(smURL, smID) {
     };
 
   }());
+
+  /*
+   * internal HTML5 event handling
+   */
+
+  function _html5_event(oFn) {
+    // wrap html5 event handlers so we don't call them on destroyed sounds
+    return function(e) {
+      if (!this._t || !this._t._a) {
+        if (this._t && this._t.sID) {
+          //_s._wD(_h5+'ignoring '+e.type+': '+this._t.sID);
+        } else {
+          //_s._wD(_h5+'ignoring '+e.type);
+        }
+        return null;
+      } else {
+        return oFn.call(this, e);
+      }
+    };
+  }
+
+  _html5_events = {
+
+    // HTML5 event-name-to-handler map
+    abort: _html5_event(function(e) {
+      //_s._wD(_h5+'abort: '+this._t.sID);
+    }),
+
+    // enough has loaded to play
+    canplay: _html5_event(function(e) {
+      if (this._t._html5_canplay) {
+        // this event has already fired. ignore.
+        return true;
+      }
+      this._t._html5_canplay = true;
+      //_s._wD(_h5+'canplay: '+this._t.sID+', '+this._t.url);
+      this._t._onbufferchange(0);
+      var position1K = (!isNaN(this._t.position)?this._t.position/1000:null);
+      // set the position if position was set before the sound loaded
+      if (this._t.position && this.currentTime !== position1K) {
+        //_s._wD(_h5+'canplay: setting position to '+position1K);
+        try {
+          this.currentTime = position1K;
+        } catch(ee) {
+          //_s._wD(_h5+'setting position failed: '+ee.message, 2);
+        }
+      }
+    }),
+
+    load: _html5_event(function(e) {
+      if (!this._t.loaded) {
+        this._t._onbufferchange(0);
+        // should be 1, and the same
+        this._t._whileloading(this._t.bytesTotal, this._t.bytesTotal, this._t._get_html5_duration());
+        this._t._onload(true);
+      }
+    }),
+
+    emptied: _html5_event(function(e) {
+      //_s._wD(_h5+'emptied: '+this._t.sID);
+    }),
+
+    ended: _html5_event(function(e) {
+      //_s._wD(_h5+'ended: '+this._t.sID);
+      this._t._onfinish();
+    }),
+
+    error: _html5_event(function(e) {
+      //_s._wD(_h5+'error: '+this.error.code);
+      // call load with error state?
+      this._t._onload(false);
+    }),
+
+    loadeddata: _html5_event(function(e) {
+      var t = this._t,
+          bytesTotal = t.bytesTotal || 1; // at least 1 byte, so math works
+      //_s._wD(_h5+'loadeddata: '+this._t.sID);
+      if (!t._loaded && !_isSafari) { // safari seems to nicely report progress events, eventually totalling 100%
+        t.duration = t._get_html5_duration();
+        // fire whileloading() with 100% values
+        t._whileloading(bytesTotal, bytesTotal, t._get_html5_duration());
+        t._onload(true);
+      }
+    }),
+
+    loadedmetadata: _html5_event(function(e) {
+      //_s._wD(_h5+'loadedmetadata: '+this._t.sID);
+    }),
+
+    loadstart: _html5_event(function(e) {
+      //_s._wD(_h5+'loadstart: '+this._t.sID);
+      // assume buffering at first
+      this._t._onbufferchange(1);
+    }),
+
+    play: _html5_event(function(e) {
+      //_s._wD(_h5+'play: '+this._t.sID+', '+this._t.url);
+      // once play starts, no buffering
+      this._t._onbufferchange(0);
+    }),
+
+    // TODO: verify if this is actually implemented anywhere yet.
+    playing: _html5_event(function(e) {
+      //_s._wD(_h5+'playing: '+this._t.sID+', '+this._t.url);
+      // once play starts, no buffering
+      this._t._onbufferchange(0);
+    }),
+
+    progress: _html5_event(function(e) {
+
+      if (this._t.loaded) {
+        return false;
+      }
+
+      var i, j, str, buffered = 0,
+          isProgress = (e.type === 'progress'),
+          ranges = e.target.buffered,
+          loaded = (e.loaded||0), // firefox 3.6 implements e.loaded/total (bytes)
+          total = (e.total||1);
+
+      if (ranges && ranges.length) {
+
+        // if loaded is 0, try TimeRanges implementation as % of load
+        // https://developer.mozilla.org/en/DOM/TimeRanges
+        for (i=ranges.length; i--;) {
+          buffered = (ranges.end(i) - ranges.start(i));
+        }
+
+        // linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges
+        loaded = buffered/e.target.duration;
+
+        /*
+        if (isProgress && ranges.length > 1) {
+          str = [];
+          j = ranges.length;
+          for (i=0; i<j; i++) {
+            str.push(e.target.buffered.start(i) +'-'+ e.target.buffered.end(i));
+          }
+          //_s._wD(_h5+'progress: timeRanges: '+str.join(', '));
+        }
+        */
+
+        if (isProgress && !isNaN(loaded)) {
+          //_s._wD(_h5+'progress: '+this._t.sID+': ' + Math.floor(loaded*100)+'% loaded');
+        }
+
+      }
+
+      if (!isNaN(loaded)) {
+
+        this._t._onbufferchange(0); // if progress, likely not buffering
+        this._t._whileloading(loaded, total, this._t._get_html5_duration());
+
+        if (loaded && total && loaded === total) {
+          // in case "onload" doesn't fire (eg. gecko 1.9.2)
+          _html5_events.load.call(this, e);
+        }
+
+      }
+
+    }),
+
+    ratechange: _html5_event(function(e) {
+      //_s._wD(_h5+'ratechange: '+this._t.sID);
+    }),
+
+    suspend: _html5_event(function(e) {
+      // download paused/stopped, may have finished (eg. onload)
+      //_s._wD(_h5+'suspend: '+this._t.sID);
+      _html5_events.progress.call(this, e);
+    }),
+
+    stalled: _html5_event(function(e) {
+      //_s._wD(_h5+'stalled: '+this._t.sID);
+    }),
+
+    timeupdate: _html5_event(function(e) {
+      this._t._onTimer();
+    }),
+
+    waiting: _html5_event(function(e) { // see also: seeking
+      //_s._wD(_h5+'waiting: '+this._t.sID);
+      // playback faster than download rate, etc.
+      this._t._onbufferchange(1);
+    })
+
+  };
 
   _html5OK = function(iO) {
     return (!iO.serverURL && (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay({url:iO.url})||_s.html5Only)); // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
@@ -2173,18 +2209,17 @@ function SoundManager(smURL, smID) {
       _s.flashVersion = _fV = _defaultFlashVersion;
     }
     var isDebug = (_s.debugMode || _s.debugFlash?'_debug.swf':'.swf'); // debug flash movie, if applicable
-    if (_s.useHTML5Audio && !_s.html5Only && _s.audioFormats.mp4.required && _s.flashVersion < 9) {
+    if (_s.useHTML5Audio && !_s.html5Only && _s.audioFormats.mp4.required && _fV < 9) {
       //_s._wD(_str('needfl9'));
-      _s.flashVersion = 9;
+      _s.flashVersion = _fV = 9;
     }
     _s.version = _s.versionNumber + (_s.html5Only?' (HTML5-only mode)':(_fV === 9?' (AS3/Flash 9)':' (AS2/Flash 8)'));
     // set up default options
     if (_fV > 8) {
+      // +flash 9 base options
       _s.defaultOptions = _mixin(_s.defaultOptions, _s.flash9Options);
       _s.features.buffering = true;
-    }
-    if (_fV > 8) {
-      // flash 9+ support for movieStar formats as well as MP3
+      // +moviestar support
       _s.defaultOptions = _mixin(_s.defaultOptions, _s.movieStarOptions);
       _s.filePatterns.flash9 = new RegExp('\\.(mp3|' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
       _s.mimePattern = _netStreamMimeTypes;
