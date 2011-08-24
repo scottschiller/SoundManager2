@@ -1636,7 +1636,6 @@ function SoundManager(smURL, smID) {
             _t._onTimer();
 
             _stop_html5_timer();
-            _t.unload();
 
           }
 
@@ -1731,7 +1730,6 @@ function SoundManager(smURL, smID) {
              * "INDEX_SIZE_ERR": DOM exception 1
              */
             _s._wD('setPosition('+position1K+'): setting position');
-
             try {
               _t._a.currentTime = position1K;
               if (_t.playState === 0 || _t.paused) {
