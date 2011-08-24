@@ -1,32 +1,32 @@
-/*
-   SoundManager 2: Javascript Sound for the Web
-   ----------------------------------------------
-   http://schillmania.com/projects/soundmanager2/
-
-   Copyright (c) 2007, Scott Schiller. All rights reserved.
-   Code licensed under the BSD License:
-   http://www.schillmania.com/projects/soundmanager2/license.txt
-
-   Flash 8 / ActionScript 2 version
-
-   Compiling AS to Flash 8 SWF using MTASC (free compiler - http://www.mtasc.org/):
-   mtasc -swf soundmanager2.swf -main -header 16:16:30 SoundManager2.as -version 8
-
-   ActionScript Sound class reference (Macromedia), documentation download:
-   http://livedocs.macromedia.com/flash/8/
-   Previously-live URL:
-   http://livedocs.macromedia.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00002668.html
-
-   *** NOTE ON LOCAL FILE SYSTEM ACCESS ***
-
-   Flash security allows local OR network access, but not both
-   unless explicitly whitelisted/allowed by the flash player's
-   security settings.
-
-   To enable in-flash messaging for troubleshooting, pass debug=1 in FlashVars (within object/embed code)
-   SM2 will do this by default when soundManager.debugFlash = true.
-
-*/
+/**
+ * SoundManager 2: Javascript Sound for the Web
+ * ----------------------------------------------
+ * http://schillmania.com/projects/soundmanager2/
+ *
+ * Copyright (c) 2007, Scott Schiller. All rights reserved.
+ * Code licensed under the BSD License:
+ * http://www.schillmania.com/projects/soundmanager2/license.txt
+ *
+ * Flash 8 / ActionScript 2 version
+ *
+ * Compiling AS to Flash 8 SWF using MTASC (free compiler - http://www.mtasc.org/):
+ * mtasc -swf soundmanager2.swf -main -header 16:16:30 SoundManager2.as -version 8
+ *
+ * ActionScript Sound class reference (Macromedia), documentation download:
+ * http://livedocs.macromedia.com/flash/8/
+ * Previously-live URL:
+ * http://livedocs.macromedia.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00002668.html
+ *
+ * *** NOTE ON LOCAL FILE SYSTEM ACCESS ***
+ *
+ * Flash security allows local OR network access, but not both
+ * unless explicitly whitelisted/allowed by the flash player's
+ * security settings.
+ *
+ * To enable in-flash messaging for troubleshooting, pass debug=1 in FlashVars (within object/embed code)
+ * SM2 will do this by default when soundManager.debugFlash = true.
+ *
+ */
 
 import flash.external.ExternalInterface; // woo
 
@@ -39,7 +39,7 @@ class SoundManager2 {
     var version = "V2.97a.20110801+DEV";
     var version_as = "(AS2/Flash 8)";
 
-    /*
+    /**
      *  Cross-domain security options
      *  HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
      *  // allow_xdomain_scripting = true;
