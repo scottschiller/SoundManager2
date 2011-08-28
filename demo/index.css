@@ -209,7 +209,7 @@ code,
 .code,
 dt,
 #soundmanager-debug {
- font-size:11px;
+ font-size:12px;
  font-weight:normal;
  line-height:1.5em;
  color:#006699;
@@ -217,7 +217,7 @@ dt,
 }
 
 pre {
- font-size:11px; /* x-small */
+ font-size:12px; /* small or x-small */
  line-height:1.75em;
 }
 
@@ -238,7 +238,7 @@ p.in pre {
  background:#fff;
  padding-left:0.75em;
  border:2px solid #ddeeff;
- font-size:11px;
+ font-size:12px;
  line-height:1.7em;
 }
 
@@ -271,7 +271,7 @@ body.home #soundmanager-debug div {
 #soundmanager-debug div {
  margin:0px;
  padding:0.25em 0px;
- font-size:11px;
+ font-size:12px;
  color:#333;
 }
 
@@ -341,7 +341,7 @@ div.block div.code {
  background:#fff;
  border:1px solid #ccddee;
  padding:0.5em;
- font-size:11px;
+ font-size:12px;
  line-height:1.75em;
 }
 
@@ -879,7 +879,7 @@ ul.standard ul {
 
 .c3 ul li ul li {
  font-family:monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
- font-size:11px;
+ font-size:12px;
  line-height:1.5em;
  text-indent:0.5em;
  padding:0.25em 0.25em 0.25em 0.25em;
@@ -996,11 +996,12 @@ li.new {
 span.nevermind,
 .removed {
  text-decoration:line-through;
- opacity:0.75;
+ opacity:0.5;
 }
 
 strong.removed {
  font-weight: normal;
+ opacity:0.5;
 }
 
 .padded {
