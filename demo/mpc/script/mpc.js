@@ -1,6 +1,6 @@
-// demo-specific code - not needed for general use
-
-// refer to bottom for initialisation and soundManager tie-ins, however!
+/**
+ * SoundManager 2: MPC (Drum Machine) demo
+ */
 
 var MPC = function() {
   var self = this;
@@ -110,27 +110,25 @@ soundManager.onready(function() {
     soundManager.createSound('s'+i, 'audio/'+soundURLs[i]+'.mp3');
   }
 
-  /*
-
-   createSound options can also be set on a per-file basis, with specific option overrides.
-   (Options not specified here will inherit defaults as defined in soundManager.defaultOptions.)
-
-   eg.
-
-   soundManager.createSound({
-    id: 'mySound',
-    url: '/path/to/some.mp3',
-    stream: true,
-    autoPlay: true,
-    multiShot: false,
-    whileloading: function() { alert('sound '+this.sID+': '+this.bytesLoaded+' of '+this.bytesTotal+' bytes loaded.'); } // event handler: "this" is scoped to SMSound() object instance for easy access to methods/properties
-   });
-
-   - OR -
-
-   If you just want a sound with all default options, you can also specify just the required id and URL as string parameters:
-
-   soundManager.createSound('mySound','/path/to/some.mp3');
-
-  */
+  /**
+   * createSound options can also be set on a per-file basis, with specific option overrides.
+   * (Options not specified here will inherit defaults as defined in soundManager.defaultOptions.)
+   *
+   * eg.
+   *
+   * soundManager.createSound({
+   *  id: 'mySound',
+   *  url: '/path/to/some.mp3',
+   *  stream: true,
+   *  autoPlay: true,
+   *  multiShot: false,
+   *  whileloading: function() { alert('sound '+this.sID+': '+this.bytesLoaded+' of '+this.bytesTotal+' bytes loaded.'); } // event handler: "this" is scoped to SMSound() object instance for easy access to methods/properties
+   * });
+   *
+   * - OR -
+   *
+   * If you just want a sound with all default options, you can also specify just the required id and URL as string parameters:
+   *
+   * soundManager.createSound('mySound','/path/to/some.mp3');
+   */
 });

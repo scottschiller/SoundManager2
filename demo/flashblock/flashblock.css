@@ -1,13 +1,14 @@
-/*
+/**
  * SoundManager 2 + useFlashBlock
+ * ------------------------------
  * Flash positioning and flashblock / clicktoflash handling
-*/
+ */
 
 #sm2-container {
- /*
+ /**
   * where the SM2 flash movie goes. by default, relative container.
   * set relative or absolute here, and don't touch it later or bad things will happen (see below comments.)
- */
+  */
  position: absolute;
  width: 1px;
  height: 1px;
@@ -18,12 +19,12 @@
 
 #sm2-container object,
 #sm2-container embed {
- /*
+ /**
   * the actual SWF movie bit.
   * important: The SWF needs to be able to be moved off-screen without display: or position: changes.
   * changing display: or position: or overflow: here or on parent can cause SWF reload or other weird issues after unblock
   * e.g., SM2 starts but strange errors, no whileplaying() etc.
- */
+  */
  width: 48px;
  height: 48px;
  /* some flash blockers may also respect this rule */
@@ -41,10 +42,10 @@
 #sm2-container.swf_timedout,
 #sm2-container.swf_timedout object,
 #sm2-container.swf_timedout embed {
- /* 
+ /**
   * when SM2 didn't start normally, time-out case. flash blocked, missing SWF, no flash?
   * 48px square flash placeholder is typically used by blockers.
- */
+  */
  min-width: 48px;
  min-height: 48px;
 }
@@ -82,11 +83,11 @@
  _left: -9999px;
  bottom: 0px;
  left: 0px;
- /*
+ /**
   * special case: show at first with w/h, hide when unblocked.
   * might be bad/annoying.
   * try to stay within ClickToFlash "invisible" limits (so it won't be blocked.)
- */
+  */
  z-index: 99; /* try to stay on top */
 }
 
@@ -99,11 +100,11 @@
 #sm2-container.high_performance.swf_unblocked,
 #sm2-container.high_performance.swf_unblocked object,
 #sm2-container.high_performance.swf_unblocked embed {
- /*
+ /**
   * 8x8px is required minimum to load in fx/win32 in some cases(?)
   * 6x6+ good for fast performance, even better when on-screen via position:fixed
   * also, clickToFlash (Safari <5.1) may auto-load "invisible" SWFs at this size
- */
+  */
  height: 8px;
  width: 8px;
 }

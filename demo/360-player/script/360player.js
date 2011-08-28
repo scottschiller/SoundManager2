@@ -1,18 +1,18 @@
-/*
-
-  SoundManager 2 Demo: 360-degree / "donut player"
-  ------------------------------------------------
-  http://schillmania.com/projects/soundmanager2/
-
-  An inline player with a circular UI.
-  Based on the original SM2 inline player.
-  Inspired by Apple's preview feature in the
-  iTunes music store (iPhone), among others.
-
-  Requires SoundManager 2 Javascript API.
-  Also uses Bernie's Better Animation Class (BSD):
-  http://www.berniecode.com/writing/animator.html
-
+/**
+ *
+ * SoundManager 2 Demo: 360-degree / "donut player"
+ * ------------------------------------------------
+ * http://schillmania.com/projects/soundmanager2/
+ *
+ * An inline player with a circular UI.
+ * Based on the original SM2 inline player.
+ * Inspired by Apple's preview feature in the
+ * iTunes music store (iPhone), among others.
+ *
+ * Requires SoundManager 2 Javascript API.
+ * Also uses Bernie's Better Animation Class (BSD):
+ * http://www.berniecode.com/writing/animator.html
+ *
 */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
@@ -36,9 +36,12 @@ function ThreeSixtyPlayer() {
       isFirefox = (uA.match(/firefox/i)),
       isTouchDevice = (uA.match(/ipad|iphone/i)),
       hasRealCanvas = (typeof window.G_vmlCanvasManager === 'undefined' && typeof document.createElement('canvas').getContext('2d') !== 'undefined'),
-      fullCircle = (isOpera||isChrome?359.9:360); // I dunno what Opera doesn't like about this. I'm probably doing it wrong.
+      // I dunno what Opera doesn't like about this. I'm probably doing it wrong.
+      fullCircle = (isOpera||isChrome?359.9:360);
 
-  this.excludeClass = 'threesixty-exclude'; // CSS class for ignoring MP3 links
+  // CSS class for ignoring MP3 links
+  this.excludeClass = 'threesixty-exclude';
+
   this.links = [];
   this.sounds = [];
   this.soundsByURL = [];
@@ -52,6 +55,7 @@ function ThreeSixtyPlayer() {
   this.callbackCount = 0;
   this.peakDataHistory = [];
 
+  // 360player configuration options
   this.config = {
 
     playNext: false,   // stop after one sound, or play through list until end

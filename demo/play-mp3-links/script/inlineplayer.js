@@ -1,16 +1,16 @@
-/*
-
-  SoundManager 2 Demo: Play MP3 links "in-place"
-  ----------------------------------------------
-
-  http://schillmania.com/projects/soundmanager2/
-
-  A simple demo making MP3s playable "inline"
-  and easily styled/customizable via CSS.
-
-  Requires SoundManager 2 Javascript API.
-
-*/
+/**
+ *
+ * SoundManager 2 Demo: Play MP3 links "in-place"
+ * ----------------------------------------------
+ *
+ * http://schillmania.com/projects/soundmanager2/
+ *
+ * A simple demo making MP3s playable "inline"
+ * and easily styled/customizable via CSS.
+ *
+ * Requires SoundManager 2 Javascript API.
+ *
+ */
 
 function InlinePlayer() {
   var self = this;

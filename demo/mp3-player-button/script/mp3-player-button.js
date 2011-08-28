@@ -1,18 +1,16 @@
-/*
-
-  SoundManager 2 Demo: Play MP3 links via button
-  ----------------------------------------------
-
-  http://schillmania.com/projects/soundmanager2/
-
-  A simple demo making MP3s playable "inline"
-  and easily styled/customizable via CSS.
-
-  A variation of the "play mp3 links" demo.
-
-  Requires SoundManager 2 Javascript API.
-
-*/
+/**
+ * SoundManager 2 Demo: Play MP3 links via button
+ * ----------------------------------------------
+ *
+ * http://schillmania.com/projects/soundmanager2/
+ *
+ * A simple demo making MP3s playable "inline"
+ * and easily styled/customizable via CSS.
+ *
+ * A variation of the "play mp3 links" demo.
+ *
+ * Requires SoundManager 2 Javascript API.
+ */
 
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, newcap: true, immed: true */
 /*global document, window, soundManager, navigator */
@@ -32,6 +30,7 @@ function BasicMP3Player() {
   this.soundCount = 0;
 
   this.config = {
+    // configuration options
     playNext: false, // stop after one sound, or play through list until end
     autoPlay: false  // start playing the first sound right away
   };
@@ -43,6 +42,8 @@ function BasicMP3Player() {
     sPlaying: 'sm2_playing',
     sPaused: 'sm2_paused'
   };
+
+  // event + DOM utils
 
   this.includeClass = this.css.sDefault;
 
@@ -251,7 +252,8 @@ function BasicMP3Player() {
 
 var basicMP3Player = null;
 
-soundManager.preferFlash = false; // use HTML5 audio for MP3/MP4, if available
+// use HTML5 audio for MP3/MP4, if available
+soundManager.preferFlash = false;
 
 soundManager.onready(function() {
   // soundManager.createSound() etc. may now be called
