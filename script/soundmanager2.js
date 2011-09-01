@@ -1434,9 +1434,9 @@ function SoundManager(smURL, smID) {
       for (i=j; i--;) {
         item = _t._onPositionItems[i];
         if (!item.fired && _t.position >= item.position) {
-          item.method.apply(item.scope,[item.position]);
           item.fired = true;
           _s._onPositionFired++;
+          item.method.apply(item.scope,[item.position]);
         }
       }
       return true;
