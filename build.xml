@@ -21,9 +21,17 @@
 
 	RELATED DOWNLOADS
 
+    Google Closure Compiler
 	http://code.google.com/closure/compiler/
+
+    MTASC (Windows / OS X / Linux) compiler for AS2/Flash 8 SWF
 	http://www.mtasc.org/
+    Precompiled binaries (eg., Universal binary that should work on OS X Lion):
+    http://lists.motion-twin.com/pipermail/mtasc/2007-February/030170.html
+
+    Adobe Flex Open Source SDK (including mxmlc compiler) for AS3/Flash 9 SWF
 	http://opensource.adobe.com/wiki/display/flexsdk/Flex+SDK
+	** NOTE: ExternalInterface issues were found in SWFs compiled with Flex SDK version 4.5.1.21328. Do not use 4.5.x. Instead, use Flex SDK version 4.1.0.16076 to be safe, which has been confirmed to work with SM2 (Flash 9 version.) **
 
 	WHAT IS AUTOMATED
 
@@ -40,8 +48,8 @@
 <project name="SoundManager 2" default="build" basedir=".">
 
   <property file='${basedir}/.build.properties'/>
-  <property name='mxmlc' value='mxmlc'/>
-  <property name='mtasc' value='mtasc'/>
+  <property name='mxmlc' value='/Applications/mxmlc/bin/mxmlc'/>
+  <property name='mtasc' value='/Applications/mtasc/mtasc'/>
   <property name='closure-compiler.jar' value="${user.home}/compiler.jar"/>
 
   <echo>${closure-compiler.jar}</echo>
