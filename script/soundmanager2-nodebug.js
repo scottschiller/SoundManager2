@@ -12,7 +12,7 @@
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
-/*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
+/* jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
 
 (function(window) {
 
@@ -245,10 +245,11 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext,  _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
+  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _likesHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
+  _emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _http = (!_overHTTP ? 'http:' : ''),
   // mp3, mp4, aac etc.
@@ -1373,15 +1374,16 @@ function SoundManager(smURL, smID) {
     };
 
     /**
-     * Unloads a sound.
+     * Unloads a sound, canceling any open HTTP requests.
      *
      * @return {SMSound} The SMSound object
      */
 
     this.unload = function() {
 
-      // Flash 8/AS2 can't "close" a stream - fake it by loading an empty MP3
+      // Flash 8/AS2 can't "close" a stream - fake it by loading an empty URL
       // Flash 9/AS3: Close stream, preventing further load
+      // HTML5: Most UAs will use empty URL
 
       if (_t.readyState !== 0) {
 
@@ -1389,16 +1391,15 @@ function SoundManager(smURL, smID) {
 
         if (!_t.isHTML5) {
           if (_fV === 8) {
-            _s.o._unload(_t.sID, 'about:blank'); // safe URL to unload/load nothing from
+            _s.o._unload(_t.sID, _emptyURL);
           } else {
             _s.o._unload(_t.sID);
           }
         } else {
           _stop_html5_timer();
           if (_t._a) {
-            // abort()-style method here, stop loading? (doesn't exist?)
             _t._a.pause();
-            _t._a.src = ''; // https://developer.mozilla.org/En/Using_audio_and_video_in_Firefox#Stopping_the_download_of_media
+            _html5Unload(_t._a);
           }
         }
 
@@ -1431,9 +1432,8 @@ function SoundManager(smURL, smID) {
         _stop_html5_timer();
 
         if (_t._a) {
-          // abort()-style method here, stop loading? (doesn't exist?)
           _t._a.pause();
-          _t._a.src = ''; // https://developer.mozilla.org/En/Using_audio_and_video_in_Firefox#Stopping_the_download_of_media
+          _html5Unload(_t._a);
           if (!_useGlobalHTML5Audio) {
             _t._remove_html5_events();
           }
@@ -2022,9 +2022,9 @@ function SoundManager(smURL, smID) {
       for (i=j; i--;) {
         item = _t._onPositionItems[i];
         if (!item.fired && _t.position >= item.position) {
-          item.method.apply(item.scope,[item.position]);
           item.fired = true;
           _s._onPositionFired++;
+          item.method.apply(item.scope,[item.position]);
         }
       }
 
@@ -2902,6 +2902,21 @@ function SoundManager(smURL, smID) {
 
   };
 
+  _html5Unload = function(oAudio) {
+
+    /**
+     * Internal method: Unload media, and cancel any current/pending network requests.
+     * Firefox can load an empty URL, which allegedly destroys the decoder and stops the download.
+     * https://developer.mozilla.org/En/Using_audio_and_video_in_Firefox#Stopping_the_download_of_media
+     * Other UA behaviour is unclear, so everyone else gets an about:blank-style URL.
+     */
+
+    if (oAudio) {
+      oAudio.src = (_ua.match(/gecko/i) ? '' : _emptyURL);
+    }
+
+  };
+
   _html5CanPlay = function(o) {
 
     /**
@@ -3274,8 +3289,9 @@ function SoundManager(smURL, smID) {
 
   _initDebug = function() {
 
-    // allow force of debug mode via URL
+    // starts debug mode, creating output <div> for UAs without console object
 
+    // allow force of debug mode via URL
     if (_s.debugURLParam.test(_wl)) {
       _s.debugMode = true;
     }
@@ -3865,7 +3881,8 @@ function SoundManager(smURL, smID) {
       'title': swfTitle,
       'type': 'application/x-shockwave-flash',
       'wmode': _s.wmode,
-      'hasPriority': 'true' // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
+      // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
+      'hasPriority': 'true'
     };
 
     if (_s.debugFlash) {
