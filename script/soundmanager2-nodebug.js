@@ -4268,7 +4268,9 @@ function SoundManager(smURL, smID) {
       //_wDS('flashJS');
       // attempt to talk to Flash
       _s.o._externalInterfaceTest(false);
-      _setPolling(true, (_s.flashPollingInterval || 50));
+      // apply user-specified polling interval, OR, if "high performance" set, faster vs. default polling
+      // (determines frequency of whileloading/whileplaying callbacks, effectively driving UI framerates)
+      _setPolling(true, (_s.flashPollingInterval || (_s.useHighPerformance ? 10 : 50)));
       if (!_s.debugMode) {
         _s.o._disableDebug();
       }
