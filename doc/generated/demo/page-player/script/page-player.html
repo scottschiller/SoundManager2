@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>page-player.js</title>
+  <style type="text/css">
+/**
+ * http://jashkenas.github.com/docco/resources/docco.css
+ */
+
+/*--------------------- Layout and Typography ----------------------------*/
+body {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-size: 15px;
+  line-height: 22px;
+  color: #252519;
+  margin: 0; padding: 0;
+}
+a {
+  color: #261a3b;
+}
+  a:visited {
+    color: #261a3b;
+  }
+p {
+  margin: 0 0 15px 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  margin: 0px 0 15px 0;
+}
+  h1 {
+    margin-top: 40px;
+  }
+#container {
+  position: relative;
+}
+#background {
+  position: fixed;
+  top: 0; left: 525px; right: 0; bottom: 0;
+  background: #f5f5ff;
+  border-left: 1px solid #e5e5ee;
+  z-index: -1;
+}
+#jump_to, #jump_page {
+  background: white;
+  -webkit-box-shadow: 0 0 25px #777; -moz-box-shadow: 0 0 25px #777;
+  -webkit-border-bottom-left-radius: 5px; -moz-border-radius-bottomleft: 5px;
+  font: 10px Arial;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: right;
+}
+#jump_to, #jump_wrapper {
+  position: fixed;
+  right: 0; top: 0;
+  padding: 5px 10px;
+}
+  #jump_wrapper {
+    padding: 0;
+    display: none;
+  }
+    #jump_to:hover #jump_wrapper {
+      display: block;
+    }
+    #jump_page {
+      padding: 5px 0 3px;
+      margin: 0 0 25px 25px;
+    }
+      #jump_page .source {
+        display: block;
+        padding: 5px 10px;
+        text-decoration: none;
+        border-top: 1px solid #eee;
+      }
+        #jump_page .source:hover {
+          background: #f5f5ff;
+        }
+        #jump_page .source:first-child {
+        }
+table td {
+  border: 0;
+  outline: 0;
+}
+  td.docs, th.docs {
+    max-width: 450px;
+    min-width: 450px;
+    min-height: 5px;
+    padding: 10px 25px 1px 50px;
+    overflow-x: hidden;
+    vertical-align: top;
+    text-align: left;
+  }
+    .docs pre {
+      margin: 15px 0 15px;
+      padding-left: 15px;
+    }
+    .docs p tt, .docs p code {
+      background: #f8f8ff;
+      border: 1px solid #dedede;
+      font-size: 12px;
+      padding: 0 0.2em;
+    }
+    .pilwrap {
+      position: relative;
+    }
+      .pilcrow {
+        font: 12px Arial;
+        text-decoration: none;
+        color: #454545;
+        position: absolute;
+        top: 3px; left: -20px;
+        padding: 1px 2px;
+        opacity: 0;
+        -webkit-transition: opacity 0.2s linear;
+      }
+        td.docs:hover .pilcrow {
+          opacity: 1;
+        }
+  td.code, th.code {
+    padding: 14px 15px 16px 25px;
+    width: 100%;
+    vertical-align: top;
+    background: #f5f5ff;
+    border-left: 1px solid #e5e5ee;
+  }
+    pre, tt, code {
+      font-size: 12px; line-height: 18px;
+      font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+      margin: 0; padding: 0;
+    }
+
+
+/*---------------------- Syntax Highlighting -----------------------------*/
+td.linenos { background-color: #f0f0f0; padding-right: 10px; }
+span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }
+body .hll { background-color: #ffffcc }
+body .c { color: #408080; font-style: italic }  /* Comment */
+body .err { border: 1px solid #FF0000 }         /* Error */
+body .k { color: #954121 }                      /* Keyword */
+body .o { color: #666666 }                      /* Operator */
+body .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+body .cp { color: #BC7A00 }                     /* Comment.Preproc */
+body .c1 { color: #408080; font-style: italic } /* Comment.Single */
+body .cs { color: #408080; font-style: italic } /* Comment.Special */
+body .gd { color: #A00000 }                     /* Generic.Deleted */
+body .ge { font-style: italic }                 /* Generic.Emph */
+body .gr { color: #FF0000 }                     /* Generic.Error */
+body .gh { color: #000080; font-weight: bold }  /* Generic.Heading */
+body .gi { color: #00A000 }                     /* Generic.Inserted */
+body .go { color: #808080 }                     /* Generic.Output */
+body .gp { color: #000080; font-weight: bold }  /* Generic.Prompt */
+body .gs { font-weight: bold }                  /* Generic.Strong */
+body .gu { color: #800080; font-weight: bold }  /* Generic.Subheading */
+body .gt { color: #0040D0 }                     /* Generic.Traceback */
+body .kc { color: #954121 }                     /* Keyword.Constant */
+body .kd { color: #954121; font-weight: bold }  /* Keyword.Declaration */
+body .kn { color: #954121; font-weight: bold }  /* Keyword.Namespace */
+body .kp { color: #954121 }                     /* Keyword.Pseudo */
+body .kr { color: #954121; font-weight: bold }  /* Keyword.Reserved */
+body .kt { color: #B00040 }                     /* Keyword.Type */
+body .m { color: #666666 }                      /* Literal.Number */
+body .s { color: #219161 }                      /* Literal.String */
+body .na { color: #7D9029 }                     /* Name.Attribute */
+body .nb { color: #954121 }                     /* Name.Builtin */
+body .nc { color: #0000FF; font-weight: bold }  /* Name.Class */
+body .no { color: #880000 }                     /* Name.Constant */
+body .nd { color: #AA22FF }                     /* Name.Decorator */
+body .ni { color: #999999; font-weight: bold }  /* Name.Entity */
+body .ne { color: #D2413A; font-weight: bold }  /* Name.Exception */
+body .nf { color: #0000FF }                     /* Name.Function */
+body .nl { color: #A0A000 }                     /* Name.Label */
+body .nn { color: #0000FF; font-weight: bold }  /* Name.Namespace */
+body .nt { color: #954121; font-weight: bold }  /* Name.Tag */
+body .nv { color: #19469D }                     /* Name.Variable */
+body .ow { color: #AA22FF; font-weight: bold }  /* Operator.Word */
+body .w { color: #bbbbbb }                      /* Text.Whitespace */
+body .mf { color: #666666 }                     /* Literal.Number.Float */
+body .mh { color: #666666 }                     /* Literal.Number.Hex */
+body .mi { color: #666666 }                     /* Literal.Number.Integer */
+body .mo { color: #666666 }                     /* Literal.Number.Oct */
+body .sb { color: #219161 }                     /* Literal.String.Backtick */
+body .sc { color: #219161 }                     /* Literal.String.Char */
+body .sd { color: #219161; font-style: italic } /* Literal.String.Doc */
+body .s2 { color: #219161 }                     /* Literal.String.Double */
+body .se { color: #BB6622; font-weight: bold }  /* Literal.String.Escape */
+body .sh { color: #219161 }                     /* Literal.String.Heredoc */
+body .si { color: #BB6688; font-weight: bold }  /* Literal.String.Interpol */
+body .sx { color: #954121 }                     /* Literal.String.Other */
+body .sr { color: #BB6688 }                     /* Literal.String.Regex */
+body .s1 { color: #219161 }                     /* Literal.String.Single */
+body .ss { color: #19469D }                     /* Literal.String.Symbol */
+body .bp { color: #954121 }                     /* Name.Builtin.Pseudo */
+body .vc { color: #19469D }                     /* Name.Variable.Class */
+body .vg { color: #19469D }                     /* Name.Variable.Global */
+body .vi { color: #19469D }                     /* Name.Variable.Instance */
+body .il { color: #666666 }                     /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="../../360-player/script/360player.html">360player.js</a>
+          <a class="source" href="../../flashblock/flashblock.html">flashblock.css</a>
+          <a class="source" href="../../mp3-player-button/script/mp3-player-button.html">mp3-player-button.js</a>
+          <a class="source" href="../../mpc/script/mpc.html">mpc.js</a>
+          <a class="source" href="page-player.html">page-player.js</a>
+          <a class="source" href="../../play-mp3-links/script/inlineplayer.html">inlineplayer.js</a>
+          <a class="source" href="../../../script/soundmanager2.html">soundmanager2.js</a>
+          <a class="source" href="../../../src/SoundManager2.html">SoundManager2.as</a>
+          <a class="source" href="../../../src/SoundManager2_AS3.html">SoundManager2_AS3.as</a>
+          <a class="source" href="../../../src/SoundManager2_SMSound_AS3.html">SoundManager2_SMSound_AS3.as</a>
+      </div>
+    </div>
+  </div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>page-player.js</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-SoundManager_2_Demo:_&amp;ldquo;Page_as_playlist&amp;rdquo;_UI'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-SoundManager_2_Demo:_&amp;ldquo;Page_as_playlist&amp;rdquo;_UI">&#182;</a>
+        </div>
+        <h2>SoundManager 2 Demo: &ldquo;Page as playlist&rdquo; UI</h2>
+
+<p>http://schillmania.com/projects/soundmanager2/</p>
+
+<p>An example of a Muxtape.com-style UI, where an
+unordered list of MP3 links becomes a playlist</p>
+
+<p>Flash 9 &ldquo;MovieStar&rdquo; edition supports MPEG4
+audio as well.</p>
+
+<p>Requires SoundManager 2 Javascript API.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="cm">/*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, newcap: true, immed: true */</span>
+<span class="cm">/*global soundManager, window, document, navigator, setTimeout, attachEvent, Metadata, PP_CONFIG */</span>
+
+<span class="kd">var</span> <span class="nx">pagePlayer</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">PagePlayer</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+      <span class="nx">pl</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+      <span class="nx">sm</span> <span class="o">=</span> <span class="nx">soundManager</span><span class="p">,</span> <span class="c1">// soundManager instance</span>
+      <span class="nx">_event</span><span class="p">,</span>
+      <span class="nx">vuDataCanvas</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nx">controlTemplate</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nx">_head</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;head&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+      <span class="nx">spectrumContainer</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>sniffing for favicon stuff, IE workarounds and touchy-feely devices</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">ua</span> <span class="o">=</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">,</span>
+      <span class="nx">supportsFavicon</span> <span class="o">=</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/(opera|firefox)/i</span><span class="p">)),</span>
+      <span class="nx">isTouchDevice</span> <span class="o">=</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/ipad|ipod|iphone/i</span><span class="p">)),</span>
+      <span class="nx">cleanup</span><span class="p">;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>configuration options
+note that if Flash 9 is required, you must set soundManager.flashVersion = 9 in your script before this point.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">usePeakData</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>     <span class="c1">// [Flash 9 only]: show peak data</span>
+    <span class="nx">useWaveformData</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// [Flash 9 only]: enable sound spectrum (raw waveform data) - WARNING: CPU-INTENSIVE: may set CPUs on fire.</span>
+    <span class="nx">useEQData</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>       <span class="c1">// [Flash 9 only]: enable sound EQ (frequency spectrum data) - WARNING: Also CPU-intensive.</span>
+    <span class="nx">fillGraph</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>       <span class="c1">// [Flash 9 only]: draw full lines instead of only top (peak) spectrum points</span>
+    <span class="nx">useMovieStar</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>     <span class="c1">// [Flash 9 only]: Support for MPEG4 audio formats</span>
+    <span class="nx">allowRightClick</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>  <span class="c1">// let users right-click MP3 links (&quot;save as...&quot;, etc.) or discourage (can&#39;t prevent.)</span>
+    <span class="nx">useThrottling</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>    <span class="c1">// try to rate-limit potentially-expensive calls (eg. dragging position around)</span>
+    <span class="nx">autoStart</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>       <span class="c1">// begin playing first sound when page loads</span>
+    <span class="nx">playNext</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>         <span class="c1">// stop after one sound, or play through list until end</span>
+    <span class="nx">updatePageTitle</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>  <span class="c1">// change the page title while playing sounds</span>
+    <span class="nx">emptyTime</span><span class="o">:</span> <span class="s1">&#39;-:--&#39;</span><span class="p">,</span>      <span class="c1">// null/undefined timer values (before data is available)</span>
+    <span class="nx">useFavIcon</span><span class="o">:</span> <span class="kc">false</span>       <span class="c1">// try to show peakData in address bar (Firefox + Opera) - may be too CPU heavy</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">css</span> <span class="o">=</span> <span class="p">{</span>              <span class="c1">// CSS class names appended to link during various states</span>
+    <span class="nx">sDefault</span><span class="o">:</span> <span class="s1">&#39;sm2_link&#39;</span><span class="p">,</span>   <span class="c1">// default state</span>
+    <span class="nx">sLoading</span><span class="o">:</span> <span class="s1">&#39;sm2_loading&#39;</span><span class="p">,</span>
+    <span class="nx">sPlaying</span><span class="o">:</span> <span class="s1">&#39;sm2_playing&#39;</span><span class="p">,</span>
+    <span class="nx">sPaused</span><span class="o">:</span> <span class="s1">&#39;sm2_paused&#39;</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">sounds</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">soundsByObject</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">lastSound</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">soundCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">strings</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">dragActive</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">dragExec</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">dragTimer</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">pageTitle</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">lastWPExec</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">lastWLExec</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">vuMeterData</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">oControls</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">_mergeObjects</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oMain</span><span class="p">,</span><span class="nx">oAdd</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>non-destructive merge</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="kd">var</span> <span class="nx">o1</span> <span class="o">=</span> <span class="p">{},</span> <span class="nx">o2</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">;</span> <span class="c1">// clone o1</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="k">in</span> <span class="nx">oMain</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">oMain</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">o1</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">oMain</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">o2</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">oAdd</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="o">?</span><span class="p">{}</span><span class="o">:</span><span class="nx">oAdd</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">o</span> <span class="k">in</span> <span class="nx">o2</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">o1</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">o1</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">o2</span><span class="p">[</span><span class="nx">o</span><span class="p">];</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">o1</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nx">_event</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">old</span> <span class="o">=</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">attachEvent</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">),</span>
+    <span class="nx">_slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">,</span>
+    <span class="nx">evt</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nx">add</span><span class="o">:</span> <span class="p">(</span><span class="nx">old</span><span class="o">?</span><span class="s1">&#39;attachEvent&#39;</span><span class="o">:</span><span class="s1">&#39;addEventListener&#39;</span><span class="p">),</span>
+      <span class="nx">remove</span><span class="o">:</span> <span class="p">(</span><span class="nx">old</span><span class="o">?</span><span class="s1">&#39;detachEvent&#39;</span><span class="o">:</span><span class="s1">&#39;removeEventListener&#39;</span><span class="p">)</span>
+    <span class="p">};</span>
+
+    <span class="kd">function</span> <span class="nx">getArgs</span><span class="p">(</span><span class="nx">oArgs</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">_slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">oArgs</span><span class="p">),</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">old</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;on&#39;</span> <span class="o">+</span> <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">// prefix</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">args</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span> <span class="c1">// no capture</span>
+        <span class="p">}</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">===</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">args</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">args</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">apply</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">sType</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
+          <span class="nx">method</span> <span class="o">=</span> <span class="p">[</span><span class="nx">evt</span><span class="p">[</span><span class="nx">sType</span><span class="p">]];</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">old</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">element</span><span class="p">[</span><span class="nx">method</span><span class="p">](</span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">element</span><span class="p">[</span><span class="nx">method</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">add</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">apply</span><span class="p">(</span><span class="nx">getArgs</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span> <span class="s1">&#39;add&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">remove</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">apply</span><span class="p">(</span><span class="nx">getArgs</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span> <span class="s1">&#39;remove&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="s1">&#39;add&#39;</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span>
+      <span class="s1">&#39;remove&#39;</span><span class="o">:</span> <span class="nx">remove</span>
+    <span class="p">};</span>
+
+  <span class="p">}());</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>event + DOM utilities</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">hasClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">cStr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">className</span><span class="p">)</span><span class="o">!==</span><span class="s1">&#39;undefined&#39;</span><span class="o">?</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;(^|\\s)&#39;</span><span class="o">+</span><span class="nx">cStr</span><span class="o">+</span><span class="s1">&#39;(\\s|$)&#39;</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">className</span><span class="p">)</span><span class="o">:</span><span class="kc">false</span><span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">addClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">cStr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">o</span> <span class="o">||</span> <span class="o">!</span><span class="nx">cStr</span> <span class="o">||</span> <span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="nx">cStr</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// safety net</span>
+    <span class="p">}</span>
+    <span class="nx">o</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">className</span><span class="o">?</span><span class="nx">o</span><span class="p">.</span><span class="nx">className</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">:</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">+</span><span class="nx">cStr</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">removeClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">cStr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">o</span> <span class="o">||</span> <span class="o">!</span><span class="nx">cStr</span> <span class="o">||</span> <span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="nx">cStr</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">o</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">className</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;( &#39;</span><span class="o">+</span><span class="nx">cStr</span><span class="o">+</span><span class="s1">&#39;)|(&#39;</span><span class="o">+</span><span class="nx">cStr</span><span class="o">+</span><span class="s1">&#39;)&#39;</span><span class="p">,</span><span class="s1">&#39;g&#39;</span><span class="p">),</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">select</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">oParent</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getByClassName</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="nx">oParent</span><span class="o">||</span><span class="kc">null</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">result</span> <span class="o">?</span> <span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">:</span> <span class="kc">null</span><span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getByClassName</span> <span class="o">=</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span> <span class="o">?</span> <span class="kd">function</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">tagNames</span><span class="p">,</span> <span class="nx">oParent</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// tagNames: string or [&#39;div&#39;, &#39;p&#39;] etc.</span>
+
+    <span class="kd">var</span> <span class="nx">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="nx">className</span><span class="p">),</span> <span class="nx">qs</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">tagNames</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">tagNames</span> <span class="o">=</span> <span class="nx">tagNames</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">qs</span> <span class="o">=</span> <span class="p">(</span><span class="nx">tagNames</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">?</span> <span class="nx">tagNames</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">pattern</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="p">)</span> <span class="o">:</span> <span class="nx">tagNames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="nx">pattern</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">oParent</span><span class="o">?</span><span class="nx">oParent</span><span class="o">:</span><span class="nb">document</span><span class="p">).</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="nx">qs</span><span class="p">);</span>
+
+  <span class="p">}</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">tagNames</span><span class="p">,</span> <span class="nx">oParent</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="p">(</span><span class="nx">oParent</span><span class="o">?</span><span class="nx">oParent</span><span class="o">:</span><span class="nb">document</span><span class="p">),</span> <span class="nx">matches</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span><span class="p">,</span> <span class="nx">nodes</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">tagNames</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">tagNames</span> <span class="o">=</span> <span class="nx">tagNames</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">tagNames</span> <span class="k">instanceof</span> <span class="nb">Array</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="nx">tagNames</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">nodes</span> <span class="o">||</span> <span class="o">!</span><span class="nx">nodes</span><span class="p">[</span><span class="nx">tagNames</span><span class="p">[</span><span class="nx">i</span><span class="p">]])</span> <span class="p">{</span>
+          <span class="nx">nodes</span><span class="p">[</span><span class="nx">tagNames</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="nx">tagNames</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="nx">tagNames</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">j</span><span class="o">=</span><span class="nx">nodes</span><span class="p">[</span><span class="nx">tagNames</span><span class="p">[</span><span class="nx">i</span><span class="p">]].</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">nodes</span><span class="p">[</span><span class="nx">tagNames</span><span class="p">[</span><span class="nx">i</span><span class="p">]][</span><span class="nx">j</span><span class="p">],</span> <span class="nx">className</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">matches</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">nodes</span><span class="p">[</span><span class="nx">tagNames</span><span class="p">[</span><span class="nx">i</span><span class="p">]][</span><span class="nx">j</span><span class="p">]);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">nodes</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">all</span><span class="o">||</span><span class="nx">node</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">j</span><span class="o">=</span><span class="nx">nodes</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">j</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">nodes</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span><span class="nx">className</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">matches</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">nodes</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">matches</span><span class="p">;</span>
+
+  <span class="p">});</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">isChildOfClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oChild</span><span class="p">,</span> <span class="nx">oClass</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oChild</span> <span class="o">||</span> <span class="o">!</span><span class="nx">oClass</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">oChild</span><span class="p">,</span><span class="nx">oClass</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">oChild</span> <span class="o">=</span> <span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">oChild</span><span class="p">,</span><span class="nx">oClass</span><span class="p">));</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getParentByNodeName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oChild</span><span class="p">,</span> <span class="nx">sParentNodeName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oChild</span> <span class="o">||</span> <span class="o">!</span><span class="nx">sParentNodeName</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">sParentNodeName</span> <span class="o">=</span> <span class="nx">sParentNodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">&amp;&amp;</span> <span class="nx">sParentNodeName</span> <span class="o">!==</span> <span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="p">{</span>
+      <span class="nx">oChild</span> <span class="o">=</span> <span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">&amp;&amp;</span> <span class="nx">sParentNodeName</span> <span class="o">===</span> <span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span><span class="o">?</span><span class="nx">oChild</span><span class="p">.</span><span class="nx">parentNode</span><span class="o">:</span><span class="kc">null</span><span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getOffX</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>http://www.xs4all.nl/~ppk/js/findpos.html</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="kd">var</span> <span class="nx">curleft</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">offsetParent</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">offsetParent</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">curleft</span> <span class="o">+=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">offsetLeft</span><span class="p">;</span>
+        <span class="nx">o</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">offsetParent</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">curleft</span> <span class="o">+=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">curleft</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getTime</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">nMSec</span><span class="p">,</span> <span class="nx">bAsString</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-7">&#182;</a>
+        </div>
+        <p>convert milliseconds to mm:ss, return as object literal or string</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="kd">var</span> <span class="nx">nSec</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">nMSec</span><span class="o">/</span><span class="mi">1000</span><span class="p">),</span>
+        <span class="nx">min</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">nSec</span><span class="o">/</span><span class="mi">60</span><span class="p">),</span>
+        <span class="nx">sec</span> <span class="o">=</span> <span class="nx">nSec</span><span class="o">-</span><span class="p">(</span><span class="nx">min</span><span class="o">*</span><span class="mi">60</span><span class="p">);</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-8">&#182;</a>
+        </div>
+        <p>if (min === 0 &amp;&amp; sec === 0) return null; // return 0:00 as null</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">return</span> <span class="p">(</span><span class="nx">bAsString</span><span class="o">?</span><span class="p">(</span><span class="nx">min</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="p">(</span><span class="nx">sec</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">?</span><span class="s1">&#39;0&#39;</span><span class="o">+</span><span class="nx">sec</span><span class="o">:</span><span class="nx">sec</span><span class="p">))</span><span class="o">:</span><span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="o">:</span><span class="nx">min</span><span class="p">,</span><span class="s1">&#39;sec&#39;</span><span class="o">:</span><span class="nx">sec</span><span class="p">});</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getSoundByObject</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">self</span><span class="p">.</span><span class="nx">soundsByObject</span><span class="p">[</span><span class="nx">o</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="o">?</span><span class="nx">self</span><span class="p">.</span><span class="nx">soundsByObject</span><span class="p">[</span><span class="nx">o</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span><span class="o">:</span><span class="kc">null</span><span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getPreviousItem</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-9">&#182;</a>
+        </div>
+        <p>given <li> playlist item, find previous <li> and then <a></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">previousElementSibling</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">o</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">previousElementSibling</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">o</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">previousSibling</span><span class="p">;</span> <span class="c1">// move from original node..</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">o</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">previousSibling</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">previousSibling</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">!==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">o</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">previousSibling</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">&#39;li&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">o</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">playPrevious</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">oSound</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">previousItem</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getPreviousItem</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">previousItem</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">handleClick</span><span class="p">({</span><span class="nx">target</span><span class="o">:</span><span class="nx">previousItem</span><span class="p">});</span> <span class="c1">// fake a click event - aren&#39;t we sneaky. ;)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">previousItem</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getNextItem</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
+        <p>given <li> playlist item, find next <li> and then <a></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">nextElementSibling</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">o</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">nextElementSibling</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">o</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">;</span> <span class="c1">// move from original node..</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">o</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">nextSibling</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">!==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">o</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">&#39;li&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">o</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">playNext</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">oSound</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">nextItem</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getNextItem</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">nextItem</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">handleClick</span><span class="p">({</span><span class="nx">target</span><span class="o">:</span><span class="nx">nextItem</span><span class="p">});</span> <span class="c1">// fake a click event - aren&#39;t we sneaky. ;)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">nextItem</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">setPageTitle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sTitle</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">updatePageTitle</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="p">(</span><span class="nx">sTitle</span><span class="o">?</span><span class="nx">sTitle</span><span class="o">+</span><span class="s1">&#39; - &#39;</span><span class="o">:</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">+</span><span class="nx">self</span><span class="p">.</span><span class="nx">pageTitle</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-11">&#182;</a>
+        </div>
+        <p>oh well</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">self</span><span class="p">.</span><span class="nx">setPageTitle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">};</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">events</span> <span class="o">=</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-12">&#182;</a>
+        </div>
+        <p>handlers for sound events as they&rsquo;re started/stopped/played</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nx">play</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">sPlaying</span><span class="p">;</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">setPageTitle</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">originalTitle</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">stop</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oPosition</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="s1">&#39;0px&#39;</span><span class="p">;</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">setPageTitle</span><span class="p">();</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">resetPageIcon</span><span class="p">();</span>
+    <span class="p">},</span>
+
+    <span class="nx">pause</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">dragActive</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">sPaused</span><span class="p">;</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">setPageTitle</span><span class="p">();</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">resetPageIcon</span><span class="p">();</span>
+    <span class="p">},</span>
+
+    <span class="nx">resume</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">dragActive</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">sPlaying</span><span class="p">;</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">finish</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">pl</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oPosition</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="s1">&#39;0px&#39;</span><span class="p">;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-13'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-13">&#182;</a>
+        </div>
+        <p>play next if applicable</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">playNext</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pl</span><span class="p">.</span><span class="nx">playNext</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">setPageTitle</span><span class="p">();</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">resetPageIcon</span><span class="p">();</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="nx">whileloading</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">function</span> <span class="nx">doWork</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLoading</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="p">(((</span><span class="k">this</span><span class="p">.</span><span class="nx">bytesLoaded</span><span class="o">/</span><span class="k">this</span><span class="p">.</span><span class="nx">bytesTotal</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;%&#39;</span><span class="p">);</span> <span class="c1">// theoretically, this should work.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">didRefresh</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">didRefresh</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">refresh</span><span class="p">();</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useThrottling</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">doWork</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&amp;&amp;</span> <span class="nx">d</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastWLExec</span><span class="o">&gt;</span><span class="mi">30</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">bytesLoaded</span> <span class="o">===</span> <span class="k">this</span><span class="p">.</span><span class="nx">bytesTotal</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">doWork</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">lastWLExec</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+    <span class="p">},</span>
+
+    <span class="nx">onload</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">loaded</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">oTemp</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="nx">oString</span> <span class="o">=</span> <span class="nx">oTemp</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">,</span>
+            <span class="nx">oThis</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="nx">oTemp</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">oString</span><span class="o">+</span><span class="s1">&#39; &lt;span style=&quot;font-size:0.5em&quot;&gt; | Load failed, d\&#39;oh! &#39;</span><span class="o">+</span><span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">sandbox</span><span class="p">.</span><span class="nx">noRemote</span><span class="o">?</span><span class="s1">&#39; Possible cause: Flash sandbox is denying remote URL access.&#39;</span><span class="o">:</span><span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">sandbox</span><span class="p">.</span><span class="nx">noLocal</span><span class="o">?</span><span class="s1">&#39;Flash denying local filesystem access&#39;</span><span class="o">:</span><span class="s1">&#39;404?&#39;</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;&lt;/span&gt;&#39;</span><span class="p">;</span>
+        <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+          <span class="nx">oTemp</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">oString</span><span class="p">;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-14">&#182;</a>
+        </div>
+        <p>pl.events.finish.apply(oThis); // load next</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="p">},</span><span class="mi">5000</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">refresh</span><span class="p">();</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="nx">whileplaying</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">dragActive</span> <span class="o">||</span> <span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useThrottling</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">updateTime</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">&gt;=</span> <span class="mi">9</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">usePeakData</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">usePeakData</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">updatePeaks</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">||</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">updateGraph</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&amp;&amp;</span> <span class="nx">d</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastWPExec</span><span class="o">&gt;</span><span class="mi">500</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">refreshMetadata</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">lastWPExec</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oPosition</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="p">(((</span><span class="k">this</span><span class="p">.</span><span class="nx">position</span><span class="o">/</span><span class="nx">self</span><span class="p">.</span><span class="nx">getDurationEstimate</span><span class="p">(</span><span class="k">this</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;%&#39;</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">d</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastWPExec</span><span class="o">&gt;</span><span class="mi">30</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">updateTime</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">&gt;=</span> <span class="mi">9</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">usePeakData</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">usePeakData</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">self</span><span class="p">.</span><span class="nx">updatePeaks</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">||</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">self</span><span class="p">.</span><span class="nx">updateGraph</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+          <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">refreshMetadata</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oPosition</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="p">(((</span><span class="k">this</span><span class="p">.</span><span class="nx">position</span><span class="o">/</span><span class="nx">self</span><span class="p">.</span><span class="nx">getDurationEstimate</span><span class="p">(</span><span class="k">this</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;%&#39;</span><span class="p">);</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">lastWPExec</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+  <span class="p">};</span> <span class="c1">// events{}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">setPageIcon</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sDataURL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useFavIcon</span> <span class="o">||</span> <span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">usePeakData</span> <span class="o">||</span> <span class="o">!</span><span class="nx">sDataURL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">link</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;sm2-favicon&#39;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">link</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">_head</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">link</span><span class="p">);</span>
+      <span class="nx">link</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">link</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">link</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">);</span>
+      <span class="nx">link</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;sm2-favicon&#39;</span><span class="p">;</span>
+      <span class="nx">link</span><span class="p">.</span><span class="nx">rel</span> <span class="o">=</span> <span class="s1">&#39;shortcut icon&#39;</span><span class="p">;</span>
+      <span class="nx">link</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s1">&#39;image/png&#39;</span><span class="p">;</span>
+      <span class="nx">link</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">sDataURL</span><span class="p">;</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;head&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">link</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">resetPageIcon</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useFavIcon</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">link</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;favicon&#39;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">link</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">link</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="s1">&#39;/favicon.ico&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">updatePeaks</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oPeak</span><span class="p">,</span>
+        <span class="nx">oSpan</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">);</span>
+    <span class="nx">oSpan</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">marginTop</span> <span class="o">=</span> <span class="p">(</span><span class="mi">13</span><span class="o">-</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="mi">15</span><span class="o">*</span><span class="k">this</span><span class="p">.</span><span class="nx">peakData</span><span class="p">.</span><span class="nx">left</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;px&#39;</span><span class="p">);</span>
+    <span class="nx">oSpan</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">marginTop</span> <span class="o">=</span> <span class="p">(</span><span class="mi">13</span><span class="o">-</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="mi">15</span><span class="o">*</span><span class="k">this</span><span class="p">.</span><span class="nx">peakData</span><span class="p">.</span><span class="nx">right</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;px&#39;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">&gt;</span> <span class="mi">8</span> <span class="o">&amp;&amp;</span> <span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useFavIcon</span> <span class="o">&amp;&amp;</span> <span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">usePeakData</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">setPageIcon</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">vuMeterData</span><span class="p">[</span><span class="nb">parseInt</span><span class="p">(</span><span class="mi">16</span><span class="o">*</span><span class="k">this</span><span class="p">.</span><span class="nx">peakData</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span><span class="mi">10</span><span class="p">)][</span><span class="nb">parseInt</span><span class="p">(</span><span class="mi">16</span><span class="o">*</span><span class="k">this</span><span class="p">.</span><span class="nx">peakData</span><span class="p">.</span><span class="nx">right</span><span class="p">,</span><span class="mi">10</span><span class="p">)]);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">updateGraph</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">&lt;</span> <span class="mi">9</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">sbC</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oGraph</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">),</span>
+        <span class="nx">scale</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">offset</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-15'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-15">&#182;</a>
+        </div>
+        <p>raw waveform</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">scale</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span> <span class="c1">// Y axis (+/- this distance from 0)</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">255</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span>
+        <span class="nx">sbC</span><span class="p">[</span><span class="mi">255</span><span class="o">-</span><span class="nx">i</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">marginTop</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="nx">scale</span><span class="o">+</span><span class="nb">Math</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">waveformData</span><span class="p">.</span><span class="nx">left</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="o">*-</span><span class="nx">scale</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;px&#39;</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-16'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-16">&#182;</a>
+        </div>
+        <p>eq spectrum</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">offset</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">255</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span>
+        <span class="nx">sbC</span><span class="p">[</span><span class="mi">255</span><span class="o">-</span><span class="nx">i</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">marginTop</span> <span class="o">=</span> <span class="p">((</span><span class="nx">offset</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="nb">Math</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">eqData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="o">*-</span><span class="nx">offset</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;px&#39;</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">resetGraph</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span> <span class="o">||</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">flashVersion</span><span class="o">&lt;</span><span class="mi">9</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">sbC</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oGraph</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">),</span>
+        <span class="nx">scale</span> <span class="o">=</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span><span class="o">?</span><span class="s1">&#39;9px&#39;</span><span class="o">:</span><span class="s1">&#39;17px&#39;</span><span class="p">),</span>
+        <span class="nx">nHeight</span> <span class="o">=</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">fillGraph</span><span class="o">?</span><span class="s1">&#39;1px&#39;</span><span class="o">:</span><span class="s1">&#39;32px&#39;</span><span class="p">),</span>
+        <span class="nx">i</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">255</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span>
+      <span class="nx">sbC</span><span class="p">[</span><span class="mi">255</span><span class="o">-</span><span class="nx">i</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">marginTop</span> <span class="o">=</span> <span class="nx">scale</span><span class="p">;</span> <span class="c1">// EQ scale</span>
+      <span class="nx">sbC</span><span class="p">[</span><span class="mi">255</span><span class="o">-</span><span class="nx">i</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">nHeight</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">updateTime</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">strings</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s1&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">getTime</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">position</span><span class="p">,</span><span class="kc">true</span><span class="p">));</span>
+    <span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s2&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">getTime</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">getDurationEstimate</span><span class="p">(</span><span class="k">this</span><span class="p">),</span><span class="kc">true</span><span class="p">));</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oTiming</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">str</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getTheDamnTarget</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="o">||</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">event</span><span class="o">?</span><span class="nb">window</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">srcElement</span><span class="o">:</span><span class="kc">null</span><span class="p">));</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">withinStatusBar</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">isChildOfClass</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="s1">&#39;controls&#39;</span><span class="p">));</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">handleClick</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-17'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-17">&#182;</a>
+        </div>
+        <p>a sound (or something) was clicked &ndash; determine what and handle appropriately</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">button</span> <span class="o">===</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">allowRightClick</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pl</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">allowRightClick</span><span class="p">;</span> <span class="c1">// ignore right-clicks</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getTheDamnTarget</span><span class="p">(</span><span class="nx">e</span><span class="p">),</span>
+        <span class="nx">sURL</span><span class="p">,</span> <span class="nx">soundURL</span><span class="p">,</span> <span class="nx">thisSound</span><span class="p">,</span> <span class="nx">oControls</span><span class="p">,</span> <span class="nx">oLI</span><span class="p">,</span> <span class="nx">str</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">dragActive</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">stopDrag</span><span class="p">();</span> <span class="c1">// to be safe</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">withinStatusBar</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-18'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-18">&#182;</a>
+        </div>
+        <p>self.handleStatusClick(e);</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">o</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getParentByNodeName</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-19'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-19">&#182;</a>
+        </div>
+        <p>not a link</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-20'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-20">&#182;</a>
+        </div>
+        <p>OK, we&rsquo;re dealing with a link</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nx">sURL</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">o</span><span class="p">.</span><span class="nx">href</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">sm</span><span class="p">.</span><span class="nx">canPlayLink</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="s1">&#39;playable&#39;</span><span class="p">))</span> <span class="o">||</span> <span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="s1">&#39;exclude&#39;</span><span class="p">))</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-21'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-21">&#182;</a>
+        </div>
+        <p>do nothing, don&rsquo;t return anything.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-22'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-22">&#182;</a>
+        </div>
+        <p>we have something we&rsquo;re interested in.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-23'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-23">&#182;</a>
+        </div>
+        <p>find and init parent UL, if need be</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">self</span><span class="p">.</span><span class="nx">initUL</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">getParentByNodeName</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">));</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-24'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-24">&#182;</a>
+        </div>
+        <p>and decorate the link too, if needed</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">self</span><span class="p">.</span><span class="nx">initItem</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+
+      <span class="nx">soundURL</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
+      <span class="nx">thisSound</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getSoundByObject</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">thisSound</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-25'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-25">&#182;</a>
+        </div>
+        <p>sound already exists</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">self</span><span class="p">.</span><span class="nx">setPageTitle</span><span class="p">(</span><span class="nx">thisSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">originalTitle</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">thisSound</span> <span class="o">===</span> <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-26'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-26">&#182;</a>
+        </div>
+        <p>..and was playing (or paused) and isn&rsquo;t in an error state</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="k">if</span> <span class="p">(</span><span class="nx">thisSound</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">!==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">thisSound</span><span class="p">.</span><span class="nx">playState</span> <span class="o">!==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-27'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-27">&#182;</a>
+        </div>
+        <p>not yet playing</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>              <span class="nx">thisSound</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+              <span class="nx">thisSound</span><span class="p">.</span><span class="nx">togglePause</span><span class="p">();</span>
+            <span class="p">}</span>
+          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;Warning: sound failed to load (security restrictions, 404 or bad format)&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-28'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-28">&#182;</a>
+        </div>
+        <p>..different sound</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">stopSound</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">spectrumContainer</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">thisSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oTimingBox</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">spectrumContainer</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="nx">thisSound</span><span class="p">.</span><span class="nx">togglePause</span><span class="p">();</span> <span class="c1">// start playing current</span>
+        <span class="p">}</span>
+
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-29'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-29">&#182;</a>
+        </div>
+        <p>create sound</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">thisSound</span> <span class="o">=</span> <span class="nx">sm</span><span class="p">.</span><span class="nx">createSound</span><span class="p">({</span>
+          <span class="nx">id</span><span class="o">:</span><span class="nx">o</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+          <span class="nx">url</span><span class="o">:</span><span class="nb">decodeURI</span><span class="p">(</span><span class="nx">soundURL</span><span class="p">),</span>
+          <span class="nx">onplay</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">play</span><span class="p">,</span>
+          <span class="nx">onstop</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">stop</span><span class="p">,</span>
+          <span class="nx">onpause</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">pause</span><span class="p">,</span>
+          <span class="nx">onresume</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">resume</span><span class="p">,</span>
+          <span class="nx">onfinish</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">finish</span><span class="p">,</span>
+          <span class="nx">whileloading</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">whileloading</span><span class="p">,</span>
+          <span class="nx">whileplaying</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">whileplaying</span><span class="p">,</span>
+          <span class="nx">onmetadata</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">metadata</span><span class="p">,</span>
+          <span class="nx">onload</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">onload</span>
+        <span class="p">});</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-30'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-30">&#182;</a>
+        </div>
+        <p>append control template</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">oControls</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">oControls</span><span class="p">.</span><span class="nx">cloneNode</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="nx">oLI</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+        <span class="nx">oLI</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">oControls</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">spectrumContainer</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">oLI</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">spectrumContainer</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">soundsByObject</span><span class="p">[</span><span class="nx">o</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="nx">thisSound</span><span class="p">;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-31'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-31">&#182;</a>
+        </div>
+        <p>tack on some custom data</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">thisSound</span><span class="p">.</span><span class="nx">_data</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="nx">oLink</span><span class="o">:</span> <span class="nx">o</span><span class="p">,</span> <span class="c1">// DOM reference within SM2 object event handlers</span>
+          <span class="nx">oLI</span><span class="o">:</span> <span class="nx">oLI</span><span class="p">,</span>
+          <span class="nx">oControls</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;controls&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">),</span>
+          <span class="nx">oStatus</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;statusbar&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">),</span>
+          <span class="nx">oLoading</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;loading&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">),</span>
+          <span class="nx">oPosition</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;position&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">),</span>
+          <span class="nx">oTimingBox</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;timing&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">),</span>
+          <span class="nx">oTiming</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;timing&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">).</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+          <span class="nx">oPeak</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">),</span>
+          <span class="nx">oGraph</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;spectrum-box&#39;</span><span class="p">,</span><span class="nx">oLI</span><span class="p">),</span>
+          <span class="nx">className</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">sPlaying</span><span class="p">,</span>
+          <span class="nx">originalTitle</span><span class="o">:</span> <span class="nx">o</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">,</span>
+          <span class="nx">metadata</span><span class="o">:</span> <span class="kc">null</span>
+        <span class="p">};</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">spectrumContainer</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">thisSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oTimingBox</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">spectrumContainer</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-32'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-32">&#182;</a>
+        </div>
+        <p>&ldquo;Metadata&rdquo;</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">thisSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">).</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">thisSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Metadata</span><span class="p">(</span><span class="nx">thisSound</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-33'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-33">&#182;</a>
+        </div>
+        <p>set initial timer stuff (before loading)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">str</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">strings</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s1&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">emptyTime</span><span class="p">);</span>
+        <span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s2&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">emptyTime</span><span class="p">);</span>
+        <span class="nx">thisSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oTiming</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">str</span><span class="p">;</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">sounds</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">thisSound</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">stopSound</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">resetGraph</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">thisSound</span><span class="p">);</span>
+        <span class="nx">thisSound</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+
+      <span class="p">}</span>
+
+      <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span> <span class="o">=</span> <span class="nx">thisSound</span><span class="p">;</span> <span class="c1">// reference for next call</span>
+      <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">handleMouseDown</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-34'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-34">&#182;</a>
+        </div>
+        <p>a sound link was clicked</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">isTouchDevice</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">touches</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">e</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">touches</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">button</span> <span class="o">===</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">allowRightClick</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pl</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">pl</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">allowRightClick</span><span class="p">;</span> <span class="c1">// ignore right-clicks</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getTheDamnTarget</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">withinStatusBar</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">dragActive</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isTouchDevice</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">_event</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;mousemove&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">handleMouseMove</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">_event</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;touchmove&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">handleMouseMove</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oControls</span><span class="p">,</span><span class="s1">&#39;dragging&#39;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">handleMouseMove</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isTouchDevice</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">touches</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">e</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">touches</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-35'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-35">&#182;</a>
+        </div>
+        <p>set position accordingly</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">dragActive</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useThrottling</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-36'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-36">&#182;</a>
+        </div>
+        <p>be nice to CPU/externalInterface</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">d</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">dragExec</span><span class="o">&gt;</span><span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="nb">window</span><span class="p">.</span><span class="nx">clearTimeout</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">dragTimer</span><span class="p">);</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">dragTimer</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span><span class="nx">self</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">e</span><span class="p">);},</span><span class="mi">20</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">dragExec</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-37'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-37">&#182;</a>
+        </div>
+        <p>oh the hell with it</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">self</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">stopDrag</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">stopPropagation</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">stopDrag</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">dragActive</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oControls</span><span class="p">,</span><span class="s1">&#39;dragging&#39;</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isTouchDevice</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_event</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;mousemove&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">handleMouseMove</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">_event</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;touchmove&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">handleMouseMove</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">sPaused</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">resume</span><span class="p">();</span>
+      <span class="p">}</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">dragActive</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">handleStatusClick</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pl</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">oLI</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">sPaused</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">resume</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+  <span class="p">};</span>
+  
+  <span class="k">this</span><span class="p">.</span><span class="nx">stopEvent</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">e</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">stopPropagation</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">returnValue</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">};</span>
+ 
+  <span class="k">this</span><span class="p">.</span><span class="nx">setPosition</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-38'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-38">&#182;</a>
+        </div>
+        <p>called from slider control</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="kd">var</span> <span class="nx">oThis</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getTheDamnTarget</span><span class="p">(</span><span class="nx">e</span><span class="p">),</span>
+        <span class="nx">x</span><span class="p">,</span> <span class="nx">oControl</span><span class="p">,</span> <span class="nx">oSound</span><span class="p">,</span> <span class="nx">nMsecOffset</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oThis</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">oControl</span> <span class="o">=</span> <span class="nx">oThis</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">oControl</span><span class="p">,</span><span class="s1">&#39;controls&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">oControl</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">oControl</span> <span class="o">=</span> <span class="nx">oControl</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">oSound</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">;</span>
+    <span class="nx">x</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-39'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-39">&#182;</a>
+        </div>
+        <p>play sound at this position</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nx">nMsecOffset</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">((</span><span class="nx">x</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">getOffX</span><span class="p">(</span><span class="nx">oControl</span><span class="p">)</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nx">oControl</span><span class="p">.</span><span class="nx">offsetWidth</span><span class="p">)</span><span class="o">*</span><span class="nx">self</span><span class="p">.</span><span class="nx">getDurationEstimate</span><span class="p">(</span><span class="nx">oSound</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">nMsecOffset</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">nMsecOffset</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="nx">nMsecOffset</span><span class="p">,</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">duration</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">nMsecOffset</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">oSound</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">nMsecOffset</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">stopSound</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;stopping sound: &#39;</span><span class="o">+</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+    <span class="nx">sm</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isTouchDevice</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// iOS 4.2+ security blocks onfinish() -&gt; playNext() if we set a .src in-between(?)</span>
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">unload</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">getDurationEstimate</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">isMovieStar</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">duration</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">(</span><span class="o">!</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span> <span class="o">||</span> <span class="o">!</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">givenDuration</span> <span class="o">?</span> <span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">durationEstimate</span><span class="o">||</span><span class="mi">0</span><span class="p">)</span> <span class="o">:</span> <span class="nx">oSound</span><span class="p">.</span><span class="nx">_data</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">givenDuration</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">createVUData</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">j</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+      <span class="nx">canvas</span> <span class="o">=</span> <span class="nx">vuDataCanvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">),</span>
+      <span class="nx">vuGrad</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">createLinearGradient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+      <span class="nx">bgGrad</span><span class="p">,</span> <span class="nx">outline</span><span class="p">;</span>
+
+    <span class="nx">vuGrad</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;rgb(0,192,0)&#39;</span><span class="p">);</span>
+    <span class="nx">vuGrad</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mf">0.30</span><span class="p">,</span><span class="s1">&#39;rgb(0,255,0)&#39;</span><span class="p">);</span>
+    <span class="nx">vuGrad</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mf">0.625</span><span class="p">,</span><span class="s1">&#39;rgb(255,255,0)&#39;</span><span class="p">);</span>
+    <span class="nx">vuGrad</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span><span class="s1">&#39;rgb(255,0,0)&#39;</span><span class="p">);</span>
+    <span class="nx">bgGrad</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">createLinearGradient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="nx">outline</span> <span class="o">=</span> <span class="s1">&#39;rgba(0,0,0,0.2)&#39;</span><span class="p">;</span>
+    <span class="nx">bgGrad</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nx">outline</span><span class="p">);</span>
+    <span class="nx">bgGrad</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;rgba(0,0,0,0.5)&#39;</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">16</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">vuMeterData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">16</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">j</span><span class="o">&lt;</span><span class="mi">16</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-40'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-40">&#182;</a>
+        </div>
+        <p>reset/erase canvas</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">vuDataCanvas</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span><span class="mi">16</span><span class="p">);</span>
+        <span class="nx">vuDataCanvas</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span><span class="mi">16</span><span class="p">);</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-41'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-41">&#182;</a>
+        </div>
+        <p>draw new stuffs</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">canvas</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="nx">bgGrad</span><span class="p">;</span>
+        <span class="nx">canvas</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">15</span><span class="p">);</span>
+        <span class="nx">canvas</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">15</span><span class="p">);</span>
+        <span class="cm">/*</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-42'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-42">&#182;</a>
+        </div>
+        <p>shadow</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="cm">        canvas.fillStyle = &#39;rgba(0,0,0,0.1)&#39;;</span>
+<span class="cm">        canvas.fillRect(1,15-i,7,17-(17-i));</span>
+<span class="cm">        canvas.fillRect(9,15-j,7,17-(17-j));</span>
+<span class="cm">        */</span>
+        <span class="nx">canvas</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="nx">vuGrad</span><span class="p">;</span>
+        <span class="nx">canvas</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">15</span><span class="o">-</span><span class="nx">i</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">16</span><span class="o">-</span><span class="p">(</span><span class="mi">16</span><span class="o">-</span><span class="nx">i</span><span class="p">));</span>
+        <span class="nx">canvas</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="o">-</span><span class="nx">j</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">16</span><span class="o">-</span><span class="p">(</span><span class="mi">16</span><span class="o">-</span><span class="nx">j</span><span class="p">));</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-43'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-43">&#182;</a>
+        </div>
+        <p>and now, clear out some bits.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">canvas</span><span class="p">.</span><span class="nx">clearRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+        <span class="nx">canvas</span><span class="p">.</span><span class="nx">clearRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+        <span class="nx">canvas</span><span class="p">.</span><span class="nx">clearRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">vuMeterData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="o">=</span> <span class="nx">vuDataCanvas</span><span class="p">.</span><span class="nx">toDataURL</span><span class="p">(</span><span class="s1">&#39;image/png&#39;</span><span class="p">);</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-44'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-44">&#182;</a>
+        </div>
+        <p>for debugging VU images</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="cm">/*</span>
+<span class="cm">        var o = document.createElement(&#39;img&#39;);</span>
+<span class="cm">        o.style.marginRight = &#39;5px&#39;; </span>
+<span class="cm">        o.src = self.vuMeterData[i][j];</span>
+<span class="cm">        document.documentElement.appendChild(o);</span>
+<span class="cm">        */</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">testCanvas</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-45'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-45">&#182;</a>
+        </div>
+        <p>canvas + toDataURL();</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;canvas&#39;</span><span class="p">),</span>
+        <span class="nx">ctx</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">ok</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">c</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">c</span><span class="p">.</span><span class="nx">getContext</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ctx</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">c</span><span class="p">.</span><span class="nx">toDataURL</span> <span class="o">!==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-46'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-46">&#182;</a>
+        </div>
+        <p>just in case..</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">try</span> <span class="p">{</span>
+        <span class="nx">ok</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">toDataURL</span><span class="p">(</span><span class="s1">&#39;image/png&#39;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-47'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-47">&#182;</a>
+        </div>
+        <p>no canvas or no toDataURL()</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-48'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-48">&#182;</a>
+        </div>
+        <p>assume we&rsquo;re all good.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">return</span> <span class="nx">c</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">initItem</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oNode</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oNode</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">oNode</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;pagePlayerMP3Sound&#39;</span><span class="o">+</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">soundCount</span><span class="o">++</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">oNode</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">sDefault</span><span class="p">);</span> <span class="c1">// add default CSS decoration</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">initUL</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oULNode</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-49'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-49">&#182;</a>
+        </div>
+        <p>set up graph box stuffs</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">&gt;=</span> <span class="mi">9</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">oULNode</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">cssBase</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oConfig</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">oConfig</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-50'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-50">&#182;</a>
+        </div>
+        <p>allow overriding via arguments object</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;pagePlayer.init(): Using custom configuration&#39;</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_mergeObjects</span><span class="p">(</span><span class="nx">oConfig</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;pagePlayer.init(): Using default configuration&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">spectrumBox</span><span class="p">,</span> <span class="nx">sbC</span><span class="p">,</span> <span class="nx">oF</span><span class="p">,</span> <span class="nx">oClone</span><span class="p">,</span> <span class="nx">oTiming</span><span class="p">;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-51'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-51">&#182;</a>
+        </div>
+        <p>apply externally-defined override, if applicable</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">cssBase</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// optional features added to ul.playlist</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-52'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-52">&#182;</a>
+        </div>
+        <p>apply some items to SM2</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nx">sm</span><span class="p">.</span><span class="nx">useFlashBlock</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">&gt;=</span> <span class="mi">9</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">useMovieStar</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useMovieStar</span><span class="p">;</span> <span class="c1">// enable playing FLV, MP4 etc.</span>
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">usePeakData</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">usePeakData</span><span class="p">;</span>
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span><span class="p">;</span>
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">useEQData</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">;</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">usePeakData</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">cssBase</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">&#39;use-peak&#39;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">cssBase</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">&#39;use-spectrum&#39;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">cssBase</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cssBase</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useFavIcon</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">vuDataCanvas</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">testCanvas</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">vuDataCanvas</span> <span class="o">&amp;&amp;</span> <span class="nx">supportsFavicon</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-53'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-53">&#182;</a>
+        </div>
+        <p>these browsers support dynamically-updating the favicon</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="nx">self</span><span class="p">.</span><span class="nx">createVUData</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-54'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-54">&#182;</a>
+        </div>
+        <p>browser doesn&rsquo;t support doing this</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useFavIcon</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">usePeakData</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;Page player: Note: soundManager.flashVersion = 9 is required for peak/waveform/EQ features.&#39;</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="nx">controlTemplate</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">);</span>
+
+     <span class="nx">controlTemplate</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="p">[</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-55'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-55">&#182;</a>
+        </div>
+        <p>control markup inserted dynamically after each page player link
+if you want to change the UI layout, this is the place to do it.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="s1">&#39;  &lt;div class=&quot;controls&quot;&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;   &lt;div class=&quot;statusbar&quot;&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;    &lt;div class=&quot;loading&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;    &lt;div class=&quot;position&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;   &lt;/div&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;  &lt;/div&gt;&#39;</span><span class="p">,</span>
+
+      <span class="s1">&#39;  &lt;div class=&quot;timing&quot;&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;   &lt;div id=&quot;sm2_timing&quot; class=&quot;timing-data&quot;&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;    &lt;span class=&quot;sm2_position&quot;&gt;%s1&lt;/span&gt; / &lt;span class=&quot;sm2_total&quot;&gt;%s2&lt;/span&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;   &lt;/div&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;  &lt;/div&gt;&#39;</span><span class="p">,</span>
+
+      <span class="s1">&#39;  &lt;div class=&quot;peak&quot;&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;   &lt;div class=&quot;peak-box&quot;&gt;&lt;span class=&quot;l&quot;&gt;&lt;/span&gt;&lt;span class=&quot;r&quot;&gt;&lt;/span&gt;&lt;/div&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;  &lt;/div&gt;&#39;</span><span class="p">,</span>
+
+      <span class="s1">&#39; &lt;div class=&quot;spectrum-container&quot;&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;  &lt;div class=&quot;spectrum-box&quot;&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;   &lt;div class=&quot;spectrum&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;  &lt;/div&gt;&#39;</span><span class="p">,</span>
+      <span class="s1">&#39; &lt;/div&gt;&#39;</span>
+
+    <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">sm</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">&gt;=</span> <span class="mi">9</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-56'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-56">&#182;</a>
+        </div>
+        <p>create the spectrum box ish</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">spectrumContainer</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;spectrum-container&#39;</span><span class="p">,</span><span class="nx">controlTemplate</span><span class="p">);</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-57'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-57">&#182;</a>
+        </div>
+        <p>take out of template, too</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">spectrumContainer</span> <span class="o">=</span> <span class="nx">controlTemplate</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">spectrumContainer</span><span class="p">);</span>
+
+      <span class="nx">spectrumBox</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;spectrum-box&#39;</span><span class="p">,</span><span class="nx">spectrumContainer</span><span class="p">);</span>
+
+      <span class="nx">sbC</span> <span class="o">=</span> <span class="nx">spectrumBox</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="nx">oF</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createDocumentFragment</span><span class="p">();</span>
+      <span class="nx">oClone</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">256</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span>
+        <span class="nx">oClone</span> <span class="o">=</span> <span class="nx">sbC</span><span class="p">.</span><span class="nx">cloneNode</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+        <span class="nx">oClone</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;px&#39;</span><span class="p">;</span>
+        <span class="nx">oF</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">oClone</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="nx">spectrumBox</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">sbC</span><span class="p">);</span>
+      <span class="nx">spectrumBox</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">oF</span><span class="p">);</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-58'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-58">&#182;</a>
+        </div>
+        <p>flash 8-only, take out the spectrum container and peak elements</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">controlTemplate</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;spectrum-container&#39;</span><span class="p">,</span><span class="nx">controlTemplate</span><span class="p">));</span>
+      <span class="nx">controlTemplate</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span><span class="nx">controlTemplate</span><span class="p">));</span>
+
+    <span class="p">}</span>
+
+    <span class="nx">self</span><span class="p">.</span><span class="nx">oControls</span> <span class="o">=</span> <span class="nx">controlTemplate</span><span class="p">.</span><span class="nx">cloneNode</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+
+    <span class="nx">oTiming</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;timing-data&#39;</span><span class="p">,</span><span class="nx">controlTemplate</span><span class="p">);</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">strings</span><span class="p">.</span><span class="nx">timing</span> <span class="o">=</span> <span class="nx">oTiming</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">;</span>
+    <span class="nx">oTiming</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+    <span class="nx">oTiming</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+
+    <span class="kd">function</span> <span class="nx">doEvents</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// action: add / remove</span>
+
+      <span class="nx">_event</span><span class="p">[</span><span class="nx">action</span><span class="p">](</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;click&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">handleClick</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isTouchDevice</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_event</span><span class="p">[</span><span class="nx">action</span><span class="p">](</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;mousedown&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">handleMouseDown</span><span class="p">);</span>
+        <span class="nx">_event</span><span class="p">[</span><span class="nx">action</span><span class="p">](</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;mouseup&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">stopDrag</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">_event</span><span class="p">[</span><span class="nx">action</span><span class="p">](</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;touchstart&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">handleMouseDown</span><span class="p">);</span>
+        <span class="nx">_event</span><span class="p">[</span><span class="nx">action</span><span class="p">](</span><span class="nb">document</span><span class="p">,</span><span class="s1">&#39;touchend&#39;</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">stopDrag</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="nx">_event</span><span class="p">[</span><span class="nx">action</span><span class="p">](</span><span class="nb">window</span><span class="p">,</span> <span class="s1">&#39;unload&#39;</span><span class="p">,</span> <span class="nx">cleanup</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="nx">cleanup</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">doEvents</span><span class="p">(</span><span class="s1">&#39;remove&#39;</span><span class="p">);</span>
+    <span class="p">};</span>
+
+    <span class="nx">doEvents</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">);</span>
+
+    <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;pagePlayer.init(): Ready&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">autoStart</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-59'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-59">&#182;</a>
+        </div>
+        <p>grab the first ul.playlist link</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">pl</span><span class="p">.</span><span class="nx">handleClick</span><span class="p">({</span><span class="nx">target</span><span class="o">:</span><span class="nx">pl</span><span class="p">.</span><span class="nx">getByClassName</span><span class="p">(</span><span class="s1">&#39;playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]});</span>
+    <span class="p">}</span>
+
+  <span class="p">};</span>
+
+<span class="p">}</span>
+
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">useFlashBlock</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">onready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">pagePlayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PagePlayer</span><span class="p">();</span>
+  <span class="nx">pagePlayer</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">PP_CONFIG</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">?</span> <span class="nx">PP_CONFIG</span> <span class="o">:</span> <span class="kc">null</span><span class="p">);</span>
+<span class="p">});</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

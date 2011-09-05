@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>flashblock.css</title>
+  <style type="text/css">
+/**
+ * http://jashkenas.github.com/docco/resources/docco.css
+ */
+
+/*--------------------- Layout and Typography ----------------------------*/
+body {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-size: 15px;
+  line-height: 22px;
+  color: #252519;
+  margin: 0; padding: 0;
+}
+a {
+  color: #261a3b;
+}
+  a:visited {
+    color: #261a3b;
+  }
+p {
+  margin: 0 0 15px 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  margin: 0px 0 15px 0;
+}
+  h1 {
+    margin-top: 40px;
+  }
+#container {
+  position: relative;
+}
+#background {
+  position: fixed;
+  top: 0; left: 525px; right: 0; bottom: 0;
+  background: #f5f5ff;
+  border-left: 1px solid #e5e5ee;
+  z-index: -1;
+}
+#jump_to, #jump_page {
+  background: white;
+  -webkit-box-shadow: 0 0 25px #777; -moz-box-shadow: 0 0 25px #777;
+  -webkit-border-bottom-left-radius: 5px; -moz-border-radius-bottomleft: 5px;
+  font: 10px Arial;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: right;
+}
+#jump_to, #jump_wrapper {
+  position: fixed;
+  right: 0; top: 0;
+  padding: 5px 10px;
+}
+  #jump_wrapper {
+    padding: 0;
+    display: none;
+  }
+    #jump_to:hover #jump_wrapper {
+      display: block;
+    }
+    #jump_page {
+      padding: 5px 0 3px;
+      margin: 0 0 25px 25px;
+    }
+      #jump_page .source {
+        display: block;
+        padding: 5px 10px;
+        text-decoration: none;
+        border-top: 1px solid #eee;
+      }
+        #jump_page .source:hover {
+          background: #f5f5ff;
+        }
+        #jump_page .source:first-child {
+        }
+table td {
+  border: 0;
+  outline: 0;
+}
+  td.docs, th.docs {
+    max-width: 450px;
+    min-width: 450px;
+    min-height: 5px;
+    padding: 10px 25px 1px 50px;
+    overflow-x: hidden;
+    vertical-align: top;
+    text-align: left;
+  }
+    .docs pre {
+      margin: 15px 0 15px;
+      padding-left: 15px;
+    }
+    .docs p tt, .docs p code {
+      background: #f8f8ff;
+      border: 1px solid #dedede;
+      font-size: 12px;
+      padding: 0 0.2em;
+    }
+    .pilwrap {
+      position: relative;
+    }
+      .pilcrow {
+        font: 12px Arial;
+        text-decoration: none;
+        color: #454545;
+        position: absolute;
+        top: 3px; left: -20px;
+        padding: 1px 2px;
+        opacity: 0;
+        -webkit-transition: opacity 0.2s linear;
+      }
+        td.docs:hover .pilcrow {
+          opacity: 1;
+        }
+  td.code, th.code {
+    padding: 14px 15px 16px 25px;
+    width: 100%;
+    vertical-align: top;
+    background: #f5f5ff;
+    border-left: 1px solid #e5e5ee;
+  }
+    pre, tt, code {
+      font-size: 12px; line-height: 18px;
+      font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+      margin: 0; padding: 0;
+    }
+
+
+/*---------------------- Syntax Highlighting -----------------------------*/
+td.linenos { background-color: #f0f0f0; padding-right: 10px; }
+span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }
+body .hll { background-color: #ffffcc }
+body .c { color: #408080; font-style: italic }  /* Comment */
+body .err { border: 1px solid #FF0000 }         /* Error */
+body .k { color: #954121 }                      /* Keyword */
+body .o { color: #666666 }                      /* Operator */
+body .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+body .cp { color: #BC7A00 }                     /* Comment.Preproc */
+body .c1 { color: #408080; font-style: italic } /* Comment.Single */
+body .cs { color: #408080; font-style: italic } /* Comment.Special */
+body .gd { color: #A00000 }                     /* Generic.Deleted */
+body .ge { font-style: italic }                 /* Generic.Emph */
+body .gr { color: #FF0000 }                     /* Generic.Error */
+body .gh { color: #000080; font-weight: bold }  /* Generic.Heading */
+body .gi { color: #00A000 }                     /* Generic.Inserted */
+body .go { color: #808080 }                     /* Generic.Output */
+body .gp { color: #000080; font-weight: bold }  /* Generic.Prompt */
+body .gs { font-weight: bold }                  /* Generic.Strong */
+body .gu { color: #800080; font-weight: bold }  /* Generic.Subheading */
+body .gt { color: #0040D0 }                     /* Generic.Traceback */
+body .kc { color: #954121 }                     /* Keyword.Constant */
+body .kd { color: #954121; font-weight: bold }  /* Keyword.Declaration */
+body .kn { color: #954121; font-weight: bold }  /* Keyword.Namespace */
+body .kp { color: #954121 }                     /* Keyword.Pseudo */
+body .kr { color: #954121; font-weight: bold }  /* Keyword.Reserved */
+body .kt { color: #B00040 }                     /* Keyword.Type */
+body .m { color: #666666 }                      /* Literal.Number */
+body .s { color: #219161 }                      /* Literal.String */
+body .na { color: #7D9029 }                     /* Name.Attribute */
+body .nb { color: #954121 }                     /* Name.Builtin */
+body .nc { color: #0000FF; font-weight: bold }  /* Name.Class */
+body .no { color: #880000 }                     /* Name.Constant */
+body .nd { color: #AA22FF }                     /* Name.Decorator */
+body .ni { color: #999999; font-weight: bold }  /* Name.Entity */
+body .ne { color: #D2413A; font-weight: bold }  /* Name.Exception */
+body .nf { color: #0000FF }                     /* Name.Function */
+body .nl { color: #A0A000 }                     /* Name.Label */
+body .nn { color: #0000FF; font-weight: bold }  /* Name.Namespace */
+body .nt { color: #954121; font-weight: bold }  /* Name.Tag */
+body .nv { color: #19469D }                     /* Name.Variable */
+body .ow { color: #AA22FF; font-weight: bold }  /* Operator.Word */
+body .w { color: #bbbbbb }                      /* Text.Whitespace */
+body .mf { color: #666666 }                     /* Literal.Number.Float */
+body .mh { color: #666666 }                     /* Literal.Number.Hex */
+body .mi { color: #666666 }                     /* Literal.Number.Integer */
+body .mo { color: #666666 }                     /* Literal.Number.Oct */
+body .sb { color: #219161 }                     /* Literal.String.Backtick */
+body .sc { color: #219161 }                     /* Literal.String.Char */
+body .sd { color: #219161; font-style: italic } /* Literal.String.Doc */
+body .s2 { color: #219161 }                     /* Literal.String.Double */
+body .se { color: #BB6622; font-weight: bold }  /* Literal.String.Escape */
+body .sh { color: #219161 }                     /* Literal.String.Heredoc */
+body .si { color: #BB6688; font-weight: bold }  /* Literal.String.Interpol */
+body .sx { color: #954121 }                     /* Literal.String.Other */
+body .sr { color: #BB6688 }                     /* Literal.String.Regex */
+body .s1 { color: #219161 }                     /* Literal.String.Single */
+body .ss { color: #19469D }                     /* Literal.String.Symbol */
+body .bp { color: #954121 }                     /* Name.Builtin.Pseudo */
+body .vc { color: #19469D }                     /* Name.Variable.Class */
+body .vg { color: #19469D }                     /* Name.Variable.Global */
+body .vi { color: #19469D }                     /* Name.Variable.Instance */
+body .il { color: #666666 }                     /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="../360-player/script/360player.html">360player.js</a>
+          <a class="source" href="flashblock.html">flashblock.css</a>
+          <a class="source" href="../mp3-player-button/script/mp3-player-button.html">mp3-player-button.js</a>
+          <a class="source" href="../mpc/script/mpc.html">mpc.js</a>
+          <a class="source" href="../page-player/script/page-player.html">page-player.js</a>
+          <a class="source" href="../play-mp3-links/script/inlineplayer.html">inlineplayer.js</a>
+          <a class="source" href="../../script/soundmanager2.html">soundmanager2.js</a>
+          <a class="source" href="../../src/SoundManager2.html">SoundManager2.as</a>
+          <a class="source" href="../../src/SoundManager2_AS3.html">SoundManager2_AS3.as</a>
+          <a class="source" href="../../src/SoundManager2_SMSound_AS3.html">SoundManager2_SMSound_AS3.as</a>
+      </div>
+    </div>
+  </div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>flashblock.css</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-SoundManager_2_+_useFlashBlock'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-SoundManager_2_+_useFlashBlock">&#182;</a>
+        </div>
+        <h2>SoundManager 2 + useFlashBlock</h2>
+
+<p>Flash positioning and flashblock / clicktoflash handling</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nf">#sm2-container</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>where the SM2 flash movie goes. by default, relative container.
+set relative or absolute here, and don&rsquo;t touch it later or bad things will happen (see below comments.)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre> <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+ <span class="k">width</span><span class="o">:</span> <span class="m">1px</span><span class="p">;</span>
+ <span class="k">height</span><span class="o">:</span> <span class="m">1px</span><span class="p">;</span>
+ <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+ <span class="c">/* screw IE 6, just make it display nice */</span>
+ <span class="err">_</span><span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span> <span class="nt">object</span><span class="o">,</span>
+<span class="nf">#sm2-container</span> <span class="nt">embed</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>the actual SWF movie bit.
+important: The SWF needs to be able to be moved off-screen without display: or position: changes.
+changing display: or position: or overflow: here or on parent can cause SWF reload or other weird issues after unblock
+e.g., SM2 starts but strange errors, no whileplaying() etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre> <span class="k">width</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+ <span class="k">height</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+ <span class="c">/* some flash blockers may also respect this rule */</span>
+ <span class="k">max-width</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+ <span class="k">max-height</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.swf_timedout</span> <span class="p">{</span>
+ <span class="c">/* expand to show the timed-out SWF content */</span>
+ <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+ <span class="k">width</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+ <span class="k">height</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.swf_timedout</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.swf_timedout</span> <span class="nt">object</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.swf_timedout</span> <span class="nt">embed</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>when SM2 didn&rsquo;t start normally, time-out case. flash blocked, missing SWF, no flash?
+48px square flash placeholder is typically used by blockers.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre> <span class="k">min-width</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+ <span class="k">min-height</span><span class="o">:</span> <span class="m">48px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.swf_unblocked</span> <span class="p">{</span>
+ <span class="c">/* SWF unblocked, or was never blocked to begin with; try to collapse container as much as possible. */</span>
+ <span class="k">width</span><span class="o">:</span> <span class="m">1px</span><span class="p">;</span>
+ <span class="k">height</span><span class="o">:</span> <span class="m">1px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.swf_loaded</span> <span class="nt">object</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.swf_loaded</span> <span class="nt">embed</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.swf_unblocked</span> <span class="nt">object</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.swf_unblocked</span> <span class="nt">embed</span> <span class="p">{</span>
+ <span class="c">/* hide flash off-screen (relative to container) when it has loaded OK */</span>
+ <span class="k">left</span><span class="o">:</span> <span class="m">-9999em</span><span class="p">;</span>
+ <span class="k">top</span><span class="o">:</span> <span class="m">-9999em</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.swf_error</span> <span class="p">{</span>
+ <span class="c">/* when there is a fatal error (flash loaded, but SM2 failed) */</span>
+ <span class="k">display</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.high_performance</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_timeout</span> <span class="p">{</span>
+ <span class="c">/* &quot;high performance&quot; case: keep on-screen at all times */</span>
+ <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+ <span class="k">position</span><span class="o">:</span> <span class="k">fixed</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.high_performance</span> <span class="p">{</span>
+ <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+ <span class="err">_</span><span class="k">top</span><span class="o">:</span> <span class="m">-9999px</span><span class="p">;</span> <span class="c">/* IE 6 hax, no position:fixed */</span>
+ <span class="err">_</span><span class="k">left</span><span class="o">:</span> <span class="m">-9999px</span><span class="p">;</span>
+ <span class="k">bottom</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span>
+ <span class="k">left</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>special case: show at first with w/h, hide when unblocked.
+might be bad/annoying.
+try to stay within ClickToFlash &ldquo;invisible&rdquo; limits (so it won&rsquo;t be blocked.)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre> <span class="k">z-index</span><span class="o">:</span> <span class="m">99</span><span class="p">;</span> <span class="c">/* try to stay on top */</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_loaded</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_unblocked</span> <span class="p">{</span>
+ <span class="k">z-index</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_loaded</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_unblocked</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_unblocked</span> <span class="nt">object</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_unblocked</span> <span class="nt">embed</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>8x8px is required minimum to load in fx/win32 in some cases(?)
+6x6+ good for fast performance, even better when on-screen via position:fixed
+also, clickToFlash (Safari &lt;5.1) may auto-load &ldquo;invisible&rdquo; SWFs at this size</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre> <span class="k">height</span><span class="o">:</span> <span class="m">8px</span><span class="p">;</span>
+ <span class="k">width</span><span class="o">:</span> <span class="m">8px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_loaded</span> <span class="p">{</span>
+ <span class="c">/* stay bottom/left */</span>
+ <span class="k">top</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+ <span class="k">bottom</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span>
+ <span class="k">left</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_loaded</span> <span class="nt">object</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_loaded</span> <span class="nt">embed</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_unblocked</span> <span class="nt">object</span><span class="o">,</span>
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_unblocked</span> <span class="nt">embed</span> <span class="p">{</span>
+ <span class="c">/* high-performance case must stay on-screen */</span>
+ <span class="k">left</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+ <span class="k">top</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sm2-container</span><span class="nc">.high_performance.swf_timedout</span> <span class="p">{</span>
+ <span class="k">z-index</span><span class="o">:</span> <span class="m">99</span><span class="p">;</span> <span class="c">/* try to stay on top */</span>
+<span class="p">}</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

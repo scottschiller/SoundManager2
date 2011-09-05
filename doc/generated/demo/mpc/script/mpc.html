@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>mpc.js</title>
+  <style type="text/css">
+/**
+ * http://jashkenas.github.com/docco/resources/docco.css
+ */
+
+/*--------------------- Layout and Typography ----------------------------*/
+body {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-size: 15px;
+  line-height: 22px;
+  color: #252519;
+  margin: 0; padding: 0;
+}
+a {
+  color: #261a3b;
+}
+  a:visited {
+    color: #261a3b;
+  }
+p {
+  margin: 0 0 15px 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  margin: 0px 0 15px 0;
+}
+  h1 {
+    margin-top: 40px;
+  }
+#container {
+  position: relative;
+}
+#background {
+  position: fixed;
+  top: 0; left: 525px; right: 0; bottom: 0;
+  background: #f5f5ff;
+  border-left: 1px solid #e5e5ee;
+  z-index: -1;
+}
+#jump_to, #jump_page {
+  background: white;
+  -webkit-box-shadow: 0 0 25px #777; -moz-box-shadow: 0 0 25px #777;
+  -webkit-border-bottom-left-radius: 5px; -moz-border-radius-bottomleft: 5px;
+  font: 10px Arial;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: right;
+}
+#jump_to, #jump_wrapper {
+  position: fixed;
+  right: 0; top: 0;
+  padding: 5px 10px;
+}
+  #jump_wrapper {
+    padding: 0;
+    display: none;
+  }
+    #jump_to:hover #jump_wrapper {
+      display: block;
+    }
+    #jump_page {
+      padding: 5px 0 3px;
+      margin: 0 0 25px 25px;
+    }
+      #jump_page .source {
+        display: block;
+        padding: 5px 10px;
+        text-decoration: none;
+        border-top: 1px solid #eee;
+      }
+        #jump_page .source:hover {
+          background: #f5f5ff;
+        }
+        #jump_page .source:first-child {
+        }
+table td {
+  border: 0;
+  outline: 0;
+}
+  td.docs, th.docs {
+    max-width: 450px;
+    min-width: 450px;
+    min-height: 5px;
+    padding: 10px 25px 1px 50px;
+    overflow-x: hidden;
+    vertical-align: top;
+    text-align: left;
+  }
+    .docs pre {
+      margin: 15px 0 15px;
+      padding-left: 15px;
+    }
+    .docs p tt, .docs p code {
+      background: #f8f8ff;
+      border: 1px solid #dedede;
+      font-size: 12px;
+      padding: 0 0.2em;
+    }
+    .pilwrap {
+      position: relative;
+    }
+      .pilcrow {
+        font: 12px Arial;
+        text-decoration: none;
+        color: #454545;
+        position: absolute;
+        top: 3px; left: -20px;
+        padding: 1px 2px;
+        opacity: 0;
+        -webkit-transition: opacity 0.2s linear;
+      }
+        td.docs:hover .pilcrow {
+          opacity: 1;
+        }
+  td.code, th.code {
+    padding: 14px 15px 16px 25px;
+    width: 100%;
+    vertical-align: top;
+    background: #f5f5ff;
+    border-left: 1px solid #e5e5ee;
+  }
+    pre, tt, code {
+      font-size: 12px; line-height: 18px;
+      font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+      margin: 0; padding: 0;
+    }
+
+
+/*---------------------- Syntax Highlighting -----------------------------*/
+td.linenos { background-color: #f0f0f0; padding-right: 10px; }
+span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }
+body .hll { background-color: #ffffcc }
+body .c { color: #408080; font-style: italic }  /* Comment */
+body .err { border: 1px solid #FF0000 }         /* Error */
+body .k { color: #954121 }                      /* Keyword */
+body .o { color: #666666 }                      /* Operator */
+body .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+body .cp { color: #BC7A00 }                     /* Comment.Preproc */
+body .c1 { color: #408080; font-style: italic } /* Comment.Single */
+body .cs { color: #408080; font-style: italic } /* Comment.Special */
+body .gd { color: #A00000 }                     /* Generic.Deleted */
+body .ge { font-style: italic }                 /* Generic.Emph */
+body .gr { color: #FF0000 }                     /* Generic.Error */
+body .gh { color: #000080; font-weight: bold }  /* Generic.Heading */
+body .gi { color: #00A000 }                     /* Generic.Inserted */
+body .go { color: #808080 }                     /* Generic.Output */
+body .gp { color: #000080; font-weight: bold }  /* Generic.Prompt */
+body .gs { font-weight: bold }                  /* Generic.Strong */
+body .gu { color: #800080; font-weight: bold }  /* Generic.Subheading */
+body .gt { color: #0040D0 }                     /* Generic.Traceback */
+body .kc { color: #954121 }                     /* Keyword.Constant */
+body .kd { color: #954121; font-weight: bold }  /* Keyword.Declaration */
+body .kn { color: #954121; font-weight: bold }  /* Keyword.Namespace */
+body .kp { color: #954121 }                     /* Keyword.Pseudo */
+body .kr { color: #954121; font-weight: bold }  /* Keyword.Reserved */
+body .kt { color: #B00040 }                     /* Keyword.Type */
+body .m { color: #666666 }                      /* Literal.Number */
+body .s { color: #219161 }                      /* Literal.String */
+body .na { color: #7D9029 }                     /* Name.Attribute */
+body .nb { color: #954121 }                     /* Name.Builtin */
+body .nc { color: #0000FF; font-weight: bold }  /* Name.Class */
+body .no { color: #880000 }                     /* Name.Constant */
+body .nd { color: #AA22FF }                     /* Name.Decorator */
+body .ni { color: #999999; font-weight: bold }  /* Name.Entity */
+body .ne { color: #D2413A; font-weight: bold }  /* Name.Exception */
+body .nf { color: #0000FF }                     /* Name.Function */
+body .nl { color: #A0A000 }                     /* Name.Label */
+body .nn { color: #0000FF; font-weight: bold }  /* Name.Namespace */
+body .nt { color: #954121; font-weight: bold }  /* Name.Tag */
+body .nv { color: #19469D }                     /* Name.Variable */
+body .ow { color: #AA22FF; font-weight: bold }  /* Operator.Word */
+body .w { color: #bbbbbb }                      /* Text.Whitespace */
+body .mf { color: #666666 }                     /* Literal.Number.Float */
+body .mh { color: #666666 }                     /* Literal.Number.Hex */
+body .mi { color: #666666 }                     /* Literal.Number.Integer */
+body .mo { color: #666666 }                     /* Literal.Number.Oct */
+body .sb { color: #219161 }                     /* Literal.String.Backtick */
+body .sc { color: #219161 }                     /* Literal.String.Char */
+body .sd { color: #219161; font-style: italic } /* Literal.String.Doc */
+body .s2 { color: #219161 }                     /* Literal.String.Double */
+body .se { color: #BB6622; font-weight: bold }  /* Literal.String.Escape */
+body .sh { color: #219161 }                     /* Literal.String.Heredoc */
+body .si { color: #BB6688; font-weight: bold }  /* Literal.String.Interpol */
+body .sx { color: #954121 }                     /* Literal.String.Other */
+body .sr { color: #BB6688 }                     /* Literal.String.Regex */
+body .s1 { color: #219161 }                     /* Literal.String.Single */
+body .ss { color: #19469D }                     /* Literal.String.Symbol */
+body .bp { color: #954121 }                     /* Name.Builtin.Pseudo */
+body .vc { color: #19469D }                     /* Name.Variable.Class */
+body .vg { color: #19469D }                     /* Name.Variable.Global */
+body .vi { color: #19469D }                     /* Name.Variable.Instance */
+body .il { color: #666666 }                     /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="../../360-player/script/360player.html">360player.js</a>
+          <a class="source" href="../../flashblock/flashblock.html">flashblock.css</a>
+          <a class="source" href="../../mp3-player-button/script/mp3-player-button.html">mp3-player-button.js</a>
+          <a class="source" href="mpc.html">mpc.js</a>
+          <a class="source" href="../../page-player/script/page-player.html">page-player.js</a>
+          <a class="source" href="../../play-mp3-links/script/inlineplayer.html">inlineplayer.js</a>
+          <a class="source" href="../../../script/soundmanager2.html">soundmanager2.js</a>
+          <a class="source" href="../../../src/SoundManager2.html">SoundManager2.as</a>
+          <a class="source" href="../../../src/SoundManager2_AS3.html">SoundManager2_AS3.as</a>
+          <a class="source" href="../../../src/SoundManager2_SMSound_AS3.html">SoundManager2_SMSound_AS3.as</a>
+      </div>
+    </div>
+  </div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>mpc.js</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        <p>SoundManager 2: MPC (Drum Machine) demo</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="kd">var</span> <span class="nx">MPC</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">idPrefix</span> <span class="o">=</span> <span class="s1">&#39;btn-&#39;</span><span class="p">;</span> <span class="c1">// HTML ID prefix</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">statusWidth</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">progressWidth</span> <span class="o">=</span> <span class="mi">256</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;2&#39;</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;3&#39;</span><span class="o">:</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;q&#39;</span><span class="o">:</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="o">:</span><span class="mi">5</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="o">:</span><span class="mi">6</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="o">:</span><span class="mi">7</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="o">:</span><span class="mi">8</span><span class="p">,</span><span class="s1">&#39;s&#39;</span><span class="o">:</span><span class="mi">9</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="o">:</span><span class="mi">10</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="o">:</span><span class="mi">11</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="o">:</span><span class="mi">12</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="o">:</span><span class="mi">13</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="o">:</span><span class="mi">14</span><span class="p">,</span><span class="s1">&#39;v&#39;</span><span class="o">:</span><span class="mi">15</span><span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>scope within these event handler methods: &ldquo;this&rdquo; = SMSound() object instance (see SMSound() in soundmanager.js for reference) </p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">showProgress</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>sound is loading, update bytes received using this.bytesLoaded / this.bytesTotal</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">_getButton</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">).</span><span class="nx">className</span> <span class="o">!=</span> <span class="s1">&#39;loading&#39;</span><span class="p">)</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_getButton</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">).</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;loading&#39;</span><span class="p">;</span> <span class="c1">// a bit inefficient here..</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_showStatus</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">bytesLoaded</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">bytesTotal</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">onid3</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">soundManager</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;mpc.onid3()&#39;</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">oName</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">oName</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">id3</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">soundManager</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="nx">oName</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">id3</span><span class="p">[</span><span class="nx">oName</span><span class="p">])</span> <span class="c1">// write out name/value ID3 pairs (eg. &quot;artist: Beck&quot;)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">sID</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">;</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_getButton</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">).</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_getButton</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">).</span><span class="nx">title</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Sound ID: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="o">+</span><span class="s1">&#39; (&#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="o">+</span><span class="s1">&#39;)&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">onfinish</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_getButton</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">).</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_reset</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">onplay</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_getButton</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">).</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;active&#39;</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">whileplaying</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_showStatus</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sID</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">position</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">duration</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">_keyHandler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">oEvt</span> <span class="o">=</span> <span class="nx">e</span><span class="o">?</span><span class="nx">e</span><span class="o">:</span><span class="nx">event</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">sChar</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">oEvt</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">self</span><span class="p">.</span><span class="nx">keys</span><span class="p">[</span><span class="nx">sChar</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="nx">soundManager</span><span class="p">.</span><span class="nx">play</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="o">+</span><span class="nx">self</span><span class="p">.</span><span class="nx">keys</span><span class="p">[</span><span class="nx">sChar</span><span class="p">]);</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">_showStatus</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sID</span><span class="p">,</span><span class="nx">n1</span><span class="p">,</span><span class="nx">n2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_getButton</span><span class="p">(</span><span class="nx">sID</span><span class="p">).</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">offX</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n2</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">?</span><span class="p">(</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">progressWidth</span><span class="o">+</span><span class="nb">parseInt</span><span class="p">((</span><span class="nx">n1</span><span class="o">/</span><span class="nx">n2</span><span class="p">)</span><span class="o">*</span><span class="nx">o</span><span class="p">.</span><span class="nx">offsetWidth</span><span class="p">))</span><span class="o">:-</span><span class="nx">self</span><span class="p">.</span><span class="nx">progressWidth</span><span class="p">);</span>
+    <span class="nx">o</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">backgroundPosition</span> <span class="o">=</span> <span class="nx">offX</span><span class="o">+</span><span class="s1">&#39;px 0px&#39;</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">_getButton</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sID</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">idPrefix</span><span class="o">+</span><span class="nx">sID</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">_reset</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sID</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">sID</span><span class="p">;</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">_showStatus</span><span class="p">(</span><span class="nx">sID</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span><span class="nx">self</span><span class="p">.</span><span class="nx">_showStatus</span><span class="p">(</span><span class="nx">sID</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);},</span><span class="mi">200</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">onkeydown</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_keyHandler</span><span class="p">;</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">mpc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MPC</span><span class="p">();</span>
+
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">=</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">match</span><span class="p">(</span><span class="sr">/#flash8/i</span><span class="p">)</span><span class="o">?</span><span class="mi">8</span><span class="o">:</span><span class="mi">9</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">soundManager</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">useHighPerformance</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">useFastPolling</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="s1">&#39;../../swf/&#39;</span><span class="p">;</span> <span class="c1">// path to load SWF from (overriding default)</span>
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">bgcolor</span> <span class="o">=</span> <span class="s1">&#39;#333333&#39;</span><span class="p">;</span>
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">wmode</span> <span class="o">=</span> <span class="s1">&#39;transparent&#39;</span><span class="p">;</span>
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">debugMode</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">consoleOnly</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">useFlashBlock</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">onready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>This is the &ldquo;onload&rdquo; equivalent which is called when SoundManager has been initialised (sounds can be created, etc.)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="nx">mpc</span><span class="p">.</span><span class="nx">init</span><span class="p">();</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>set up some default options / event handlers &ndash; so all sounds created are given these handlers</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">autoLoad</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">whileloading</span> <span class="o">=</span> <span class="nx">mpc</span><span class="p">.</span><span class="nx">showProgress</span><span class="p">;</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">onid3</span> <span class="o">=</span> <span class="nx">mpc</span><span class="p">.</span><span class="nx">onid3</span><span class="p">;</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">mpc</span><span class="p">.</span><span class="nx">onload</span><span class="p">;</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">onplay</span> <span class="o">=</span> <span class="nx">mpc</span><span class="p">.</span><span class="nx">onplay</span><span class="p">;</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">whileplaying</span> <span class="o">=</span> <span class="nx">mpc</span><span class="p">.</span><span class="nx">whileplaying</span><span class="p">;</span>
+  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">.</span><span class="nx">onfinish</span> <span class="o">=</span> <span class="nx">mpc</span><span class="p">.</span><span class="nx">onfinish</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">soundManager</span><span class="p">.</span><span class="nx">html5</span><span class="p">.</span><span class="nx">needsFlash</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;isHTML5&#39;</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="s1">&#39;inline&#39;</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="kd">var</span> <span class="nx">soundURLs</span> <span class="o">=</span> <span class="s1">&#39;AMB_BD_1,AMB_FTM2,AMB_HHCL,AMB_HHOP,AMB_HHPD,AMB_HTM,AMB_LTM2,AMB_MTM,AMB_RIM1,AMB_SN13,AMB_SN_5,CHINA_1,CRASH_1,CRASH_5,CRASH_6,RIDE_1&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">soundURLs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">soundManager</span><span class="p">.</span><span class="nx">createSound</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="o">+</span><span class="nx">i</span><span class="p">,</span> <span class="s1">&#39;audio/&#39;</span><span class="o">+</span><span class="nx">soundURLs</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.mp3&#39;</span><span class="p">);</span>
+  <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>createSound options can also be set on a per-file basis, with specific option overrides.
+(Options not specified here will inherit defaults as defined in soundManager.defaultOptions.)</p>
+
+<p>eg.</p>
+
+<p>soundManager.createSound({
+ id: &lsquo;mySound&rsquo;,
+ url: &lsquo;/path/to/some.mp3&rsquo;,
+ stream: true,
+ autoPlay: true,
+ multiShot: false,
+ whileloading: function() { alert(&lsquo;sound &rsquo;+this.sID+&lsquo;: &rsquo;+this.bytesLoaded+&lsquo; of &rsquo;+this.bytesTotal+&lsquo; bytes loaded.&rsquo;); } // event handler: &ldquo;this&rdquo; is scoped to SMSound() object instance for easy access to methods/properties
+});</p>
+
+<ul>
+<li>OR &ndash;</li>
+</ul>
+
+<p>If you just want a sound with all default options, you can also specify just the required id and URL as string parameters:</p>
+
+<p>soundManager.createSound(&lsquo;mySound&rsquo;,&lsquo;/path/to/some.mp3&rsquo;);</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="p">});</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

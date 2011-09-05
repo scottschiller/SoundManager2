@@ -70,6 +70,7 @@
 		<li><a href="#smdefaults">Global Sound Defaults</a></li>
 		<li><a href="#api">SoundManager Core API</a></li>
 		<li><a href="#smsoundmethods">Sound Object (SMSound) API</a></li>
+		<li><a href="generated/script/soundmanager2.html">Generated Documentation</a></li>
 	   </ul>
 	  </li>
 	
@@ -339,25 +340,29 @@
 	</div>
 
 	<div id="soundmanager-properties" class="columnar">
+
 		<div class="c1">
 			<h2>SoundManager Configuration</h2>
 			<p>Flash URLs, version + performance options</p>
 		</div>
+
 		<div class="c2">
-			
+
+	      <p>
+			For nicely-formatted and commented source code, see the <a href="generated/script/soundmanager2.html">generated documentation</a>.
+		  </p>
+
 		  <h3>SoundManager Properties</h3>
 			
 		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-usemoviestar f-allowscriptaccess">
 
 		  <p class="in">SoundManager has properties which configure debug mode, flash movie path and other behaviours. At minimum, the <code>soundManager.url</code> property must be assigned a path used to look for the necessary flash movie.</p>
 
-<pre class="small block specialcommentblock"><code><strong class="removed" title="Removed after v2.97a.20110801">allowPolling = true;     <span>// enable flash status updates. Required for whileloading/whileplaying.</strong></span>
-consoleOnly = false;     <span>// if console is being used, do not create/write to #soundmanager-debug</span>
+<pre class="small block specialcommentblock"><code><span>consoleOnly = false;     <span>// if console is being used, do not create/write to #soundmanager-debug</span>
 debugMode = true;        <span>// enable debugging output (div#soundmanager-debug, OR console..)</span>
 debugFlash = false;      <span>// enable debugging output inside SWF, troubleshoot Flash/browser issues</span>
 flashLoadTimeout = 1000; <span>// ms to wait for flash movie to load before failing (0 = infinity)</span>
-flashVersion = 8;        <span>// version of flash to require, either 8 or 9. Some features require 9.</span><strong class="removed" title="Removed after v2.97a.20110801">
-nullURL = 'about:blank'; <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span></strong>
+flashVersion = 8;        <span>// version of flash to require, either 8 or 9. Some features require 9.</span>
 url = '/path/to/swfs/';  <span>// path (directory) where SM2 .SWF files will be found.</span>
 useConsole = true;       <span>// use firebug/safari console.log()-type debug console if available</span>
 useMovieStar = true;     <span>// enable <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+</a> MPEG4 audio support</span>
@@ -367,8 +372,10 @@ useHighPerformance = false;<span>// position:fixed flash movie for faster JS/fla
 waitForWindowLoad = false; <span>// always delay soundManager.onload() until after window.onload()</span>
 wmode = 'transparent';     <span>// null, transparent, opaque (last two allow HTML on top of flash)</span>
 allowScriptAccess = 'always'; <span>// for scripting SWF (object/embed prop.), 'always' or 'sameDomain'</span>
-useFlashBlock = true;      <span>// better handling of SWF if load fails, let user unblock. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span>
-useHTML5Audio = false;     <span>// <a href="#soundmanager-usehtml5audio">beta feature</a>: Use HTML5 Audio() where supported.</span>
+useFlashBlock = true;    <span>// better handling of SWF if load fails, let user unblock. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span>
+useHTML5Audio = false;   <span>// <a href="#soundmanager-usehtml5audio">beta feature</a>: Use HTML5 Audio() where supported.</span><strong class="removed" title="Removed after v2.97a.20110801">
+allowPolling = true;     <span>// enable flash status updates. Required for whileloading/whileplaying.</span></strong><strong class="removed" title="Removed after v2.97a.20110801">
+nullURL = 'about:blank'; <span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span></strong>
 </span></code></pre>
 			  <p>To modify global SoundManager default parameters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
@@ -1004,6 +1011,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
     });
   }
 });</code></pre>
+			       </dd>
 				   <dd>Again, note that due to the interval / polling-based methods of both HTML5 and flash audio, sound status updates and thus precision can vary between 20 msec to perhaps 0.5 seconds and the sound's position property will reflect this delta when the <code>onposition()</code> callback fires.</dd>
 
 				   </dl>
