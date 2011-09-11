@@ -57,6 +57,12 @@
 
 <target name="build">
 
+<echo>Removing existing JS builds...</echo>
+
+<delete file="script/soundmanager2-nodebug.js"/>
+<delete file="script/soundmanager2-jsmin.js"/>
+<delete file="script/soundmanager2-nodebug-jsmin.js"/>
+
 <echo>Compressing minified JS...</echo>
 
 <!--
@@ -70,7 +76,6 @@
 <!-- Google Closure Compiler -->
 <echo level="debug"
  message="java -jar ${closure-compiler.jar} --compilation_level SIMPLE_OPTIMIZATIONS --js script/soundmanager2.js --js_output_file tmp/soundmanager2-jsmin-temp.js"/>
-
 
 <jscomp compilationLevel="simple" debug="false" output="script/soundmanager2-jsmin.js">
     <sources dir="script">
@@ -104,50 +109,69 @@
 	<replacetoken>this.debugMode = true;</replacetoken>
 	<replacevalue>this.debugMode = false;</replacevalue>
     </replacefilter>
-    <!-- _s._wD() / _wDS() -->
-    <replacefilter>
-	<replacetoken>_s._wD(</replacetoken>
-	<replacevalue>//_s._wD(</replacevalue>
-    </replacefilter>
-    <replacefilter>
-	<replacetoken>_wDS(</replacetoken>
-	<replacevalue>//_wDS(</replacevalue>
-    </replacefilter>
-    <!-- _debugTS() -->
-    <replacefilter>
-	<replacetoken>_debugTS(</replacetoken>
-	<replacevalue>//_debugTS(</replacevalue>
-    </replacefilter>
-    <!-- <d> and </d> -->
-    <replacefilter>
-	<replacetoken>// &lt;d&gt;</replacetoken>
-	<replacevalue>/*</replacevalue>
-    </replacefilter>
-    <replacefilter>
-	<replacetoken>// &lt;/d&gt;</replacetoken>
-	<replacevalue>*/</replacevalue>
-    </replacefilter>
 </replace>
 
+<!-- remove [d] and [/d] blocks -->
+<replaceregexp match="// &lt;d&gt;*.+?// &lt;\/d&gt;" replace="" flags="gs" byline="false" file="script/soundmanager2-nodebug.js" />
+
+<!-- remove _s._wD() calls -->
+<replaceregexp match="\s+_s._wD\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+
+<!-- remove _wDS() calls -->
+<replaceregexp match="\s+_wDS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+
+<!-- remove _debugTS() calls -->
+<replaceregexp match="\s+_debugTS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+
+<!-- remove single-line comments -->
+<replaceregexp match="\s+?//.*" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+
+<!-- remove multi-line comments -->
+<replaceregexp match="/\*.+?\*/" replace="" flags="gs" byline="false" file="script/soundmanager2-nodebug.js" />
+
+<!-- remove multiple linebreaks, replace with one (could be improved) -->
+<replaceregexp file="script/soundmanager2-nodebug.js" match="\s+(\r\n)" flags="g" replace="\1\1" />
+
+<!-- more newline removal (license header) -->
+<!--
+<replaceregexp file="script/soundmanager2-jsmin.js" match="(\r?\n)+" flags="g" replace="\1" />
+-->
 
 <echo>Compressing no-debug JS...</echo>
 
-<!--
-<echo>[YUICompressor]</echo>
-<exec executable="/bin/sh">
- <arg line='-c "java -jar ~/yuicompressor-2.4.2.jar sm2-nodebug-temp6.js -o script/soundmanager2-nodebug-yuicompressor.js"'/>
-</exec>
--->
-
 <jscomp compilationLevel="simple" output="script/soundmanager2-nodebug-jsmin.js">
-    <sources dir="script">
-	<file name="soundmanager2-nodebug.js"/>
-    </sources>
+	<sources dir="script">
+		<file name="soundmanager2-nodebug.js"/>
+	</sources>
 </jscomp>
 
-<!-- Retain license comment through further closure compiler minification -->
+<!-- retain license comment through further closure compiler minification? -->
+
 <replace file="script/soundmanager2-jsmin.js" token="/*" value="/** @license"/>
 <replace file="script/soundmanager2-nodebug-jsmin.js" token="/*" value="/** @license"/>
+
+<!-- fetch the license from the full source, and prepend it to the jsmin builds. -->
+
+<!-- a cheap hack: Read the first N lines of a file -->
+<loadfile property="sm2_license_jslint" srcFile="script/soundmanager2.js">
+	<filterchain>
+    	<headfilter lines="15"/>
+  </filterchain>
+</loadfile>
+
+<loadfile property="sm2_license" srcFile="script/soundmanager2.js">
+	<filterchain>
+    	<headfilter lines="12"/>
+  </filterchain>
+</loadfile>
+
+<echo>Retrieved SM2 license:</echo>
+<echo>${sm2_license}</echo>
+
+<!-- prepend license -->
+<!-- this is stupid, there must be a better concat + prepend way, but I couldn't seem to find it. -->
+<replaceregexp file="script/soundmanager2-nodebug.js" match="(.*+)" flags="s" replace="${sm2_license_jslint}\1" />
+<replaceregexp file="script/soundmanager2-nodebug-jsmin.js" match="(.*+)" flags="s" replace="${sm2_license}\1" />
 
 <!-- show size -->
 
@@ -157,24 +181,6 @@
 <exec executable="perl">
     <arg line='-e "print qq($_: ), (stat $_)[7], qq(\n) for @ARGV" script/soundmanager2.js script/soundmanager2-jsmin.js script/soundmanager2-nodebug.js script/soundmanager2-nodebug-jsmin.js'/>
 </exec>
-
-<!--
-<exec executable="perl">
- <arg line='-e &#39;printf &#34;%d&#34; ,(stat(shift))[7]; &#39; script/soundmanager2.js'/>
-</exec>
-
-<exec executable="perl">
- <arg line='-e &#39;printf &#34;%d&#34; ,(stat(shift))[7]; &#39; script/soundmanager2-jsmin.js'/>
-</exec>
-
-<exec executable="perl">
- <arg line='-e &#39;printf &#34;%d&#34; ,(stat(shift))[7]; &#39; script/soundmanager2-nodebug.js'/>
-</exec>
-
-<exec executable="perl">
- <arg line='-e &#39;printf &#34;%dn&#34; ,(stat(shift))[7]; &#39; script/soundmanager2-nodebug-jsmin.js'/>
-</exec>
--->
 
 <echo>Building debug version, Flash 8/AS2...</echo>
 
