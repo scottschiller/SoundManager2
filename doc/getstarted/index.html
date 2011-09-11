@@ -137,7 +137,7 @@
 			  <div class="f-block c-basic-use">
 
 
-			  <h4 id="basic-inclusion">Including SoundManager</h4>
+			  <h4 id="basic-inclusion">Including SoundManager 2</h4>
 
 			  <p>The soundmanager2.js core can get down to 10 KB over the wire, depending on what version you use. A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds.</p>
 			  <p>Regardless of which build you use, take advantage of <a href="http://developer.yahoo.com/performance/rules.html#gzip" title="Best Practices for Speeding Up Your Web Site (Yahoo Developer Network)">gzip compression</a> on your server for big savings. As shown below, SoundManager 2 compresses quite well with gzip; the full debug-enabled version served <i>with</i> gzip is smaller than even the minified, no-debug version served without.</p>
@@ -157,8 +157,18 @@
 				  <pre>&lt;script src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Development, testing, debugging</td>
-				 <td class="nw">104 KB</td>
-				 <td class="nw">~27 KB</td>
+				 <td class="nw">115 KB</td>
+				 <td class="nw">~30 KB</td>
+			   </tr>
+
+			   <tr>
+				 <td>
+				  <p>"No-debug", formatted (comments removed, whitespace retained) version</p>
+				  <pre>&lt;script src="<span>soundmanager2-nodebug.js</span>"&gt;&lt;/script&gt;</pre>
+				 </td>
+				 <td>Production, "clean" no-debug code</td>
+				 <td class="nw">66 KB</td>
+				 <td class="nw">~15 KB</td>
 			   </tr>
 
 			   <tr>
@@ -167,7 +177,7 @@
 				  <pre>&lt;script src="<span>soundmanager2-jsmin.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Production, with debug code</td>
-				 <td class="nw">46 KB</td>
+				 <td class="nw">44 KB</td>
 				 <td class="nw">~15 KB</td>
 			   </tr>
 
