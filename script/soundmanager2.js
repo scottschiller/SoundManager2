@@ -14,6 +14,20 @@
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
 /* jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
 
+/**
+ * About this file
+ * ---------------
+ * This is the fully-commented source version of the SoundManager 2 API,
+ * recommended for use during development and testing.
+ *
+ * See soundmanager2-nodebug-jsmin.js for an optimized build (~10KB with gzip.)
+ * http://schillmania.com/projects/soundmanager2/doc/getstarted/#basic-inclusion
+ * Alternately, serve this file with gzip for 75% compression savings (~30KB over HTTP.)
+ *
+ * You may notice <d> and </d> comments in this source; these are delimiters for
+ * debug blocks which are removed in the -nodebug builds, further optimizing code size.
+ */
+
 (function(window) {
 
 var soundManager = null;
@@ -251,7 +265,7 @@ function SoundManager(smURL, smID) {
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
   _emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
-  _http = (!_overHTTP ? 'http:' : ''),
+  _http = (!_overHTTP ? 'http:/'+'/' : ''),
   // mp3, mp4, aac etc.
   _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i,
   // Flash v9.0r115+ "moviestar" formats
@@ -362,17 +376,21 @@ function SoundManager(smURL, smID) {
         if (_tO.isMovieStar === null) {
           _tO.isMovieStar = ((_tO.serverURL || (_tO.type?_tO.type.match(_netStreamPattern):false)||_tO.url.match(_netStreamPattern))?true:false);
         }
+        // <d>
         if (_tO.isMovieStar) {
           _s._wD(_cs + 'using MovieStar handling');
         }
+        // </d>
         if (_tO.isMovieStar) {
           if (_tO.usePeakData) {
             _wDS('noPeak');
             _tO.usePeakData = false;
           }
+          // <d>
           if (_tO.loops > 1) {
             _wDS('noNSLoop');
           }
+          // </d>
         }
       }
 
@@ -936,9 +954,11 @@ function SoundManager(smURL, smID) {
 
     var result = _s.sounds[sID];
 
+    // <d>
     if (!result && !_suppressDebug) {
       _s._wD('"' + sID + '" is an invalid sound ID.', 2);
     }
+    // </d>
 
     return result;
 
@@ -957,9 +977,11 @@ function SoundManager(smURL, smID) {
 
     if (oMethod && oMethod instanceof Function) {
 
+      // <d>
       if (_didInit) {
         _s._wD(_str('queue', sType));
       }
+      // </d>
 
       if (!oScope) {
         oScope = _win;
@@ -991,9 +1013,11 @@ function SoundManager(smURL, smID) {
 
     if (oMethod && oMethod instanceof Function) {
 
+      // <d>
       if (_didInit) {
         _s._wD(_str('queue', sType));
       }
+      // </d>
 
       if (!oScope) {
         oScope = _win;
@@ -1125,9 +1149,11 @@ function SoundManager(smURL, smID) {
     // attempt to reset and init SM2
     _s._wD(_sm+'.reboot()');
 
+    // <d>
     if (_s.soundIDs.length) {
       _s._wD('Destroying ' + _s.soundIDs.length + ' SMSound objects...');
     }
+    // </d>
 
     var i, j;
 
@@ -1333,7 +1359,7 @@ function SoundManager(smURL, smID) {
       _t.readyState = 1;
       _t.playState = 0;
 
-// TODO: If switching from HTML5 -> flash (or vice versa), stop currently-playing audio.
+      // TODO: If switching from HTML5 -> flash (or vice versa), stop currently-playing audio.
 
       if (_html5OK(_t._iO)) {
 
@@ -2666,11 +2692,13 @@ function SoundManager(smURL, smID) {
     return function(e) {
 
       if (!this._t || !this._t._a) {
+        // <d>
         if (this._t && this._t.sID) {
           _s._wD(_h5+'ignoring '+e.type+': '+this._t.sID);
         } else {
           _s._wD(_h5+'ignoring '+e.type);
         }
+        // </d>
         return null;
       } else {
         return oFn.call(this, e);
@@ -2834,11 +2862,11 @@ function SoundManager(smURL, smID) {
           }
           _s._wD(_h5+'progress: timeRanges: '+str.join(', '));
         }
-        // </d>
 
         if (isProgress && !isNaN(loaded)) {
           _s._wD(_h5+'progress: '+this._t.sID+': ' + Math.floor(loaded*100)+'% loaded');
         }
+        // </d>
 
       }
 
@@ -3168,11 +3196,13 @@ function SoundManager(smURL, smID) {
 
   _complain = function(sMsg) {
 
+    // <d>
     if (typeof console !== 'undefined' && typeof console.warn !== 'undefined') {
       console.warn(sMsg);
     } else {
       _s._wD(sMsg);
     }
+    // </d>
 
   };
 
@@ -3877,7 +3907,7 @@ function SoundManager(smURL, smID) {
       'quality': 'high',
       'allowScriptAccess': _s.allowScriptAccess,
       'bgcolor': _s.bgColor,
-      'pluginspage': _http+'//www.macromedia.com/go/getflashplayer',
+      'pluginspage': _http+'www.macromedia.com/go/getflashplayer',
       'title': swfTitle,
       'type': 'application/x-shockwave-flash',
       'wmode': _s.wmode,
@@ -3899,7 +3929,7 @@ function SoundManager(smURL, smID) {
       // IE is "special".
       oMovie = _doc.createElement('div');
       movieHTML = [
-        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" title="' + oEmbed.title +'" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '">',
+        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" title="' + oEmbed.title +'" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '">',
         param('movie', smURL),
         param('AllowScriptAccess', _s.allowScriptAccess),
         param('quality', oEmbed.quality),
@@ -4049,9 +4079,11 @@ function SoundManager(smURL, smID) {
       _s.o = _s.getMovie(_s.id);
     }
 
+    // <d>
     if (_s.o) {
       _wDS('waitEI');
     }
+    // </d>
 
     if (_s.oninitmovie instanceof Function) {
       setTimeout(_s.oninitmovie, 1);
@@ -4092,6 +4124,7 @@ function SoundManager(smURL, smID) {
 
       p = _s.getMoviePercent();
 
+      // <d>
       if (!_didInit) {
         _s._wD(_sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0?'Loading ' + _s.movieURL + ' may have failed (and/or Flash ' + _fV + '+ not present?), ':'') + 'Flash blocked or JS-Flash security error.' + (_s.debugFlash?' ' + _str('checkSWF'):''), 2);
         if (!_overHTTP && p) {
@@ -4106,6 +4139,7 @@ function SoundManager(smURL, smID) {
         }
         _debugTS('flashtojs', false, ': Timed out' + _overHTTP?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
       }
+      // </d>
 
       // give up / time-out, depending
 
@@ -4225,9 +4259,11 @@ function SoundManager(smURL, smID) {
       _event.add(_win, 'load', _initUserOnload);
       return false;
     } else {
+      // <d>
       if (_s.waitForWindowLoad && _windowLoaded) {
         _wDS('docLoaded');
       }
+      // </d>
       _initUserOnload();
     }
 
