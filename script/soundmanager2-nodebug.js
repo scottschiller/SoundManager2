@@ -198,7 +198,7 @@ function SoundManager(smURL, smID) {
     } else {
       if (_fV > 8) {
         if (_tO.isMovieStar === null) {
-          _tO.isMovieStar = (_tO.serverURL || (_tO.type ? _s.canPlayMIME(_tO.type) : false) || _tO.url.match(_netStreamPattern));
+          _tO.isMovieStar = (_tO.serverURL || (_tO.type ? _tO.type.match(_netStreamMimeTypes) : false) || _tO.url.match(_netStreamPattern));
         }
         if (_tO.isMovieStar) {
           if (_tO.usePeakData) {
@@ -431,7 +431,7 @@ function SoundManager(smURL, smID) {
     if (!_needsFlash || result) {
       return result;
     } else {
-      return (sMIME ? !!(sMIME.match(_s.mimePattern)) : null);
+      return (sMIME ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
     }
   };
   this.canPlayURL = function(sURL) {
@@ -1558,7 +1558,6 @@ function SoundManager(smURL, smID) {
       _s.features.buffering = true;
       _s.defaultOptions = _mixin(_s.defaultOptions, _s.movieStarOptions);
       _s.filePatterns.flash9 = new RegExp('\\.(mp3|' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
-      _s.mimePattern = _netStreamMimeTypes;
       _s.features.movieStar = true;
     } else {
       _s.features.movieStar = false;

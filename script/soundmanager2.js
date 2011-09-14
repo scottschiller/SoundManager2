@@ -271,7 +271,7 @@ function SoundManager(smURL, smID) {
   // Flash v9.0r115+ "moviestar" formats
   _netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2'],
   _netStreamPattern = new RegExp('\\.(' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
-  this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
+  this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // default mp3 set
 
   // use altURL if not "online"
   this.useAltURL = !_overHTTP;
@@ -375,7 +375,7 @@ function SoundManager(smURL, smID) {
       if (_fV > 8) {
         if (_tO.isMovieStar === null) {
           // attempt to detect MPEG-4 formats
-          _tO.isMovieStar = (_tO.serverURL || (_tO.type ? _s.canPlayMIME(_tO.type) : false) || _tO.url.match(_netStreamPattern));
+          _tO.isMovieStar = (_tO.serverURL || (_tO.type ? _tO.type.match(_netStreamMimeTypes) : false) || _tO.url.match(_netStreamPattern));
         }
         // <d>
         if (_tO.isMovieStar) {
@@ -892,7 +892,8 @@ function SoundManager(smURL, smID) {
       // no flash, or OK
       return result;
     } else {
-      return (sMIME ? !!(sMIME.match(_s.mimePattern)) : null);
+      // if flash 9, test netStream (movieStar) types as well.
+      return (sMIME ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
     }
 
   };
@@ -3292,7 +3293,6 @@ function SoundManager(smURL, smID) {
       // +moviestar support
       _s.defaultOptions = _mixin(_s.defaultOptions, _s.movieStarOptions);
       _s.filePatterns.flash9 = new RegExp('\\.(mp3|' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
-      _s.mimePattern = _netStreamMimeTypes;
       _s.features.movieStar = true;
     } else {
       _s.features.movieStar = false;
