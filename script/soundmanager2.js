@@ -267,9 +267,9 @@ function SoundManager(smURL, smID) {
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _http = (!_overHTTP ? 'http:/'+'/' : ''),
   // mp3, mp4, aac etc.
-  _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i,
+  _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mpeg4|aac|flv|mov|mp4||m4v|m4a|mp4v|3gp|3g2)\s*(?:$|;)/i,
   // Flash v9.0r115+ "moviestar" formats
-  _netStreamTypes = ['aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2'],
+  _netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2'],
   _netStreamPattern = new RegExp('\\.(' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
   this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // mp3
 
@@ -374,7 +374,8 @@ function SoundManager(smURL, smID) {
 
       if (_fV > 8) {
         if (_tO.isMovieStar === null) {
-          _tO.isMovieStar = ((_tO.serverURL || (_tO.type?_tO.type.match(_netStreamPattern):false)||_tO.url.match(_netStreamPattern))?true:false);
+          // attempt to detect MPEG-4 formats
+          _tO.isMovieStar = (_tO.serverURL || (_tO.type ? _s.canPlayMIME(_tO.type) : false) || _tO.url.match(_netStreamPattern));
         }
         // <d>
         if (_tO.isMovieStar) {
@@ -876,7 +877,7 @@ function SoundManager(smURL, smID) {
   };
 
   /**
-   * Undocumented: NOPs soundManager and all SMSound objects.
+   * Determines playability of a MIME type, eg. 'audio/mp3'.
    */
 
   this.canPlayMIME = function(sMIME) {
@@ -891,7 +892,7 @@ function SoundManager(smURL, smID) {
       // no flash, or OK
       return result;
     } else {
-      return (sMIME?(sMIME.match(_s.mimePattern)?true:false):null);
+      return (sMIME ? !!(sMIME.match(_s.mimePattern)) : null);
     }
 
   };
