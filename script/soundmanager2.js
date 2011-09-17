@@ -4252,9 +4252,6 @@ function SoundManager(smURL, smID) {
       _debugTS('onload', true);
     }
 
-    // prevent browser from showing cached state via back button, because flash will be dead
-    _event.add(_win, 'unload', _doNothing);
-
     if (_s.waitForWindowLoad && !_windowLoaded) {
       _wDS('waitOnload');
       _event.add(_win, 'load', _initUserOnload);
@@ -4303,16 +4300,27 @@ function SoundManager(smURL, smID) {
     try {
 
       _wDS('flashJS');
+
       // attempt to talk to Flash
       _s.o._externalInterfaceTest(false);
+
       // apply user-specified polling interval, OR, if "high performance" set, faster vs. default polling
       // (determines frequency of whileloading/whileplaying callbacks, effectively driving UI framerates)
       _setPolling(true, (_s.flashPollingInterval || (_s.useHighPerformance ? 10 : 50)));
+
       if (!_s.debugMode) {
+        // stop the SWF from making debug output calls to JS
         _s.o._disableDebug();
       }
+
       _s.enabled = true;
       _debugTS('jstoflash', true);
+
+      if (!_s.html5Only) {
+        // prevent browser from showing cached page state (or rather, restoring "suspended" page state) via back button, because flash may be dead
+        // http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
+        _event.add(_win, 'unload', _doNothing);
+      }
 
     } catch(e) {
 
@@ -4322,6 +4330,7 @@ function SoundManager(smURL, smID) {
       // don't disable, for reboot()
       _failSafely(true);
       _initComplete();
+
       return false;
 
     }

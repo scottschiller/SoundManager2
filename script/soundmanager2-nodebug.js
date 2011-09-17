@@ -2061,7 +2061,6 @@ function SoundManager(smURL, smID) {
       return false;
     } else {
     }
-    _event.add(_win, 'unload', _doNothing);
     if (_s.waitForWindowLoad && !_windowLoaded) {
       _event.add(_win, 'load', _initUserOnload);
       return false;
@@ -2093,6 +2092,9 @@ function SoundManager(smURL, smID) {
         _s.o._disableDebug();
       }
       _s.enabled = true;
+      if (!_s.html5Only) {
+        _event.add(_win, 'unload', _doNothing);
+      }
     } catch(e) {
       _catchError({type:'JS_TO_FLASH_EXCEPTION', fatal:true});
       _failSafely(true);
