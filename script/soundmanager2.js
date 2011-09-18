@@ -181,7 +181,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20110801+DEV';
+  this.versionNumber = 'V2.97a.20110918';
   this.version = null;
   this.movieURL = null;
   this.url = (smURL || null);
