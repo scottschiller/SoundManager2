@@ -129,9 +129,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p><b>Latest changes:</b> Improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> Code clean-up, improved comments and formatting, generated documentation, polling and <code>onbefore-</code> removal, HTML5 <code>stop()</code>/<code>unload()</code> fixes. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110801.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110801</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110918.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110918</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
 				<p><b>Performance tip:</b> SM2's code size varies from over 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 				<p><b>Side reading + video:</b> An article on the issues, promise and future, <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>. There is also a <a href="http://www.yuiblog.com/blog/2011/06/29/video-f2esummit2011-schiller/" title="Yahoo!/YUI Blog, video presentation: Scott Schiller on the State of HTML5 Audio">video presentation + turntable demo</a> (with slides) given at a Yahoo! Front-end Engineering summit.</p>
@@ -159,10 +159,151 @@
 
 			  	<ul id="revision-list" class="standard">
 
+			   		<li id="sm2-20110918" class="in">
+
+						<h3><b>V2.97a.20110918</b> - Code clean-up, improved comments and formatting, generated documentation, polling and <code>onbefore-</code> removal, HTML5 <code>stop()</code>/<code>unload()</code> fixes</h3>
+
+						<p>Added block comments above major SM2 methods (and Docco-generated documentation), more line breaks for consistent vertical spacing and readability, removal of <code>onbefore</code>-related SMSound options, <code>allowPolling</code> + <code>useFastPolling</code> features. Improved build task optimizing of -nodebug JS build, removing comments, extra line breaks and debug code blocks which were previously only commented out.</p>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>HTML5 unload: Gecko can use url = '' to cancel request etc., others seem to need <code>about:blank</code> or similar empty URL (matching Flash 8.)</li>
+
+									<li>HTML5 <code>stop()</code>: Don't call <code>unload()</code> here (file under "durrr." This fixes a few state-related bugs.)</li>
+
+									<li>Fire the <code>onposition</code> callback after setting item.fired, instead of before. This allows looping in the form of <code>mySound.onposition(200, function(){ mySound.setposition(100); });</code></li>
+
+									<li>Fix movieStar (MPEG-4) handling for URLs without MIME hints (eg. a URL ending in .php) if <code>type: 'audio/mp4'</code> is passed, for example. (Possible regression introduced with V2.97a.20110801, one report was received.)</li>
+
+									<li>Fire <code>onposition()</code> <i>after</i> increasing the internal "onPositionFired" counter.</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API updates</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+
+										<p>Clean-up time! The following soundManager properties have been removed as they're ineffective and/or have modern replacements:</p>
+
+										<p>
+											<code>soundManager.nullURL = 'about:blank';</code> (internalized; search for 'about:blank' in the source if you want to customize it.)
+										</p>
+
+										<p>
+											<code>soundManager.allowPolling = true;</code> (ignored, always true now. <code>whileloading()</code> / <code>whileplaying()</code> calls rely on it.)
+										</p>
+
+										<p>
+											<code>soundManager.useFastPolling = false;</code> (redundant, now determined by flashPollingInterval now being specified as a number eg., 20, instead of the default of null.)
+										</p>
+
+										<p>
+											The following SMSound (sound options) have been removed, in favour of modern replacements (and also didn't work with HTML5 sounds.)
+										</p>
+
+										<pre class="block"><code>soundManager.defaultOptions.onbeforefinish = null;
+soundManager.defaultOptions.onbeforefinishtime = 5000;
+soundManager.defaultOptions.onbeforefinishcomplete = null;
+soundManager.defaultOptions.onjustbeforefinish = null;
+soundManager.defaultOptions.onjustbeforefinishtime: 200;</code></pre>
+
+										<p>
+											As a replacement, use the <code>SMSound.onposition()</code> method to assign an event callback handler to fire at the relevant time.
+										</p>
+
+<pre class="block"><code>mySound.onposition(10000, function() {
+  console.log('the sound ' + this.sID + ' is now at position ' + this.position);
+});</code></pre>
+
+										<p>
+											If you need to fire an event relative to the true end of the sound, reference its duration once the sound has fully-loaded - ie., at or after the <code>onload()</code> event - as the duration will not be completely accurate until that time. <code>durationEstimate</code> may be referenced before <code>onload()</code>, but it should not be relied on when "precise" timings of say, &lt; 1 second are desired.
+										</p>
+
+<pre class="block"><code>mySound.load({
+  onload: function() {
+    this.onposition(this.duration - 5000, function() {
+      console.log('the sound ' + this.sID + ' is now at position ' + this.position);
+    }
+  }
+});</code></pre>
+
+										<p>
+											Again, note that due to the interval / polling-based methods of both HTML5 and flash audio, sound status updates and thus precision can vary between 20 msec to perhaps 0.5 seconds and the sound's position property will reflect this delta when the onposition() callback fires.
+										</p>
+
+									</li>
+
+									<li>
+
+										<p>Added <code>soundManager.onposition()</code> (forgot to mirror the SMSound method)</p>
+
+									</li>
+
+									<li>
+
+										<p>
+											Privatize <code>soundManager.netStreamMimeTypes</code>, etc. <code>soundManager.mimePattern</code>, the resulting one applied to <code>canPlayMIME()</code> etc., is still exposed.
+										</p>
+
+									</li>
+
+									<li>
+
+										<p>
+											Simplify getMovie() to use _id(smID) || _doc[smID] || _win[smID] rather than IE / Safari special checks. Sometimes (old?) IE and Safari would return null on getElementById(), but window[id] or document[id] would work. Presumably related to Flash + ExternalInterface wackiness.
+										</p>
+
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>Reviewed soundmanager2.js code for readability and comments. Added linebreaks, spacing and block-style comments around main functions.</li>
+
+									<li>Added generated documentation via "Rocco" (ruby port of Docco.)</li>
+
+									<li>Added build.xml notes re: Closure compiler, MTASC and where to find working builds</li>
+
+									<li>Modified soundmanager-nodebug.js build so comments and debug blocks are removed entirely from the code. Double-spaced linebreaks are also removed.</li>
+
+									<li>Removed executable permissions from almost all files</li>
+
+									<li>parseInt() on soundManager.flashVersion, invalidate strings like "9"</li>
+
+									<li>Use 10 / 50 msec polling interval for high performance mode vs. regular mode</li>
+
+									<li>Page cache/unload/restore (back button case): Only apply window unload event if using flash, since plugin is more likely to break (ie., state won't be recalled correctly.)</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
 
 			   		<li id="sm2-20110801" class="in">
 
-			   			<h3><b>V2.97a.20110801</b> - "100% HTML5 mode" desktop browser (+no flash) fix, <code>useHTML5Audio</code> enabled by default, flash 9 end-of-sound correction, ClickToFlash improvements</h3>
+			   			<h3><b>V2.97a.20110801</b> - "100% HTML5 mode" desktop browser (+no flash) fix, <code>useHTML5Audio</code> enabled by default, flash 9 end-of-sound correction, ClickToFlash improvements (<a href="../../download/soundmanagerv297a-20110801.zip" title="Download SoundManager 2" class="norewrite">Download archived version</a>)</h3>
 			
 						<p>Last release introduced a regression with HTML5-only mode on desktops when flash was not installed/present, now fixed; HTM5 audio support is enabled by default, although flash is still preferred for MP3/MP4 by default. <code>probably|maybe</code> is now the default when testing HTML5 format support. Flash 9 now <i>does not</i> reset sound position to 0 at <code>onfinish()</code>, matching flash 8 and HTML5 behaviour. Better ClickToPlugin / ClickToFlash compatibility (CSS tweaks for display of blocked SWF.) Minor internal flash polling loop improvements. soundManager <code>onload</code>, <code>onerror</code> and <code>oninitmovie</code> events have been deprecated in favour of <code>onready()</code> and <code>ontimeout()</code>, but remain functional.</p>
 
@@ -211,7 +352,7 @@
 									
 									<li>
 										<p><a href="../#soundmanager-oninitmovie" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.onload</a>, <a href="../#soundmanager-onerror" onclick="checkDomain(this)">soundManager.onerror</a> and <a href="../#soundmanager-oninitmovie" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.oninitmovie</a> have been deprecated in favour of <a href="../#soundmanager-onready" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.onready()</a> and <a href="../#soundmanager-ontimeout" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">soundManager.ontimeout()</a>. The deprecated methods are still present and work with this release, but you should migrate to their modern replacements.</p>
-
+									</li>
 
 								</ul>
 
