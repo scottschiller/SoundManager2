@@ -917,7 +917,7 @@ function SoundManager(smURL, smID) {
       // no flash, or OK
       return result;
     } else {
-      return (sURL?(sURL.match(_s.filePattern)?true:false):null);
+      return (sURL ? !!(sURL.match(_s.filePattern)) : null);
     }
 
   };
@@ -1386,7 +1386,7 @@ function SoundManager(smURL, smID) {
           if (_fV === 8) {
             _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1, _t._iO.usePolicyFile);
           } else {
-            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1, _t._iO.autoLoad?true:false, _t._iO.usePolicyFile);
+            _s.o._load(_t.sID, _t._iO.url, !!(_t._iO.stream), !!(_t._iO.autoPlay), _t._iO.loops||1, !!(_t._iO.autoLoad), _t._iO.usePolicyFile);
           }
         } catch(e) {
           _wDS('smError', 2);
@@ -2329,7 +2329,7 @@ function SoundManager(smURL, smID) {
     this._onload = function(nSuccess) {
 
 
-      var fN = 'SMSound._onload(): ', loadOK = (nSuccess?true:false);
+      var fN = 'SMSound._onload(): ', loadOK = !!(nSuccess);
       _s._wD(fN + '"' + _t.sID + '"' + (loadOK?' loaded.':' failed to load? - ' + _t.url), (loadOK?1:2));
       // <d>
 

@@ -442,7 +442,7 @@ function SoundManager(smURL, smID) {
     if (!_needsFlash || result) {
       return result;
     } else {
-      return (sURL?(sURL.match(_s.filePattern)?true:false):null);
+      return (sURL ? !!(sURL.match(_s.filePattern)) : null);
     }
   };
   this.canPlayLink = function(oLink) {
@@ -594,7 +594,7 @@ function SoundManager(smURL, smID) {
           if (_fV === 8) {
             _s.o._load(_t.sID, _t._iO.url, _t._iO.stream, _t._iO.autoPlay, (_t._iO.whileloading?1:0), _t._iO.loops||1, _t._iO.usePolicyFile);
           } else {
-            _s.o._load(_t.sID, _t._iO.url, _t._iO.stream?true:false, _t._iO.autoPlay?true:false, _t._iO.loops||1, _t._iO.autoLoad?true:false, _t._iO.usePolicyFile);
+            _s.o._load(_t.sID, _t._iO.url, !!(_t._iO.stream), !!(_t._iO.autoPlay), _t._iO.loops||1, !!(_t._iO.autoLoad), _t._iO.usePolicyFile);
           }
         } catch(e) {
           _catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
@@ -1078,7 +1078,7 @@ function SoundManager(smURL, smID) {
       }
     };
     this._onload = function(nSuccess) {
-      var fN = 'SMSound._onload(): ', loadOK = (nSuccess?true:false);
+      var fN = 'SMSound._onload(): ', loadOK = !!(nSuccess);
       _t.loaded = loadOK;
       _t.readyState = loadOK?3:2;
       _t._onbufferchange(0);
