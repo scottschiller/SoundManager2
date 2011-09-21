@@ -130,7 +130,7 @@
 <replaceregexp match="/\*.+?\*/" replace="" flags="gs" byline="false" file="script/soundmanager2-nodebug.js" />
 
 <!-- remove multiple linebreaks, replace with one (could be improved) -->
-<replaceregexp file="script/soundmanager2-nodebug.js" match="\s+(\r\n)" flags="g" replace="\1\1" />
+<replaceregexp file="script/soundmanager2-nodebug.js" match="\s+(\r\n)" flags="g" replace="\1" />
 
 <!-- more newline removal (license header) -->
 <!--
