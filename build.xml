@@ -4,15 +4,15 @@
 
 	SoundManager 2 buildfile (Ant)
 
-	This is tested on OS X and Windows and uses Google's closure compiler, MTASC to build the Flash 8 stuff, and mxmlc (Adobe Flex Open Source SDK) for the Flash 9 versions.
-	Perl is also still used for file, but just comment the
-	part that uses it if you don't have Perl.
+	This is tested on OS X and Windows and uses Google's Closure Compiler (JS), MTASC (Flash 8) and mxmlc (Adobe Flex Open Source SDK) for the Flash 9 build.
+	Perl is used only to display file sizes during compilation, and can be commented out if you don't have it installed.
 
     USAGE
 
 	- Go to the soundmanager2 root directory (ie., where this build.xml file is.)
-	- Create the file .build.properties containing the paths to the external tools:
+	- Create the file .build.properties containing the paths to the external tools.
 	  For example, on Windows:
+
 		closure-compiler.jar=C:\\Tools\\closure\\compiler.jar
 		mtasc=C:\\Tools\\mtasc\\mtasc.exe
 		mxmlc=C:\\Tools\\flex_sdk\\bin\\mxmlc.exe
@@ -26,7 +26,8 @@
 
     MTASC (Windows / OS X / Linux) compiler for AS2/Flash 8 SWF
 	http://www.mtasc.org/
-    Precompiled binaries (eg., Universal binary that should work on OS X Lion):
+
+    Precompiled MTASC binaries (eg., Universal binary that should work on OS X Lion):
     http://lists.motion-twin.com/pipermail/mtasc/2007-February/030170.html
 
     Adobe Flex Open Source SDK (including mxmlc compiler) for AS3/Flash 9 SWF
@@ -65,12 +66,6 @@
 
 <echo>Compressing minified JS...</echo>
 
-<!--
-<exec executable="/bin/sh">
- <arg line='-c "java -jar ~/yuicompressor-2.4.2.jar script/soundmanager2.js -o script/soundmanager2-jsmin.js"'/>
-</exec>
--->
-
 <mkdir dir="tmp"/>
 
 <!-- Google Closure Compiler -->
@@ -97,13 +92,6 @@
 <copy file="script/soundmanager2.js" tofile="script/soundmanager2-nodebug.js" overwrite="true"/>
 
 <replace file="script/soundmanager2-nodebug.js">
-    <!-- Fix license comment -->
-    <!--
-    <replacefilter>
-	<replacetoken>/*</replacetoken>
-	<replacevalue>/** @license</replacevalue>
-    </replacefilter>
-    -->
     <!-- Set debug mode -->
     <replacefilter>
 	<replacetoken>this.debugMode = true;</replacetoken>
@@ -204,13 +192,6 @@
 <!-- flash 8 debug -->
 
 <replace file="tmp/soundmanager2_flash_nodebug/SoundManager2.as">
-    <!-- Fix license comment -->
-    <!--
-    <replacefilter>
-	<replacetoken>/*</replacetoken>
-	<replacevalue>/** @license</replacevalue>
-    </replacefilter>
-    -->
     <!-- Set debug mode -->
     <replacefilter>
 	<replacetoken>var debugEnabled = true;</replacetoken>
@@ -237,7 +218,6 @@
 	<replacevalue>// writeDebug(</replacevalue>
     </replacefilter>
 </replace>
-
 
 <!-- flash 9 debug: SoundManager2 -->
 
@@ -303,7 +283,6 @@
 
 <replace file="tmp/soundmanager2_flash_xdomain/SoundManager2.as" token="var allow_xdomain_scripting = false;" value="var allow_xdomain_scripting = true;"/>
 <replace file="tmp/soundmanager2_flash_xdomain/SoundManager2_AS3.as" token="var allow_xdomain_scripting:Boolean = false;" value="var allow_xdomain_scripting:Boolean = true;"/>
-
 
 <!-- -nodebug cross-domain -->
 
