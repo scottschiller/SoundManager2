@@ -39,6 +39,7 @@ function ThreeSixtyPlayer() {
       fullCircle = (isOpera||isChrome?359.9:360); // I dunno what Opera doesn't like about this. I'm probably doing it wrong.
 
   this.excludeClass = 'threesixty-exclude'; // CSS class for ignoring MP3 links
+  this.initializedClass = 'threesixty-initialized';
   this.links = [];
   this.sounds = [];
   this.soundsByURL = [];
@@ -1040,8 +1041,10 @@ function ThreeSixtyPlayer() {
     self.oUITemplateVis.innerHTML = self.getUIHTML(uiDataVis.circleDiameter).join('');
 
     for (i=0,j=oLinks.length; i<j; i++) {
-      if (sm.canPlayLink(oLinks[i]) && !self.hasClass(oLinks[i],self.excludeClass)) {
+    	console.log('Checking link: ', oLinks[i]);
+      if (sm.canPlayLink(oLinks[i]) && !self.hasClass(oLinks[i],self.excludeClass) && !self.hasClass(oLinks[i],self.initializedClass)) {
         self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration
+        self.addClass(oLinks[i],self.initializedClass); // add class setting the element to initialized
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
         foundItems++;
