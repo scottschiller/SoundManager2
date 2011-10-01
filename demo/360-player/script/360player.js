@@ -41,7 +41,6 @@ function ThreeSixtyPlayer() {
 
   // CSS class for ignoring MP3 links
   this.excludeClass = 'threesixty-exclude';
-
   this.links = [];
   this.sounds = [];
   this.soundsByURL = [];
@@ -1044,7 +1043,7 @@ function ThreeSixtyPlayer() {
     self.oUITemplateVis.innerHTML = self.getUIHTML(uiDataVis.circleDiameter).join('');
 
     for (i=0,j=oLinks.length; i<j; i++) {
-      if (sm.canPlayLink(oLinks[i]) && !self.hasClass(oLinks[i],self.excludeClass)) {
+      if (sm.canPlayLink(oLinks[i]) && !self.hasClass(oLinks[i],self.excludeClass) && !self.hasClass(oLinks[i],self.css.sDefault)) {
         self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
