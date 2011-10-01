@@ -33,6 +33,7 @@ function SoundManager(smURL, smID) {
   this.useHTML5Audio = true;
   this.html5Test = /^(probably|maybe)$/i;
   this.preferFlash = true;
+  this.noSWFCache = false;
   this.audioFormats = {
     'mp3': {
       'type': ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
@@ -1530,7 +1531,7 @@ function SoundManager(smURL, smID) {
     }
   };
   _normalizeMovieURL = function(smURL) {
-    var urlParams = null;
+    var urlParams = null, url;
     if (smURL) {
       if (smURL.match(/\.swf(\?.*)?$/i)) {
         urlParams = smURL.substr(smURL.toLowerCase().lastIndexOf('.swf?') + 4);
@@ -1538,10 +1539,14 @@ function SoundManager(smURL, smID) {
           return smURL;
         }
       } else if (smURL.lastIndexOf('/') !== smURL.length - 1) {
-        smURL = smURL + '/';
+        smURL += '/';
       }
     }
-    return (smURL && smURL.lastIndexOf('/') !== - 1?smURL.substr(0, smURL.lastIndexOf('/') + 1):'./') + _s.movieURL;
+    url = (smURL && smURL.lastIndexOf('/') !== - 1 ? smURL.substr(0, smURL.lastIndexOf('/') + 1) : './') + _s.movieURL;
+    if (_s.noSWFCache) {
+      url += ('?ts=' + new Date().getTime());
+    }
+    return url;
   };
   _setVersionInfo = function() {
     _fV = parseInt(_s.flashVersion, 10);

@@ -59,9 +59,10 @@ function SoundManager(smURL, smID) {
   this.wmode = null;                 // string: flash rendering mode - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
-  this.useHTML5Audio = true;         // beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
+  this.useHTML5Audio = true;         // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^(probably|maybe)$/i; // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
-  this.preferFlash = true;           // (experimental) if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
+  this.preferFlash = true;           // overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
+  this.noSWFCache = false;           // if true, appends ?ts={date} to break aggressive SWF caching.
 
   this.audioFormats = {
 
@@ -3246,7 +3247,7 @@ function SoundManager(smURL, smID) {
 
   _normalizeMovieURL = function(smURL) {
 
-    var urlParams = null;
+    var urlParams = null, url;
 
     if (smURL) {
       if (smURL.match(/\.swf(\?.*)?$/i)) {
@@ -3256,11 +3257,18 @@ function SoundManager(smURL, smID) {
           return smURL;
         }
       } else if (smURL.lastIndexOf('/') !== smURL.length - 1) {
-        smURL = smURL + '/';
+        // append trailing slash, if needed
+        smURL += '/';
       }
     }
 
-    return (smURL && smURL.lastIndexOf('/') !== - 1?smURL.substr(0, smURL.lastIndexOf('/') + 1):'./') + _s.movieURL;
+    url = (smURL && smURL.lastIndexOf('/') !== - 1 ? smURL.substr(0, smURL.lastIndexOf('/') + 1) : './') + _s.movieURL;
+
+    if (_s.noSWFCache) {
+      url += ('?ts=' + new Date().getTime());
+    }
+
+    return url;
 
   };
 
