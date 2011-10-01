@@ -16,6 +16,7 @@ function InlinePlayer() {
   var self = this;
   var pl = this;
   var sm = soundManager; // soundManager instance
+  var isIE = (navigator.userAgent.match(/msie/i));
   this.playableClass = 'inline-playable'; // CSS class for forcing a link to be playable (eg. doesn't have .MP3 in it)
   this.excludeClass = 'inline-exclude'; // CSS class for ignoring MP3 links
   this.links = [];
@@ -24,7 +25,6 @@ function InlinePlayer() {
   this.indexByURL = [];
   this.lastSound = null;
   this.soundCount = 0;
-  var isIE = (navigator.userAgent.match(/msie/i));
 
   this.config = {
     playNext: false, // stop after one sound, or play through list until end
@@ -139,8 +139,8 @@ function InlinePlayer() {
   this.handleClick = function(e) {
     // a sound link was clicked
     if (typeof e.button != 'undefined' && e.button>1) {
-	  // ignore right-click
-	  return true;
+      // ignore right-click
+      return true;
     }
     var o = self.getTheDamnLink(e);
     if (o.nodeName.toLowerCase() != 'a') {
@@ -162,10 +162,15 @@ function InlinePlayer() {
         // different sound
         thisSound.togglePause(); // start playing current
         sm._writeDebug('sound different than last sound: '+self.lastSound.sID);
-        if (self.lastSound) self.stopSound(self.lastSound);
+        if (self.lastSound) {
+          self.stopSound(self.lastSound);
+        }
       }
     } else {
       // create sound
+      if (self.lastSound) {
+        self.stopSound(self.lastSound);
+      }
       thisSound = sm.createSound({
        id:'inlineMP3Sound'+(self.soundCount++),
        url:soundURL,
@@ -182,7 +187,6 @@ function InlinePlayer() {
       };
       self.soundsByURL[soundURL] = thisSound;
       self.sounds.push(thisSound);
-      if (self.lastSound) self.stopSound(self.lastSound);
       thisSound.play();
       // stop last sound
     }
