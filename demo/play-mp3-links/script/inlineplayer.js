@@ -160,17 +160,18 @@ function InlinePlayer() {
         thisSound.togglePause();
       } else {
         // different sound
-        thisSound.togglePause(); // start playing current
         sm._writeDebug('sound different than last sound: '+self.lastSound.sID);
         if (self.lastSound) {
           self.stopSound(self.lastSound);
         }
+        thisSound.togglePause(); // start playing current
       }
     } else {
-      // create sound
+      // stop last sound
       if (self.lastSound) {
         self.stopSound(self.lastSound);
       }
+      // create sound
       thisSound = sm.createSound({
        id:'inlineMP3Sound'+(self.soundCount++),
        url:soundURL,
@@ -188,7 +189,6 @@ function InlinePlayer() {
       self.soundsByURL[soundURL] = thisSound;
       self.sounds.push(thisSound);
       thisSound.play();
-      // stop last sound
     }
 
     self.lastSound = thisSound; // reference for next call
