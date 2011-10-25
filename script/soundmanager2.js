@@ -2387,15 +2387,19 @@ function SoundManager(smURL, smID) {
     };
 
     /**
-      Notify Mobile Safari that user action is required
-      to continue playing / loading the audio file.
+     * Notify Mobile Safari that user action is required
+     * to continue playing / loading the audio file.
      */
+
     this._onsuspend = function () {
+
       if (_t._iO.onsuspend) {
-        _s._wD("SMSound._onsuspend()");
+        _s._wD('SMSound._onsuspend()');
         _t._iO.onsuspend.apply(_t);
       }
+
       return true;
+
     };
 
     /**
@@ -2407,6 +2411,7 @@ function SoundManager(smURL, smID) {
 
       _t.failures++;
       _s._wD('SMSound._onfailure(): "'+_t.sID+'" count '+_t.failures);
+
       if (_t._iO.onfailure && _t.failures === 1) {
         _t._iO.onfailure(_t, msg, level, code);
       } else {
