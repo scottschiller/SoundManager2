@@ -2387,6 +2387,18 @@ function SoundManager(smURL, smID) {
     };
 
     /**
+      Notify Mobile Safari that user action is required
+      to continue playing / loading the audio file.
+     */
+    this._onsuspend = function () {
+      if (_t._iO.onsuspend) {
+        _s._wD("SMSound._onsuspend()");
+        _t._iO.onsuspend.apply(_t);
+      }
+      return true;
+    };
+
+    /**
      * flash 9/movieStar + RTMP-only method, should fire only once at most
      * at this point we just recreate failed sounds rather than trying to reconnect
      */
@@ -2906,6 +2918,7 @@ function SoundManager(smURL, smID) {
 
       _s._wD(_h5+'suspend: '+this._t.sID);
       _html5_events.progress.call(this, e);
+      this._t._onsuspend();
 
     }),
 

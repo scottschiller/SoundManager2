@@ -1106,6 +1106,12 @@ function SoundManager(smURL, smID) {
       }
       return true;
     };
+    this._onsuspend = function () {
+      if (_t._iO.onsuspend) {
+        _t._iO.onsuspend.apply(_t);
+      }
+      return true;
+    };
     this._onfailure = function(msg, level, code) {
       _t.failures++;
       if (_t._iO.onfailure && _t.failures === 1) {
@@ -1381,6 +1387,7 @@ function SoundManager(smURL, smID) {
     }),
     suspend: _html5_event(function(e) {
       _html5_events.progress.call(this, e);
+      this._t._onsuspend();
     }),
     stalled: _html5_event(function(e) {
     }),
