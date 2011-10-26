@@ -236,8 +236,19 @@ function SoundManager(smURL, smID) {
 
   };
 
-  // do we have HTML5 audio?
-  this.hasHTML5 = (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+  /**
+   * basic HTML5 Audio() support test
+   * try...catch because of IE 9 "not implemented" nonsense
+   * https://github.com/Modernizr/Modernizr/issues/224
+   */
+
+  this.hasHTML5 = (function() {
+    try {
+      return (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+    } catch(e) {
+      return false;
+    }
+  }());
 
   /**
    * format support (html5/flash)

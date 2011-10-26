@@ -133,7 +133,13 @@ function SoundManager(smURL, smID) {
   };
   this.sandbox = {
   };
-  this.hasHTML5 = (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+  this.hasHTML5 = (function() {
+    try {
+      return (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+    } catch(e) {
+      return false;
+    }
+  }());
   this.html5 = {
     'usingFlash': null
   };
