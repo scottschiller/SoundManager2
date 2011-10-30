@@ -243,6 +243,7 @@ and easily styled/customizable via CSS.</p>
   <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="kd">var</span> <span class="nx">pl</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="kd">var</span> <span class="nx">sm</span> <span class="o">=</span> <span class="nx">soundManager</span><span class="p">;</span> <span class="c1">// soundManager instance</span>
+  <span class="kd">var</span> <span class="nx">isIE</span> <span class="o">=</span> <span class="p">(</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/msie/i</span><span class="p">));</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">playableClass</span> <span class="o">=</span> <span class="s1">&#39;inline-playable&#39;</span><span class="p">;</span> <span class="c1">// CSS class for forcing a link to be playable (eg. doesn&#39;t have .MP3 in it)</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">excludeClass</span> <span class="o">=</span> <span class="s1">&#39;inline-exclude&#39;</span><span class="p">;</span> <span class="c1">// CSS class for ignoring MP3 links</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">links</span> <span class="o">=</span> <span class="p">[];</span>
@@ -251,7 +252,6 @@ and easily styled/customizable via CSS.</p>
   <span class="k">this</span><span class="p">.</span><span class="nx">indexByURL</span> <span class="o">=</span> <span class="p">[];</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">lastSound</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">soundCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">isIE</span> <span class="o">=</span> <span class="p">(</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/msie/i</span><span class="p">));</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
     <span class="nx">playNext</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// stop after one sound, or play through list until end</span>
@@ -410,7 +410,7 @@ and easily styled/customizable via CSS.</p>
         <p>ignore right-click</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+        <div class='highlight'><pre>      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">getTheDamnLink</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="p">{</span>
@@ -457,9 +457,11 @@ and easily styled/customizable via CSS.</p>
         <p>different sound</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>        <span class="nx">thisSound</span><span class="p">.</span><span class="nx">togglePause</span><span class="p">();</span> <span class="c1">// start playing current</span>
-        <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;sound different than last sound: &#39;</span><span class="o">+</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stopSound</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">);</span>
+        <div class='highlight'><pre>        <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;sound different than last sound: &#39;</span><span class="o">+</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">stopSound</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="nx">thisSound</span><span class="p">.</span><span class="nx">togglePause</span><span class="p">();</span> <span class="c1">// start playing current</span>
       <span class="p">}</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
@@ -468,6 +470,19 @@ and easily styled/customizable via CSS.</p>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
+        <p>stop last sound</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">stopSound</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">);</span>
+      <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-11">&#182;</a>
         </div>
         <p>create sound</p>
       </td>
@@ -483,10 +498,10 @@ and easily styled/customizable via CSS.</p>
       <span class="p">});</span></pre></div>
       </td>
     </tr>
-    <tr id='section-11'>
+    <tr id='section-12'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-11">&#182;</a>
+          <a class="pilcrow" href="#section-12">&#182;</a>
         </div>
         <p>tack on some custom data</p>
       </td>
@@ -497,19 +512,8 @@ and easily styled/customizable via CSS.</p>
       <span class="p">};</span>
       <span class="nx">self</span><span class="p">.</span><span class="nx">soundsByURL</span><span class="p">[</span><span class="nx">soundURL</span><span class="p">]</span> <span class="o">=</span> <span class="nx">thisSound</span><span class="p">;</span>
       <span class="nx">self</span><span class="p">.</span><span class="nx">sounds</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">thisSound</span><span class="p">);</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stopSound</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">);</span>
-      <span class="nx">thisSound</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-12'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-12">&#182;</a>
-        </div>
-        <p>stop last sound</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="p">}</span>
+      <span class="nx">thisSound</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+    <span class="p">}</span>
 
     <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span> <span class="o">=</span> <span class="nx">thisSound</span><span class="p">;</span> <span class="c1">// reference for next call</span>
 

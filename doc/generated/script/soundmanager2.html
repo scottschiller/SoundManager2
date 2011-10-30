@@ -239,7 +239,7 @@ body .il { color: #666666 }                     /* Literal.Number.Integer.Long *
 Code provided under the BSD License:
 http://schillmania.com/projects/soundmanager2/license.txt</p>
 
-<p>V2.97a.20110918</p>
+<p>V2.97a.20111030</p>
       </td>
       <td class=code>
         <div class='highlight'><pre><span class="cm">/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */</span>
@@ -307,9 +307,10 @@ debug blocks which are removed in the -nodebug builds, further optimizing code s
   <span class="k">this</span><span class="p">.</span><span class="nx">wmode</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>                 <span class="c1">// string: flash rendering mode - null, transparent, opaque (last two allow layering of HTML on top)</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">allowScriptAccess</span> <span class="o">=</span> <span class="s1">&#39;always&#39;</span><span class="p">;</span> <span class="c1">// for scripting the SWF (object/embed property), either &#39;always&#39; or &#39;sameDomain&#39;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">useFlashBlock</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>        <span class="c1">// *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">useHTML5Audio</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>         <span class="c1">// beta feature: Use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">useHTML5Audio</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>         <span class="c1">// use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">html5Test</span> <span class="o">=</span> <span class="sr">/^(probably|maybe)$/i</span><span class="p">;</span> <span class="c1">// HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">preferFlash</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>           <span class="c1">// (experimental) if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">preferFlash</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>           <span class="c1">// overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">noSWFCache</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>           <span class="c1">// if true, appends ?ts={date} to break aggressive SWF caching.</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">audioFormats</span> <span class="o">=</span> <span class="p">{</span></pre></div>
       </td>
@@ -463,7 +464,7 @@ merged into defaultOptions if flash 9+movieStar mode is enabled</p>
         <p>dynamic attributes</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">versionNumber</span> <span class="o">=</span> <span class="s1">&#39;V2.97a.20110918&#39;</span><span class="p">;</span>
+        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">versionNumber</span> <span class="o">=</span> <span class="s1">&#39;V2.97a.20111030&#39;</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">movieURL</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="p">(</span><span class="nx">smURL</span> <span class="o">||</span> <span class="kc">null</span><span class="p">);</span>
@@ -553,10 +554,18 @@ merged into defaultOptions if flash 9+movieStar mode is enabled</p>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-15">&#182;</a>
         </div>
-        <p>do we have HTML5 audio?</p>
+        <p>basic HTML5 Audio() support test
+try&hellip;catch because of IE 9 &ldquo;not implemented&rdquo; nonsense
+https://github.com/Modernizr/Modernizr/issues/224</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">hasHTML5</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">Audio</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="k">new</span> <span class="nx">Audio</span><span class="p">().</span><span class="nx">canPlayType</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">);</span></pre></div>
+        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">hasHTML5</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">Audio</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="k">new</span> <span class="nx">Audio</span><span class="p">().</span><span class="nx">canPlayType</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}());</span></pre></div>
       </td>
     </tr>
     <tr id='section-16'>
@@ -590,7 +599,8 @@ treat as read-only.</p>
       <td class=code>
         <div class='highlight'><pre>  <span class="kd">var</span> <span class="nx">SMSound</span><span class="p">,</span>
   <span class="nx">_s</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span> <span class="nx">_sm</span> <span class="o">=</span> <span class="s1">&#39;soundManager&#39;</span><span class="p">,</span> <span class="nx">_smc</span> <span class="o">=</span> <span class="nx">_sm</span><span class="o">+</span><span class="s1">&#39;::&#39;</span><span class="p">,</span> <span class="nx">_h5</span> <span class="o">=</span> <span class="s1">&#39;HTML5::&#39;</span><span class="p">,</span> <span class="nx">_id</span><span class="p">,</span> <span class="nx">_ua</span> <span class="o">=</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">,</span> <span class="nx">_win</span> <span class="o">=</span> <span class="nb">window</span><span class="p">,</span> <span class="nx">_wl</span> <span class="o">=</span> <span class="nx">_win</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span> <span class="nx">_doc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">,</span> <span class="nx">_doNothing</span><span class="p">,</span> <span class="nx">_init</span><span class="p">,</span> <span class="nx">_fV</span><span class="p">,</span> <span class="nx">_on_queue</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">_debugOpen</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">_debugTS</span><span class="p">,</span> <span class="nx">_didAppend</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_appendSuccess</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_didInit</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_disabled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_windowLoaded</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_wDS</span><span class="p">,</span> <span class="nx">_wdCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">_initComplete</span><span class="p">,</span> <span class="nx">_mixin</span><span class="p">,</span> <span class="nx">_addOnEvent</span><span class="p">,</span> <span class="nx">_processOnEvents</span><span class="p">,</span> <span class="nx">_initUserOnload</span><span class="p">,</span> <span class="nx">_delayWaitForEI</span><span class="p">,</span> <span class="nx">_waitForEI</span><span class="p">,</span> <span class="nx">_setVersionInfo</span><span class="p">,</span> <span class="nx">_handleFocus</span><span class="p">,</span> <span class="nx">_strings</span><span class="p">,</span> <span class="nx">_initMovie</span><span class="p">,</span> <span class="nx">_domContentLoaded</span><span class="p">,</span> <span class="nx">_didDCLoaded</span><span class="p">,</span> <span class="nx">_getDocument</span><span class="p">,</span> <span class="nx">_createMovie</span><span class="p">,</span> <span class="nx">_catchError</span><span class="p">,</span> <span class="nx">_setPolling</span><span class="p">,</span> <span class="nx">_initDebug</span><span class="p">,</span> <span class="nx">_debugLevels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">],</span> <span class="nx">_defaultFlashVersion</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="nx">_disableObject</span><span class="p">,</span> <span class="nx">_failSafely</span><span class="p">,</span> <span class="nx">_normalizeMovieURL</span><span class="p">,</span> <span class="nx">_oRemoved</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">_oRemovedHTML</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">_str</span><span class="p">,</span> <span class="nx">_flashBlockHandler</span><span class="p">,</span> <span class="nx">_getSWFCSS</span><span class="p">,</span> <span class="nx">_toggleDebug</span><span class="p">,</span> <span class="nx">_loopFix</span><span class="p">,</span> <span class="nx">_policyFix</span><span class="p">,</span> <span class="nx">_complain</span><span class="p">,</span> <span class="nx">_idCheck</span><span class="p">,</span> <span class="nx">_waitingForEI</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_initPending</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_smTimer</span><span class="p">,</span> <span class="nx">_onTimer</span><span class="p">,</span> <span class="nx">_startTimer</span><span class="p">,</span> <span class="nx">_stopTimer</span><span class="p">,</span> <span class="nx">_needsFlash</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">_featureCheck</span><span class="p">,</span> <span class="nx">_html5OK</span><span class="p">,</span> <span class="nx">_html5CanPlay</span><span class="p">,</span> <span class="nx">_html5Ext</span><span class="p">,</span> <span class="nx">_html5Unload</span><span class="p">,</span> <span class="nx">_domContentLoadedIE</span><span class="p">,</span> <span class="nx">_testHTML5</span><span class="p">,</span> <span class="nx">_event</span><span class="p">,</span> <span class="nx">_slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">,</span> <span class="nx">_useGlobalHTML5Audio</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">_hasFlash</span><span class="p">,</span> <span class="nx">_detectFlash</span><span class="p">,</span> <span class="nx">_badSafariFix</span><span class="p">,</span> <span class="nx">_html5_events</span><span class="p">,</span> <span class="nx">_showSupport</span><span class="p">,</span>
-  <span class="nx">_is_iDevice</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/(ipad|iphone|ipod)/i</span><span class="p">),</span> <span class="nx">_likesHTML5</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/(mobile|pre\/|xoom)/i</span><span class="p">)</span> <span class="o">||</span> <span class="nx">_is_iDevice</span><span class="p">),</span> <span class="nx">_isIE</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/msie/i</span><span class="p">),</span> <span class="nx">_isWebkit</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/webkit/i</span><span class="p">),</span> <span class="nx">_isSafari</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/safari/i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/chrome/i</span><span class="p">)),</span> <span class="nx">_isOpera</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/opera/i</span><span class="p">)),</span> 
+  <span class="nx">_is_iDevice</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/(ipad|iphone|ipod)/i</span><span class="p">),</span> <span class="nx">_is_firefox</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/firefox/i</span><span class="p">),</span> <span class="nx">_is_android</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/droid/i</span><span class="p">),</span> <span class="nx">_isIE</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/msie/i</span><span class="p">),</span> <span class="nx">_isWebkit</span> <span class="o">=</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/webkit/i</span><span class="p">),</span> <span class="nx">_isSafari</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/safari/i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/chrome/i</span><span class="p">)),</span> <span class="nx">_isOpera</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/opera/i</span><span class="p">)),</span> 
+  <span class="nx">_likesHTML5</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/(mobile|pre\/|xoom)/i</span><span class="p">)</span> <span class="o">||</span> <span class="nx">_is_iDevice</span><span class="p">),</span>
   <span class="nx">_isBadSafari</span> <span class="o">=</span> <span class="p">(</span><span class="o">!</span><span class="nx">_wl</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/usehtml5audio/i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_wl</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/sm2\-ignorebadua/i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">_isSafari</span> <span class="o">&amp;&amp;</span> <span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/OS X 10_6_([3-7])/i</span><span class="p">)),</span> <span class="c1">// Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159</span>
   <span class="nx">_hasConsole</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">console</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span> <span class="nx">_isFocused</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">_doc</span><span class="p">.</span><span class="nx">hasFocus</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="o">?</span><span class="nx">_doc</span><span class="p">.</span><span class="nx">hasFocus</span><span class="p">()</span><span class="o">:</span><span class="kc">null</span><span class="p">),</span> <span class="nx">_tryInitOnFocus</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_isSafari</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">_doc</span><span class="p">.</span><span class="nx">hasFocus</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span> <span class="nx">_okToDisable</span> <span class="o">=</span> <span class="o">!</span><span class="nx">_tryInitOnFocus</span><span class="p">,</span> <span class="nx">_flashMIME</span> <span class="o">=</span> <span class="sr">/(mp3|mp4|mpa)/i</span><span class="p">,</span>
   <span class="nx">_emptyURL</span> <span class="o">=</span> <span class="s1">&#39;about:blank&#39;</span><span class="p">,</span> <span class="c1">// safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)</span>
@@ -3632,7 +3642,21 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
 
         <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="s1">&#39;creating HTML5 Audio() element with URL: &#39;</span><span class="o">+</span><span class="nx">_dURL</span><span class="p">);</span>
         <span class="nx">_a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Audio</span><span class="p">(</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
-        <span class="nx">_a</span><span class="p">.</span><span class="nx">_called_load</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+        <span class="nx">_a</span><span class="p">.</span><span class="nx">_called_load</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-172'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-172">&#182;</a>
+        </div>
+        <p>android (seen in 2.3/Honeycomb) sometimes fails first .load() &ndash;&gt; .play(), results in playback failure and ended() events?</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">_is_android</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">_a</span><span class="p">.</span><span class="nx">_called_load</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nx">_useGlobalHTML5Audio</span><span class="p">)</span> <span class="p">{</span>
           <span class="nx">_s</span><span class="p">.</span><span class="nx">_global_a</span> <span class="o">=</span> <span class="nx">_a</span><span class="p">;</span>
@@ -3642,10 +3666,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <span class="nx">_t</span><span class="p">.</span><span class="nx">isHTML5</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-172'>
+    <tr id='section-173'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-172">&#182;</a>
+          <a class="pilcrow" href="#section-173">&#182;</a>
         </div>
         <p>store a ref on the track</p>
       </td>
@@ -3653,10 +3677,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
         <div class='highlight'><pre>      <span class="nx">_t</span><span class="p">.</span><span class="nx">_a</span> <span class="o">=</span> <span class="nx">_a</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-173'>
+    <tr id='section-174'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-173">&#182;</a>
+          <a class="pilcrow" href="#section-174">&#182;</a>
         </div>
         <p>store a ref on the audio</p>
       </td>
@@ -3669,10 +3693,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <span class="k">if</span> <span class="p">(</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">autoLoad</span> <span class="o">||</span> <span class="nx">_iO</span><span class="p">.</span><span class="nx">autoPlay</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-174'>
+    <tr id='section-175'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-174">&#182;</a>
+          <a class="pilcrow" href="#section-175">&#182;</a>
         </div>
         <p>early HTML5 implementation (non-standard)</p>
       </td>
@@ -3680,10 +3704,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
         <div class='highlight'><pre>        <span class="nx">_a</span><span class="p">.</span><span class="nx">autobuffer</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-175'>
+    <tr id='section-176'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-175">&#182;</a>
+          <a class="pilcrow" href="#section-176">&#182;</a>
         </div>
         <p>standard</p>
       </td>
@@ -3696,10 +3720,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-176'>
+    <tr id='section-177'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-176">&#182;</a>
+          <a class="pilcrow" href="#section-177">&#182;</a>
         </div>
         <p>early HTML5 implementation (non-standard)</p>
       </td>
@@ -3707,10 +3731,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
         <div class='highlight'><pre>        <span class="nx">_a</span><span class="p">.</span><span class="nx">autobuffer</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-177'>
+    <tr id='section-178'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-177">&#182;</a>
+          <a class="pilcrow" href="#section-178">&#182;</a>
         </div>
         <p>standard</p>
       </td>
@@ -3720,10 +3744,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-178'>
+    <tr id='section-179'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-178">&#182;</a>
+          <a class="pilcrow" href="#section-179">&#182;</a>
         </div>
         <p>boolean instead of &ldquo;loop&rdquo;, for webkit? &ndash; spec says string. http://www.w3.org/TR/html-markup/audio.html#audio.attrs.loop</p>
       </td>
@@ -3762,10 +3786,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
     <span class="k">this</span><span class="p">.</span><span class="nx">_remove_html5_events</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-179'>
+    <tr id='section-180'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-179">&#182;</a>
+          <a class="pilcrow" href="#section-180">&#182;</a>
         </div>
         <p>Remove event listeners</p>
       </td>
@@ -3803,10 +3827,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">fN</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">loadOK</span><span class="o">?</span><span class="s1">&#39; loaded.&#39;</span><span class="o">:</span><span class="s1">&#39; failed to load? - &#39;</span> <span class="o">+</span> <span class="nx">_t</span><span class="p">.</span><span class="nx">url</span><span class="p">),</span> <span class="p">(</span><span class="nx">loadOK</span><span class="o">?</span><span class="mi">1</span><span class="o">:</span><span class="mi">2</span><span class="p">));</span></pre></div>
       </td>
     </tr>
-    <tr id='section-181'>
+    <tr id='section-182'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-181">&#182;</a>
+          <a class="pilcrow" href="#section-182">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -3821,10 +3845,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-182'>
+    <tr id='section-183'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-182">&#182;</a>
+          <a class="pilcrow" href="#section-183">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -3848,10 +3872,10 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <span class="k">if</span> <span class="p">(</span><span class="nx">_t</span><span class="p">.</span><span class="nx">playState</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-183'>
+    <tr id='section-184'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-183">&#182;</a>
+          <a class="pilcrow" href="#section-184">&#182;</a>
         </div>
         <p>ignore if not playing</p>
       </td>
@@ -3874,10 +3898,31 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
     <span class="p">};</span></pre></div>
       </td>
     </tr>
-    <tr id='section-184'>
+    <tr id='section-185'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-184">&#182;</a>
+          <a class="pilcrow" href="#section-185">&#182;</a>
+        </div>
+        <p>Notify Mobile Safari that user action is required
+to continue playing / loading the audio file.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">_onsuspend</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">onsuspend</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="s1">&#39;SMSound._onsuspend()&#39;</span><span class="p">);</span>
+        <span class="nx">_t</span><span class="p">.</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">onsuspend</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">_t</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="p">};</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-186'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-186">&#182;</a>
         </div>
         <p>flash 9/movieStar + RTMP-only method, should fire only once at most
 at this point we just recreate failed sounds rather than trying to reconnect</p>
@@ -3887,6 +3932,7 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
 
       <span class="nx">_t</span><span class="p">.</span><span class="nx">failures</span><span class="o">++</span><span class="p">;</span>
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="s1">&#39;SMSound._onfailure(): &quot;&#39;</span><span class="o">+</span><span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span><span class="o">+</span><span class="s1">&#39;&quot; count &#39;</span><span class="o">+</span><span class="nx">_t</span><span class="p">.</span><span class="nx">failures</span><span class="p">);</span>
+
       <span class="k">if</span> <span class="p">(</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">onfailure</span> <span class="o">&amp;&amp;</span> <span class="nx">_t</span><span class="p">.</span><span class="nx">failures</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">_t</span><span class="p">.</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">onfailure</span><span class="p">(</span><span class="nx">_t</span><span class="p">,</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">level</span><span class="p">,</span> <span class="nx">code</span><span class="p">);</span>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -3898,10 +3944,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
     <span class="k">this</span><span class="p">.</span><span class="nx">_onfinish</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-185'>
+    <tr id='section-187'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-185">&#182;</a>
+          <a class="pilcrow" href="#section-187">&#182;</a>
         </div>
         <p>store local copy before it gets trashed..</p>
       </td>
@@ -3911,10 +3957,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
       <span class="nx">_t</span><span class="p">.</span><span class="nx">resetOnPosition</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-186'>
+    <tr id='section-188'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-186">&#182;</a>
+          <a class="pilcrow" href="#section-188">&#182;</a>
         </div>
         <p>reset some state items</p>
       </td>
@@ -3925,10 +3971,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_t</span><span class="p">.</span><span class="nx">instanceCount</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-187'>
+    <tr id='section-189'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-187">&#182;</a>
+          <a class="pilcrow" href="#section-189">&#182;</a>
         </div>
         <p>reset instance options</p>
       </td>
@@ -3944,10 +3990,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_t</span><span class="p">.</span><span class="nx">instanceCount</span> <span class="o">||</span> <span class="nx">_t</span><span class="p">.</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">multiShotEvents</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-188'>
+    <tr id='section-190'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-188">&#182;</a>
+          <a class="pilcrow" href="#section-190">&#182;</a>
         </div>
         <p>fire onfinish for last, or every instance</p>
       </td>
@@ -3974,10 +4020,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">duration</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-189'>
+    <tr id='section-191'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-189">&#182;</a>
+          <a class="pilcrow" href="#section-191">&#182;</a>
         </div>
         <p>use options, if specified and larger</p>
       </td>
@@ -4012,10 +4058,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
       <span class="k">if</span> <span class="p">(</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">nPosition</span><span class="p">)</span> <span class="o">||</span> <span class="nx">nPosition</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-190'>
+    <tr id='section-192'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-190">&#182;</a>
+          <a class="pilcrow" href="#section-192">&#182;</a>
         </div>
         <p>flash safety net</p>
       </td>
@@ -4058,10 +4104,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
       <span class="k">if</span> <span class="p">(</span><span class="nx">_t</span><span class="p">.</span><span class="nx">playState</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-191'>
+    <tr id='section-193'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-191">&#182;</a>
+          <a class="pilcrow" href="#section-193">&#182;</a>
         </div>
         <p>special case/hack: ensure buffering is false if loading from cache (and not yet started)</p>
       </td>
@@ -4073,10 +4119,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_iO</span><span class="p">.</span><span class="nx">whileplaying</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-192'>
+    <tr id='section-194'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-192">&#182;</a>
+          <a class="pilcrow" href="#section-194">&#182;</a>
         </div>
         <p>flash may call after actual finish</p>
       </td>
@@ -4093,10 +4139,10 @@ at this point we just recreate failed sounds rather than trying to reconnect</p>
     <span class="k">this</span><span class="p">.</span><span class="nx">_onid3</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oID3PropNames</span><span class="p">,</span> <span class="nx">oID3Data</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-193'>
+    <tr id='section-195'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-193">&#182;</a>
+          <a class="pilcrow" href="#section-195">&#182;</a>
         </div>
         <p>oID3PropNames: string array (names)
 ID3Data: string array (data)</p>
@@ -4118,10 +4164,10 @@ ID3Data: string array (data)</p>
     <span class="p">};</span></pre></div>
       </td>
     </tr>
-    <tr id='section-194'>
+    <tr id='section-196'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-194">&#182;</a>
+          <a class="pilcrow" href="#section-196">&#182;</a>
         </div>
         <p>flash/RTMP-only</p>
       </td>
@@ -4141,10 +4187,10 @@ ID3Data: string array (data)</p>
           <span class="k">if</span> <span class="p">(</span><span class="nx">_t</span><span class="p">.</span><span class="nx">getAutoPlay</span><span class="p">())</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-195'>
+    <tr id='section-197'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-195">&#182;</a>
+          <a class="pilcrow" href="#section-197">&#182;</a>
         </div>
         <p>only update the play state if auto playing</p>
       </td>
@@ -4166,10 +4212,10 @@ ID3Data: string array (data)</p>
     <span class="k">this</span><span class="p">.</span><span class="nx">_ondataerror</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sError</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-196'>
+    <tr id='section-198'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-196">&#182;</a>
+          <a class="pilcrow" href="#section-198">&#182;</a>
         </div>
         <p>flash 9 wave/eq data handler
 hack: called at start, and end from flash at/after onfinish()</p>
@@ -4210,10 +4256,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
   <span class="nx">_mixin</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oMain</span><span class="p">,</span> <span class="nx">oAdd</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-198'>
+    <tr id='section-200'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-198">&#182;</a>
+          <a class="pilcrow" href="#section-200">&#182;</a>
         </div>
         <p>non-destructive merge</p>
       </td>
@@ -4221,10 +4267,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
         <div class='highlight'><pre>    <span class="kd">var</span> <span class="nx">o1</span> <span class="o">=</span> <span class="p">{},</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">o2</span><span class="p">,</span> <span class="nx">o</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-199'>
+    <tr id='section-201'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-199">&#182;</a>
+          <a class="pilcrow" href="#section-201">&#182;</a>
         </div>
         <p>clone c1</p>
       </td>
@@ -4260,10 +4306,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="k">if</span> <span class="p">(</span><span class="nx">old</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-200'>
+    <tr id='section-202'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-200">&#182;</a>
+          <a class="pilcrow" href="#section-202">&#182;</a>
         </div>
         <p>prefix</p>
       </td>
@@ -4272,10 +4318,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-201'>
+    <tr id='section-203'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-201">&#182;</a>
+          <a class="pilcrow" href="#section-203">&#182;</a>
         </div>
         <p>no capture</p>
       </td>
@@ -4333,10 +4379,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
         <div class='highlight'><pre>  <span class="kd">function</span> <span class="nx">_html5_event</span><span class="p">(</span><span class="nx">oFn</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-203'>
+    <tr id='section-205'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-203">&#182;</a>
+          <a class="pilcrow" href="#section-205">&#182;</a>
         </div>
         <p>wrap html5 event handlers so we don&rsquo;t call them on destroyed sounds</p>
       </td>
@@ -4346,10 +4392,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_a</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-204'>
+    <tr id='section-206'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-204">&#182;</a>
+          <a class="pilcrow" href="#section-206">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -4361,10 +4407,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
         <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-205'>
+    <tr id='section-207'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-205">&#182;</a>
+          <a class="pilcrow" href="#section-207">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -4381,10 +4427,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
   <span class="nx">_html5_events</span> <span class="o">=</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-206'>
+    <tr id='section-208'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-206">&#182;</a>
+          <a class="pilcrow" href="#section-208">&#182;</a>
         </div>
         <p>HTML5 event-name-to-handler map</p>
       </td>
@@ -4396,10 +4442,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
     <span class="p">}),</span></pre></div>
       </td>
     </tr>
-    <tr id='section-207'>
+    <tr id='section-209'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-207">&#182;</a>
+          <a class="pilcrow" href="#section-209">&#182;</a>
         </div>
         <p>enough has loaded to play</p>
       </td>
@@ -4409,10 +4455,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_html5_canplay</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-208'>
+    <tr id='section-210'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-208">&#182;</a>
+          <a class="pilcrow" href="#section-210">&#182;</a>
         </div>
         <p>this event has already fired. ignore.</p>
       </td>
@@ -4426,10 +4472,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="kd">var</span> <span class="nx">position1K</span> <span class="o">=</span> <span class="p">(</span><span class="o">!</span><span class="nb">isNaN</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">position</span><span class="p">)</span><span class="o">?</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">position</span><span class="o">/</span><span class="mi">1000</span><span class="o">:</span><span class="kc">null</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-209'>
+    <tr id='section-211'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-209">&#182;</a>
+          <a class="pilcrow" href="#section-211">&#182;</a>
         </div>
         <p>set the position if position was set before the sound loaded</p>
       </td>
@@ -4451,10 +4497,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
         <span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_onbufferchange</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-210'>
+    <tr id='section-212'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-210">&#182;</a>
+          <a class="pilcrow" href="#section-212">&#182;</a>
         </div>
         <p>should be 1, and the same</p>
       </td>
@@ -4483,10 +4529,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">_h5</span><span class="o">+</span><span class="s1">&#39;error: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-211'>
+    <tr id='section-213'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-211">&#182;</a>
+          <a class="pilcrow" href="#section-213">&#182;</a>
         </div>
         <p>call load with error state?</p>
       </td>
@@ -4500,10 +4546,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">,</span></pre></div>
       </td>
     </tr>
-    <tr id='section-212'>
+    <tr id='section-214'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-212">&#182;</a>
+          <a class="pilcrow" href="#section-214">&#182;</a>
         </div>
         <p>at least 1 byte, so math works</p>
       </td>
@@ -4513,10 +4559,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">_h5</span><span class="o">+</span><span class="s1">&#39;loadeddata: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-213'>
+    <tr id='section-215'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-213">&#182;</a>
+          <a class="pilcrow" href="#section-215">&#182;</a>
         </div>
         <p>safari seems to nicely report progress events, eventually totalling 100%</p>
       </td>
@@ -4525,10 +4571,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
         <span class="nx">t</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">_get_html5_duration</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-214'>
+    <tr id='section-216'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-214">&#182;</a>
+          <a class="pilcrow" href="#section-216">&#182;</a>
         </div>
         <p>fire whileloading() with 100% values</p>
       </td>
@@ -4550,10 +4596,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">_h5</span><span class="o">+</span><span class="s1">&#39;loadstart: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-215'>
+    <tr id='section-217'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-215">&#182;</a>
+          <a class="pilcrow" href="#section-217">&#182;</a>
         </div>
         <p>assume buffering at first</p>
       </td>
@@ -4567,10 +4613,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">_h5</span><span class="o">+</span><span class="s1">&#39;play: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-216'>
+    <tr id='section-218'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-216">&#182;</a>
+          <a class="pilcrow" href="#section-218">&#182;</a>
         </div>
         <p>once play starts, no buffering</p>
       </td>
@@ -4580,10 +4626,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
     <span class="p">}),</span></pre></div>
       </td>
     </tr>
-    <tr id='section-217'>
+    <tr id='section-219'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-217">&#182;</a>
+          <a class="pilcrow" href="#section-219">&#182;</a>
         </div>
         <p>TODO: verify if this is actually implemented anywhere yet.</p>
       </td>
@@ -4593,10 +4639,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">_h5</span><span class="o">+</span><span class="s1">&#39;playing: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-218'>
+    <tr id='section-220'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-218">&#182;</a>
+          <a class="pilcrow" href="#section-220">&#182;</a>
         </div>
         <p>once play starts, no buffering</p>
       </td>
@@ -4616,10 +4662,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
           <span class="nx">ranges</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">buffered</span><span class="p">,</span></pre></div>
       </td>
     </tr>
-    <tr id='section-219'>
+    <tr id='section-221'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-219">&#182;</a>
+          <a class="pilcrow" href="#section-221">&#182;</a>
         </div>
         <p>firefox 3.6 implements e.loaded/total (bytes)</p>
       </td>
@@ -4631,10 +4677,10 @@ hack: called at start, and end from flash at/after onfinish()</p>
       <span class="k">if</span> <span class="p">(</span><span class="nx">ranges</span> <span class="o">&amp;&amp;</span> <span class="nx">ranges</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-220'>
+    <tr id='section-222'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-220">&#182;</a>
+          <a class="pilcrow" href="#section-222">&#182;</a>
         </div>
         <p>if loaded is 0, try TimeRanges implementation as % of load
 https://developer.mozilla.org/en/DOM/TimeRanges</p>
@@ -4645,10 +4691,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
         <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-221'>
+    <tr id='section-223'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-221">&#182;</a>
+          <a class="pilcrow" href="#section-223">&#182;</a>
         </div>
         <p>linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges</p>
       </td>
@@ -4656,10 +4702,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
         <div class='highlight'><pre>        <span class="nx">loaded</span> <span class="o">=</span> <span class="nx">buffered</span><span class="o">/</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">duration</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-222'>
+    <tr id='section-224'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-222">&#182;</a>
+          <a class="pilcrow" href="#section-224">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -4678,10 +4724,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
         <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-223'>
+    <tr id='section-225'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-223">&#182;</a>
+          <a class="pilcrow" href="#section-225">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -4691,10 +4737,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
       <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">loaded</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-224'>
+    <tr id='section-226'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-224">&#182;</a>
+          <a class="pilcrow" href="#section-226">&#182;</a>
         </div>
         <p>if progress, likely not buffering</p>
       </td>
@@ -4704,10 +4750,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">loaded</span> <span class="o">&amp;&amp;</span> <span class="nx">total</span> <span class="o">&amp;&amp;</span> <span class="nx">loaded</span> <span class="o">===</span> <span class="nx">total</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-225'>
+    <tr id='section-227'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-225">&#182;</a>
+          <a class="pilcrow" href="#section-227">&#182;</a>
         </div>
         <p>in case &ldquo;onload&rdquo; doesn&rsquo;t fire (eg. gecko 1.9.2)</p>
       </td>
@@ -4728,16 +4774,17 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
     <span class="nx">suspend</span><span class="o">:</span> <span class="nx">_html5_event</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-226'>
+    <tr id='section-228'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-226">&#182;</a>
+          <a class="pilcrow" href="#section-228">&#182;</a>
         </div>
         <p>download paused/stopped, may have finished (eg. onload)</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>      <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">_h5</span><span class="o">+</span><span class="s1">&#39;suspend: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
       <span class="nx">_html5_events</span><span class="p">.</span><span class="nx">progress</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">e</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">_onsuspend</span><span class="p">();</span>
 
     <span class="p">}),</span>
 
@@ -4756,10 +4803,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
     <span class="nx">waiting</span><span class="o">:</span> <span class="nx">_html5_event</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-227'>
+    <tr id='section-229'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-227">&#182;</a>
+          <a class="pilcrow" href="#section-229">&#182;</a>
         </div>
         <p>see also: seeking</p>
       </td>
@@ -4767,10 +4814,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
         <div class='highlight'><pre>      <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="nx">_h5</span><span class="o">+</span><span class="s1">&#39;waiting: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">_t</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-228'>
+    <tr id='section-230'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-228">&#182;</a>
+          <a class="pilcrow" href="#section-230">&#182;</a>
         </div>
         <p>playback faster than download rate, etc.</p>
       </td>
@@ -4784,10 +4831,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
   <span class="nx">_html5OK</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">iO</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-229'>
+    <tr id='section-231'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-229">&#182;</a>
+          <a class="pilcrow" href="#section-231">&#182;</a>
         </div>
         <p>Use type, if specified. If HTML5-only mode, no other options, so just give &lsquo;er</p>
       </td>
@@ -4799,10 +4846,10 @@ https://developer.mozilla.org/en/DOM/TimeRanges</p>
   <span class="nx">_html5Unload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oAudio</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-230'>
+    <tr id='section-232'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-230">&#182;</a>
+          <a class="pilcrow" href="#section-232">&#182;</a>
         </div>
         <p>Internal method: Unload media, and cancel any current/pending network requests.
 Firefox can load an empty URL, which allegedly destroys the decoder and stops the download.
@@ -4810,8 +4857,18 @@ https://developer.mozilla.org/En/Using<em>audio</em>and<em>video</em>in<em>Firef
 Other UA behaviour is unclear, so everyone else gets an about:blank-style URL.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">oAudio</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">oAudio</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/gecko/i</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nx">_emptyURL</span><span class="p">);</span>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">oAudio</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-233'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-233">&#182;</a>
+        </div>
+        <p>Firefox likes &ldquo; for unload, most other UAs don&rsquo;t and fail to unload.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nx">oAudio</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_is_firefox</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nx">_emptyURL</span><span class="p">);</span>
     <span class="p">}</span>
 
   <span class="p">};</span>
@@ -4819,10 +4876,10 @@ Other UA behaviour is unclear, so everyone else gets an about:blank-style URL.</
   <span class="nx">_html5CanPlay</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-231'>
+    <tr id='section-234'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-231">&#182;</a>
+          <a class="pilcrow" href="#section-234">&#182;</a>
         </div>
         <p>Try to find MIME, test and return truthiness
 o = {
@@ -4846,10 +4903,10 @@ o = {
     <span class="kd">function</span> <span class="nx">preferFlashCheck</span><span class="p">(</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-232'>
+    <tr id='section-235'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-232">&#182;</a>
+          <a class="pilcrow" href="#section-235">&#182;</a>
         </div>
         <p>whether flash should play a given type</p>
       </td>
@@ -4859,10 +4916,10 @@ o = {
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-233'>
+    <tr id='section-236'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-233">&#182;</a>
+          <a class="pilcrow" href="#section-236">&#182;</a>
         </div>
         <p>account for known cases like audio/mp3</p>
       </td>
@@ -4885,10 +4942,10 @@ o = {
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-234'>
+    <tr id='section-237'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-234">&#182;</a>
+          <a class="pilcrow" href="#section-237">&#182;</a>
         </div>
         <p>TODO: Strip URL queries, etc.</p>
       </td>
@@ -4901,10 +4958,10 @@ o = {
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-235'>
+    <tr id='section-238'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-235">&#182;</a>
+          <a class="pilcrow" href="#section-238">&#182;</a>
         </div>
         <p>audio/mp3 &ndash;&gt; mp3, result should be known</p>
       </td>
@@ -4912,12 +4969,12 @@ o = {
         <div class='highlight'><pre>        <span class="nx">offset</span> <span class="o">=</span> <span class="nx">mime</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-236'>
+    <tr id='section-239'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-236">&#182;</a>
+          <a class="pilcrow" href="#section-239">&#182;</a>
         </div>
-        <p>strip &ldquo;audio/X; codecs..&rdquo;</p>
+        <p>strip &quot;audio/X; codecs..&rdquo;</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>        <span class="nx">fileExt</span> <span class="o">=</span> <span class="p">(</span><span class="nx">offset</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="o">?</span><span class="nx">mime</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nx">offset</span><span class="p">)</span><span class="o">:</span><span class="nx">mime</span><span class="p">).</span><span class="nx">substr</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
@@ -4925,10 +4982,10 @@ o = {
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-237'>
+    <tr id='section-240'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-237">&#182;</a>
+          <a class="pilcrow" href="#section-240">&#182;</a>
         </div>
         <p>match the raw extension name &ndash; &ldquo;mp3&rdquo;, for example</p>
       </td>
@@ -4939,10 +4996,10 @@ o = {
     <span class="k">if</span> <span class="p">(</span><span class="nx">fileExt</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">html5</span><span class="p">[</span><span class="nx">fileExt</span><span class="p">]</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-238'>
+    <tr id='section-241'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-238">&#182;</a>
+          <a class="pilcrow" href="#section-241">&#182;</a>
         </div>
         <p>result known</p>
       </td>
@@ -4954,10 +5011,10 @@ o = {
       <span class="nx">_s</span><span class="p">.</span><span class="nx">html5</span><span class="p">[</span><span class="nx">fileExt</span><span class="p">]</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-239'>
+    <tr id='section-242'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-239">&#182;</a>
+          <a class="pilcrow" href="#section-242">&#182;</a>
         </div>
         <p><em>s.</em>wD(&lsquo;canPlayType, found result: &rsquo;+result);</p>
       </td>
@@ -4974,10 +5031,10 @@ o = {
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-240'>
+    <tr id='section-243'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-240">&#182;</a>
+          <a class="pilcrow" href="#section-243">&#182;</a>
         </div>
         <p>double-whammy: Opera 9.64 throws WRONG<em>ARGUMENTS</em>ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load &ldquo;null&rdquo; as a URL. :/</p>
       </td>
@@ -4996,10 +5053,10 @@ o = {
       <span class="k">if</span> <span class="p">(</span><span class="nx">m</span> <span class="k">instanceof</span> <span class="nb">Array</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-241'>
+    <tr id='section-244'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-241">&#182;</a>
+          <a class="pilcrow" href="#section-244">&#182;</a>
         </div>
         <p>iterate through all mime types, return any successes</p>
       </td>
@@ -5010,10 +5067,10 @@ o = {
             <span class="nx">_s</span><span class="p">.</span><span class="nx">html5</span><span class="p">[</span><span class="nx">m</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-242'>
+    <tr id='section-245'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-242">&#182;</a>
+          <a class="pilcrow" href="#section-245">&#182;</a>
         </div>
         <p>if flash can play and preferred, also mark it for use.</p>
       </td>
@@ -5031,10 +5088,10 @@ o = {
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-243'>
+    <tr id='section-246'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-243">&#182;</a>
+          <a class="pilcrow" href="#section-246">&#182;</a>
         </div>
         <p>test all registered formats + codecs</p>
       </td>
@@ -5046,10 +5103,10 @@ o = {
         <span class="nx">support</span><span class="p">[</span><span class="nx">item</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_cp</span><span class="p">(</span><span class="nx">aF</span><span class="p">[</span><span class="nx">item</span><span class="p">].</span><span class="nx">type</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-244'>
+    <tr id='section-247'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-244">&#182;</a>
+          <a class="pilcrow" href="#section-247">&#182;</a>
         </div>
         <p>write back generic type too, eg. audio/mp3</p>
       </td>
@@ -5057,10 +5114,10 @@ o = {
         <div class='highlight'><pre>        <span class="nx">support</span><span class="p">[</span><span class="s1">&#39;audio/&#39;</span><span class="o">+</span><span class="nx">item</span><span class="p">]</span> <span class="o">=</span> <span class="nx">support</span><span class="p">[</span><span class="nx">item</span><span class="p">];</span></pre></div>
       </td>
     </tr>
-    <tr id='section-245'>
+    <tr id='section-248'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-245">&#182;</a>
+          <a class="pilcrow" href="#section-248">&#182;</a>
         </div>
         <p>assign flash</p>
       </td>
@@ -5072,10 +5129,10 @@ o = {
         <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-246'>
+    <tr id='section-249'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-246">&#182;</a>
+          <a class="pilcrow" href="#section-249">&#182;</a>
         </div>
         <p>assign result to related formats, too</p>
       </td>
@@ -5084,10 +5141,10 @@ o = {
           <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="nx">aF</span><span class="p">[</span><span class="nx">item</span><span class="p">].</span><span class="nx">related</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">;)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-247'>
+    <tr id='section-250'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-247">&#182;</a>
+          <a class="pilcrow" href="#section-250">&#182;</a>
         </div>
         <p>eg. audio/m4a</p>
       </td>
@@ -5111,10 +5168,10 @@ o = {
   <span class="nx">_strings</span> <span class="o">=</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-248'>
+    <tr id='section-251'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-248">&#182;</a>
+          <a class="pilcrow" href="#section-251">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -5162,10 +5219,10 @@ o = {
     <span class="nx">policy</span><span class="o">:</span> <span class="s1">&#39;Enabling usePolicyFile for data access&#39;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-249'>
+    <tr id='section-252'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-249">&#182;</a>
+          <a class="pilcrow" href="#section-252">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -5175,10 +5232,10 @@ o = {
   <span class="nx">_str</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-250'>
+    <tr id='section-253'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-250">&#182;</a>
+          <a class="pilcrow" href="#section-253">&#182;</a>
         </div>
         <p>internal string replace helper.
 arguments: o [,items to replace]
@@ -5188,10 +5245,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre></pre></div>
       </td>
     </tr>
-    <tr id='section-251'>
+    <tr id='section-254'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-251">&#182;</a>
+          <a class="pilcrow" href="#section-254">&#182;</a>
         </div>
         <p>real array, please</p>
       </td>
@@ -5199,10 +5256,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre>    <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">_slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span></pre></div>
       </td>
     </tr>
-    <tr id='section-252'>
+    <tr id='section-255'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-252">&#182;</a>
+          <a class="pilcrow" href="#section-255">&#182;</a>
         </div>
         <p>first arg</p>
       </td>
@@ -5219,10 +5276,10 @@ arguments: o [,items to replace]
     <span class="k">return</span> <span class="nx">str</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-253'>
+    <tr id='section-256'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-253">&#182;</a>
+          <a class="pilcrow" href="#section-256">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -5232,10 +5289,10 @@ arguments: o [,items to replace]
   <span class="nx">_loopFix</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sOpt</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-254'>
+    <tr id='section-257'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-254">&#182;</a>
+          <a class="pilcrow" href="#section-257">&#182;</a>
         </div>
         <p>flash 8 requires stream = false for looping to work</p>
       </td>
@@ -5263,10 +5320,10 @@ arguments: o [,items to replace]
   <span class="nx">_complain</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sMsg</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-255'>
+    <tr id='section-258'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-255">&#182;</a>
+          <a class="pilcrow" href="#section-258">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -5278,10 +5335,10 @@ arguments: o [,items to replace]
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-256'>
+    <tr id='section-259'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-256">&#182;</a>
+          <a class="pilcrow" href="#section-259">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -5311,10 +5368,10 @@ arguments: o [,items to replace]
   <span class="nx">_failSafely</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">bNoDisable</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-257'>
+    <tr id='section-260'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-257">&#182;</a>
+          <a class="pilcrow" href="#section-260">&#182;</a>
         </div>
         <p>general failure exception handler</p>
       </td>
@@ -5332,7 +5389,7 @@ arguments: o [,items to replace]
 
   <span class="nx">_normalizeMovieURL</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">smURL</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="kd">var</span> <span class="nx">urlParams</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">urlParams</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">url</span><span class="p">;</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="nx">smURL</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">if</span> <span class="p">(</span><span class="nx">smURL</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\.swf(\?.*)?$/i</span><span class="p">))</span> <span class="p">{</span>
@@ -5340,32 +5397,48 @@ arguments: o [,items to replace]
         <span class="k">if</span> <span class="p">(</span><span class="nx">urlParams</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-258'>
+    <tr id='section-261'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-258">&#182;</a>
+          <a class="pilcrow" href="#section-261">&#182;</a>
         </div>
         <p>assume user knows what they&rsquo;re doing</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>          <span class="k">return</span> <span class="nx">smURL</span><span class="p">;</span>
         <span class="p">}</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">smURL</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="nx">smURL</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">smURL</span> <span class="o">=</span> <span class="nx">smURL</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">smURL</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="nx">smURL</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-262'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-262">&#182;</a>
+        </div>
+        <p>append trailing slash, if needed</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="nx">smURL</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span><span class="p">;</span>
       <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="nx">smURL</span> <span class="o">&amp;&amp;</span> <span class="nx">smURL</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="o">-</span> <span class="mi">1</span><span class="o">?</span><span class="nx">smURL</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">smURL</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">:</span><span class="s1">&#39;./&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">movieURL</span><span class="p">;</span>
+    <span class="nx">url</span> <span class="o">=</span> <span class="p">(</span><span class="nx">smURL</span> <span class="o">&amp;&amp;</span> <span class="nx">smURL</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">?</span> <span class="nx">smURL</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">smURL</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="s1">&#39;./&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">movieURL</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">_s</span><span class="p">.</span><span class="nx">noSWFCache</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">url</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;?ts=&#39;</span> <span class="o">+</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">url</span><span class="p">;</span>
 
   <span class="p">};</span>
 
   <span class="nx">_setVersionInfo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-259'>
+    <tr id='section-263'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-259">&#182;</a>
+          <a class="pilcrow" href="#section-263">&#182;</a>
         </div>
         <p>short-hand for internal use</p>
       </td>
@@ -5378,10 +5451,10 @@ arguments: o [,items to replace]
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-260'>
+    <tr id='section-264'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-260">&#182;</a>
+          <a class="pilcrow" href="#section-264">&#182;</a>
         </div>
         <p>debug flash movie, if applicable</p>
       </td>
@@ -5396,10 +5469,10 @@ arguments: o [,items to replace]
     <span class="nx">_s</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">versionNumber</span> <span class="o">+</span> <span class="p">(</span><span class="nx">_s</span><span class="p">.</span><span class="nx">html5Only</span><span class="o">?</span><span class="s1">&#39; (HTML5-only mode)&#39;</span><span class="o">:</span><span class="p">(</span><span class="nx">_fV</span> <span class="o">===</span> <span class="mi">9</span><span class="o">?</span><span class="s1">&#39; (AS3/Flash 9)&#39;</span><span class="o">:</span><span class="s1">&#39; (AS2/Flash 8)&#39;</span><span class="p">));</span></pre></div>
       </td>
     </tr>
-    <tr id='section-261'>
+    <tr id='section-265'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-261">&#182;</a>
+          <a class="pilcrow" href="#section-265">&#182;</a>
         </div>
         <p>set up default options</p>
       </td>
@@ -5407,10 +5480,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">_fV</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-262'>
+    <tr id='section-266'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-262">&#182;</a>
+          <a class="pilcrow" href="#section-266">&#182;</a>
         </div>
         <p>+flash 9 base options</p>
       </td>
@@ -5419,10 +5492,10 @@ arguments: o [,items to replace]
       <span class="nx">_s</span><span class="p">.</span><span class="nx">features</span><span class="p">.</span><span class="nx">buffering</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-263'>
+    <tr id='section-267'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-263">&#182;</a>
+          <a class="pilcrow" href="#section-267">&#182;</a>
         </div>
         <p>+moviestar support</p>
       </td>
@@ -5435,10 +5508,10 @@ arguments: o [,items to replace]
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-264'>
+    <tr id='section-268'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-264">&#182;</a>
+          <a class="pilcrow" href="#section-268">&#182;</a>
         </div>
         <p>regExp for flash canPlay(), etc.</p>
       </td>
@@ -5446,10 +5519,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre>    <span class="nx">_s</span><span class="p">.</span><span class="nx">filePattern</span> <span class="o">=</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">filePatterns</span><span class="p">[(</span><span class="nx">_fV</span> <span class="o">!==</span> <span class="mi">8</span><span class="o">?</span><span class="s1">&#39;flash9&#39;</span><span class="o">:</span><span class="s1">&#39;flash8&#39;</span><span class="p">)];</span></pre></div>
       </td>
     </tr>
-    <tr id='section-265'>
+    <tr id='section-269'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-265">&#182;</a>
+          <a class="pilcrow" href="#section-269">&#182;</a>
         </div>
         <p>if applicable, use _debug versions of SWFs</p>
       </td>
@@ -5473,10 +5546,10 @@ arguments: o [,items to replace]
   <span class="nx">_initDebug</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-266'>
+    <tr id='section-270'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-266">&#182;</a>
+          <a class="pilcrow" href="#section-270">&#182;</a>
         </div>
         <p>starts debug mode, creating output <div> for UAs without console object</p>
       </td>
@@ -5484,10 +5557,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre></pre></div>
       </td>
     </tr>
-    <tr id='section-267'>
+    <tr id='section-271'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-267">&#182;</a>
+          <a class="pilcrow" href="#section-271">&#182;</a>
         </div>
         <p>allow force of debug mode via URL</p>
       </td>
@@ -5497,10 +5570,10 @@ arguments: o [,items to replace]
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-268'>
+    <tr id='section-272'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-268">&#182;</a>
+          <a class="pilcrow" href="#section-272">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -5566,10 +5639,10 @@ arguments: o [,items to replace]
     <span class="nx">oTarget</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-269'>
+    <tr id='section-273'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-269">&#182;</a>
+          <a class="pilcrow" href="#section-273">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -5579,10 +5652,10 @@ arguments: o [,items to replace]
   <span class="nx">_idCheck</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getSoundById</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-270'>
+    <tr id='section-274'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-270">&#182;</a>
+          <a class="pilcrow" href="#section-274">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -5598,10 +5671,10 @@ arguments: o [,items to replace]
   <span class="p">};</span></pre></div>
       </td>
     </tr>
-    <tr id='section-271'>
+    <tr id='section-275'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-271">&#182;</a>
+          <a class="pilcrow" href="#section-275">&#182;</a>
         </div>
         <p>last-resort debugging option</p>
       </td>
@@ -5622,10 +5695,10 @@ arguments: o [,items to replace]
     <span class="k">if</span> <span class="p">(</span><span class="nx">_debugOpen</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-272'>
+    <tr id='section-276'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-272">&#182;</a>
+          <a class="pilcrow" href="#section-276">&#182;</a>
         </div>
         <p>minimize</p>
       </td>
@@ -5644,10 +5717,10 @@ arguments: o [,items to replace]
   <span class="nx">_debugTS</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sEventType</span><span class="p">,</span> <span class="nx">bSuccess</span><span class="p">,</span> <span class="nx">sMessage</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-273'>
+    <tr id='section-277'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-273">&#182;</a>
+          <a class="pilcrow" href="#section-277">&#182;</a>
         </div>
         <p>troubleshooter debug hooks</p>
       </td>
@@ -5658,10 +5731,10 @@ arguments: o [,items to replace]
       <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-274'>
+    <tr id='section-278'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-274">&#182;</a>
+          <a class="pilcrow" href="#section-278">&#182;</a>
         </div>
         <p>oh well</p>
       </td>
@@ -5674,10 +5747,10 @@ arguments: o [,items to replace]
   <span class="p">};</span></pre></div>
       </td>
     </tr>
-    <tr id='section-275'>
+    <tr id='section-279'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-275">&#182;</a>
+          <a class="pilcrow" href="#section-279">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -5705,10 +5778,10 @@ arguments: o [,items to replace]
   <span class="nx">_flashBlockHandler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-276'>
+    <tr id='section-280'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-276">&#182;</a>
+          <a class="pilcrow" href="#section-280">&#182;</a>
         </div>
         <p><em>possible</em> flash block situation.</p>
       </td>
@@ -5727,10 +5800,10 @@ arguments: o [,items to replace]
       <span class="k">if</span> <span class="p">(</span><span class="nx">_needsFlash</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-277'>
+    <tr id='section-281'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-277">&#182;</a>
+          <a class="pilcrow" href="#section-281">&#182;</a>
         </div>
         <p>make the movie more visible, so user can fix</p>
       </td>
@@ -5742,10 +5815,10 @@ arguments: o [,items to replace]
       <span class="nx">_s</span><span class="p">.</span><span class="nx">didFlashBlock</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-278'>
+    <tr id='section-282'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-278">&#182;</a>
+          <a class="pilcrow" href="#section-282">&#182;</a>
         </div>
         <p>fire onready(), complain lightly</p>
       </td>
@@ -5756,10 +5829,10 @@ arguments: o [,items to replace]
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-279'>
+    <tr id='section-283'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-279">&#182;</a>
+          <a class="pilcrow" href="#section-283">&#182;</a>
         </div>
         <p>SM2 loaded OK (or recovered)</p>
       </td>
@@ -5793,10 +5866,10 @@ arguments: o [,items to replace]
   <span class="nx">_processOnEvents</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oOptions</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-280'>
+    <tr id='section-284'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-280">&#182;</a>
+          <a class="pilcrow" href="#section-284">&#182;</a>
         </div>
         <p>assume onready, if unspecified</p>
       </td>
@@ -5810,10 +5883,10 @@ arguments: o [,items to replace]
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_didInit</span> <span class="o">&amp;&amp;</span> <span class="nx">oOptions</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">oOptions</span><span class="p">.</span><span class="nx">ignoreInit</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-281'>
+    <tr id='section-285'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-281">&#182;</a>
+          <a class="pilcrow" href="#section-285">&#182;</a>
         </div>
         <p>not ready yet.</p>
       </td>
@@ -5824,10 +5897,10 @@ arguments: o [,items to replace]
     <span class="k">if</span> <span class="p">(</span><span class="nx">oOptions</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;ontimeout&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">ok</span><span class="p">())</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-282'>
+    <tr id='section-286'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-282">&#182;</a>
+          <a class="pilcrow" href="#section-286">&#182;</a>
         </div>
         <p>invalid case</p>
       </td>
@@ -5840,10 +5913,10 @@ arguments: o [,items to replace]
         <span class="p">},</span></pre></div>
       </td>
     </tr>
-    <tr id='section-283'>
+    <tr id='section-287'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-283">&#182;</a>
+          <a class="pilcrow" href="#section-287">&#182;</a>
         </div>
         <p>queue specified by type, or none</p>
       </td>
@@ -5875,10 +5948,10 @@ arguments: o [,items to replace]
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">canRetry</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-284'>
+    <tr id='section-288'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-284">&#182;</a>
+          <a class="pilcrow" href="#section-288">&#182;</a>
         </div>
         <p>flashblock case doesn&rsquo;t count here</p>
       </td>
@@ -5903,10 +5976,10 @@ arguments: o [,items to replace]
       <span class="nx">_processOnEvents</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-285'>
+    <tr id='section-289'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-285">&#182;</a>
+          <a class="pilcrow" href="#section-289">&#182;</a>
         </div>
         <p>call user-defined &ldquo;onload&rdquo;, scoped to window</p>
       </td>
@@ -5928,10 +6001,10 @@ arguments: o [,items to replace]
   <span class="nx">_detectFlash</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-286'>
+    <tr id='section-290'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-286">&#182;</a>
+          <a class="pilcrow" href="#section-290">&#182;</a>
         </div>
         <p>hat tip: Flash Detect library (BSD, &copy; 2007) by Carl &ldquo;DocYes&rdquo; S. Yestrau &ndash; http://featureblend.com/javascript-flash-detection-library.html / http://featureblend.com/license.txt</p>
       </td>
@@ -5939,10 +6012,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">_hasFlash</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-287'>
+    <tr id='section-291'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-287">&#182;</a>
+          <a class="pilcrow" href="#section-291">&#182;</a>
         </div>
         <p>this work has already been done.</p>
       </td>
@@ -5964,10 +6037,10 @@ arguments: o [,items to replace]
       <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-288'>
+    <tr id='section-292'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-288">&#182;</a>
+          <a class="pilcrow" href="#section-292">&#182;</a>
         </div>
         <p>oh well</p>
       </td>
@@ -5987,10 +6060,10 @@ arguments: o [,items to replace]
     <span class="kd">var</span> <span class="nx">needsFlash</span><span class="p">,</span> <span class="nx">item</span><span class="p">,</span></pre></div>
       </td>
     </tr>
-    <tr id='section-289'>
+    <tr id='section-293'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-289">&#182;</a>
+          <a class="pilcrow" href="#section-293">&#182;</a>
         </div>
         <p>iPhone &lt;= 3.1 has broken HTML5 audio(), but firmware 3.2 (iPad) + iOS4 works.</p>
       </td>
@@ -6000,10 +6073,10 @@ arguments: o [,items to replace]
     <span class="k">if</span> <span class="p">(</span><span class="nx">isSpecial</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-290'>
+    <tr id='section-294'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-290">&#182;</a>
+          <a class="pilcrow" href="#section-294">&#182;</a>
         </div>
         <p>has Audio(), but is broken; let it load links directly.</p>
       </td>
@@ -6011,10 +6084,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre>      <span class="nx">_s</span><span class="p">.</span><span class="nx">hasHTML5</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-291'>
+    <tr id='section-295'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-291">&#182;</a>
+          <a class="pilcrow" href="#section-295">&#182;</a>
         </div>
         <p>ignore flash case, however</p>
       </td>
@@ -6047,10 +6120,10 @@ arguments: o [,items to replace]
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-292'>
+    <tr id='section-296'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-292">&#182;</a>
+          <a class="pilcrow" href="#section-296">&#182;</a>
         </div>
         <p>flash needed (or, HTML5 needs enabling.)</p>
       </td>
@@ -6064,10 +6137,10 @@ arguments: o [,items to replace]
         <span class="k">if</span> <span class="p">((</span><span class="nx">_s</span><span class="p">.</span><span class="nx">audioFormats</span><span class="p">[</span><span class="nx">item</span><span class="p">].</span><span class="nx">required</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_s</span><span class="p">.</span><span class="nx">html5</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="nx">_s</span><span class="p">.</span><span class="nx">audioFormats</span><span class="p">[</span><span class="nx">item</span><span class="p">].</span><span class="nx">type</span><span class="p">))</span> <span class="o">||</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">flash</span><span class="p">[</span><span class="nx">item</span><span class="p">]</span> <span class="o">||</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">flash</span><span class="p">[</span><span class="nx">_s</span><span class="p">.</span><span class="nx">audioFormats</span><span class="p">[</span><span class="nx">item</span><span class="p">].</span><span class="nx">type</span><span class="p">])</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-293'>
+    <tr id='section-297'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-293">&#182;</a>
+          <a class="pilcrow" href="#section-297">&#182;</a>
         </div>
         <p>flash may be required, or preferred for this format</p>
       </td>
@@ -6078,10 +6151,10 @@ arguments: o [,items to replace]
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-294'>
+    <tr id='section-298'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-294">&#182;</a>
+          <a class="pilcrow" href="#section-298">&#182;</a>
         </div>
         <p>sanity check..</p>
       </td>
@@ -6129,10 +6202,10 @@ arguments: o [,items to replace]
   <span class="nx">_badSafariFix</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-295'>
+    <tr id='section-299'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-295">&#182;</a>
+          <a class="pilcrow" href="#section-299">&#182;</a>
         </div>
         <p>special case: &ldquo;bad&rdquo; Safari (OS X 10.3 &ndash; 10.7) must fall back to flash for MP3/MP4</p>
       </td>
@@ -6140,10 +6213,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_isBadSafari</span> <span class="o">||</span> <span class="o">!</span><span class="nx">_detectFlash</span><span class="p">())</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-296'>
+    <tr id='section-300'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-296">&#182;</a>
+          <a class="pilcrow" href="#section-300">&#182;</a>
         </div>
         <p>doesn&rsquo;t apply</p>
       </td>
@@ -6160,10 +6233,10 @@ arguments: o [,items to replace]
           <span class="nx">_s</span><span class="p">.</span><span class="nx">html5</span><span class="p">[</span><span class="nx">item</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-297'>
+    <tr id='section-301'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-297">&#182;</a>
+          <a class="pilcrow" href="#section-301">&#182;</a>
         </div>
         <p>assign result to related formats, too</p>
       </td>
@@ -6191,10 +6264,10 @@ arguments: o [,items to replace]
         <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">_setSandboxType</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sandboxType</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-299'>
+    <tr id='section-303'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-299">&#182;</a>
+          <a class="pilcrow" href="#section-303">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -6225,10 +6298,10 @@ arguments: o [,items to replace]
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-300'>
+    <tr id='section-304'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-300">&#182;</a>
+          <a class="pilcrow" href="#section-304">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -6238,10 +6311,10 @@ arguments: o [,items to replace]
   <span class="k">this</span><span class="p">.</span><span class="nx">_externalInterfaceOK</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">flashDate</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-301'>
+    <tr id='section-305'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-301">&#182;</a>
+          <a class="pilcrow" href="#section-305">&#182;</a>
         </div>
         <p>flash callback confirming flash loaded, EI working etc.
 flashDate = approx. timing/delay info for JS/flash bridge</p>
@@ -6266,10 +6339,10 @@ flashDate = approx. timing/delay info for JS/flash bridge</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_isIE</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-302'>
+    <tr id='section-306'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-302">&#182;</a>
+          <a class="pilcrow" href="#section-306">&#182;</a>
         </div>
         <p>IE needs a timeout OR delay until window.onload &ndash; may need TODO: investigating</p>
       </td>
@@ -6295,10 +6368,10 @@ flashDate = approx. timing/delay info for JS/flash bridge</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_didAppend</span> <span class="o">&amp;&amp;</span> <span class="nx">_appendSuccess</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-304'>
+    <tr id='section-308'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-304">&#182;</a>
+          <a class="pilcrow" href="#section-308">&#182;</a>
         </div>
         <p>ignore if already succeeded</p>
       </td>
@@ -6313,10 +6386,10 @@ flashDate = approx. timing/delay info for JS/flash bridge</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_s</span><span class="p">.</span><span class="nx">html5Only</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-305'>
+    <tr id='section-309'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-305">&#182;</a>
+          <a class="pilcrow" href="#section-309">&#182;</a>
         </div>
         <p>100% HTML5 mode</p>
       </td>
@@ -6328,10 +6401,10 @@ flashDate = approx. timing/delay info for JS/flash bridge</p>
       <span class="nx">_init</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-306'>
+    <tr id='section-310'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-306">&#182;</a>
+          <a class="pilcrow" href="#section-310">&#182;</a>
         </div>
         <p>prevent multiple init attempts</p>
       </td>
@@ -6345,10 +6418,10 @@ flashDate = approx. timing/delay info for JS/flash bridge</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-307'>
+    <tr id='section-311'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-307">&#182;</a>
+          <a class="pilcrow" href="#section-311">&#182;</a>
         </div>
         <p>flash path</p>
       </td>
@@ -6368,10 +6441,10 @@ flashDate = approx. timing/delay info for JS/flash bridge</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-308'>
+    <tr id='section-312'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-308">&#182;</a>
+          <a class="pilcrow" href="#section-312">&#182;</a>
         </div>
         <p>safety check for legacy (change to Flash 9 URL)</p>
       </td>
@@ -6385,10 +6458,10 @@ flashDate = approx. timing/delay info for JS/flash bridge</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_s</span><span class="p">.</span><span class="nx">wmode</span> <span class="o">!==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">_ua</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/msie 8/i</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">_isIE</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_s</span><span class="p">.</span><span class="nx">useHighPerformance</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">platform</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/win32|win64/i</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-309'>
+    <tr id='section-313'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-309">&#182;</a>
+          <a class="pilcrow" href="#section-313">&#182;</a>
         </div>
         <p>extra-special case: movie doesn&rsquo;t load until scrolled into view when using wmode = anything but &lsquo;window&rsquo; here
 does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
@@ -6415,10 +6488,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
       <span class="s1">&#39;wmode&#39;</span><span class="o">:</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">wmode</span><span class="p">,</span></pre></div>
       </td>
     </tr>
-    <tr id='section-310'>
+    <tr id='section-314'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-310">&#182;</a>
+          <a class="pilcrow" href="#section-314">&#182;</a>
         </div>
         <p>http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html</p>
       </td>
@@ -6433,10 +6506,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_s</span><span class="p">.</span><span class="nx">wmode</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-311'>
+    <tr id='section-315'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-311">&#182;</a>
+          <a class="pilcrow" href="#section-315">&#182;</a>
         </div>
         <p>don&rsquo;t write empty attribute</p>
       </td>
@@ -6447,10 +6520,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_isIE</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-312'>
+    <tr id='section-316'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-312">&#182;</a>
+          <a class="pilcrow" href="#section-316">&#182;</a>
         </div>
         <p>IE is &ldquo;special&rdquo;.</p>
       </td>
@@ -6498,10 +6571,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
           <span class="k">if</span> <span class="p">(</span><span class="nx">_s</span><span class="p">.</span><span class="nx">useHighPerformance</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-313'>
+    <tr id='section-317'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-313">&#182;</a>
+          <a class="pilcrow" href="#section-317">&#182;</a>
         </div>
         <p>on-screen at all times</p>
       </td>
@@ -6512,10 +6585,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
               <span class="s1">&#39;height&#39;</span><span class="o">:</span> <span class="s1">&#39;8px&#39;</span><span class="p">,</span></pre></div>
       </td>
     </tr>
-    <tr id='section-314'>
+    <tr id='section-318'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-314">&#182;</a>
+          <a class="pilcrow" href="#section-318">&#182;</a>
         </div>
         <blockquote>
 <p>= 6px for flash to run fast, &gt;= 8px to start up under Firefox/win32 in some cases. odd? yes.</p>
@@ -6529,10 +6602,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
           <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-315'>
+    <tr id='section-319'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-315">&#182;</a>
+          <a class="pilcrow" href="#section-319">&#182;</a>
         </div>
         <p>hide off-screen, lower priority</p>
       </td>
@@ -6553,10 +6626,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">_isWebkit</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-316'>
+    <tr id='section-320'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-316">&#182;</a>
+          <a class="pilcrow" href="#section-320">&#182;</a>
         </div>
         <p>soundcloud-reported render/crash fix, safari 5</p>
       </td>
@@ -6590,10 +6663,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-317'>
+    <tr id='section-321'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-317">&#182;</a>
+          <a class="pilcrow" href="#section-321">&#182;</a>
         </div>
         <p>SM2 container is already in the document (eg. flashblock use case)</p>
       </td>
@@ -6628,10 +6701,10 @@ wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-318'>
+    <tr id='section-322'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-318">&#182;</a>
+          <a class="pilcrow" href="#section-322">&#182;</a>
         </div>
         <p>attempt to get, or create, movie
 may already exist</p>
@@ -6642,10 +6715,10 @@ may already exist</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-319'>
+    <tr id='section-323'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-319">&#182;</a>
+          <a class="pilcrow" href="#section-323">&#182;</a>
         </div>
         <p>inline markup case</p>
       </td>
@@ -6656,10 +6729,10 @@ may already exist</p>
       <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_oRemoved</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-320'>
+    <tr id='section-324'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-320">&#182;</a>
+          <a class="pilcrow" href="#section-324">&#182;</a>
         </div>
         <p>try to create</p>
       </td>
@@ -6668,10 +6741,10 @@ may already exist</p>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-321'>
+    <tr id='section-325'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-321">&#182;</a>
+          <a class="pilcrow" href="#section-325">&#182;</a>
         </div>
         <p>try to re-append removed movie after reboot()</p>
       </td>
@@ -6688,10 +6761,10 @@ may already exist</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-322'>
+    <tr id='section-326'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-322">&#182;</a>
+          <a class="pilcrow" href="#section-326">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -6701,10 +6774,10 @@ may already exist</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-323'>
+    <tr id='section-327'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-323">&#182;</a>
+          <a class="pilcrow" href="#section-327">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -6735,10 +6808,10 @@ may already exist</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_tryInitOnFocus</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_isFocused</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-324'>
+    <tr id='section-328'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-324">&#182;</a>
+          <a class="pilcrow" href="#section-328">&#182;</a>
         </div>
         <p>giant Safari 3.1 hack &ndash; assume mousemove = focus given lack of focus event</p>
       </td>
@@ -6758,10 +6831,10 @@ may already exist</p>
       <span class="nx">p</span> <span class="o">=</span> <span class="nx">_s</span><span class="p">.</span><span class="nx">getMoviePercent</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-325'>
+    <tr id='section-329'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-325">&#182;</a>
+          <a class="pilcrow" href="#section-329">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -6777,10 +6850,10 @@ may already exist</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">p</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-326'>
+    <tr id='section-330'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-326">&#182;</a>
+          <a class="pilcrow" href="#section-330">&#182;</a>
         </div>
         <p>if 0 (not null), probably a 404.</p>
       </td>
@@ -6791,10 +6864,10 @@ may already exist</p>
       <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-327'>
+    <tr id='section-331'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-327">&#182;</a>
+          <a class="pilcrow" href="#section-331">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -6802,10 +6875,10 @@ may already exist</p>
         <div class='highlight'><pre></pre></div>
       </td>
     </tr>
-    <tr id='section-328'>
+    <tr id='section-332'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-328">&#182;</a>
+          <a class="pilcrow" href="#section-332">&#182;</a>
         </div>
         <p>give up / time-out, depending</p>
       </td>
@@ -6814,10 +6887,10 @@ may already exist</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">p</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-329'>
+    <tr id='section-333'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-329">&#182;</a>
+          <a class="pilcrow" href="#section-333">&#182;</a>
         </div>
         <p>SWF failed. Maybe blocked.</p>
       </td>
@@ -6830,10 +6903,10 @@ may already exist</p>
           <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-330'>
+    <tr id='section-334'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-330">&#182;</a>
+          <a class="pilcrow" href="#section-334">&#182;</a>
         </div>
         <p>old SM2 behaviour, simply fail</p>
       </td>
@@ -6843,10 +6916,10 @@ may already exist</p>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-331'>
+    <tr id='section-335'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-331">&#182;</a>
+          <a class="pilcrow" href="#section-335">&#182;</a>
         </div>
         <p>flash loaded? Shouldn&rsquo;t be a blocking issue, then.</p>
       </td>
@@ -6884,10 +6957,10 @@ may already exist</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-332'>
+    <tr id='section-336'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-332">&#182;</a>
+          <a class="pilcrow" href="#section-336">&#182;</a>
         </div>
         <p>allow init to restart</p>
       </td>
@@ -6923,10 +6996,10 @@ may already exist</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_s</span><span class="p">.</span><span class="nx">html5Only</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-333'>
+    <tr id='section-337'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-333">&#182;</a>
+          <a class="pilcrow" href="#section-337">&#182;</a>
         </div>
         <p>all good.</p>
       </td>
@@ -6969,10 +7042,10 @@ may already exist</p>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-334'>
+    <tr id='section-338'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-334">&#182;</a>
+          <a class="pilcrow" href="#section-338">&#182;</a>
         </div>
         <p><d></p>
       </td>
@@ -6982,10 +7055,10 @@ may already exist</p>
       <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-335'>
+    <tr id='section-339'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-335">&#182;</a>
+          <a class="pilcrow" href="#section-339">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -7002,10 +7075,10 @@ may already exist</p>
     <span class="nx">_wDS</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-336'>
+    <tr id='section-340'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-336">&#182;</a>
+          <a class="pilcrow" href="#section-340">&#182;</a>
         </div>
         <p>called after onload()</p>
       </td>
@@ -7023,10 +7096,10 @@ may already exist</p>
       <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_didInit</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-337'>
+    <tr id='section-341'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-337">&#182;</a>
+          <a class="pilcrow" href="#section-341">&#182;</a>
         </div>
         <p>we don&rsquo;t need no steenking flash!</p>
       </td>
@@ -7039,10 +7112,10 @@ may already exist</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-338'>
+    <tr id='section-342'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-338">&#182;</a>
+          <a class="pilcrow" href="#section-342">&#182;</a>
         </div>
         <p>flash path</p>
       </td>
@@ -7054,10 +7127,10 @@ may already exist</p>
       <span class="nx">_wDS</span><span class="p">(</span><span class="s1">&#39;flashJS&#39;</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-339'>
+    <tr id='section-343'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-339">&#182;</a>
+          <a class="pilcrow" href="#section-343">&#182;</a>
         </div>
         <p>attempt to talk to Flash</p>
       </td>
@@ -7065,10 +7138,10 @@ may already exist</p>
         <div class='highlight'><pre>      <span class="nx">_s</span><span class="p">.</span><span class="nx">o</span><span class="p">.</span><span class="nx">_externalInterfaceTest</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-340'>
+    <tr id='section-344'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-340">&#182;</a>
+          <a class="pilcrow" href="#section-344">&#182;</a>
         </div>
         <p>apply user-specified polling interval, OR, if &ldquo;high performance&rdquo; set, faster vs. default polling
 (determines frequency of whileloading/whileplaying callbacks, effectively driving UI framerates)</p>
@@ -7079,10 +7152,10 @@ may already exist</p>
       <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_s</span><span class="p">.</span><span class="nx">debugMode</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-341'>
+    <tr id='section-345'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-341">&#182;</a>
+          <a class="pilcrow" href="#section-345">&#182;</a>
         </div>
         <p>stop the SWF from making debug output calls to JS</p>
       </td>
@@ -7096,10 +7169,10 @@ may already exist</p>
       <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_s</span><span class="p">.</span><span class="nx">html5Only</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-342'>
+    <tr id='section-346'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-342">&#182;</a>
+          <a class="pilcrow" href="#section-346">&#182;</a>
         </div>
         <p>prevent browser from showing cached page state (or rather, restoring &ldquo;suspended&rdquo; page state) via back button, because flash may be dead
 http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/</p>
@@ -7115,10 +7188,10 @@ http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/</p>
       <span class="nx">_catchError</span><span class="p">({</span><span class="nx">type</span><span class="o">:</span><span class="s1">&#39;JS_TO_FLASH_EXCEPTION&#39;</span><span class="p">,</span> <span class="nx">fatal</span><span class="o">:</span><span class="kc">true</span><span class="p">});</span></pre></div>
       </td>
     </tr>
-    <tr id='section-343'>
+    <tr id='section-347'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-343">&#182;</a>
+          <a class="pilcrow" href="#section-347">&#182;</a>
         </div>
         <p>don&rsquo;t disable, for reboot()</p>
       </td>
@@ -7133,10 +7206,10 @@ http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/</p>
     <span class="nx">_initComplete</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-344'>
+    <tr id='section-348'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-344">&#182;</a>
+          <a class="pilcrow" href="#section-348">&#182;</a>
         </div>
         <p>disconnect events</p>
       </td>
@@ -7157,10 +7230,10 @@ http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/</p>
     <span class="nx">_initDebug</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-345'>
+    <tr id='section-349'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-345">&#182;</a>
+          <a class="pilcrow" href="#section-349">&#182;</a>
         </div>
         <p>Temporary feature: allow force of HTML5 via URL params: sm2-usehtml5audio=0 or 1
 Ditto for sm2-preferFlash, too.
@@ -7191,10 +7264,10 @@ Ditto for sm2-preferFlash, too.
     <span class="p">}());</span></pre></div>
       </td>
     </tr>
-    <tr id='section-346'>
+    <tr id='section-350'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-346">&#182;</a>
+          <a class="pilcrow" href="#section-350">&#182;</a>
         </div>
         <p></d></p>
       </td>
@@ -7204,10 +7277,10 @@ Ditto for sm2-preferFlash, too.
       <span class="nx">_s</span><span class="p">.</span><span class="nx">useHTML5Audio</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-347'>
+    <tr id='section-351'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-347">&#182;</a>
+          <a class="pilcrow" href="#section-351">&#182;</a>
         </div>
         <p>make sure we aren&rsquo;t preferring flash, either
 TODO: preferFlash should not matter if flash is not installed. Currently, stuff breaks without the below tweak.</p>
@@ -7225,10 +7298,10 @@ TODO: preferFlash should not matter if flash is not installed. Currently, stuff 
       <span class="nx">_s</span><span class="p">.</span><span class="nx">_wD</span><span class="p">(</span><span class="s1">&#39;SoundManager: Fatal error: Flash is needed to play some required formats, but is not available.&#39;</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-348'>
+    <tr id='section-352'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-348">&#182;</a>
+          <a class="pilcrow" href="#section-352">&#182;</a>
         </div>
         <p>TODO: Fatal here vs. timeout approach, etc.
 hack: fail sooner.</p>
@@ -7258,10 +7331,10 @@ hack: fail sooner.</p>
   <span class="p">};</span></pre></div>
       </td>
     </tr>
-    <tr id='section-349'>
+    <tr id='section-353'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-349">&#182;</a>
+          <a class="pilcrow" href="#section-353">&#182;</a>
         </div>
         <p>sniff up-front</p>
       </td>
@@ -7269,10 +7342,10 @@ hack: fail sooner.</p>
         <div class='highlight'><pre>  <span class="nx">_detectFlash</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-350'>
+    <tr id='section-354'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-350">&#182;</a>
+          <a class="pilcrow" href="#section-354">&#182;</a>
         </div>
         <p>focus and window load, init (primarily flash-driven)</p>
       </td>
@@ -7284,10 +7357,10 @@ hack: fail sooner.</p>
   <span class="k">if</span> <span class="p">(</span><span class="nx">_isSafari</span> <span class="o">&amp;&amp;</span> <span class="nx">_tryInitOnFocus</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-351'>
+    <tr id='section-355'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-351">&#182;</a>
+          <a class="pilcrow" href="#section-355">&#182;</a>
         </div>
         <p>massive Safari 3.1 focus detection hack</p>
       </td>
@@ -7306,10 +7379,10 @@ hack: fail sooner.</p>
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-352'>
+    <tr id='section-356'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-352">&#182;</a>
+          <a class="pilcrow" href="#section-356">&#182;</a>
         </div>
         <p>no add/attachevent support &ndash; safe to assume no JS &ndash;&gt; Flash either</p>
       </td>
@@ -7322,10 +7395,10 @@ hack: fail sooner.</p>
   <span class="k">if</span> <span class="p">(</span><span class="nx">_doc</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="s1">&#39;complete&#39;</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-353'>
+    <tr id='section-357'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-353">&#182;</a>
+          <a class="pilcrow" href="#section-357">&#182;</a>
         </div>
         <p>DOMReady has already happened.</p>
       </td>
@@ -7336,10 +7409,10 @@ hack: fail sooner.</p>
 <span class="p">}</span> <span class="c1">// SoundManager()</span></pre></div>
       </td>
     </tr>
-    <tr id='section-354'>
+    <tr id='section-358'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-354">&#182;</a>
+          <a class="pilcrow" href="#section-358">&#182;</a>
         </div>
         <p>SM2_DEFER details: http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading</p>
       </td>
