@@ -129,9 +129,9 @@
 			
 			<div class="c2">
 				<h3>Download SoundManager 2</h3>
-				<p><b>Latest changes:</b> Code clean-up, improved comments and formatting, generated documentation, polling and <code>onbefore-</code> removal, HTML5 <code>stop()</code>/<code>unload()</code> fixes. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> HTML5 <code>unload()</code> improvements, Android 2.3 fix, new <code>onsuspend()</code> event and more. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20110918.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20110918</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20111030.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20111030</a></p>
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
 				<p><b>Performance tip:</b> SM2's code size varies from over 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 				<p><b>Side reading + video:</b> An article on the issues, promise and future, <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>. There is also a <a href="http://www.yuiblog.com/blog/2011/06/29/video-f2esummit2011-schiller/" title="Yahoo!/YUI Blog, video presentation: Scott Schiller on the State of HTML5 Audio">video presentation + turntable demo</a> (with slides) given at a Yahoo! Front-end Engineering summit.</p>
@@ -158,6 +158,94 @@
 			  	<p>A changelog of sorts.</p>
 
 			  	<ul id="revision-list" class="standard">
+
+			   		<li id="sm2-20111030" class="in">
+
+						<h3><b>V2.97a.20111030</b> - HTML5 <code>unload()</code> improvements, Android 2.3 fix and new <code>onsuspend()</code> event</h3>
+
+						<p>Fixes for HTML5 <code>unload()</code> on Webkit (connection was not closing), playback on Android 2.3, and IE 9 "not implemented" / unsupported HTML5 case. Addition of <code>onsuspend()</code> HTML5 event, possibly applicable to iOS where stalled events suggest that user action is needed to play or resume audio playback.</p>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+
+										<p>HTML5 <code>unload()</code>: Correctly apply <code>about:blank</code> (_emptyURL default) to everyone except Firefox, which allegedly likes <code>''</code>. Webkit was not actually closing the connection of loading streams, in this case.</p>
+
+									</li>
+
+									<li>
+
+										<p>HTML5 audio playback fix for Android 2.3 (Honeycomb), which doesn't seem to like <code>new Audio('foo.mp3')</code> followed by <code>load()</code> -> <code>play()</code>; first request/attempt stalls and eventually fires <code>ended</code> event. Rather odd. (<a href="http://getsatisfaction.com/schillmania/topics/soundmanager2_on_android">Related discussion</a>.)</p>
+
+									</li>
+
+									<li>
+
+										<p>Added <code>try...catch</code> for dumb IE 9 <code>Audio()</code> "not implemented" error in Windows server case without "desktop experience" installed, means no HTML5 audio/video support. Hat tip: <a href="https://github.com/Modernizr/Modernizr/issues/224">Modernizr issue 224</a></p>
+
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API updates</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+
+										<p>Added <code>soundManager.noSWFCache</code> (boolean) for easy cache busting - good for dev/testing. SWFs tend to be aggressively cached by browsers, especially in offline cases.</p>
+
+									</li>
+
+									<li>
+										<p>HTML5 <code>suspend</code> events are now listened for and fired via SMSound option <code>onsuspend()</code>. This event may be the best way to detect when mobile Safari (eg. iOS) is blocking autoplay-style behaviour, and user interaction is required to start or resume playback.</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+
+										<p>Fix "playable MP3 links" demo for iOS, playing 2nd+ sound now works. Due to single sound object reuse, "old" sound must be paused before new one is created. Previously, playing sound 1 -&gt; sound 2 -&gt; sound 1 would fail.</p>
+
+									</li>
+
+									<li>
+
+										<p>Tweaked 360player behaviour to support being initialized multiple times (for dynamic content, "decorating" new MP3 links etc.)</p>
+
+									</li>
+
+									<li>
+
+										<p>Modified soundManager core property documentation to be multi-line, allowing longer comments</p>
+
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
 
 			   		<li id="sm2-20110918" class="in">
 
