@@ -981,6 +981,7 @@ li.flash9 {
 
 .deprecated {
  font-style: italic;
+ color: #333 !important;
 }
 
 .new.active,
