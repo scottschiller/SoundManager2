@@ -1946,6 +1946,13 @@ function SoundManager(smURL, smID) {
 
     this.setVolume = function(nVol, _bInstanceOnly) {
 
+      /**
+       * Note: Setting volume has no effect on iOS "special snowflake" devices.
+       * Hardware volume control overrides software, and volume
+       * will always return 1 per Apple docs. (iOS 4 + 5.)
+       * http://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/HTML-canvas-guide/AddingSoundtoCanvasAnimations/AddingSoundtoCanvasAnimations.html
+       */
+
       if (typeof nVol === 'undefined') {
         nVol = 100;
       }
