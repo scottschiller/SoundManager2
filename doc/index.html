@@ -200,6 +200,7 @@
      <li><a href="#soundmanager-load">load()</a></li>
      <li><a href="#soundmanager-mute">mute()</a></li>
      <li><a href="#soundmanager-ok">ok()</a></li>
+     <li><a href="#soundmanager-onposition">onposition()</a></li>
      <li><a href="#soundmanager-pause">pause()</a></li>
      <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
      <li><a href="#soundmanager-play">play()</a></li>
@@ -421,7 +422,7 @@ soundManager.allowPolling = true;</strong>
 
 <strong class="removed" title="Removed after v2.97a.20110801"><span><span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span></span>
 soundManager.nullURL = 'about:blank';</strong>
-</span></code></pre>
+</code></pre>
 			  <p>To modify global SoundManager default parameters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
 <pre class="block"><code>soundManager.debugMode = false;          <span><span>// disable debug mode</span></span>
@@ -843,6 +844,13 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dd title="id:string">Mutes the sound specified by ID and returns that sound object. If no ID specified, all sounds will be muted and null is returned. Affects <span>muted</span> property (boolean.)</dd>
 	   <dd>Example: <code>soundManager.mute('<span>mySound</span>');</code></dd>
 	   </dl>
+
+	   <dl id="soundmanager-onposition" class="f-block f-onposition">
+	   <dt><span>object:SMSound</span> onposition(<span>id:string, msecOffset:integer, callback:function, [scope]</span>)</dt>
+	   <dd>Registers an event listener, fired when a sound reaches or passes a certain position while playing. Position being "listened" for is passed back to event handler. Will also fire if a sound is "rewound" (eg. via <code>setPosition()</code> to an earlier point) and the given position is reached again. Listeners will be removed if a sound is unloaded. An optional scope can be passed as well.</dd>
+	   <dd>Note that for <code>multiShot</code> cases, only the first play instance's <code>position</code> is tracked in Flash; therefore, subsequent "shots" will not have onposition() events being fired.</dd>
+	   <dd>Example: <code>soundManager.onposition('mySound', 3000, function(eventPosition){<span>console.log(this.sID+' reached '+eventPosition</span>});</code></dd>
+   </dl>
 
 	   <dl id="soundmanager-onready" class="f-block f-onready">
 	   <dt>onready(<span>callback:function, [scope]</span>)</dt>
