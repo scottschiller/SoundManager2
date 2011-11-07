@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20111030
+ * V2.97a.20111030+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -19,6 +19,8 @@
  * ---------------
  * This is the fully-commented source version of the SoundManager 2 API,
  * recommended for use during development and testing.
+ *
+ * Also, as you may note: Whoa, reliable cross-platform/device audio support is hard! ;)
  *
  * See soundmanager2-nodebug-jsmin.js for an optimized build (~10KB with gzip.)
  * http://schillmania.com/projects/soundmanager2/doc/getstarted/#basic-inclusion
@@ -55,6 +57,7 @@ function SoundManager(smURL, smID) {
   this.bgColor = '#ffffff';          // movie (.swf) background color, eg. '#000000'
   this.useHighPerformance = false;   // position:fixed flash movie can help increase js/flash speed, minimize lag
   this.flashPollingInterval = null;  // msec affecting whileplaying/loading callback frequency. If null, default of 50 msec is used.
+  this.html5PollingInterval = null;  // msec affecting whileplaying() for HTML5 audio, excluding mobile devices. If null, native HTML5 update events are used.
   this.flashLoadTimeout = 1000;      // msec to wait for flash movie to load before failing (0 = infinity)
   this.wmode = null;                 // string: flash rendering mode - null, transparent, opaque (last two allow layering of HTML on top)
   this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
@@ -63,6 +66,13 @@ function SoundManager(smURL, smID) {
   this.html5Test = /^(probably|maybe)$/i; // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
   this.preferFlash = true;           // overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
   this.noSWFCache = false;           // if true, appends ?ts={date} to break aggressive SWF caching.
+
+
+  // DEV/TESTING
+  // in this case, poll HTML5 audio objects every 100 msec to get increased whileplaying() callback frequency.
+  // default (native) HTML5 progress event interval seems to be pretty high, eg., 250-500 msec.
+  this.html5PollingInterval = 50;
+
 
   this.audioFormats = {
 
@@ -182,7 +192,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20111030';
+  this.versionNumber = 'V2.97a.20111030+DEV';
   this.version = null;
   this.movieURL = null;
   this.url = (smURL || null);
@@ -271,7 +281,8 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
+  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null,
+  _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _is_firefox = _ua.match(/firefox/i), _is_android = _ua.match(/droid/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _likesHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
@@ -1270,6 +1281,13 @@ function SoundManager(smURL, smID) {
   SMSound = function(oOptions) {
 
     var _t = this, _resetProperties, _stop_html5_timer, _start_html5_timer;
+
+    var _lastHTML5State = {
+      // tracks duration + position (time)
+      duration: null,
+      time: null
+    };
+
     this.sID = oOptions.id;
     this.url = oOptions.url;
     this.options = _mixin(oOptions);
@@ -2175,9 +2193,13 @@ function SoundManager(smURL, smID) {
 
     this._onTimer = function(bForce) {
 
-      // HTML5-only _whileplaying() etc.
+      /**
+       * HTML5-only _whileplaying() etc.
+       * called from both HTML5 native events, and polling/interval-based timers
+       * mimics flash and fires only when time/duration change, so as to be polling-friendly
+       */
 
-      var time, x = {};
+      var duration, isNew = false, time, x = {};
 
       if (_t._hasTimer || bForce) {
 
@@ -2185,15 +2207,40 @@ function SoundManager(smURL, smID) {
 
         if (_t._a && (bForce || ((_t.playState > 0 || _t.readyState === 1) && !_t.paused))) {
 
-          _t.duration = _t._get_html5_duration();
+          duration = _t._get_html5_duration();
+
+          if (duration !== _lastHTML5State.duration) {
+
+            _lastHTML5State.duration = duration;
+            _t.duration = duration;
+            isNew = true;
+
+          }
+
+          // TODO: investigate why this goes wack if not set/re-set each time.
           _t.durationEstimate = _t.duration;
-          time = _t._a.currentTime?_t._a.currentTime*1000:0;
-          _t._whileplaying(time,x,x,x,x);
-          return true;
+
+          time = (_t._a.currentTime * 1000 || 0);
+
+          if (time !== _lastHTML5State.time) {
+
+            _lastHTML5State.time = time;
+            isNew = true;
+
+          }
+
+          if (isNew || bForce) {
+
+            _t._whileplaying(time,x,x,x,x);
+
+          }
+
+          return isNew;
 
         } else {
 
-         _s._wD('_onTimer: Warn for "'+_t.sID+'": '+(!_t._a?'Could not find element. ':'')+(_t.playState === 0?'playState bad, 0?':'playState = '+_t.playState+', OK'));
+          _s._wD('_onTimer: Warn for "'+_t.sID+'": '+(!_t._a?'Could not find element. ':'')+(_t.playState === 0?'playState bad, 0?':'playState = '+_t.playState+', OK'));
+
           return false;
 
         }
@@ -3763,16 +3810,81 @@ function SoundManager(smURL, smID) {
 
   _startTimer = function(oSound) {
 
+    /**
+     * attach a timer to this sound, and start an interval if needed
+     */
+
     if (!oSound._hasTimer) {
+
       oSound._hasTimer = true;
+
+      if (!_likesHTML5 && _s.html5PollingInterval) {
+
+        if (!_h5IntervalTimer && _h5TimerCount === 0) {
+
+          _h5IntervalTimer = window.setInterval(_timerExecute, _s.html5PollingInterval);
+   
+        }
+         _h5TimerCount++;
+
+      }
+
     }
 
   };
 
   _stopTimer = function(oSound) {
 
+    /**
+     * detach a timer
+     */
+
     if (oSound._hasTimer) {
+
       oSound._hasTimer = false;
+
+      if (!_likesHTML5 && _s.html5PollingInterval) {
+
+        // interval will stop itself at next execution.
+
+        _h5TimerCount--;
+
+      }
+
+    }
+
+  };
+
+  _timerExecute = function() {
+
+    /**
+     * manual polling for HTML5 progress events, ie., whileplaying() (can achieve greater precision than conservative default HTML5 interval)
+     */
+
+    var i, j;
+
+    if (_h5IntervalTimer && !_h5TimerCount) {
+
+      // no active timers, stop polling interval.
+
+      window.clearInterval(_h5IntervalTimer);
+
+      _h5IntervalTimer = null;
+
+      return false;
+
+    }
+
+    // check all HTML5 sounds with timers
+
+    for (i = _s.soundIDs.length; i--;) {
+
+      if (_s.sounds[_s.soundIDs[i]].isHTML5 && _s.sounds[_s.soundIDs[i]]._hasTimer) {
+
+        _s.sounds[_s.soundIDs[i]]._onTimer();
+
+      }
+
     }
 
   };
