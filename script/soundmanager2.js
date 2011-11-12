@@ -20,14 +20,14 @@
  * This is the fully-commented source version of the SoundManager 2 API,
  * recommended for use during development and testing.
  *
- * Also, as you may note: Whoa, reliable cross-platform/device audio support is hard! ;)
- *
  * See soundmanager2-nodebug-jsmin.js for an optimized build (~10KB with gzip.)
  * http://schillmania.com/projects/soundmanager2/doc/getstarted/#basic-inclusion
  * Alternately, serve this file with gzip for 75% compression savings (~30KB over HTTP.)
  *
  * You may notice <d> and </d> comments in this source; these are delimiters for
  * debug blocks which are removed in the -nodebug builds, further optimizing code size.
+ *
+ * Also, as you may note: Whoa, reliable cross-platform/device audio support is hard! ;)
  */
 
 (function(window) {
@@ -519,13 +519,12 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-
     return _s.sounds[sID].unload();
 
   };
 
   /**
-   * Calls the onposition() method of a SMSound object by ID.
+   * Calls the onPosition() method of a SMSound object by ID.
    *
    * @param {string} sID The ID of the sound
    * @param {number} nPosition The position to watch for
@@ -534,12 +533,33 @@ function SoundManager(smURL, smID) {
    * @return {SMSound} The SMSound object
    */
 
-  this.onposition = function(sID, nPosition, oMethod, oScope) {
+  this.onPosition = function(sID, nPosition, oMethod, oScope) {
 
     if (!_idCheck(sID)) {
       return false;
     }
     return _s.sounds[sID].onposition(nPosition, oMethod, oScope);
+
+  };
+
+  // legacy/backwards-compability: lower-case method name
+  this.onposition = this.onPosition;
+
+  /**
+   * Calls the clearOnPosition() method of a SMSound object by ID.
+   *
+   * @param {string} sID The ID of the sound
+   * @param {number} nPosition The position to watch for
+   * @param {function} oMethod Optional: The relevant callback to fire
+   * @return {SMSound} The SMSound object
+   */
+
+  this.clearOnPosition = function(sID, nPosition, oMethod) {
+
+    if (!_idCheck(sID)) {
+      return false;
+    }
+    return _s.sounds[sID].clearOnPosition(nPosition, oMethod);
 
   };
 
@@ -594,7 +614,6 @@ function SoundManager(smURL, smID) {
 
     if (!_idCheck(sID)) {
       return false;
-
     }
     return _s.sounds[sID].setPosition(nMsecOffset);
 
@@ -612,6 +631,7 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
+
     _s._wD(_sm+'.stop(' + sID + ')', 1);
     return _s.sounds[sID].stop();
 
@@ -844,7 +864,6 @@ function SoundManager(smURL, smID) {
     if (!_idCheck(sID)) {
       return false;
     }
-
     return _s.sounds[sID].toggleMute();
 
   };
@@ -1660,7 +1679,7 @@ function SoundManager(smURL, smID) {
       if (_t.playState === 1) {
 
         _t._onbufferchange(0);
-        _t.resetOnPosition(0);
+        _t._resetOnPosition(0);
         _t.paused = false;
 
         if (!_t.isHTML5) {
@@ -1767,7 +1786,7 @@ function SoundManager(smURL, smID) {
       original_pos = _t.position;
       _t.position = offset;
       position1K = _t.position/1000;
-      _t.resetOnPosition(_t.position);
+      _t._resetOnPosition(_t.position);
       _t._iO.position = offset;
 
       if (!_t.isHTML5) {
@@ -2050,7 +2069,7 @@ function SoundManager(smURL, smID) {
     };
 
     /**
-     * Calls the onposition() method of a SMSound object.
+     * Registers a callback to be fired when a sound reaches a given position during playback.
      *
      * @param {number} nPosition The position to watch for
      * @param {function} oMethod The relevant callback to fire
@@ -2058,14 +2077,14 @@ function SoundManager(smURL, smID) {
      * @return {SMSound} The SMSound object
      */
 
-    this.onposition = function(nPosition, oMethod, oScope) {
+    this.onPosition = function(nPosition, oMethod, oScope) {
 
       // TODO: allow for ranges, too? eg. (nPosition instanceof Array)
 
       _t._onPositionItems.push({
         position: nPosition,
         method: oMethod,
-        scope: (typeof oScope !== 'undefined'?oScope:_t),
+        scope: (typeof oScope !== 'undefined' ? oScope : _t),
         fired: false
       });
 
@@ -2073,11 +2092,49 @@ function SoundManager(smURL, smID) {
 
     };
 
+    // legacy/backwards-compability: lower-case method name
+    this.onposition = this.onPosition;
+
     /**
-     * TODO: This should be marked as pseudo-private.
+     * Removes registered callback(s) from a sound, by position and/or callback.
+     *
+     * @param {number} nPosition The position to clear callback(s) for
+     * @param {function} oMethod Optional: Identify one callback to be removed when multiple listeners exist for one position
+     * @return {SMSound} The SMSound object
      */
 
-    this.processOnPosition = function() {
+    this.clearOnPosition = function(nPosition, oMethod) {
+
+      var i, removed = 0;
+
+      nPosition = parseInt(nPosition, 10);
+
+      if (isNaN(nPosition)) {
+        // safety check
+        return false;
+      }
+
+      for (i=0; i<_t._onPositionItems.length; i++) {
+
+        if (nPosition === _t._onPositionItems[i].position) {
+          // remove this item if no method was specified, or, if the method matches
+          if (!oMethod || (oMethod === _t._onPositionItems[i].oMethod)) {
+            if (_t._onPositionItems[i].fired) {
+              // decrement "fired" counter, too
+              _t._onPositionFired--;
+            }
+            _t._onPositionItems.splice(i, 1);
+            removed++;
+          }
+        }
+
+      }
+
+      _s._wD('clearOnPosition('+nPosition+'): Removed ' + removed + ' listener' + (removed === 1 ? '' : 's'));
+
+    };
+
+    this._processOnPosition = function() {
 
       var i, item, j = _t._onPositionItems.length;
 
@@ -2089,8 +2146,8 @@ function SoundManager(smURL, smID) {
         item = _t._onPositionItems[i];
         if (!item.fired && _t.position >= item.position) {
           item.fired = true;
-          _s._onPositionFired++;
-          item.method.apply(item.scope,[item.position]);
+          _t._onPositionFired++;
+          item.method.apply(item.scope, [item.position]);
         }
       }
 
@@ -2098,7 +2155,7 @@ function SoundManager(smURL, smID) {
 
     };
 
-    this.resetOnPosition = function(nPosition) {
+    this._resetOnPosition = function(nPosition) {
 
       // reset "fired" for items interested in this position
       var i, item, j = _t._onPositionItems.length;
@@ -2111,7 +2168,7 @@ function SoundManager(smURL, smID) {
         item = _t._onPositionItems[i];
         if (item.fired && nPosition <= item.position) {
           item.fired = false;
-          _s._onPositionFired--;
+          _t._onPositionFired--;
         }
       }
 
@@ -2151,7 +2208,7 @@ function SoundManager(smURL, smID) {
       _t.bytesLoaded = null;
       _t.bytesTotal = null;
       _t.position = null;
-      _t.duration = (_t._iO && _t._iO.duration?_t._iO.duration:null);
+      _t.duration = (_t._iO && _t._iO.duration ? _t._iO.duration : null);
       _t.durationEstimate = null;
       _t.failures = 0;
       _t.loaded = false;
@@ -2342,7 +2399,7 @@ function SoundManager(smURL, smID) {
       }
 
       // boolean instead of "loop", for webkit? - spec says string. http://www.w3.org/TR/html-markup/audio.html#audio.attrs.loop
-      _a.loop = (_iO.loops>1?'loop':'');
+      _a.loop = (_iO.loops > 1 ? 'loop' : '');
 
       return _a;
 
@@ -2404,8 +2461,8 @@ function SoundManager(smURL, smID) {
 
       var fN = 'SMSound._onload(): ', loadOK = !!(nSuccess);
       _s._wD(fN + '"' + _t.sID + '"' + (loadOK?' loaded.':' failed to load? - ' + _t.url), (loadOK?1:2));
-      // <d>
 
+      // <d>
       if (!loadOK && !_t.isHTML5) {
         if (_s.sandbox.noRemote === true) {
           _s._wD(fN + _str('noNet'), 1);
@@ -2456,7 +2513,7 @@ function SoundManager(smURL, smID) {
      * to continue playing / loading the audio file.
      */
 
-    this._onsuspend = function () {
+    this._onsuspend = function() {
 
       if (_t._iO.onsuspend) {
         _s._wD('SMSound._onsuspend()');
@@ -2489,8 +2546,9 @@ function SoundManager(smURL, smID) {
 
       // store local copy before it gets trashed..
       var _io_onfinish = _t._iO.onfinish;
+
       _t._onbufferchange(0);
-      _t.resetOnPosition(0);
+      _t._resetOnPosition(0);
 
       // reset some state items
       if (_t.instanceCount) {
@@ -2562,7 +2620,7 @@ function SoundManager(smURL, smID) {
       }
 
       _t.position = nPosition;
-      _t.processOnPosition();
+      _t._processOnPosition();
 
       if (!_t.isHTML5 && _fV > 8) {
 
@@ -2653,7 +2711,7 @@ function SoundManager(smURL, smID) {
         }
 
         if (_t._iO.onconnect) {
-          _t._iO.onconnect.apply(_t,[bSuccess]);
+          _t._iO.onconnect.apply(_t, [bSuccess]);
         }
 
       }
@@ -2736,6 +2794,7 @@ function SoundManager(smURL, smID) {
       } else if (len === 3) {
         args.push(false);
       }
+
       return args;
 
     }

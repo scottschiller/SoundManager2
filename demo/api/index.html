@@ -329,7 +329,7 @@ s.play({
 <p>Looping is possible as shown above using Flash 9. <b>With flash 8, the sound must be preloaded before looping can begin</b> - eg. <code>autoLoad: true, onload: function() { this.play{loops:3} }</code>. For tighter looping, see See <a href="http://www.flickr.com/photos/schill/4499319436/" title="Seamless looping MP3 sounds in Flash">Seamless Looping MP3 in Flash</a> for further details.</p>
 
 
-<h2 id="onposition">Demo 4e: Sound timing notifications using onposition()</h2>
+<h2 id="onposition">Demo 4e: Sound timing notifications using onPosition()</h2>
 <pre id="demo4e" class="block"><code>var s = soundManager.getSoundById('<span>aCymbalSound</span>'); <span><span>// existing sound object</span></span>
 
 <span><span>// register some listeners (only do this once, they will work for subsequent plays)</span></span>
@@ -337,11 +337,11 @@ s.play({
 if (typeof addedListeners === '<span>undefined</span>') {
   addedListeners = true;
 
-  s.onposition(<span>500</span>, function(eventPosition) { <span><span>// fire at 0.5 seconds</span></span>
+  s.onPosition(<span>500</span>, function(eventPosition) { <span><span>// fire at 0.5 seconds</span></span>
     soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
   });
 
-  s.onposition(<span>1000</span>, function(eventPosition) {<span><span>// fire at 1 second</span></span>
+  s.onPosition(<span>1000</span>, function(eventPosition) {<span><span>// fire at 1 second</span></span>
     soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
   });
 }
@@ -355,8 +355,53 @@ s.play({
 </code></pre>
 
 <button onclick="return doEval(document.getElementById('demo4e').innerHTML);return false">Do this</button>
-<p>onposition() allows you to add an event listener for a given time (in miliseconds, watching the position property); the event fires when that time has been reached while a sound is playing.</p>
+<p>onPosition() allows you to add an event listener for a given time (in miliseconds, watching the position property); the event fires when that time has been reached while a sound is playing.</p>
 <p>Note that for multiShot cases, the listeners will only fire for the original (first) shot because its position is the only one that is tracked within Flash.</p>
+
+<!-- foo -->
+
+<h2 id="onposition-2">Demo 4f: Sound timing with onPosition() and clearOnPosition()</h2>
+<pre id="demo4f" class="block"><code>var s = soundManager.getSoundById('<span>aCymbalSound</span>'); <span><span>// existing sound object</span></span>
+
+<span><span>// clear listeners from prior demo, if they were assigned...</span></span>
+
+if (typeof addedListeners !== '<span>undefined</span>') {
+
+  soundManager._writeDebug(<span>'Removing previous demo listeners...'</span>);
+  s.clearOnPosition(<span>500</span>);<span><span> // remove 500 msec listener</span></span>
+  s.clearOnPosition(<span>1000</span>);<span><span> // remove 1000 msec listener</span></span>
+
+}
+
+s.onPosition(<span>750</span>, function(eventPosition) { <span><span>// fire at 0.75 seconds</span></span>
+
+  soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
+  <span><span>// and now, remove the listener using the eventPosition specified in this callback</span></span>
+  <span><span>// so next time the sound plays, this listener will not fire</span></span>
+  this.clearOnPosition(eventPosition);
+
+});
+
+s.play({
+  whileplaying: function() {
+    <span><span>// demo only: show sound position while playing, for context</span></span>
+    soundManager._writeDebug('position = ' + this.position);
+  },
+  onfinish: function() {
+    <span><span>// when the sound finishes, play it once more to show that the listener does not fire.</span></span>
+    soundManager._writeDebug(<span>'Playing once more, onPosition() should not fire'</span>);
+    this.play({
+      onfinish: function() {
+        soundManager._writeDebug('"' + this.sID + '" finished.');
+      }
+    });
+  }
+});
+</code></pre>
+
+<button onclick="return doEval(document.getElementById('demo4f').innerHTML);return false">Do this</button>
+<p>When onPosition() is used, a listener is added and a callback is fired when the sound reaches the desired position. To remove the listener, clearOnPosition() is called using the same position value.</p>
+
  
 <h2>Demo 5a: Set sound parameters, then play</h2>
 <pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>'); <span><span>// predefined/preloaded sound</span></span>
