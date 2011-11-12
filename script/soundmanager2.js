@@ -3879,12 +3879,13 @@ function SoundManager(smURL, smID) {
 
       if (!_likesHTML5 && _s.html5PollingInterval) {
 
-        if (!_h5IntervalTimer && _h5TimerCount === 0) {
+        if (_h5IntervalTimer === null && _h5TimerCount === 0) {
 
           _h5IntervalTimer = window.setInterval(_timerExecute, _s.html5PollingInterval);
    
         }
-         _h5TimerCount++;
+
+        _h5TimerCount++;
 
       }
 
@@ -3922,7 +3923,7 @@ function SoundManager(smURL, smID) {
 
     var i, j;
 
-    if (_h5IntervalTimer && !_h5TimerCount) {
+    if (_h5IntervalTimer !== null && !_h5TimerCount) {
 
       // no active timers, stop polling interval.
 
