@@ -125,6 +125,7 @@ function SoundManager(smURL, smID) {
     'onpause': null,          // callback for "pause"
     'onresume': null,         // callback for "resume" (pause toggle)
     'whileplaying': null,     // callback during play (position update)
+    'onposition': null,       // object containing times and function callbacks for positions of interest
     'onstop': null,           // callback for "user stop"
     'onfailure': null,        // callback function for when playing fails
     'onfinish': null,         // callback function for "sound finished playing"
@@ -1299,7 +1300,7 @@ function SoundManager(smURL, smID) {
 
   SMSound = function(oOptions) {
 
-    var _t = this, _resetProperties, _stop_html5_timer, _start_html5_timer;
+    var _t = this, _resetProperties, _stop_html5_timer, _start_html5_timer, _attachOnPosition, _detachOnPosition;
 
     var _lastHTML5State = {
       // tracks duration + position (time)
@@ -1628,6 +1629,12 @@ function SoundManager(smURL, smID) {
       } else {
 
         _s._wD(fN+'"'+ _t.sID+'" is starting to play');
+
+        // if first play and onposition parameters exist, apply them now
+        if (_t.playState === 0 && _t._iO.onposition) {
+          _attachOnPosition(_t);
+        }
+
         _t.playState = 1;
         _t.paused = false;
 
@@ -1685,6 +1692,9 @@ function SoundManager(smURL, smID) {
         if (!_t.isHTML5) {
           _t.playState = 0;
         }
+
+        // remove onPosition listeners, if any
+        _detachOnPosition(_t);
 
         if (_t._iO.onstop) {
           _t._iO.onstop.apply(_t);
@@ -2081,6 +2091,8 @@ function SoundManager(smURL, smID) {
 
       // TODO: allow for ranges, too? eg. (nPosition instanceof Array)
 
+      // TODO: basic dupe checking?
+
       _t._onPositionItems.push({
         position: nPosition,
         method: oMethod,
@@ -2105,7 +2117,7 @@ function SoundManager(smURL, smID) {
 
     this.clearOnPosition = function(nPosition, oMethod) {
 
-      var i, removed = 0;
+      var i;
 
       nPosition = parseInt(nPosition, 10);
 
@@ -2118,19 +2130,16 @@ function SoundManager(smURL, smID) {
 
         if (nPosition === _t._onPositionItems[i].position) {
           // remove this item if no method was specified, or, if the method matches
-          if (!oMethod || (oMethod === _t._onPositionItems[i].oMethod)) {
+          if (!oMethod || (oMethod === _t._onPositionItems[i].method)) {
             if (_t._onPositionItems[i].fired) {
               // decrement "fired" counter, too
               _t._onPositionFired--;
             }
             _t._onPositionItems.splice(i, 1);
-            removed++;
           }
         }
 
       }
-
-      _s._wD('clearOnPosition('+nPosition+'): Removed ' + removed + ' listener' + (removed === 1 ? '' : 's'));
 
     };
 
@@ -2177,9 +2186,54 @@ function SoundManager(smURL, smID) {
     };
 
     /**
-     * SoundManager() private internals
+     * SMSound() private internals
      * --------------------------------
      */
+
+    _attachOnPosition = function() {
+
+      var op = _t._iO.onposition;
+
+      // attach onposition things, if any, now.
+
+      if (op) {
+
+        var item;
+
+        for (item in op) {
+
+          if (op.hasOwnProperty(item)) {
+            _t.onPosition(parseInt(item, 10), op[item]); 
+
+          }
+
+        }
+
+      }
+
+    };
+
+    _detachOnPosition = function() {
+
+      var op = _t._iO.onposition;
+
+      // detach any onposition()-style listeners.
+
+      if (op) {
+
+        var item;
+
+        for (item in op) {
+
+          if (op.hasOwnProperty(item)) {
+            _t.clearOnPosition(parseInt(item, 10));
+          }
+
+        }
+
+      }
+
+    };
 
     _start_html5_timer = function() {
 
@@ -2554,7 +2608,12 @@ function SoundManager(smURL, smID) {
       if (_t.instanceCount) {
 
         _t.instanceCount--;
+
         if (!_t.instanceCount) {
+
+          // remove onPosition listeners, if any
+          _detachOnPosition(_t);
+
           // reset instance options
           _t.playState = 0;
           _t.paused = false;
@@ -2562,6 +2621,7 @@ function SoundManager(smURL, smID) {
           _t.instanceOptions = {};
           _t._iO = {};
           _stop_html5_timer();
+
         }
 
         if (!_t.instanceCount || _t._iO.multiShotEvents) {
