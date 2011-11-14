@@ -770,7 +770,10 @@ function SoundManager(smURL, smID) {
         if (!_t.isHTML5) {
           _t.playState = 0;
         }
-        _detachOnPosition(_t);
+        _detachOnPosition();
+        if (_t._iO.to) {
+          _t.clearOnPosition(_t._iO.to);
+        }
         if (_t._iO.onstop) {
           _t._iO.onstop.apply(_t);
         }
@@ -1242,7 +1245,7 @@ function SoundManager(smURL, smID) {
       if (_t.instanceCount) {
         _t.instanceCount--;
         if (!_t.instanceCount) {
-          _detachOnPosition(_t);
+          _detachOnPosition();
           _t.playState = 0;
           _t.paused = false;
           _t.instanceCount = 0;

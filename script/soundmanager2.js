@@ -1758,7 +1758,12 @@ function SoundManager(smURL, smID) {
         }
 
         // remove onPosition listeners, if any
-        _detachOnPosition(_t);
+        _detachOnPosition();
+
+        // and "to" position, if set
+        if (_t._iO.to) {
+          _t.clearOnPosition(_t._iO.to);
+        }
 
         if (_t._iO.onstop) {
           _t._iO.onstop.apply(_t);
@@ -1767,6 +1772,7 @@ function SoundManager(smURL, smID) {
         if (!_t.isHTML5) {
 
           _s.o._stop(_t.sID, bAll);
+
           // hack for netStream: just unload
           if (_t._iO.serverURL) {
             _t.unload();
@@ -2710,7 +2716,7 @@ function SoundManager(smURL, smID) {
         if (!_t.instanceCount) {
 
           // remove onPosition listeners, if any
-          _detachOnPosition(_t);
+          _detachOnPosition();
 
           // reset instance options
           _t.playState = 0;
