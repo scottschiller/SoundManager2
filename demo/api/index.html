@@ -341,7 +341,7 @@ if (typeof addedListeners === '<span>undefined</span>') {
     soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
   });
 
-  s.onPosition(<span>1000</span>, function(eventPosition) {<span><span>// fire at 1 second</span></span>
+  s.onPosition(<span>1000</span>, function(eventPosition) { <span><span>// fire at 1 second</span></span>
     soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
   });
 }
@@ -357,8 +357,6 @@ s.play({
 <button onclick="return doEval(document.getElementById('demo4e').innerHTML);return false">Do this</button>
 <p>onPosition() allows you to add an event listener for a given time (in miliseconds, watching the position property); the event fires when that time has been reached while a sound is playing.</p>
 <p>Note that for multiShot cases, the listeners will only fire for the original (first) shot because its position is the only one that is tracked within Flash.</p>
-
-<!-- foo -->
 
 <h2 id="onposition-2">Demo 4f: Sound timing with onPosition() and clearOnPosition()</h2>
 <pre id="demo4f" class="block"><code>var s = soundManager.getSoundById('<span>aCymbalSound</span>'); <span><span>// existing sound object</span></span>
@@ -385,14 +383,14 @@ s.onPosition(<span>750</span>, function(eventPosition) { <span><span>// fire at 
 s.play({
   whileplaying: function() {
     <span><span>// demo only: show sound position while playing, for context</span></span>
-    soundManager._writeDebug('position = ' + this.position);
+    soundManager._writeDebug(<span>'position = ' + this.position</span>);
   },
   onfinish: function() {
     <span><span>// when the sound finishes, play it once more to show that the listener does not fire.</span></span>
     soundManager._writeDebug(<span>'Playing once more, onPosition() should not fire'</span>);
     this.play({
       onfinish: function() {
-        soundManager._writeDebug('"' + this.sID + '" finished.');
+        soundManager._writeDebug(<span>'"' + this.sID + '" finished.'</span>);
       }
     });
   }
@@ -402,7 +400,32 @@ s.play({
 <button onclick="return doEval(document.getElementById('demo4f').innerHTML);return false">Do this</button>
 <p>When onPosition() is used, a listener is added and a callback is fired when the sound reaches the desired position. To remove the listener, clearOnPosition() is called using the same position value.</p>
 
- 
+<!-- foo -->
+
+<h2 id="from-to">Demo 4g: Sound splicing / sampling with from: and to: parameters</h2>
+<pre id="demo4g" class="block"><code>var spliceDemo = soundManager.createSound({
+  id: '<span>spliceSound</span>',
+  url: '<span>../mpc/audio/AMB_HHOP.mp3</span>'
+});
+
+spliceDemo.stop(); <span><span>// optional: stop before re-starting sound (covers overlapping play attempts)</span></span>
+
+spliceDemo.play({
+  from: <span>500</span>, <span><span>// start playing at 500 msec</span></span>
+  to: <span>1200</span>,  <span><span>// end at 1200 msec</span></span>
+  onstop: function() {
+    soundManager._writeDebug(<span>'sound stopped at position ' + this.position</span>);
+    <span><span>// note that the "to" target may be over-shot by 200+ msec, depending on polling and other factors.</span></span>
+  }
+});
+</code></pre>
+
+<button onclick="return doEval(document.getElementById('demo4g').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('spliceSound');soundManager.play('spliceSound','../mpc/audio/AMB_HHOP.mp3');return false">Play full sound</button>
+<p>By specifying "from" and "to" parameters to methods like play() and createSound(), you may play a sample (or segment) of audio from a larger file. An audio "sprite" of one file with many sounds is one way to think of this. Given timing accuracy of the "to" target may vary a lot, it is safest to have perhaps 500-msec gaps of silence between distinct sounds to ensure that no accidental overlaps occur.</p>
+<p>To tighten the accuracy of the "to" timing, <a href="?flash9-highperformance#from-to" onclick="window.location.replace(this.href);window.location.reload()">try using soundManager.useHighPerformance and soundManager.useFastPolling</a>.</p>
+<p>If HTML5 audio is being used, the sound should begin playing once a "canplay" event fires (after a connection has established), and the sound will then seek to the correct start position. When using flash, the whole audio file will be loaded before playback can begin.</p>
+<p>Given limitations, Flash 9's multiShot (chorusing) mode does not apply here. If you wish to trigger a sound numerous times, call stop() before play() to reset the sound each time, or make multiple sound objects that reuse the same sprite.</p>
+
 <h2>Demo 5a: Set sound parameters, then play</h2>
 <pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>'); <span><span>// predefined/preloaded sound</span></span>
 sound.setPosition(<span>500</span>); <span><span>// 500 msec into sound</span></span>
@@ -620,23 +643,9 @@ if (!fortyeight.loaded) {
 </code></pre>
 <button onclick="return doEval(document.getElementById('demo12').innerHTML)">Do this</button> <button onclick="soundManager.stop('s-48khz')">Make it stop!</button>
 
-<h2>Demo 13: onbeforefinish() testcase</h2>
-<p class="in">This event fires when the sound's position property is equal to or less than <code>onbeforefinishtime</code> msec from the end of the sound, as defined by <code>duration</code>. If unspecified, a default value is used (eg. 5000 msec.)</p>
-<pre id="demo13" class="block"><code>var d13 = soundManager.createSound({
-  id: '<span>demo13</span>',
-  url: '<span>../mpc/audio/CRASH_1.mp3</span>',
-  onbeforefinish: function() {
-    soundManager._writeDebug(this.sID+'<span>.onbeforefinish(): </span>'+this.position+'<span> of </span>'+this.duration);
-  },
-  onbeforefinishtime: 1000
-});
-d13.play();
-</code></pre>
-<button onclick="return doEval(document.getElementById('demo13').innerHTML)">Do this</button>
-
-<h2>Demo 14: autoLoad:true + play() testcase</h2>
+<h2>Demo 13: autoLoad:true + play() testcase</h2>
 <p>Bug testcase (Flash 8 version-specific): creating a sound with autoLoad:true and immediately calling play() does not work.</p>
-<pre id="demo14" class="block"><code>var autoLoadTest = soundManager.createSound({
+<pre id="demo13" class="block"><code>var autoLoadTest = soundManager.createSound({
    id: '<span>autoLoadTest</span>',
    url: getRandomMP3URL(),
    onload: function() {
@@ -653,12 +662,12 @@ d13.play();
   setTimeout(autoLoadTest.play,1000); <span><span>// may work with a delay?</span></span>
 </code></pre>
 <p>Under Flash 8, this case does not work as expected. Even with the delay, the sound does not begin playing as soon as expected - sometimes it fires after the sound loads, in fact. For this reason, avoid using <code class="in">autoLoad:true</code> if you intend to play the sound shortly after creating it when using Flash 8.</p>
-<button onclick="return doEval(document.getElementById('demo14').innerHTML)">Do this</button> <button onclick="soundManager.stop('autoLoadTest')">Make it stop!</button>
+<button onclick="return doEval(document.getElementById('demo13').innerHTML)">Do this</button> <button onclick="soundManager.stop('autoLoadTest')">Make it stop!</button>
 
-<h2>Demo 15: autoPlay + onfinish() testcase</h2>
+<h2>Demo 14: autoPlay + onfinish() testcase</h2>
 <p>Bug testcase (Flash 8 version-specific): onfinish() does not fire with autoPlay:true</p>
-<pre id="demo15" class="block"><code>var sound = soundManager.createSound({
- id: '<span>demo15</span>',
+<pre id="demo14" class="block"><code>var sound = soundManager.createSound({
+ id: '<span>demo14</span>',
  url: '<span>../mpc/audio/AMB_SN13.mp3</span>',
  onfinish: function() {
   soundManager._writeDebug(this.sID+'<span> finished (now destroying)</span>');
@@ -669,12 +678,12 @@ d13.play();
  multiShot: false
 });
 </code></pre>
-<button onclick="return doEval(document.getElementById('demo15').innerHTML)">Do this</button>
+<button onclick="return doEval(document.getElementById('demo14').innerHTML)">Do this</button>
 
-<h2>Demo 16: onstop() -&gt; unload() testcase</h2>
+<h2>Demo 15: onstop() -&gt; unload() testcase</h2>
 <p>Bug testcase: unload() from onstop() does not work</p>
-<pre id="demo16" class="block"><code>var sound16 = soundManager.createSound({
- id: '<span>demo16</span>',
+<pre id="demo15" class="block"><code>var sound16 = soundManager.createSound({
+ id: '<span>demo15</span>',
  url: getRandomMP3URL(),
  onstop: function() {
   soundManager.unload(this.sID);
@@ -683,16 +692,16 @@ d13.play();
    soundManager._writeDebug('<span>loaded</span>');
  }
 });
-sound16.play();
-setTimeout(sound16.stop,1500);
+sound15.play();
+setTimeout(sound15.stop,1500);
 </code></pre>
-<button onclick="return doEval(document.getElementById('demo16').innerHTML)">Do this</button>
+<button onclick="return doEval(document.getElementById('demo15').innerHTML)">Do this</button>
 
-<h2>Demo 17: Buffering event handler/property example (Flash 9 only)</h2>
+<h2>Demo 16: Buffering event handler/property example (Flash 9 only)</h2>
 <p>Reporting the isBuffering property of a SMSound object</p>
-<pre id="demo17" class="block"><code>if (soundManager.flashVersion != 8) {
-  var sound17 = soundManager.createSound({
-    id: '<span>demo17</span>',
+<pre id="demo16" class="block"><code>if (soundManager.flashVersion != 8) {
+  var sound16 = soundManager.createSound({
+    id: '<span>demo16</span>',
     url: getRandomMP3URL(),
     onbufferchange: function() {
       soundManager._writeDebug('<span>Buffering </span>'+(this.isBuffering?'<span>started</span>':'<span>stopped</span>')+'<span>.</span>');
@@ -701,10 +710,10 @@ setTimeout(sound16.stop,1500);
       soundManager._writeDebug(this.sID+'<span> loaded.</span>');
     }
   });
-  sound17.play();
+  sound16.play();
 }
 </code></pre>
-<button onclick="return doEval(document.getElementById('demo17').innerHTML)">Do this</button> <button onclick="soundManager.stop('demo17')">Make it stop!</button>
+<button onclick="return doEval(document.getElementById('demo16').innerHTML)">Do this</button> <button onclick="soundManager.stop('demo16')">Make it stop!</button>
 
 
 <span id="flash-ram-use" title="Flash plugin RAM use (across this browser)" style="position:fixed;_position:absolute;top:0.5em;right:0.5em;background:#666;color:#fff;font-weight:bold;padding:0.3em 0.4em;cursor:pointer;cursor:hand;display:none" onclick="this.style.display='none';window.clearTimeout(t)">N/A</span>
