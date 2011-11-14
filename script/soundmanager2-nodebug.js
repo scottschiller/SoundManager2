@@ -557,7 +557,7 @@ function SoundManager(smURL, smID) {
     _s.disable(true);
   };
   SMSound = function(oOptions) {
-    var _t = this, _resetProperties, _stop_html5_timer, _start_html5_timer, _attachOnPosition, _detachOnPosition;
+    var _t = this, _resetProperties, _stop_html5_timer, _start_html5_timer, _attachOnPosition, _detachOnPosition, _applyFromTo;
     var _lastHTML5State = {
       duration: null,
       time: null
@@ -593,6 +593,9 @@ function SoundManager(smURL, smID) {
         _t._iO.url = _t.url;
       }
       if (_t._iO.url === _t.url && _t.readyState !== 0 && _t.readyState !== 2) {
+        if (_t.readyState === 3 && _t._iO.onload) {
+          _t._iO.onload.apply(_t, [(!!_t.duration)]);
+        }
         return _t;
       }
       _t._lastURL = _t.url;
@@ -603,6 +606,8 @@ function SoundManager(smURL, smID) {
         oS = _t._setup_html5(_t._iO);
         if (!oS._called_load) {
           _t._html5_canplay = false;
+          _t._a.autobuffer = 'auto';
+          _t._a.preload = 'auto';
           oS.load();
           oS._called_load = true;
           if (_t._iO.autoPlay) {
@@ -665,7 +670,7 @@ function SoundManager(smURL, smID) {
       }
     };
     this.play = function(oOptions, _updatePlayState) {
-      var fN = 'SMSound.play(): ', allowMulti, a;
+      var fN = 'SMSound.play(): ', allowMulti, a, onready;
       _updatePlayState = _updatePlayState === undefined ? true : _updatePlayState;
       if (!oOptions) {
         oOptions = {};
@@ -708,14 +713,33 @@ function SoundManager(smURL, smID) {
       if (_t.paused && _t.position && _t.position > 0) {
         _t.resume();
       } else {
+        onready = function() {
+          _t._iO = _mixin(oOptions, _t._iO);
+          _t.play(_t._iO);
+        };
+        if (_t.instanceCount === 0 && _t.playState === 0 && !isNaN(_t._iO.from) && !isNaN(_t._iO.to)) {
+          if (_t.isHTML5 && !_t._html5_canplay) {
+            _t.load({
+              _oncanplay: onready
+            });
+            return false;
+          } else if (!_t.isHTML5 && !_t.loaded && (!_t.readyState || _t.readyState !== 2)) {
+            _t.load({
+              onload: onready
+            });
+            return false;
+          }
+          _t._iO = _mixin(oOptions, _t._iO);
+          _t._iO = _applyFromTo();
+        }
+        if (!_t.instanceCount || _t._iO.multiShotEvents || (!_t.isHTML5 && _fV > 8 && !_t.getAutoPlay())) {
+          _t.instanceCount++;
+        }
         if (_t.playState === 0 && _t._iO.onposition) {
           _attachOnPosition(_t);
         }
         _t.playState = 1;
         _t.paused = false;
-        if (!_t.instanceCount || _t._iO.multiShotEvents || (!_t.isHTML5 && _fV > 8 && !_t.getAutoPlay())) {
-          _t.instanceCount++;
-        }
         _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
         if (!_t.isHTML5) {
           _t._iO = _policyFix(_loopFix(_t._iO));
@@ -990,6 +1014,25 @@ function SoundManager(smURL, smID) {
       }
       return true;
     };
+    _applyFromTo = function() {
+      var f = _t._iO.from,
+          t = _t._iO.to,
+          iO = _t._iO,
+          start, end;
+      end = function() {
+        _t.clearOnPosition(t, end);
+        _t.stop();
+      };
+      start = function() {
+        _t.onPosition(t, end);
+      };
+      if (!isNaN(f)) {
+        iO.position = f;
+        iO.multiShot = false;
+        start();
+      }
+      return iO;
+    };
     _attachOnPosition = function() {
       var op = _t._iO.onposition;
       if (op) {
@@ -1119,10 +1162,7 @@ function SoundManager(smURL, smID) {
       _t._add_html5_events();
       _a.loop = (_iO.loops>1?'loop':'');
       if (_iO.autoLoad || _iO.autoPlay) {
-        _a.autobuffer = 'auto';
-        _a.preload = 'auto';
         _t.load();
-        _a._called_load = true;
       } else {
         _a.autobuffer = false;
         _a.preload = 'none';
@@ -1400,6 +1440,9 @@ function SoundManager(smURL, smID) {
           this.currentTime = position1K;
         } catch(ee) {
         }
+      }
+      if (this._t._iO._oncanplay) {
+        this._t._iO._oncanplay();
       }
     }),
     load: _html5_event(function(e) {
