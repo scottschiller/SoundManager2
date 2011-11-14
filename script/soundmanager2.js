@@ -1747,6 +1747,8 @@ function SoundManager(smURL, smID) {
 
     this.stop = function(bAll) {
 
+      var _iO = _t._iO, _oP;
+
       if (_t.playState === 1) {
 
         _t._onbufferchange(0);
@@ -1761,12 +1763,8 @@ function SoundManager(smURL, smID) {
         _detachOnPosition();
 
         // and "to" position, if set
-        if (_t._iO.to) {
-          _t.clearOnPosition(_t._iO.to);
-        }
-
-        if (_t._iO.onstop) {
-          _t._iO.onstop.apply(_t);
+        if (_iO.to) {
+          _t.clearOnPosition(_iO.to);
         }
 
         if (!_t.isHTML5) {
@@ -1774,7 +1772,7 @@ function SoundManager(smURL, smID) {
           _s.o._stop(_t.sID, bAll);
 
           // hack for netStream: just unload
-          if (_t._iO.serverURL) {
+          if (_iO.serverURL) {
             _t.unload();
           }
 
@@ -1782,10 +1780,16 @@ function SoundManager(smURL, smID) {
 
           if (_t._a) {
 
+            _oP = _t.position;
+
             // act like Flash, though
             _t.setPosition(0);
 
+            // hack: reflect old position for onstop() (also like Flash)
+            _t.position = _oP;
+
             // html5 has no stop()
+            // NOTE: pausing means iOS requires interaction to resume.
             _t._a.pause();
 
             _t.playState = 0;
@@ -1801,6 +1805,10 @@ function SoundManager(smURL, smID) {
 
         _t.instanceCount = 0;
         _t._iO = {};
+
+        if (_iO.onstop) {
+          _iO.onstop.apply(_t);
+        }
 
       }
 
