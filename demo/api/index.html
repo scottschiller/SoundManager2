@@ -400,8 +400,6 @@ s.play({
 <button onclick="return doEval(document.getElementById('demo4f').innerHTML);return false">Do this</button>
 <p>When onPosition() is used, a listener is added and a callback is fired when the sound reaches the desired position. To remove the listener, clearOnPosition() is called using the same position value.</p>
 
-<!-- foo -->
-
 <h2 id="from-to">Demo 4g: Sound splicing / sampling with from: and to: parameters</h2>
 <pre id="demo4g" class="block"><code>var spliceDemo = soundManager.createSound({
   id: '<span>spliceSound</span>',
@@ -425,6 +423,73 @@ spliceDemo.play({
 <p>To tighten the accuracy of the "to" timing, <a href="?flash9-highperformance#from-to" onclick="window.location.replace(this.href);window.location.reload()">try using soundManager.useHighPerformance and soundManager.useFastPolling</a>.</p>
 <p>If HTML5 audio is being used, the sound should begin playing once a "canplay" event fires (after a connection has established), and the sound will then seek to the correct start position. When using flash, the whole audio file will be loaded before playback can begin.</p>
 <p>Given limitations, Flash 9's multiShot (chorusing) mode does not apply here. If you wish to trigger a sound numerous times, call stop() before play() to reset the sound each time, or make multiple sound objects that reuse the same sprite.</p>
+
+<h2 id="fitter-happier">Demo 4g: "Fitter, Happier" example using from: and to: parameters</h2>
+
+<p>
+ <img src="../_image/fitter-happier-waveform.png" alt="Fitter, Happier waveform showing sound samples" />
+</p>
+
+<pre id="demo4h" class="block"><code>var fhDemo = soundManager.createSound({
+  id: '<span>fitterHappier</span>',
+  url: '<span>http://freshly-ground.com/data/audio/sm2/fitter-happier-64kbps.mp3</span>'
+});
+
+function playFromTo(nFrom, nTo) {
+  fhDemo.stop(); <span><span>// optional: stop before re-starting sound (covers overlapping play attempts)</span></span>
+  fhDemo.play({
+    from: nFrom,
+    to: nTo,
+    onstop: function() {
+      soundManager._writeDebug(<span>'sound stopped at position ' + this.position</span>);
+      <span><span>// note that the "to" target may be over-shot by 200+ msec, depending on polling and other factors.</span></span>
+    }
+  });
+}
+
+function fitterHappier() {
+  playFromTo(<span>128, 2100</span>);
+}
+
+function moreProductive() {
+  playFromTo(<span>2500, 3850</span>);
+}
+
+function comfortable() {
+  playFromTo(<span>4275, 5200</span>);
+}
+
+function notDrinkingTooMuch() {
+  playFromTo(<span>5500, 7250</span>);
+}
+
+function regularExerciseAtTheGymThreeDaysAWeek() {
+  playFromTo(<span>7600, 11500</span>);
+}
+
+function atEase() {
+  <span><span>// interesting edge case: flash may cut off sound near end.
+  // workarounds: use play({position:x}), or specify "to" time &gt; duration eg. 99999.</span></span>
+  playFromTo(<span>11735, 99999</span>);
+}
+
+<span><span>// demo-specific hack: assign to the window object, so demo buttons work</span></span>
+window.fitterHappier = fitterHappier;
+window.moreProductive = moreProductive;
+window.comfortable = comfortable;
+window.notDrinkingTooMuch = notDrinkingTooMuch;
+window.regularExerciseAtTheGymThreeDaysAWeek = regularExerciseAtTheGymThreeDaysAWeek;
+window.atEase = atEase;
+</code></pre>
+
+<script>
+// do this work up front
+soundManager.onready(function() {
+  doEval(document.getElementById('demo4h').innerHTML);
+});
+</script>
+
+<button onclick="fitterHappier();return false">fitterHappier()</button> | <button onclick="moreProductive();return false">moreProductive()</button> | <button onclick="comfortable();return false">comfortable()</button> | <button onclick="notDrinkingTooMuch();return false">notDrinkingTooMuch()</button> | <button onclick="regularExerciseAtTheGymThreeDaysAWeek();return false">regularExerciseAtTheGymThreeDaysAWeek()</button> | <button onclick="atEase();return false">atEase()</button>
 
 <h2>Demo 5a: Set sound parameters, then play</h2>
 <pre class="block"><code>var sound = soundManager.getSoundById('<span>chinaCymbal</span>'); <span><span>// predefined/preloaded sound</span></span>
