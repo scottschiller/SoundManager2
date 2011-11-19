@@ -114,8 +114,8 @@ function SoundManager(smURL, smID) {
      */
 
     'autoLoad': false,        // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
-    'stream': true,           // allows playing before entire file has loaded (recommended)
     'autoPlay': false,        // enable playing of file as soon as possible (much faster if "stream" is true)
+    'from': null,             // position to start playback within a sound (msec), default = beginning
     'loops': 1,               // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >0)
     'onid3': null,            // callback function for "ID3 data is added/available"
     'onload': null,           // callback function for "load finished"
@@ -132,6 +132,8 @@ function SoundManager(smURL, smID) {
     'multiShotEvents': false, // fire multiple sound events (currently onfinish() only) when multiShot is enabled
     'position': null,         // offset (milliseconds) to seek to within loaded sound data.
     'pan': 0,                 // "pan" settings, left-to-right, -100 to 100
+    'stream': true,           // allows playing before entire file has loaded (recommended)
+    'to': null,               // position to end playback within a sound (msec), default = end
     'type': null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     'usePolicyFile': false,   // enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)
     'volume': 100             // self-explanatory. 0-100, the latter being the max.
@@ -2171,8 +2173,6 @@ function SoundManager(smURL, smID) {
 
     this.onPosition = function(nPosition, oMethod, oScope) {
 
-      // TODO: allow for ranges, too? eg. (nPosition instanceof Array)
-
       // TODO: basic dupe checking?
 
       _t._onPositionItems.push({
@@ -2284,7 +2284,7 @@ function SoundManager(smURL, smID) {
         // end has been reached.
         _s._wD(_t.sID + ': "to" time of ' + t + ' reached.');
 
-        // detach listener?
+        // detach listener
         _t.clearOnPosition(t, end);
 
         // stop should clear this, too
@@ -2297,11 +2297,13 @@ function SoundManager(smURL, smID) {
         _s._wD(_t.sID + ': playing "from" ' + f);
 
         // add listener for end
-        _t.onPosition(t, end);
+        if (t !== null && !isNaN(t)) {
+          _t.onPosition(t, end);
+        }
 
       };
 
-      if (!isNaN(f)) {
+      if (f !== null && !isNaN(f)) {
 
         // apply to instance options, guaranteeing correct start position.
         iO.position = f;

@@ -57,8 +57,8 @@ function SoundManager(smURL, smID) {
   };
   this.defaultOptions = {
     'autoLoad': false,
-    'stream': true,
     'autoPlay': false,
+    'from': null,
     'loops': 1,
     'onid3': null,
     'onload': null,
@@ -75,6 +75,8 @@ function SoundManager(smURL, smID) {
     'multiShotEvents': false,
     'position': null,
     'pan': 0,
+    'stream': true,
+    'to': null,
     'type': null,
     'usePolicyFile': false,
     'volume': 100
@@ -1033,9 +1035,11 @@ function SoundManager(smURL, smID) {
         _t.stop();
       };
       start = function() {
-        _t.onPosition(t, end);
+        if (t !== null && !isNaN(t)) {
+          _t.onPosition(t, end);
+        }
       };
-      if (!isNaN(f)) {
+      if (f !== null && !isNaN(f)) {
         iO.position = f;
         iO.multiShot = false;
         start();
