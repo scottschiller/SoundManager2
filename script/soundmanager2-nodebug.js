@@ -1144,8 +1144,12 @@ function SoundManager(smURL, smID) {
           _dURL = d(_iO.url),
           _oldIO = (_a && _a._t ? _a._t.instanceOptions : null);
       if (_a) {
-        if (_a._t && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
-          return _a;
+        if (_a._t) {
+          if (!_useGlobalHTML5Audio && _a._t && _dURL === d(_t._lastURL)) {
+            return _a;
+          } else if (_useGlobalHTML5Audio && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
+            return _a;
+          }
         }
         if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
           _a._t.stop();
@@ -1888,10 +1892,18 @@ function SoundManager(smURL, smID) {
     var i, j, result = 0;
     if (url instanceof Array) {
       for (i=0, j=url.length; i<j; i++) {
-        if (_s.canPlayURL(url[i])) {
+        if (url[i] instanceof Object) {
+          if (_s.canPlayMIME(url[i].type)) {
+            result = i;
+            break;
+          }
+        } else if (_s.canPlayURL(url[i])) {
           result = i;
           break;
         }
+      }
+      if (url[result].url) {
+        url[result] = url[result].url;
       }
       return url[result];
     } else {

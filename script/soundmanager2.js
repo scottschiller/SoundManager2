@@ -2501,9 +2501,16 @@ function SoundManager(smURL, smID) {
 
       if (_a) {
 
-        if (_a._t && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
-          // same url, ignore request
-          return _a; 
+        if (_a._t) {
+
+          if (!_useGlobalHTML5Audio && _a._t && _dURL === d(_t._lastURL)) {
+            // same url, ignore request
+            return _a; 
+          } else if (_useGlobalHTML5Audio && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
+            // iOS-type reuse case
+            return _a;
+          }
+
         }
 
         _s._wD('setting new URL on existing object: ' + _dURL + (_t._lastURL ? ', old URL: ' + _t._lastURL : ''));
@@ -4052,7 +4059,7 @@ function SoundManager(smURL, smID) {
 
     /**
      * Internal: Finds and returns the first playable URL (or failing that, the first URL.)
-     * @param {string or array} url A single URL string, or an array of strings.
+     * @param {string or array} url A single URL string, OR, an array of URL strings or {url:'/path/to/resource', type:'audio/mp3'} objects.
      */
 
     var i, j, result = 0;
@@ -4061,10 +4068,25 @@ function SoundManager(smURL, smID) {
 
       // find the first good one
       for (i=0, j=url.length; i<j; i++) {
-        if (_s.canPlayURL(url[i])) {
+
+        if (url[i] instanceof Object) {
+          // MIME check
+          if (_s.canPlayMIME(url[i].type)) {
+            result = i;
+            break;
+          }
+
+        } else if (_s.canPlayURL(url[i])) {
+          // URL string check
           result = i;
           break;
         }
+
+      }
+
+      // normalize to string
+      if (url[result].url) {
+        url[result] = url[result].url;
       }
 
       return url[result];
