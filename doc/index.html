@@ -241,6 +241,7 @@
      <li>autoPlay</li>
      <li title="Flash 9.0r115+ only" class="flash9">bufferTime</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
+     <li><a href="#smsound-from" title="New feature" class="new">from</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
      <li>loops</li>
      <li>multiShot</li>
@@ -253,6 +254,7 @@
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-serverurl">serverURL</a></li>
      <li><a href="#smsound-sid">sID</a></li>
      <li>stream</li>
+     <li><a href="#smsound-to" title="New feature" class="new">to</a></li>
      <li><a href="#smsound-type">type</a></li>
      <li><a href="#smsound-url">url</a></li>
      <li><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
@@ -891,7 +893,7 @@ if (soundManager.canPlayURL(sURL)) {
  <span>// optional sound parameters here, see <a href="#sound-properties" title="SoundManager 2 API Info: Sound Properties Object" onclick="resetFilter()">Sound Properties</a> for full list</span>
  volume: 50,
  autoPlay: true,
- whileloading: soundIsLoading
+ whileloading: soundIsLoadingFunction
 </span>});</code></pre>
    <p>Each <code>createSound()</code> call results in the creation of a <code>SMSound</code> object which stores all properties, methods and events relevant to that particular sound instance.</p>
    <p>Individual sound objects can also easily be referenced as returned from <code>createSound()</code>:</p>
@@ -1222,7 +1224,6 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				  </div>
 
 			 </div>
-
 
 </div>
 
@@ -1593,7 +1594,6 @@ for (prop in this.id3) {
 </span>});</code></pre></dd>
 						   </dl>
 
-
 						   <dl id="smsound-waveformdata" class="f-block s-waveformdata">
 						   <dt title="Flash 9+ only" class="flash9">waveformData = {<span>left:[], right:[]</span>}</dt>
 						   <dd>Array of 256 floating-point (three decimal place) values from -1 to 1, can be used to draw a waveform while playing a sound. See <a href="../demo/page-player/#debug=1" title="Muxtape.com-style page-as-playlist, with debug output" onclick="checkDomain(this,true)">Page-as-playlist demo</a> for example implementation. Requires Flash 9+.</dd>
@@ -1669,7 +1669,7 @@ for (prop in this.id3) {
 				
 				<div class="c2">
 					
-					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-pan s-volume s-ismoviestar s-flash9options s-moviestaroptions s-buffertime s-serverurl s-onconnect">
+					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-from s-to s-pan s-volume s-ismoviestar s-flash9options s-moviestaroptions s-buffertime s-serverurl s-onconnect">
 
 					  <h3 id="sound-properties">SoundManager Global Sound Object Defaults</h3>
 
@@ -1679,6 +1679,7 @@ for (prop in this.id3) {
 <pre class="small block"><code>soundManager.defaultOptions = {<span>
   autoLoad: false,       <span>// enable automatic loading (otherwise .load() will call with .play())</span>
   autoPlay: false,       <span>// enable playing of file ASAP (much faster if "stream" is true)</span>
+  from: null,            <span>// position to start playback within a sound (msec), see <a href="../demo/api/#fitter-happier">demo</a></span>
   loops: 1,              <span>// number of times to play the sound. Related: <a href="../demo/api/#looping">looping</a> (API demo)</span>
   multiShot: true,       <span>// let sounds "restart" or "chorus" when played multiple times..</span>
   multiShotEvents: false,<span>// allow events (onfinish()) to fire for each shot, if supported.</span>
@@ -1686,22 +1687,23 @@ for (prop in this.id3) {
   onload: null,          <span>// callback function for "load finished"</span>
   onstop: null,          <span>// callback for "user stop"</span>
   onfinish: null,        <span>// callback function for "sound finished playing"</span>
+  onpause: null,         <span>// callback for "pause"</span>
+  onplay: null,          <span>// callback for "play" start</span>
+  onresume: null,        <span>// callback for "resume" (pause toggle)</span>
+  position: null,        <span>// offset (milliseconds) to seek to within downloaded sound.</span>
+  pan: 0,                <span>// "pan" settings, left-to-right, -100 to 100</span>
+  stream: true,          <span>// allows playing before entire file has loaded (recommended)</span>
+  to: null,              <span>// position to end playback within a sound (msec), see <a href="../demo/api/#fitter-happier">demo</a></span>
+  type: null,            <span>// MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3</span>
+  usePolicyFile: false,  <span>// enable crossdomain.xml request for remote domains (for ID3/waveform access)</span>
+  volume: 100,           <span>// self-explanatory. 0-100, the latter being the max.</span>
+  whileloading: null,    <span>// callback function for updating progress (X of Y bytes received)</span>
+  whileplaying: null,    <span>// callback during play (position update)</span>
   <strong class="removed" title="Removed after V2.97a.20110801">onbeforefinish: null,  <span>// callback for "before sound finished playing (at [time])"</span></strong>
   <strong class="removed" title="Removed after V2.97a.20110801">onbeforefinishtime: 5000,    <span>// offset (milliseconds) from sound end, call beforefinish..</span></strong>
   <strong class="removed" title="Removed after V2.97a.20110801">onbeforefinishcomplete: null,<span>// function to call when said sound finishes playing</span></strong>
   <strong class="removed" title="Removed after V2.97a.20110801">onjustbeforefinish: null,    <span>// callback for [n] msec before end of current sound</span></strong>
   <strong class="removed" title="Removed after V2.97a.20110801">onjustbeforefinishtime: 200, <span>// if unused, set to 0 (or null handler), event will not fire.</span></strong>
-  onpause: null,        <span>// callback for "pause"</span>
-  onplay: null,         <span>// callback for "play" start</span>
-  onresume: null,       <span>// callback for "resume" (pause toggle)</span>
-  position: null,       <span>// offset (milliseconds) to seek to within downloaded sound.</span>
-  pan: 0,               <span>// "pan" settings, left-to-right, -100 to 100</span>
-  stream: true,         <span>// allows playing before entire file has loaded (recommended)</span>
-  type: null,           <span>// MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3</span>
-  usePolicyFile: false, <span>// enable crossdomain.xml request for remote domains (for ID3/waveform access)</span>
-  volume: 100,          <span>// self-explanatory. 0-100, the latter being the max.</span>
-  whileloading: null,   <span>// callback function for updating progress (X of Y bytes received)</span>
-  whileplaying: null,   <span>// callback during play (position update)</span>
 
   <span>// *** merged soundManager.flash9Options, as applicable ***</span>
   isMovieStar: null,    <span>// "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
