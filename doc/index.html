@@ -180,10 +180,11 @@
 	 <li>useConsole</li>
 	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-usefastpolling">useFastPolling</a></li>
 	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-flashpollinginterval">flashPollingInterval</a></li>
+	 <li class="new" title="New feature, HTML5-only"><a href="#soundmanager-html5pollinginterval">html5PollingInterval</a></li>
      <li><a href="#soundmanager-useflashblock">useFlashBlock</a></li>
 	 <li><a href="#soundmanager-highperformance">useHighPerformance</a></li>
      <li class="recent" title="Beta-ish feature">useHTML5Audio</li>
-     <li class="flash9" title="Flash 9.0r115+ only">useMovieStar</li>
+     <li class="flash9 removed" title="Flash 9.0r115+ only, removed after V2.97a.20110801 and auto-enabled">useMovieStar</li>
 	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>
 	 <li>waitForWindowLoad</li>
 	</ul>
@@ -234,7 +235,7 @@
 
     <h3 class="wedge">SMSound <span class="archive">(Sound Object)</span><span class="l"></span><span class="r"></span></h3>
 
-    <h4>Properties (Instance Options)</h4>
+    <h4>Parameters (Instance Options)</h4>
     <ul>
      <li>autoLoad</li>
      <li>autoPlay</li>
@@ -354,79 +355,150 @@
 		<div class="c2">
 
 	      <p>
-			For nicely-formatted and commented source code, see the <a href="generated/script/soundmanager2.html">generated documentation</a>.
+			Just getting started? See <a href="getstarted/#basic-inclusion">the basics</a>. For nicely-formatted and commented source code, see the <a href="generated/script/soundmanager2.html">generated documentation</a>.
 		  </p>
 
 		  <h3>SoundManager Properties</h3>
 			
-		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-usemoviestar f-allowscriptaccess">
+		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-allowscriptaccess">
 
-		  <p class="in">SoundManager has properties which configure debug mode, flash movie path and other behaviours. At minimum, the <code>soundManager.url</code> property must be assigned a path used to look for the necessary flash movie.</p>
+		  <p class="in">The soundManager object has many configurable properties which set debug mode, determine the flash movie path and other behaviours. Below are the <i>default</i> settings for SoundManager 2, which are appropriate for the majority of use cases - you shouldn't need to change them.</p>
 
-<pre class="block"><code><span><span>// if console is being used, do not create/write to #soundmanager-debug</span></span>
-soundManager.consoleOnly = false;
+          <p><b>Note</b>: The only property requiring customization is <code>soundManager.url</code>, which must be assigned a path used to look for the appropriate flash SWF for driving audio when HTML5 is not available. (If not specified, the current working path is used.)</p>
 
-<span><span>// enable debugging output (div#soundmanager-debug, OR console..)</span></span>
-soundManager.debugMode = true;
+<div id="sm2-properties" class="code block">
 
-<span><span>// enable debugging output inside SWF, troubleshoot flash/browser issues</span></span>
-soundManager.debugFlash = false;
+	<ul class="code code-block">
 
-<span><span>// msec to wait for SWF to load before failing (0 = infinity) after window.onload()</span></span>
-soundManager.flashLoadTimeout = 1000;
+		<li>
+			<div>soundManager.url = '<em>/path/to/swf-files/</em>';</div>
+			<span>// the directory where SM2 can find the flash movies (soundmanager2.swf, soundmanager2_flash9.swf and debug versions etc.) Note that SM2 will append the correct SWF file name if not specified, depending on flashVersion and debugMode settings.</span>
+		</li>
 
-<span><span>// version of flash to require, either 8 or 9. Some features require 9.</span></span>
-soundManager.flashVersion = 8;
+		<li>
+			<div>soundManager.flashVersion = <em>8</em>;</div>
+			<span>// flash build to use (8 or 9.) Some API features require 9.</span>
+		</li>
 
-<span><span>// path (directory) where the SoundManager 2 flash .SWF files will be found. SM2 will determine the specific flash file to load, so only the directory is needed. Note the trailing slash.</span></span>
-soundManager.url = '/path/to/swfs/';
+		<li>
+			<div>soundManager.debugMode = <em>true</em>;</div>
+			<span>// enable debugging output (console.log() with HTML fallback)</span>
+		</li>
 
-<span><span>// use firebug-style console.log()-type debug console for debug output, if available</span></span>
-soundManager.useConsole = true;
+		<li>
+			<div>soundManager.debugFlash = <em>false</em>;</div>
+			<span>// enable debugging output inside SWF, troubleshoot Flash/browser issues</span>
+		</li>
 
-<span><span>// enable <a href="http://www.adobe.com/support/documentation/en/flashplayer/9/releasenotes.html#fixes_90115">Flash 9.0r115+</a> MPEG4 audio support (AAC/M4A content)</span></span>
-soundManager.useMovieStar = true;
+		<li>
+			<div>soundManager.useConsole = <em>true</em>;</div>
+			<span>// use console.log() if available (otherwise, writes to #soundmanager-debug element)</span>
+		</li>
 
-<span><span>// fast flash timer = higher whileplaying() / onposition() callback frequency; combine with useHighPerformance if higher UI framerates or improved timing accuracy is desired.</span></span>
-soundManager.useFastPolling = false;
+		<li>
+			<div>soundManager.consoleOnly = <em>true</em>;</div>
+			<span>// if console is being used, do not create/write to #soundmanager-debug</span>
+		</li>
 
-<span><span>// frequency for flash internal polling timer. If null, defaults to 50. With useFastPolling = true, default is 10 msec.</span></span>
-soundManager.flashPollingInterval = null;
+		<li>
+			<div>soundManager.waitForWindowLoad = <em>false</em>;</div>
+			<span>// force SM2 to wait for window.onload() before trying to call soundManager.onload()</span>
+		</li>
 
-<span><span>// use position:fixed on flash movie for faster JS/flash callbacks</span></span>
-soundManager.useHighPerformance = false;
+		<li>
+			<div>soundManager.bgColor = '<em>#ffffff</em>';</div>
+			<span>// SWF background color. N/A when wmode = 'transparent'</span>
+		</li>
 
-<span><span>// always delay soundManager.onload() until after window.onload()</span></span>
-soundManager.waitForWindowLoad = false;
+		<li>
+			<div>soundManager.useHighPerformance = <em>false</em>;</div>
+			<span>// position:fixed flash movie can help increase js/flash speed, minimize lag</span>
+		</li>
 
-<span><span>// SWF rendering mode. One of 'null', 'transparent', or 'opaque'</span></span>
-soundManager.wmode = 'transparent';
+		<li>
+			<div>soundManager.flashPollingInterval = <em>null</em>;</div>
+			<span>// msec affecting whileplaying/loading callback frequency. If null, default of 50 msec is used.</span>
+		</li>
 
-<span><span>// for scripting the flash SWF (object/embed property), 'always' or 'sameDomain'</span></span>
-soundManager.allowScriptAccess = 'always';
+		<li>
+			<div>soundManager.html5PollingInterval = <em>null</em>;</div>
+			<span>// msec affecting whileplaying/loading callback frequency. If null, native HTML5 update events are used.</span>
+		</li>
 
-<span><span>// allows graceful recovery from flash blockers. SWF can be made visible for unblocking, and hides after successful start-up. See <a href="../demo/flashblock/" title="SoundManager 2 flash block demo">demo</a>.</span></span>
-soundManager.useFlashBlock = true;
+		<li>
+			<div>soundManager.flashLoadTimeout = <em>1000</em>;</div>
+			<span>// msec to wait for flash movie to load before failing (0 = infinity)</span>
+		</li>
+		
+		<li>
+			<div>soundManager.wmode = <em>null</em>;</div>
+			<span>// flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index to work)</span>
+		</li>
 
-<span><span>// <a href="#soundmanager-usehtml5audio">beta feature</a>: Use HTML5 Audio() where supported.</span></span>
-soundManager.useHTML5Audio = true;
+		<li>
+			<div>soundManager.allowScriptAccess = '<em>always</em>';</div>
+			<span>// for scripting the SWF (object/embed property), 'always' or 'sameDomain'</span>
+		</li>
 
-<span><span>// when true, will use flash (if present) for MP3/MP4 since HTML5 audio support is still quirky in browsers. Set to </span>false<span> to allow HTML5 audio to override flash.</span></span>
-soundManager.preferFlash = true;
+		<li>
+			<div>soundManager.useFlashBlock = <em>false</em>;</div>
+			<span>// requires flashblock.css, <a href="../demo/flashblock/" title="SoundManager 2: Flash blocking demos">see demos</a> - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.</span>
+		</li>
 
-<span><span>// accepted responses for HTML5 Audio() format support tests</span></span>
-soundManager.html5Test = /^(probably|maybe)$/i;
+		<li>
+			<div>soundManager.useHTML5Audio = <em>true</em>;</div>
+			<span>// use <a href="#soundmanager-usehtml5audio">HTML5 Audio()</a> where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.</span>
+		</li>
 
-<span><span>// if true, appends ?ts={date} to break aggressive SWF caching.</span></span>
-soundManager.noSWFCache = false;
+		<li>
+			<div>soundManager.html5Test = <em>/^(probably|maybe)$/i</em>;</div>
+			<span>// HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.</span>
+		</li>
 
-<strong class="removed" title="Removed after v2.97a.20110801"><span><span>// enable flash status updates. Required for whileloading/whileplaying.</span></span>
-soundManager.allowPolling = true;</strong>
+		<li>
+			<div>soundManager.preferFlash = <em>true</em>;</div>
+			<span>// overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.</span>
+		</li>
 
-<strong class="removed" title="Removed after v2.97a.20110801"><span><span>// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</span></span>
-soundManager.nullURL = 'about:blank';</strong>
-</code></pre>
-			  <p>To modify global SoundManager default parameters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for above section in code) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
+		<li>
+			<div>soundManager.noSWFCache = <em>false</em>;</div>
+			<span>// if true, appends ?ts={date} to break aggressive SWF caching.</span>
+		</li>
+
+		<li title="Removed after V2.97a.20110801">
+			
+			<div>
+				<strong class="removed">soundManager.allowPolling = <em>true</em>;</strong>
+			</div>
+			<span>
+				<strong class="removed">// enable flash status updates. Required for whileloading/whileplaying.</strong>
+			</span>
+		</li>
+
+		<li title="Removed after V2.97a.20110801">
+			<div>
+				<strong class="removed">soundManager.nullURL = '<em>about:blank</em>';</strong>
+			</div>
+			<span>
+				<strong class="removed">// (Flash 8 only): URL of silent/blank MP3 for unloading/stop request.</strong>
+			</span>
+		</li>
+
+		<li title="Removed after V2.97a.20111030">
+			<div>
+				<strong class="removed">soundManager.consoleOnly = <em>false</em>;</strong>
+			</div>
+			<span>
+				<strong class="removed">// if console is being used, do not create/write to #soundmanager-debug</strong>
+			</span>
+		</li>
+
+
+	</ul>
+
+</div>
+
+			  <p>To modify global SoundManager default parameters for SM2 itself or for all sound objects, edit the main soundmanager2.js file (look for the above block near the top) or assign new values in your own application script before either <code class="in">onDOMContentLoaded()</code> or <code class="in">window.onload()</code> fire. (Specifically, both external and inline script blocks which immediately execute are OK.)</p>
 			  <p>Example per-application override:</p>
 <pre class="block"><code>soundManager.debugMode = false;          <span><span>// disable debug mode</span></span>
 soundManager.defaultOptions.volume = 33; <span><span>// set global default volume for all sound objects</span></span>
@@ -504,12 +576,18 @@ soundManager.defaultOptions.volume = 33; <span><span>// set global default volum
 
 		  <div class="f-block f-usefastpolling f-usehighperformance f-flashpollinginterval">
 			<h4 id="soundmanager-usefastpolling">soundManager.useFastPolling</h4>
-			<p>By default <code>useFastPolling = false</code>, and thus SoundManager uses a 50-milisecond timer inside Flash when polling for updated sound properties such as <code>bytesLoaded</code> and data and event callbacks eg. <code>whileloading()</code>, <code>whileplaying()</code> and so on. With <code>useFastPolling = true</code>, a 10-msec timer is used and callback frequency may noticeably increase. This is best combined with <code>useHighPerformance</code> for optimal results.</p>
+			<p>By default <code>useFastPolling = false</code>, and thus SoundManager uses a 50-millisecond timer inside Flash when polling for updated sound properties such as <code>bytesLoaded</code> and data and event callbacks eg. <code>whileloading()</code>, <code>whileplaying()</code> and so on. With <code>useFastPolling = true</code>, a 10-msec timer is used and callback frequency may noticeably increase. This is best combined with <code>useHighPerformance</code> for optimal results.</p>
 		  </div>
 
 		  <div class="f-block f-flashpollinginterval f-usefastpolling f-usehighperformance">
 			<h4 id="soundmanager-flashpollinginterval">soundManager.flashPollingInterval</h4>
 			<p>Setting this will override <code>useFastPolling</code>. E.g. set this to 200 to have 200ms intervals. This is useful in case your callbacks are CPU intensive.</p>
+		  </div>
+
+		  <div class="f-block f-html5pollinginterval">
+			<h4 id="soundmanager-htmlpollinginterval">soundManager.html5PollingInterval</h4>
+			<p>Setting this will enable a single interval that will affect the frequency of event callbacks such <code>whileplaying()</code> for HTML5 sounds, with the exclusion of mobile devices. If null, native HTML5 update events are used. The frequency of native events may vary widely across browsers, and may exceed 500 msec on mobile and other resource-limited devices.</p>
+			<p>By default, Flash uses a 50-msec timer interval and this is a reasonable value to apply to <code>html5PollingInterval</code> for desktop use cases.</p>
 		  </div>
 		
 		  <div class="f-block f-usehighperformance f-usefastpolling f-flashpollinginterval">
@@ -1559,7 +1637,7 @@ for (prop in this.id3) {
 
 					  <dl class="tight">
 
-					   <dt>destruct() <span class="archive">(also called via <a href="#soundmanager-destroysound" onclick="resetFilter()">soundManager.destroySound()</a>.)</span></dt>
+					   <dt>destruct() <span class="archive">(also called via <a href="#soundmanager-destroysound" onclick="resetFilter()">soundManager.destroySound()</a>)</span></dt>
 					   <dt><a href="#smsound-load" onclick="resetFilter()">load()</a></dt>
 					   <dt><a href="#smsound-mute" onclick="resetFilter()">mute()</a></dt>
 					   <dt><a href="#smsound-pause" onclick="resetFilter()">pause()</a></dt>

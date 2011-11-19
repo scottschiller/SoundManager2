@@ -167,6 +167,9 @@ function setFilter(e,sFilterPrefix) {
   }
   var isClear = (lastSelected && lastSelected == o && utils.hasClass(lastSelected,'active'));
   if (oName == 'li' && isClear) {
+    if (typeof e.preventDefault !== 'undefined') {
+      e.preventDefault();
+    }
     return resetFilter();
   }
   if (oName == 'li') {
@@ -219,6 +222,9 @@ function setFilter(e,sFilterPrefix) {
       utils.addClass(o,'active');
     }
     lastSelected = o;
+    if (typeof e.preventDefault !== 'undefined') {
+      e.preventDefault();
+    }
     // cancel bubble, too?
     return false;
   }

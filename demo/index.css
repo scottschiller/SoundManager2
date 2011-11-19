@@ -199,6 +199,7 @@ pre,
 code,
 pre code,
 .code,
+.code-block,
 dt,
 #soundmanager-debug {
  font-family:monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
@@ -305,12 +306,18 @@ pre {
  word-wrap:break-word; /* IE */
 }
 
+ul.code-block em,
 pre span,
 code span,
 dt span {
  color:#339933;
 }
 
+ul.code-block em {
+	font-style: normal;
+}
+
+ul.code-block span,
 pre span span,
 code span span,
 dt span span {
@@ -319,7 +326,8 @@ dt span span {
 
 pre.block,
 pre.block code,
-div.block div.code {
+div.block div.code,
+ul.code-block {
  position:relative;
  display:table;
  *display:block;
@@ -337,7 +345,7 @@ pre.block {
 }
 
 pre.block code,
-div.block div.code {
+.block .code {
  background:#fff;
  border:1px solid #ccddee;
  padding:0.5em;
@@ -2036,4 +2044,55 @@ body.home #about-sm2 #inline-demo-header {
 body.home #about-sm2 #inline-demo-header,
 body.home #about-sm2 .home-shopping-network {
  display: block;
+}
+
+/* alternate code + comment blocks */
+
+ul.code-block {
+	list-style-type: none;
+	position: relative;
+	padding: 3px;
+}
+
+ul.code-block,
+ul.code-block li {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	font-size: 11px;
+	line-height: 16px;
+}
+
+ul.code-block li {
+	position: relative;
+	font-size: 11px;
+	padding: 0.75em 0px;
+}
+
+ul.code-block li:nth-child(2n+1) {
+	background-color: #f9fcff;
+}
+
+ul.code-block li:last-child {
+	padding-bottom: 0px;
+}
+
+ul.code-block li div {
+	position: absolute;
+	left: 0px;
+	top: 0.75em; /* note: match LI padding */
+	width: 28em; /* left gutter */
+	z-index: 2; /* sit on top */
+}
+
+ul.code-block li span {
+	position: relative;
+	display: block;
+	padding-left: 29em; /* room for left gutter */
+	text-indent: -2em;
+}
+
+/* special min-width case */
+#soundmanager-properties ul.code-block {
+	min-width: 43em;
 }
