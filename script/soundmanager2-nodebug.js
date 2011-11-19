@@ -21,7 +21,7 @@ function SoundManager(smURL, smID) {
   this.debugMode = false;
   this.debugFlash = false;
   this.useConsole = true;
-  this.consoleOnly = false;
+  this.consoleOnly = true;
   this.waitForWindowLoad = false;
   this.bgColor = '#ffffff';
   this.useHighPerformance = false;
@@ -1145,7 +1145,7 @@ function SoundManager(smURL, smID) {
           _oldIO = (_a && _a._t ? _a._t.instanceOptions : null);
       if (_a) {
         if (_a._t) {
-          if (!_useGlobalHTML5Audio && _a._t && _dURL === d(_t._lastURL)) {
+          if (!_useGlobalHTML5Audio && _dURL === d(_t._lastURL)) {
             return _a;
           } else if (_useGlobalHTML5Audio && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
             return _a;

@@ -48,19 +48,19 @@ function SoundManager(smURL, smID) {
 
   // Top-level configuration options
 
-  this.flashVersion = 8;             // version of flash to require, either 8 or 9. Some API features require Flash 9.
-  this.debugMode = true;             // enable debugging output (div#soundmanager-debug, OR console if available+configured)
+  this.flashVersion = 8;             // flash build to use (8 or 9.) Some API features require 9.
+  this.debugMode = true;             // enable debugging output (console.log() with HTML fallback)
   this.debugFlash = false;           // enable debugging output inside SWF, troubleshoot Flash/browser issues
-  this.useConsole = true;            // use firebug/safari console.log()-type debug console if available
-  this.consoleOnly = false;          // if console is being used, do not create/write to #soundmanager-debug
+  this.useConsole = true;            // use console.log() if available (otherwise, writes to #soundmanager-debug element)
+  this.consoleOnly = true;           // if console is being used, do not create/write to #soundmanager-debug
   this.waitForWindowLoad = false;    // force SM2 to wait for window.onload() before trying to call soundManager.onload()
-  this.bgColor = '#ffffff';          // movie (.swf) background color, eg. '#000000'
+  this.bgColor = '#ffffff';          // SWF background color. N/A when wmode = 'transparent'
   this.useHighPerformance = false;   // position:fixed flash movie can help increase js/flash speed, minimize lag
   this.flashPollingInterval = null;  // msec affecting whileplaying/loading callback frequency. If null, default of 50 msec is used.
   this.html5PollingInterval = null;  // msec affecting whileplaying() for HTML5 audio, excluding mobile devices. If null, native HTML5 update events are used.
   this.flashLoadTimeout = 1000;      // msec to wait for flash movie to load before failing (0 = infinity)
-  this.wmode = null;                 // string: flash rendering mode - null, transparent, opaque (last two allow layering of HTML on top)
-  this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), either 'always' or 'sameDomain'
+  this.wmode = null;                 // flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index to work)
+  this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), 'always' or 'sameDomain'
   this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
   this.useHTML5Audio = true;         // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
   this.html5Test = /^(probably|maybe)$/i; // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
@@ -69,7 +69,7 @@ function SoundManager(smURL, smID) {
 
 
   // DEV/TESTING
-  // in this case, poll HTML5 audio objects every 100 msec to get increased whileplaying() callback frequency.
+  // in this case, poll HTML5 audio objects every 50 msec to get increased whileplaying() callback frequency.
   // default (native) HTML5 progress event interval seems to be pretty high, eg., 250-500 msec.
   this.html5PollingInterval = 50;
 
@@ -1114,7 +1114,7 @@ function SoundManager(smURL, smID) {
       } else {
         console.log(sText);
       }
-      if (_s.useConsoleOnly) {
+      if (_s.consoleOnly) {
         return true;
       }
     }
@@ -2503,7 +2503,7 @@ function SoundManager(smURL, smID) {
 
         if (_a._t) {
 
-          if (!_useGlobalHTML5Audio && _a._t && _dURL === d(_t._lastURL)) {
+          if (!_useGlobalHTML5Audio && _dURL === d(_t._lastURL)) {
             // same url, ignore request
             return _a; 
           } else if (_useGlobalHTML5Audio && _oldIO.url === _iO.url && (!_t._lastURL || (_t._lastURL === _oldIO.url))) {
@@ -3680,7 +3680,7 @@ function SoundManager(smURL, smID) {
 
     var oD, oDebug, oTarget, oToggle, tmp;
 
-    if (_s.debugMode && !_id(_s.debugID) && ((!_hasConsole || !_s.useConsole) || (_s.useConsole && _hasConsole && !_s.consoleOnly))) {
+    if (_s.debugMode && !_id(_s.debugID) && (!_hasConsole || !_s.useConsole || !_s.consoleOnly)) {
 
       oD = _doc.createElement('div');
       oD.id = _s.debugID + '-toggle';
