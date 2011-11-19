@@ -281,7 +281,7 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null,
+  _s = this, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _smTimer, _onTimer, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
   _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _is_firefox = _ua.match(/firefox/i), _is_android = _ua.match(/droid/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _likesHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
@@ -362,6 +362,8 @@ function SoundManager(smURL, smID) {
 
     // inherit from defaultOptions
     thisOptions = _mixin(oOptions);
+
+    thisOptions.url = _parseURL(thisOptions.url);
 
     // alias
     _tO = thisOptions;
@@ -1399,6 +1401,8 @@ function SoundManager(smURL, smID) {
         _t._iO.url = _t.url;
       }
 
+      _t._iO.url = _parseURL(_t._iO.url);
+
       _s._wD('SMSound.load(): ' + _t._iO.url, 1);
 
       if (_t._iO.url === _t.url && _t.readyState !== 0 && _t.readyState !== 2) {
@@ -1565,6 +1569,7 @@ function SoundManager(smURL, smID) {
 
       _t._iO = _mixin(oOptions, _t._iO);
       _t._iO = _mixin(_t._iO, _t.options);
+      _t._iO.url = _parseURL(_t._iO.url);
       _t.instanceOptions = _t._iO;
 
       // RTMP-only
@@ -2538,6 +2543,7 @@ function SoundManager(smURL, smID) {
         }
 
       }
+
       _t.isHTML5 = true;
 
       // store a ref on the track
@@ -4041,6 +4047,37 @@ function SoundManager(smURL, smID) {
     return (!_s.html5Only);
 
   };
+
+  _parseURL = function(url) {
+
+    /**
+     * Internal: Finds and returns the first playable URL (or failing that, the first URL.)
+     * @param {string or array} url A single URL string, or an array of strings.
+     */
+
+    var i, j, result = 0;
+
+    if (url instanceof Array) {
+
+      // find the first good one
+      for (i=0, j=url.length; i<j; i++) {
+        if (_s.canPlayURL(url[i])) {
+          result = i;
+          break;
+        }
+      }
+
+      return url[result];
+
+    } else {
+
+      // single URL case
+      return url;
+
+    }
+
+  };
+
 
   _startTimer = function(oSound) {
 
