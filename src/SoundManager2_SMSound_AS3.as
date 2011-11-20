@@ -229,9 +229,10 @@ package {
     }
 
     public function metaDataHandler(infoObject: Object) : void {
+      var prop:String;
       if (sm.debugEnabled) {
         var data:String = new String();
-        for (var prop:* in infoObject) {
+        for (prop in infoObject) {
           data += prop+': '+infoObject[prop]+' \n';
         }
         writeDebug('Metadata: '+data);
@@ -243,10 +244,16 @@ package {
         // ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
         ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, (infoObject.duration || this.duration))
       }
-      // null this out for the duration of this object's existence.
-      // it may be called multiple times.
-      this.cc.onMetaData = function(infoObject: Object) : void {}
-
+      var metaData:Array = [];
+      var metaDataProps:Array = [];
+      for (prop in infoObject) {
+        metaData.push(prop);
+        metaDataProps.push(infoObject[prop]);
+      }
+      // pass infoObject to _onmetadata, too
+      ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onmetadata", metaData, metaDataProps);
+      // this handler may fire multiple times, eg., when a song changes while playing an RTMP stream.
+      // this.cc.onMetaData = function(infoObject: Object) : void {}
     }
 
     public function getWaveformData() : void {

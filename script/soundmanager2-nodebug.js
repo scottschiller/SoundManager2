@@ -718,11 +718,12 @@ function SoundManager(smURL, smID) {
       if (_t.paused && _t.position && _t.position > 0) {
         _t.resume();
       } else {
-        onready = function() {
-          _t._iO = _mixin(oOptions, _t._iO);
-          _t.play(_t._iO);
-        };
-        if (_t.instanceCount === 0 && _t.playState === 0 && !isNaN(_t._iO.from) && !isNaN(_t._iO.to)) {
+        _t._iO = _mixin(oOptions, _t._iO);
+        if (!isNaN(_t._iO.from) && !isNaN(_t._iO.to) && _t.instanceCount === 0 && _t.playState === 0 && !_t._iO.serverURL) {
+          onready = function() {
+            _t._iO = _mixin(oOptions, _t._iO);
+            _t.play(_t._iO);
+          };
           if (_t.isHTML5 && !_t._html5_canplay) {
             _t.load({
               _oncanplay: onready
@@ -734,7 +735,6 @@ function SoundManager(smURL, smID) {
             });
             return false;
           }
-          _t._iO = _mixin(oOptions, _t._iO);
           _t._iO = _applyFromTo();
         }
         if (!_t.instanceCount || _t._iO.multiShotEvents || (!_t.isHTML5 && _fV > 8 && !_t.getAutoPlay())) {
@@ -1087,18 +1087,20 @@ function SoundManager(smURL, smID) {
       _t._html5_canplay = false;
       _t.bytesLoaded = null;
       _t.bytesTotal = null;
-      _t.position = null;
       _t.duration = (_t._iO && _t._iO.duration ? _t._iO.duration : null);
       _t.durationEstimate = null;
+      _t.eqData = [];
+      _t.eqData.left = [];
+      _t.eqData.right = [];
       _t.failures = 0;
-      _t.loaded = false;
-      _t.playState = 0;
-      _t.paused = false;
-      _t.readyState = 0;
-      _t.muted = false;
       _t.isBuffering = false;
       _t.instanceOptions = {};
       _t.instanceCount = 0;
+      _t.loaded = false;
+      _t.metadata = {};
+      _t.readyState = 0;
+      _t.muted = false;
+      _t.paused = false;
       _t.peakData = {
         left: 0,
         right: 0
@@ -1107,9 +1109,8 @@ function SoundManager(smURL, smID) {
         left: [],
         right: []
       };
-      _t.eqData = [];
-      _t.eqData.left = [];
-      _t.eqData.right = [];
+      _t.playState = 0;
+      _t.position = null;
     };
     _resetProperties();
     this._onTimer = function(bForce) {
@@ -1338,10 +1339,20 @@ function SoundManager(smURL, smID) {
       }
       return true;
     };
-    this._onid3 = function(oID3PropNames, oID3Data) {
+    this._onmetadata = function(oMDProps, oMDData) {
       var oData = [], i, j;
-      for (i = 0, j = oID3PropNames.length; i < j; i++) {
-        oData[oID3PropNames[i]] = oID3Data[i];
+      for (i = 0, j = oMDProps.length; i < j; i++) {
+        oData[oMDProps[i]] = oMDData[i];
+      }
+      _t.metadata = _mixin(_t.metadata, oData);
+      if (_t._iO.onmetadata) {
+        _t._iO.onmetadata.apply(_t);
+      }
+	};
+    this._onid3 = function(oID3Props, oID3Data) {
+      var oData = [], i, j;
+      for (i = 0, j = oID3Props.length; i < j; i++) {
+        oData[oID3Props[i]] = oID3Data[i];
       }
       _t.id3 = _mixin(_t.id3, oData);
       if (_t._iO.onid3) {

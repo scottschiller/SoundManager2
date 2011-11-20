@@ -73,7 +73,6 @@ function SoundManager(smURL, smID) {
   // default (native) HTML5 progress event interval seems to be pretty high, eg., 250-500 msec.
   this.html5PollingInterval = 50;
 
-
   this.audioFormats = {
 
     /**
@@ -1652,15 +1651,17 @@ function SoundManager(smURL, smID) {
 
       } else {
 
-        onready = function() {
-          // sound "canplay" or onload()
-          // re-apply from/to to instance options, and start playback
-          _t._iO = _mixin(oOptions, _t._iO);
-          _t.play(_t._iO);
-        };
+        _t._iO = _mixin(oOptions, _t._iO);
 
-        // apply from/to parameters, if they exist
-        if (_t.instanceCount === 0 && _t.playState === 0 && !isNaN(_t._iO.from) && !isNaN(_t._iO.to)) {
+        // apply from/to parameters, if they exist (and not using RTMP)
+        if (!isNaN(_t._iO.from) && !isNaN(_t._iO.to) && _t.instanceCount === 0 && _t.playState === 0 && !_t._iO.serverURL) {
+
+          onready = function() {
+            // sound "canplay" or onload()
+            // re-apply from/to to instance options, and start playback
+            _t._iO = _mixin(oOptions, _t._iO);
+            _t.play(_t._iO);
+          };
 
           // HTML5 needs to at least have "canplay" fired before seeking.
           if (_t.isHTML5 && !_t._html5_canplay) {
@@ -1689,7 +1690,7 @@ function SoundManager(smURL, smID) {
           }
 
           // otherwise, we're ready to go. re-apply local options, and continue
-          _t._iO = _mixin(oOptions, _t._iO);
+
           _t._iO = _applyFromTo();
 
         }
@@ -2386,21 +2387,27 @@ function SoundManager(smURL, smID) {
       _t._html5_canplay = false;
       _t.bytesLoaded = null;
       _t.bytesTotal = null;
-      _t.position = null;
       _t.duration = (_t._iO && _t._iO.duration ? _t._iO.duration : null);
       _t.durationEstimate = null;
+
+      // legacy: 1D array
+      _t.eqData = [];
+
+      _t.eqData.left = [];
+      _t.eqData.right = [];
+
       _t.failures = 0;
+      _t.isBuffering = false;
+      _t.instanceOptions = {};
+      _t.instanceCount = 0;
       _t.loaded = false;
-      _t.playState = 0;
-      _t.paused = false;
+      _t.metadata = {};
 
       // 0 = uninitialised, 1 = loading, 2 = failed/error, 3 = loaded/success
       _t.readyState = 0;
 
       _t.muted = false;
-      _t.isBuffering = false;
-      _t.instanceOptions = {};
-      _t.instanceCount = 0;
+      _t.paused = false;
 
       _t.peakData = {
         left: 0,
@@ -2412,11 +2419,8 @@ function SoundManager(smURL, smID) {
         right: []
       };
 
-      // legacy: 1D array
-      _t.eqData = [];
-
-      _t.eqData.left = [];
-      _t.eqData.right = [];
+      _t.playState = 0;
+      _t.position = null;
 
     };
 
@@ -2855,16 +2859,47 @@ function SoundManager(smURL, smID) {
 
     };
 
-    this._onid3 = function(oID3PropNames, oID3Data) {
+    this._onmetadata = function(oMDProps, oMDData) {
 
-      // oID3PropNames: string array (names)
-      // ID3Data: string array (data)
+      /**
+       * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
+       * RTMP may include song title, MovieStar content may include encoding info
+       * 
+       * @param {array} oMDProps (names)
+       * @param {array} oMDData (values)
+       */
+
+      _s._wD('SMSound._onmetadata(): "' + this.sID + '" metadata received.');
+
+      var oData = [], i, j;
+
+      for (i = 0, j = oMDProps.length; i < j; i++) {
+        oData[oMDProps[i]] = oMDData[i];
+      }
+      _t.metadata = _mixin(_t.metadata, oData);
+
+      if (_t._iO.onmetadata) {
+        _t._iO.onmetadata.apply(_t);
+      }
+
+	};
+
+    this._onid3 = function(oID3Props, oID3Data) {
+
+      /**
+       * internal: flash 8 + flash 9 ID3 feature
+       * may include artist, song title etc.
+       * 
+       * @param {array} oID3Props (names)
+       * @param {array} oID3Data (values)
+       */
+
       _s._wD('SMSound._onid3(): "' + this.sID + '" ID3 data received.');
 
       var oData = [], i, j;
 
-      for (i = 0, j = oID3PropNames.length; i < j; i++) {
-        oData[oID3PropNames[i]] = oID3Data[i];
+      for (i = 0, j = oID3Props.length; i < j; i++) {
+        oData[oID3Props[i]] = oID3Data[i];
       }
       _t.id3 = _mixin(_t.id3, oData);
 
