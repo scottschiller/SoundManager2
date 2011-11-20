@@ -2871,12 +2871,12 @@ function SoundManager(smURL, smID) {
 
       _s._wD('SMSound._onmetadata(): "' + this.sID + '" metadata received.');
 
-      var oData = [], i, j;
+      var oData = {}, i, j;
 
       for (i = 0, j = oMDProps.length; i < j; i++) {
         oData[oMDProps[i]] = oMDData[i];
       }
-      _t.metadata = _mixin(_t.metadata, oData);
+      _t.metadata = oData;
 
       if (_t._iO.onmetadata) {
         _t._iO.onmetadata.apply(_t);
