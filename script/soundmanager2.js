@@ -1654,7 +1654,7 @@ function SoundManager(smURL, smID) {
         _t._iO = _mixin(oOptions, _t._iO);
 
         // apply from/to parameters, if they exist (and not using RTMP)
-        if (!isNaN(_t._iO.from) && !isNaN(_t._iO.to) && _t.instanceCount === 0 && _t.playState === 0 && !_t._iO.serverURL) {
+        if (_t._iO.from !== null && _t._iO.to !== null && _t.instanceCount === 0 && _t.playState === 0 && !_t._iO.serverURL) {
 
           onready = function() {
             // sound "canplay" or onload()
@@ -2758,6 +2758,7 @@ function SoundManager(smURL, smID) {
           // fire onfinish for last, or every instance
           if (_io_onfinish) {
             _s._wD('SMSound._onfinish(): "' + _t.sID + '"');
+console.log(_io_onfinish);
             _io_onfinish.apply(_t);
           }
         }
