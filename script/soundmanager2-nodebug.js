@@ -1270,7 +1270,6 @@ function SoundManager(smURL, smID) {
         }
         if (!_t.instanceCount || _t._iO.multiShotEvents) {
           if (_io_onfinish) {
-console.log(_io_onfinish);
             _io_onfinish.apply(_t);
           }
         }

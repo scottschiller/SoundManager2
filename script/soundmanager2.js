@@ -2758,7 +2758,6 @@ function SoundManager(smURL, smID) {
           // fire onfinish for last, or every instance
           if (_io_onfinish) {
             _s._wD('SMSound._onfinish(): "' + _t.sID + '"');
-console.log(_io_onfinish);
             _io_onfinish.apply(_t);
           }
         }
@@ -2915,6 +2914,7 @@ console.log(_io_onfinish);
     this._onconnect = function(bSuccess) {
 
       var fN = 'SMSound._onconnect(): ';
+
       bSuccess = (bSuccess === 1);
       _s._wD(fN+'"'+_t.sID+'"'+(bSuccess?' connected.':' failed to connect? - '+_t.url), (bSuccess?1:2));
       _t.connected = bSuccess;
