@@ -150,7 +150,6 @@ package {
       switch (event.info.code) {
 
         case "NetConnection.Connect.Success":
-          writeDebug('NetConnection: connected');
           try {
             this.ns = new NetStream(this.nc);
             this.ns.checkPolicyFile = this.checkPolicyFile;
@@ -162,7 +161,9 @@ package {
             this.ns.receiveAudio(true);
             this.addNetstreamEvents();
             this.connected = true;
-            if (this.useEvents) {
+            // RTMP-only
+            if (this.serverUrl && this.useEvents) {
+              writeDebug('NetConnection: connected');
               writeDebug('firing _onconnect for '+this.sID);
               ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
             }
