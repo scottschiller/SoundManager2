@@ -4321,6 +4321,7 @@ function SoundManager(smURL, smID) {
     }
 
     // complain if JS + SWF build/version strings don't match, excluding +DEV builds
+    // <d>
     if (!swfVersion || swfVersion.replace(/\+dev/i,'') !== _s.versionNumber.replace(/\+dev/i, '')) {
 
       e = _sm + ': Fatal: JavaScript file build "' + _s.versionNumber + '" does not match Flash SWF build "' + swfVersion + '" at ' + _s.url + '. Ensure both are up-to-date.';
@@ -4334,6 +4335,7 @@ function SoundManager(smURL, smID) {
       return false;
 
     }
+    // </d>
 
     if (_isIE) {
       // IE needs a timeout OR delay until window.onload - may need TODO: investigating

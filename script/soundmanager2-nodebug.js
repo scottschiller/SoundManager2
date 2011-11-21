@@ -1996,13 +1996,6 @@ function SoundManager(smURL, smID) {
     if (_isBadSafari) {
       _badSafariFix();
     }
-    if (!swfVersion || swfVersion.replace(/\+dev/i,'') !== _s.versionNumber.replace(/\+dev/i, '')) {
-      e = _sm + ': Fatal: JavaScript file build "' + _s.versionNumber + '" does not match Flash SWF build "' + swfVersion + '" at ' + _s.url + '. Ensure both are up-to-date.';
-      setTimeout(function versionMismatch() {
-        throw new Error(e);
-      }, 0);
-      return false;
-    }
     if (_isIE) {
       setTimeout(_init, 100);
     } else {
