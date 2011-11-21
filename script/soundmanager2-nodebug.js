@@ -1986,15 +1986,22 @@ function SoundManager(smURL, smID) {
   };
   this._setSandboxType = function(sandboxType) {
   };
-  this._externalInterfaceOK = function(flashDate) {
+  this._externalInterfaceOK = function(flashDate, swfVersion) {
     if (_s.swfLoaded) {
       return false;
     }
-    var eiTime = new Date().getTime();
+    var e, eiTime = new Date().getTime();
     _s.swfLoaded = true;
     _tryInitOnFocus = false;
     if (_isBadSafari) {
       _badSafariFix();
+    }
+    if (!swfVersion || swfVersion.replace(/\+dev/i,'') !== _s.versionNumber.replace(/\+dev/i, '')) {
+      e = _sm + ': Fatal: JavaScript file build "' + _s.versionNumber + '" does not match Flash SWF build "' + swfVersion + '" at ' + _s.url + '. Ensure both are up-to-date.';
+      setTimeout(function versionMismatch() {
+        throw new Error(e);
+      }, 0);
+      return false;
     }
     if (_isIE) {
       setTimeout(_init, 100);

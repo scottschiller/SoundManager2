@@ -4298,16 +4298,17 @@ function SoundManager(smURL, smID) {
 
   };
 
-  this._externalInterfaceOK = function(flashDate) {
+  this._externalInterfaceOK = function(flashDate, swfVersion) {
 
     // flash callback confirming flash loaded, EI working etc.
     // flashDate = approx. timing/delay info for JS/flash bridge
+    // swfVersion: SWF build string
 
     if (_s.swfLoaded) {
       return false;
     }
 
-    var eiTime = new Date().getTime();
+    var e, eiTime = new Date().getTime();
 
     _s._wD(_smc+'externalInterfaceOK()' + (flashDate?' (~' + (eiTime - flashDate) + ' ms)':''));
     _debugTS('swf', true);
@@ -4317,6 +4318,21 @@ function SoundManager(smURL, smID) {
 
     if (_isBadSafari) {
       _badSafariFix();
+    }
+
+    // complain if JS + SWF build/version strings don't match, excluding +DEV builds
+    if (!swfVersion || swfVersion.replace(/\+dev/i,'') !== _s.versionNumber.replace(/\+dev/i, '')) {
+
+      e = _sm + ': Fatal: JavaScript file build "' + _s.versionNumber + '" does not match Flash SWF build "' + swfVersion + '" at ' + _s.url + '. Ensure both are up-to-date.';
+
+      // escape flash -> JS stack so this error fires in window.
+      setTimeout(function versionMismatch() {
+        throw new Error(e);
+      }, 0);
+
+      // exit, init will fail with timeout
+      return false;
+
     }
 
     if (_isIE) {
