@@ -1632,7 +1632,7 @@ function SoundManager(smURL, smID) {
       if (!_t.isHTML5 && _fV === 9 && _t.position > 0 && _t.position === _t.duration) {
         // flash 9 needs a position reset if play() is called while at the end of a sound.
         _s._wD(fN + '"' + _t.sID + '": Sound at end, resetting to position:0');
-        _t._iO.position = 0;
+        oOptions.position = 0;
       }
 
       /**
@@ -1709,7 +1709,7 @@ function SoundManager(smURL, smID) {
         _t.playState = 1;
         _t.paused = false;
 
-        _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
+        _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position) ? _t._iO.position : 0);
 
         if (!_t.isHTML5) {
           _t._iO = _policyFix(_loopFix(_t._iO));

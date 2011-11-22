@@ -713,7 +713,7 @@ function SoundManager(smURL, smID) {
       } else {
       }
       if (!_t.isHTML5 && _fV === 9 && _t.position > 0 && _t.position === _t.duration) {
-        _t._iO.position = 0;
+        oOptions.position = 0;
       }
       if (_t.paused && _t.position && _t.position > 0) {
         _t.resume();
@@ -745,7 +745,7 @@ function SoundManager(smURL, smID) {
         }
         _t.playState = 1;
         _t.paused = false;
-        _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position)?_t._iO.position:0);
+        _t.position = (typeof _t._iO.position !== 'undefined' && !isNaN(_t._iO.position) ? _t._iO.position : 0);
         if (!_t.isHTML5) {
           _t._iO = _policyFix(_loopFix(_t._iO));
         }
