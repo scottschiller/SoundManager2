@@ -1988,7 +1988,7 @@ function SoundManager(smURL, smID) {
       _t.playState = 1;
 
       if (!_t.isHTML5) {
-        if (_t._iO.isMovieStar) {
+        if (_t._iO.isMovieStar && !_t._iO.serverURL) {
           // Bizarre Webkit bug (Chrome reported via 8tracks.com dudes): AAC content paused for 30+ seconds(?) will not resume without a reposition.
           _t.setPosition(_t.position);
         }

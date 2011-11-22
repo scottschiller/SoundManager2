@@ -881,7 +881,7 @@ function SoundManager(smURL, smID) {
       _t.paused = false;
       _t.playState = 1;
       if (!_t.isHTML5) {
-        if (_t._iO.isMovieStar) {
+        if (_t._iO.isMovieStar && !_t._iO.serverURL) {
           _t.setPosition(_t.position);
         }
         _s.o._pause(_t.sID);
