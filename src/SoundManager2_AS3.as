@@ -824,7 +824,7 @@ package {
     public function _start(sID:String, nLoops: int, nMsecOffset: int) : void {
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
-      writeDebug('start: ' + nMsecOffset+(nLoops?', loops: '+nLoops:''));
+      writeDebug('start: ' + nMsecOffset + (nLoops > 1 ? ', loops: ' + nLoops : ''));
       s.lastValues.paused = false; // reset pause if applicable
       s.lastValues.loops = (nLoops || 1);
       if (!s.useNetstream) {
