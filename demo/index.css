@@ -468,7 +468,7 @@ h2 {
 }
 
 .columnar .c1 p code {
- font-size:xx-small;
+ font-size:x-small;
  color:#336699;
 }
 
@@ -1030,7 +1030,7 @@ dd.deprecation-note {
 
 .c1 pre code {
  margin-top:0px;
- font-size:xx-small;
+ font-size:x-small;
  color:#336699;
  margin-left:0px;
 }
