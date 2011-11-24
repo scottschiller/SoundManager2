@@ -1761,7 +1761,7 @@ body.home #special-demo-left {
  position:relative;
  float:left;
  display:inline;
- margin-right:1.5em;
+ margin-right:16px;
  padding-right:0.9em;
  border-right:1px solid #eee;
  *border-right:none;
