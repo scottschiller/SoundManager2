@@ -265,7 +265,7 @@ SM2 will do this by default when soundManager.debugFlash = true.</p>
 
   <span class="kd">function </span><span class="nf">SoundManager2</span><span class="o">()</span> <span class="o">{</span>
 
-    <span class="n">var</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20111030&quot;</span><span class="o">;</span>
+    <span class="n">var</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20111030+DEV&quot;</span><span class="o">;</span>
     <span class="n">var</span> <span class="n">version_as</span> <span class="o">=</span> <span class="s2">&quot;(AS2/Flash 8)&quot;</span><span class="o">;</span></pre></div>
       </td>
     </tr>
@@ -456,7 +456,7 @@ Related AS3 documentation: http://livedocs.adobe.com/flash/9.0/ActionScriptLangR
             <span class="n">flashDebug</span><span class="o">(</span><span class="s1">&#39;&lt;br&gt;&lt;b&gt;Fatal: Security sandbox error: Got &quot;&#39;</span> <span class="o">+</span> <span class="n">sandboxType</span> <span class="o">+</span> <span class="s1">&#39;&quot;, expected &quot;remote&quot; or &quot;localTrusted&quot;.&lt;br&gt;Additional security permissions need to be granted.&lt;br&gt;See &lt;a href=&quot;http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html&quot;&gt;flash security settings panel&lt;/a&gt; for non-HTTP, eg. file:// use.&lt;/b&gt;&lt;br&gt;http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html&lt;br&gt;&lt;br&gt;You may also be able to right-click this movie and choose from the menu: &lt;br&gt;&quot;Global Settings&quot; -&gt; &quot;Advanced&quot; tab -&gt; &quot;Trusted Location Settings&quot;&lt;br&gt;&#39;</span><span class="o">);</span>
           <span class="o">}</span>
           <span class="n">var</span> <span class="n">d</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">Date</span><span class="o">();</span>
-          <span class="n">ExternalInterface</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">baseJSController</span> <span class="o">+</span> <span class="s2">&quot;._externalInterfaceOK&quot;</span><span class="o">,</span> <span class="n">d</span><span class="o">.</span><span class="na">getTime</span><span class="o">());</span>
+          <span class="n">ExternalInterface</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">baseJSController</span> <span class="o">+</span> <span class="s2">&quot;._externalInterfaceOK&quot;</span><span class="o">,</span> <span class="n">d</span><span class="o">.</span><span class="na">getTime</span><span class="o">(),</span> <span class="n">version</span><span class="o">);</span>
           <span class="k">if</span> <span class="o">(!</span><span class="n">didSandboxMessage</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">flashDebug</span><span class="o">(</span><span class="s1">&#39;Flash -&amp;gt; JS OK&#39;</span><span class="o">);</span>
           <span class="o">}</span>
