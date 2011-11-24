@@ -1005,7 +1005,7 @@ li.new {
 span.nevermind,
 .removed {
  text-decoration:line-through;
- opacity:0.5;
+ opacity:0.33;
 }
 
 strong.removed {
