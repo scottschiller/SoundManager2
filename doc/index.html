@@ -648,43 +648,46 @@ soundManager.defaultOptions.volume = 33; <span><span>// set global default volum
 			<p>Setting <code>useFlashBlock = true</code> will cause SM2 to wait infinitely for the Flash content to load after an initial (non-fatal) timeout, having already waited for <code>flashLoadTimeout</code> to pass. If <code>flashLoadTimeout = 0</code>, SM2 will immediately go into "flash block mode" on start-up.</p>
 			<p>The relevant CSS is as follows:</p>
 <pre class="block"><code>#sm2-container {
- <span><span>/* Initial state: position:absolute/off-screen, or left/top:0 */</span></span>
+ <span><span>/**
+  * Initial/default state...
+  * position:absolute/off-screen, or left/top:0
+  */</span></span>
 }
 
 #sm2-container.swf_timedout {
-  <span><span>/*
+  <span><span>/**
    * Didn't load before time-out, show to user.
    * Maybe highlight on-screen, red border, etc..? 
-  */</span></span>
+   */</span></span>
 }
 
 #sm2-container.swf_unblocked {
-  <span><span>/*
+  <span><span>/**
    * Applied if movie loads successfully
    * (flash started, so move off-screen etc.)
-  */</span></span>
+   */</span></span>
 }
 
 #sm2-container.swf_error {
-  <span><span>/*
+  <span><span>/**
    * "Fatal" error case: SWF loaded, but SM2 was unable to start.
    * (Flash security or other error case.)
-  */</span></span>
+   */</span></span>
 }
 
 #sm2-container.high_performance {
-  <span><span>/*
+  <span><span>/**
    * Additional modifier for "high performance" mode
    * should apply position:fixed and left/bottom 0 to stay on-screen
    * at all times (better flash performance)
-  */</span></span>
+   */</span></span>
 }
 
 #sm2-container.flash_debug {
-  <span><span>/*
+  <span><span>/**
    * Additional modifier for flash debug output mode
    * should use width/height 100% so you can read debug messages
-  */</span></span>
+   */</span></span>
 }</code></pre>
 
 			<p>For a live example, see the <a href="../demo/flashblock/">FlashBlock Demo</a>.</p>
