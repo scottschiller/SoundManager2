@@ -1531,6 +1531,31 @@ h4 .scratched-out {
  background-position: 0 -252px;
 }
 
+#baroque-me {
+ background-position: 0 -588px;
+ width: 88px;
+ height: 47px;
+ margin: -23px 0px 0px -42px;
+}
+
+.inthewild:hover #baroque-me,
+#baroque-me:hover {
+ background-position: 0 -541px;
+}
+
+#freesound {
+ background-position: 0 -662px;
+ width: 100px;
+ height: 27px;
+ margin: -15px 0px 0px -50px;
+}
+
+.inthewild:hover #freesound,
+#freesound:hover {
+ background-position: 0 -635px;
+}
+
+
 /* homepage-specific demo shiz */
 
 .sidenote {
