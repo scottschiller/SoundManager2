@@ -87,11 +87,10 @@ h5 {
 }
 
 body.home .sm2-speaker {
- float:right;
+ float:left;
  display:inline;
- padding-left:1em;
- margin-top:-40px;
  *margin-top:0px; /* IE 7 buggery */
+ margin-right:2em;
  background:#fff;
  max-width:192px;
  min-width:64px;
@@ -108,13 +107,13 @@ body.home #about-sm2 h2.special,
 body.home #about-sm2 h3,
 body.home #about-sm2 h4 {
  font-weight:500;
- font-size:1.75em;
+ font-size:2em;
  border-bottom:none;
  padding-bottom:0px;
 }
 
 body.home #about-sm2 h2.special {
- font-size:2em;
+ font-size:3.5em;
  color: #333;
  margin-top:0.1em;
 }
@@ -143,15 +142,11 @@ body.home h4 {
 }
 
 body.home #about-sm2 h4 {
- display: inline-block;
- color: #333333;
+ font-weight: bold;
+ color: #666;
  font-size: 1.2em;
- margin-bottom: 0.2em;
- margin-top: 1em;
-/*
- border-bottom: 1px solid #e9e9e9;
- padding-bottom: 5px;
-*/
+ margin-bottom: 0.5em;
+ margin-top: 1.5em;
 }
 
 body.home .demo-more,
@@ -212,7 +207,7 @@ dt,
 #soundmanager-debug {
  font-size:12px;
  font-weight:normal;
- line-height:1.5em;
+ line-height:auto;
  color:#006699;
  background:#f6fcff;
 }
@@ -426,6 +421,10 @@ h2 {
  zoom:1;
 }
 
+body.home #main {
+ max-width: 104em;
+}
+
 .columnar {
  position:relative;
  margin:0px;
@@ -587,9 +586,14 @@ ul {
  min-width:17em;
  max-width:20em;
  background:#3399cc;
- opacity:0.97;
+ background: -moz-linear-gradient(top, rgba(51,153,204,0.97) 0%, rgba(35,96,127,0.94) 100%); /* FF3.6+ */
+ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,153,204,0.97)), color-stop(100%,rgba(35,96,127,0.94))); /* Chrome,Safari4+ */
+ background: -webkit-linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* Chrome10+,Safari5.1+ */
+ background: -o-linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* Opera 11.10+ */
+ background: -ms-linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* IE10+ */
+ background: linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* W3C */
+ text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
  _width:17em;
- *opacity:1;
  *top:1.5em;
  *left:0px;
 }
@@ -616,6 +620,7 @@ ul {
  padding:0.5em;
  padding-left:1em;
  color:#fff;
+ font-weight: bold;
  color:rgba(255,255,255,0.9);
 }
 
@@ -629,28 +634,34 @@ ul {
  color:#fff;
 }
 
-#nav>ul>li>a {
+#nav>ul>li>a,
+#nav>ul>li>strong>a {
  /* top-level links */
  color:#ccc;
+ font-size: 1.1em;
 }
 
 #nav ul li strong a {
  background:#336699;
- background:#;
  background:#fff;
  color:#333;
 }
 
-#nav ul li strong a:hover,
+#nav>ul>li>strong>a {
+ /* tweak for good browsers that respect larger font size */
+ padding-bottom: 5px;
+}
+
 #nav ul li a:hover,
-#nav ul>li:hover strong a,
-#nav ul>li:hover>a {
- background:#3399cc;
+#nav>ul>li:hover>a {
+ /* top-level */
+ background-color: #3399cc;
  color:#fff;
 }
 
 #nav ul li ul li a:hover {
- background:#336699;
+ background: #3399cc;
+ background-color: rgba(0,0,0,0.45);
 }
 
 #version {
@@ -1181,6 +1192,8 @@ div#gsfn_list_widget div#gsfn_content p.gsfn_summary {
 a.cta {
  margin-top:-0.3em;
  padding:0.2em 0.25em;
+ margin-left: -0.2em;
+ margin-right: -0.2em;
  text-decoration:none;
  color:#3399cc;
  -khtml-border-radius:0.25em;
@@ -1300,7 +1313,7 @@ li.html5support em.true {
 
 .newer a,
 a.feature,
-.c2 .feature-hot {
+.feature-hot {
  display:block;
  background:#3399ff;
  padding:0.3em 0.5em;
@@ -1324,7 +1337,7 @@ a.feature {
 }
 
 .newer a,
-.c2 .feature-hot {
+.feature-hot {
  background:#ff0000;
  border-color:#ff6666;
  color:#fff;
@@ -1366,13 +1379,15 @@ a.warning:hover {
  padding:0px;
 }
 
-h4 .scratched-out {
+.scratched-out {
+ display: inline-block;
  text-decoration:line-through;
  color:#999;
  font-size:0.9em;
  margin-top:-0.75em;
  -webkit-transform:rotate(-15deg);
  -moz-transform:rotate(-15deg);
+ transform:rotate(-15deg);
 }
 
 .inthewild {
@@ -1381,6 +1396,8 @@ h4 .scratched-out {
 }
 
 .inthewild ul {
+ display: inline;
+ margin: 0px auto;
  list-style-type: none;
 }
 
@@ -1400,7 +1417,7 @@ h4 .scratched-out {
  vertical-align: middle;
  text-align: center;
  border: 1px solid #eee;
- margin: 2px 2px 5px 2px;
+ margin: 2px 0px;
 }
 
 .inthewild a,
@@ -1586,8 +1603,9 @@ ul.playlist li a:hover {
 }
 
 ul.playlist li .timing {
- top:0.6em;
- font-size:xx-small;
+ margin-right: 0.1em;
+  font-size: xx-small;
+  top: 0.5em;
 }
 
 ul.playlist.use-peak li .peak {
@@ -1724,27 +1742,50 @@ body.home .ie7sucks {
 /* special-case for the SM2 homepage only */
 
 body.home #sm2-container {
+ position: fixed;
+ bottom: 0px;
+ left: 0px;
+ width: 48px;
+ height: 48px;
  /* IE 6 hax, unlikely to have flashblock anyway... */
  _margin:-8px 0px 0px 0px;
 }
 
+@-moz-keyframes flashblock {
+    from {
+      border-color: #ff3333;
+    }
+    
+    to {
+      border-color: #fff;
+    }
+}
+
+@-webkit-keyframes flashblock {
+    from {
+      border-color: #ff3333;
+    }
+    
+    to {
+      border-color: #fff;
+    }
+}
+
 body.home #sm2-container.swf_timedout {
- /* when blocked, show this inline */
- position:relative;
- left:0px;
- top:0px;
+ /* blocked state */
  border:1px solid #ff3333;
- border-bottom:none;
- margin:1em 0px 0px 0px;
+ -moz-animation-duration: 1s;
+ -moz-animation-name: flashblock;
+ -moz-animation-iteration-count: 5;
+ -webkit-animation-duration: 1s;
+ -webkit-animation-name: flashblock;
+ -webkit-animation-iteration-count: 5;
  width:48px;
  height:48px;
- z-index:2;
 }
 
 body.home #sm2-container.swf_unblocked {
- /* if unblocked, retain relative position so stuff doesn't break. */
- position:relative;
- margin:1em 0px 0px 1px;
+ /* unblocked state */
 }
 
 body.home #sm2-container.swf_unblocked,
@@ -1753,6 +1794,8 @@ body.home #sm2-container.swf_loaded {
  left:0px;
  bottom:0px;
  margin:0px;
+ width: 6px;
+ height: 6px;
 }
 
 #sm2-support-warning {
@@ -1766,8 +1809,7 @@ body.home #sm2-container.swf_loaded {
 #sm2-support {
  display:none;
  font-size:0.9em !important;
- margin-top:-1px;
- width:245px;
+ margin-top: 1.5em;
 }
 
 #sm2-support-warning,
@@ -1801,10 +1843,6 @@ body.home #special-demo-right {
  margin-top:18px;
  padding-right:15px;
  *display:none; /* overflows in IE 7, can't be arsed */
-}
-
-body.home #special-demo-right a {
- padding:0px;
 }
 
 body.home #inline-playlist {
@@ -2118,4 +2156,195 @@ ul.code-block li span {
 /* special min-width case */
 #soundmanager-properties ul.code-block {
 	min-width: 43em;
+}
+
+/**
+ * November 2011 homepage redesign
+ */
+
+div.oneup,
+div.twoup,
+div.threeup {
+ position: relative;
+ clear: both;
+ padding: 2em 1em 2.5em 1em;
+ *zoom:1; /* god damn shite IE */
+}
+
+div.oneup .column {
+ position: relative;
+ width: 100%;
+}
+
+div.twoup .column,
+div.threeup .column {
+ position: relative;
+ float: left;
+ display: inline;
+ width: 33.3%;
+ _width: 32%; /* IE 6 */
+}
+
+div.twoup .column {
+ width: 50%;
+ _width: 49%; /* IE 6 can die */
+}
+
+div.oneup .column,
+div.twoup .column,
+div.threeup .column {
+ padding-bottom: 0.5em;
+}
+
+div.oneup .column-wrapper,
+div.twoup .column-wrapper,
+div.threeup .column-wrapper {
+ border-top: 1px dotted #e6e6e6;
+ margin: 0px 2.5em;
+}
+
+div.oneup .column-wrapper.spaced-out,
+div.twoup .column-wrapper.spaced-out,
+div.threeup .column-wrapper.spaced-out {
+ /* spacing for columns without an <h3> header */
+ padding-top: 5.3em;
+}
+
+
+div.threeup.first {
+ padding-top: 0px;
+}
+
+div.threeup.first .column-wrapper {
+ border-top: none;
+}
+
+body.home #main .oneup p,
+body.home #main .twoup p,
+body.home #main .threeup p {
+	font-size: 1.1em;
+	line-height: 1.4em;
+}
+
+body.home #main {
+	/* default: slightly-lighter text */
+	color: #272727;
+}
+
+body.home h2 {
+ margin-top: 0px;
+}
+
+body.home div.c3 {
+ /* pop discussion/support on top of margin */
+ position: relative;
+ float: right;
+ display: inline;
+ margin-top: -6px;
+ z-index: 2;
+ margin-bottom: 2.5em;
+}
+
+body.home #inline-playlist {
+ float: none;
+ display: block;
+ width: auto;
+}
+
+body.home .sm2-inline-list .ui360-vis {
+ /* center */
+ margin: 0px auto;
+}
+
+body.home ul.playlist {
+	font-size: x-small;
+}
+
+body.home ul.playlist li {
+	font-size: 1.75em;
+	letter-spacing: -0.02em;
+}
+
+body.home ul.playlist .sidenote {
+	font-size: x-small;
+	letter-spacing: 0px;
+}
+
+body.home .demo-more,
+body.home .demo-more-abs {
+	font-size: 95%;
+}
+
+body.home ul.graphic {
+	margin-top: 1em;
+}
+
+body.home ul.graphic {
+	position: relative;
+}
+
+body.home ul.graphic li {
+	float: left;
+	display: inline;
+	width: 50%;
+	margin-bottom: 0px;
+}
+
+body.home ul.graphic li a,
+body.home ul.graphic li a.sm2_link {
+	display: block;
+	width: auto;
+    	min-width: 10em;
+	margin-right: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+body.home ul.graphic li a,
+ul.playlist li a {
+	/* "..." on titles */
+	overflow: hidden;
+	white-space: nowrap;
+        text-overflow: ellipsis;
+	/* crap IE */
+	*overflow: auto;
+	*white-space: wrap;	
+}
+
+body.home ul.playlist li a,
+body.home ul.playlist li a:hover {
+	line-height: 1.2em;
+}
+
+body.home .demo-more a span,
+body.home .demo-more-abs a span {
+	font-size: 1.5em;
+	line-height: 1em;
+}
+
+body.home #sm2-visualization {
+ clear: both;
+ margin-top: 2em;
+}
+
+body.home #sm2-visualization .ui360 {
+	float: none;
+	display: block;
+}
+
+body.home .gsfn_topic_list li {
+	/* by default, hide (and only show first X items.) */
+	display: none;
+}
+
+body.home .gsfn_topic_list .gsfn-item-1,
+body.home .gsfn_topic_list .gsfn-item-2,
+body.home .gsfn_topic_list .gsfn-item-3 {
+	/* show these items only. */
+	display: block;
+}
+
+div.clearfix {
+ font-size: 0px;
+ height: 0px;
+ overflow: hidden;
 }

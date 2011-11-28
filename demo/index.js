@@ -527,7 +527,7 @@ if (window.is_home) {
 	  checkBadSafari();
 
 	  // check inline player / HTML 5 bits
-	  var items = _id('muxtape-html5').getElementsByTagName('a');
+	  var items = utils.getElementsByClassName('muxtape-html5', 'a', _id('inline-playlist'));
 	  for (var i = 0, j = items.length; i < j; i++) {
 	    if (!soundManager.canPlayLink(items[i])) {
 	      items[i].className += ' not-supported';
@@ -548,7 +548,7 @@ if (window.is_home) {
 
 	  var o = _id('sm2-support');
 	  var o2 = _id('sm2-support-warning');
-	  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>' + (soundManager.hasHTML5 ? 'The flash portion of ' : '') + 'SoundManager 2 was unable to start. ' + (soundManager.useHTML5Audio ? (soundManager.hasHTML5 ? '</p><p>Some HTML5 audio support is present, but flash is needed for MP3/MP4 support on this page.' : '</p><p>No HTML5 support was found, so flash is required.') : '' ) + '</p><p>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it may be visible above.</p><p id="flash-offline">' + (soundManager.useAltURL ? '<b>Viewing offline</b>? You may need to change a Flash security setting.' : 'Other possible causes: Missing .SWF, or no Flash?') + ' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot" style="display:inline-block;margin-left:0px">Troubleshooting</a></p></div>';
+	  var smLoadFailWarning = '<div style="margin:0.5em;margin-top:-0.25em"><h3>Oh snap!</h3><p>' + (soundManager.hasHTML5 ? 'The flash portion of ' : '') + 'SoundManager 2 was unable to start. ' + (soundManager.useHTML5Audio ? (soundManager.hasHTML5 ? '</p><p>Some HTML5 audio support is present, but flash is needed for MP3/MP4 support on this page.' : '</p><p>No HTML5 support was found, so flash is required.') : '' ) + '</p><p>All links to audio will degrade gracefully.</p><p id="flashblocker">If you have a flash blocker, try allowing the SWF to run - it may be visible below.</p><p id="flash-offline">' + (soundManager.useAltURL ? '<b>Viewing offline</b>? You may need to change a Flash security setting.' : 'Other possible causes: Missing .SWF, or no Flash?') + ' Not to worry, as guided help is provided.</p><p><a href="doc/getstarted/index.html#troubleshooting" class="feature-hot" style="display:inline-block;margin-left:0px">Troubleshooting</a></p></div>';
 	  var hatesFlash = (navigator.userAgent.match(/(ipad|iphone|ipod)/i));
 
       if (soundManager.html5.mp3 && soundManager.html5.mp4) {
@@ -569,7 +569,7 @@ if (window.is_home) {
       }
 
 	  o.innerHTML = smLoadFailWarning;
-	  o2.innerHTML = '<p style="margin:0px">SoundManager 2 could not start. <a href="#inline-demos">See below</a> for details.</p>';
+	  o2.innerHTML = '<p style="margin:0px">SoundManager 2 could not start. <a href="#sm2-support">See below</a> for details.</p>';
 	  if (hatesFlash || soundManager.getMoviePercent()) {
 	    // movie loaded at least somewhat, so don't show flashblock things
 	    _id('flashblocker').style.display = 'none';
