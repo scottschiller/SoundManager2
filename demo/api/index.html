@@ -73,6 +73,17 @@ p {
  margin:0px;
 }
 
+#sm2-container.swf_unblocked {
+ /* if initially blocked (and then unblocked), stay relative so JS <-> Flash doesn't break. */
+ position: relative;
+}
+
+#sm2-container.high_performance.swf_unblocked {
+ /* ...unless high performance, in which case stay in corner (unless old IE) */
+ _position: relative;
+ position: fixed;
+}
+
 </style>
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript">
