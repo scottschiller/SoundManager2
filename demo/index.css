@@ -2240,6 +2240,7 @@ body.home div.c3 {
  position: relative;
  float: right;
  display: inline;
+ margin-left: 30px; /* a little extra spacing, so the <h2> doesn't overlap */
  margin-top: -6px;
  z-index: 2;
  margin-bottom: 2.5em;
