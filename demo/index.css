@@ -5,6 +5,10 @@ body {
  font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
 }
 
+body.home {
+ background: #fff url(../demo/_image/noise.png);
+}
+
 @font-face {
     /*
      * "Chunk" font by Meredith Mandel - http://work.meredithmandel.com/#379252/Typeface-Chunk-Five
@@ -91,7 +95,6 @@ body.home .sm2-speaker {
  display:inline;
  *margin-top:0px; /* IE 7 buggery */
  margin-right:2em;
- background:#fff;
  max-width:192px;
  min-width:64px;
  width:30%;
@@ -409,6 +412,14 @@ h2 {
  font-weight:300;
  padding-top:2px;
  letter-spacing:-1px;
+}
+
+#main-wrapper {
+ position: relative;
+ /* fade out the body texture */
+ -moz-box-shadow: inset 0px 0px 16px #fff;
+ -webkit-box-shadow: inset 0px 0px 16px #fff;
+ box-shadow: inset 0px 0px 16px #fff;
 }
 
 #main {
@@ -1709,6 +1720,40 @@ body.home .sm2-inline-list .ui360-vis {
  margin-right:0px;
 }
 
+body.home #special-demo-left .ui360 {
+ margin-right: 4px;
+ /* homepage-specific demo UI: a slight inner shadow + BG color + border */
+ background-color: rgba(0,0,0,0.025);
+ -moz-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.075);
+ -webkit-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.075);
+ box-shadow: inset 0px 0px 5px rgba(0,0,0,0.075);
+ /* a little radii, modern browsers only */
+ border: 1px solid rgba(0,0,0,0.075);
+ -moz-border-radius: 32px;
+ -webkit-border-radius: 32px;
+ -ms-border-radius: 32px;
+ border-radius: 32px;
+ -webkit-transition: all 0.2s ease-in-out;
+ -moz-transition: all 0.2s ease-in-out;
+ transition: all 0.2s ease-in-out;
+ /* specifics */
+ -moz-transition-property: background, border, box-shadow;
+ -webkit-transition-property: background, border, box-shadow;
+ transition-property: background, border, box-shadow;
+}
+
+body.home #special-demo-left .ui360:hover {
+ background-color: rgba(0,0,0,0.045);
+ border-color: rgba(0,0,0,0.15);
+ -moz-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
+ -webkit-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
+ box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
+}
+
+body.home #special-demo-left .ui360:last-child {
+	margin-right: 0px;
+}
+
 body.home .columnar .c2 p {
  font-size: 1.1em;
  line-height:1.6em;
@@ -1824,7 +1869,7 @@ body.home #about-sm2 #sm2-support h3 {
 }
 
 body.home #special-demo-left {
- min-height:65px;
+ min-height:70px;
  position:relative;
  float:left;
  display:inline;
@@ -1836,7 +1881,7 @@ body.home #special-demo-left {
 }
 
 body.home #special-demo-right {
- min-height:47px;
+ min-height:51px;
  position:relative;
  float:left;
  display:inline;
@@ -2328,8 +2373,63 @@ body.home #sm2-visualization {
 }
 
 body.home #sm2-visualization .ui360 {
-	float: none;
-	display: block;
+ float: none;
+ display: block;
+}
+
+body.home #sm2-visualization .ui360 .sm2-360ui {
+ border-color: rgba(0,0,0,0.05);
+ background-color: rgba(255,255,255,0.5);
+ -moz-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
+ -webkit-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
+ box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
+}
+
+body.home #sm2-visualization .ui360 canvas,
+body.home #sm2-visualization .ui360 .sm2-360ui,
+body.home #sm2-visualization .ui360 a {
+ -moz-border-radius: 128px;
+ -webkit-border-radius: 128px;
+ border-radius: 128px;
+}
+
+body.home #sm2-visualization .ui360 a {
+ /* put title underneath button */
+ line-height: 340px;
+ *line-height: 480px; /* not crap IE, though. */
+ line-height: 480px\9; /* nor IE 8. */
+ color: #ccc;
+ text-shadow: 0px 1px 0px #fff;
+}
+
+body.home #sm2-visualization .ui360 a,
+body.home #sm2-visualization .ui360 canvas {
+ -webkit-transition: all 0.2s ease-in-out;
+ -moz-transition: all 0.2s ease-in-out;
+ transition: all 0.2s ease-in-out;
+ -moz-transition-property: background, border, box-shadow;
+ -webkit-transition-property: background, border, box-shadow;
+ transition-property: background, border, box-shadow;
+}
+
+body.home #sm2-visualization .ui360:hover {
+ background-color: rgba(0,0,0,0);
+}
+
+body.home #sm2-visualization .ui360:hover a {
+ background-color: rgba(0,0,0,0.01);
+ border-color: rgba(0,0,0,0.1);
+ -moz-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
+ -webkit-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
+ box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
+}
+
+body.home #sm2-visualization .ui360 .sm2_playing canvas,
+body.home #sm2-visualization .ui360 .sm2_paused canvas {
+ /* hide song title while playing */
+ background-color: #fff;
+ *background-color: transparent; /* not you, crap IE. */
+ background-color: transparent\9; /* nor IE 8. */
 }
 
 body.home .gsfn_topic_list li {
