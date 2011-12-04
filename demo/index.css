@@ -126,6 +126,44 @@ body.home #about-sm2 h3 {
  letter-spacing:0px;
 }
 
+a.feature {
+ display: inline-block;
+ -webkit-transition: all 0.25s ease-in-out;
+ -moz-transition: all 0.25s ease-in-out;
+ transition: all 0.25s ease-in-out;
+ text-shadow: 0px 1px 0px rgba(0,0,0,0.33);
+ box-shadow: inset 0px 0px 3px rgba(0,0,0,0.33);
+}
+
+@-moz-keyframes highlight {
+    from {
+      box-shadow: 0px 0px 0px rgba(255,64,64,0);
+    }
+    to {
+      box-shadow: 0px 0px 16px rgba(255,64,64,0.75);
+    }
+}
+
+@-webkit-keyframes highlight {
+    from {
+      box-shadow: 0px 0px 0px rgba(255,64,64,0);
+    }
+    to {
+      box-shadow: 0px 0px 16px rgba(255,64,64,0.75);
+    }
+}
+
+a.feature:hover {
+ -moz-animation-duration: 0.5s;
+ -moz-animation-name: highlight;
+ -moz-animation-iteration-count: infinite;
+ -moz-animation-direction: alternate;
+ -webkit-animation-duration: 0.5s;
+ -webkit-animation-name: highlight;
+ -webkit-animation-iteration-count: infinite;
+ -webkit-animation-direction: alternate;
+}
+
 body.home #about-sm2 h3 {
  color:#555;
  font-weight: bold;
@@ -417,8 +455,7 @@ h2 {
 #main-wrapper {
  position: relative;
  /* fade out the body texture */
- -moz-box-shadow: inset 0px 0px 16px #fff;
- -webkit-box-shadow: inset 0px 0px 16px #fff;
+ border: 1px solid #fff;
  box-shadow: inset 0px 0px 16px #fff;
 }
 
@@ -645,6 +682,11 @@ ul {
  color:#fff;
 }
 
+#nav ul li ul li a:hover {
+ background-color: #336699;
+ background-color: rgba(0,0,0,0.45);
+}
+
 #nav>ul>li>a,
 #nav>ul>li>strong>a {
  /* top-level links */
@@ -668,11 +710,6 @@ ul {
  /* top-level */
  background-color: #3399cc;
  color:#fff;
-}
-
-#nav ul li ul li a:hover {
- background: #3399cc;
- background-color: rgba(0,0,0,0.45);
 }
 
 #version {
@@ -1096,12 +1133,35 @@ dd.deprecation-note {
  position:relative;
 }
 
+#support-wrapper {
+ position: relative;
+}
+
+body.home #support-wrapper {
+ background: #fff;
+ border: 1px solid rgba(0,0,0,0.03);
+ box-shadow: 0px 0px 1px rgba(0,0,0,0.075);
+}
+
 #gsfn_content {
- padding:0.5em 0px 0px 0px;
+ position: relative;
+ padding:0.5em 0px 0.5em 0px;
 }
 
 #gsfn_content ul {
- margin-bottom:0.5em;
+ position: relative;
+ /* initially, hide and then expand. */
+ overflow: hidden;
+ height: 0px;
+ margin: 0px;
+ /* smooth height transitions, why not */
+ -webkit-transition: height 0.5s ease-in-out;
+ -moz-transition: height 0.5s ease-in-out;
+ transition: height 0.5s ease-in-out;
+}
+
+#gsfn_list_widget.loaded ul {
+ /* JS callback assigns this class when load is complete */
 }
 
 #gsfn_content ul li {
@@ -1125,18 +1185,22 @@ div#gsfn_list_widget a.widget_title {
 div#gsfn_list_widget .powered_by {
  font-family:verdana,arial;
  margin:-0.25em 1em 0px 1em;
- padding:0.25em 0px 0px 0px;
- border-top: 1px solid #ccc;
+ padding:0.25em 0px 0.5em 0px;
+ border-top: 1px dotted #ddd;
  font-size:xx-small;
- opacity:0.5;
 }
 
-div#gsfn_list_widget .powered_by:hover {
- opacity:1;
+body.home div#gsfn_list_widget .powered_by {
+	padding-bottom: 0px;
+}
+
+div#gsfn_list_widget .powered_by a {
+ font-style: italic;
+ color: #999;
 }
 
 div#gsfn_list_widget .powered_by a:hover {
- color:#666;
+ color:#333;
 }
 
 div#gsfn_list_widget div#gsfn_content {
@@ -1205,6 +1269,9 @@ a.cta {
  padding:0.2em 0.25em;
  margin-left: -0.2em;
  margin-right: -0.2em;
+ *margin: 0px;
+ *padding: 0px 2px;
+ *margin: 0px -2px 0px -2px;
  text-decoration:none;
  color:#3399cc;
  -khtml-border-radius:0.25em;
@@ -1312,9 +1379,6 @@ li.html5support em.true {
 
 #nav ul li ul {
  /* eh, why not. */
- -moz-box-shadow:2px 2px 2px rgba(51,153,204,0.2);
- -khtml-box-shadow:2px 2px 2px rgba(51,153,204,0.2);
- -webkit-box-shadow:2px 2px 2px rgba(51,153,204,0.2);
  box-shadow:2px 2px 2px rgba(51,153,204,0.2);
 }
 
@@ -1327,8 +1391,8 @@ a.feature,
 .feature-hot {
  display:block;
  background:#3399ff;
- padding:0.3em 0.5em;
- margin:-0.3em 0px 0px -0.5em;
+ padding:0.3em 0.66em;
+ margin:-0.3em 0px 0px -0.66em;
  color:#fff;
  font-weight:bold;
  border:3px solid #ccc;
@@ -1337,6 +1401,7 @@ a.feature,
  -webkit-border-radius:8px;
  border-radius:8px;
  line-height:1em;
+ *line-height:1.1em;
  text-decoration:none;
  font-size:small;
  vertical-align:middle;
@@ -1724,9 +1789,7 @@ body.home #special-demo-left .ui360 {
  margin-right: 4px;
  /* homepage-specific demo UI: a slight inner shadow + BG color + border */
  background-color: rgba(0,0,0,0.025);
- -moz-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.075);
- -webkit-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.075);
- box-shadow: inset 0px 0px 5px rgba(0,0,0,0.075);
+ box-shadow: inset 0px 0px 8px rgba(0,0,0,0.075);
  /* a little radii, modern browsers only */
  border: 1px solid rgba(0,0,0,0.075);
  -moz-border-radius: 32px;
@@ -1745,8 +1808,6 @@ body.home #special-demo-left .ui360 {
 body.home #special-demo-left .ui360:hover {
  background-color: rgba(0,0,0,0.045);
  border-color: rgba(0,0,0,0.15);
- -moz-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
- -webkit-box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
  box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
 }
 
@@ -2115,7 +2176,7 @@ ul.file-structure li span {
  clear: both;
  color: #666;
  margin: 0.33em 0.75em 0px 0.75em;
- border-top: 1px solid #e6e6e6;
+ border-top: 1px dotted #ddd;
 }
 
 #sm2-options .options-divider {
@@ -2126,6 +2187,8 @@ ul.file-structure li span {
 #sm2-options p {
  font-size: x-small;
  padding-left: 0px;
+ padding-bottom: 0px;
+ margin-bottom: 0.75em;
 }
 
 #sm2-options p:first-child {
@@ -2380,8 +2443,6 @@ body.home #sm2-visualization .ui360 {
 body.home #sm2-visualization .ui360 .sm2-360ui {
  border-color: rgba(0,0,0,0.05);
  background-color: rgba(255,255,255,0.5);
- -moz-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
- -webkit-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
  box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
 }
 
@@ -2398,7 +2459,7 @@ body.home #sm2-visualization .ui360 a {
  line-height: 340px;
  *line-height: 480px; /* not crap IE, though. */
  line-height: 480px\9; /* nor IE 8. */
- color: #ccc;
+ color: #666 !important; /* hax */
  text-shadow: 0px 1px 0px #fff;
 }
 
@@ -2407,9 +2468,9 @@ body.home #sm2-visualization .ui360 canvas {
  -webkit-transition: all 0.2s ease-in-out;
  -moz-transition: all 0.2s ease-in-out;
  transition: all 0.2s ease-in-out;
- -moz-transition-property: background, border, box-shadow;
- -webkit-transition-property: background, border, box-shadow;
- transition-property: background, border, box-shadow;
+ -moz-transition-property: background-color, border, box-shadow;
+ -webkit-transition-property: background-color, border, box-shadow;
+ transition-property: background-color, border, box-shadow;
 }
 
 body.home #sm2-visualization .ui360:hover {
@@ -2419,17 +2480,27 @@ body.home #sm2-visualization .ui360:hover {
 body.home #sm2-visualization .ui360:hover a {
  background-color: rgba(0,0,0,0.01);
  border-color: rgba(0,0,0,0.1);
- -moz-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
- -webkit-box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
  box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
 }
 
 body.home #sm2-visualization .ui360 .sm2_playing canvas,
 body.home #sm2-visualization .ui360 .sm2_paused canvas {
  /* hide song title while playing */
- background-color: #fff;
+ background-color: #fafafa;
  *background-color: transparent; /* not you, crap IE. */
  background-color: transparent\9; /* nor IE 8. */
+}
+
+body.home #sm2-visualization .ui360 .sm2_playing canvas,
+body.home #sm2-visualization .ui360 .sm2_paused canvas {
+ background-color: #fafafa;
+ box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
+}
+
+body.home #sm2-visualization .ui360:hover .sm2_playing canvas,
+body.home #sm2-visualization .ui360:hover .sm2_paused canvas {
+ background-color: #fafafa;
+ box-shadow: inset 0px 0px 32px rgba(0,0,0,0.1);
 }
 
 body.home .gsfn_topic_list li {
