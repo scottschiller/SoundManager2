@@ -1,4 +1,4 @@
-﻿/*  
+﻿/** @license
 	Animator.js 1.1.9
 	
 	This library is released under the BSD license:
