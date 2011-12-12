@@ -439,10 +439,16 @@ h2 {
 
 #top {
  position:relative;
- padding:1em 1em 0px 4em;
+ padding:1em 1em 0px 3.55em;
+ max-width: 97.5em;
  color:#fff;
  z-index:3;
  margin: 0px auto;
+}
+
+body.home #top {
+ /* slightly different alignment for homepage */
+ padding-right: 2em;
 }
 
 #top,
@@ -489,7 +495,6 @@ h2 {
 */
 }
 
-#top,
 #main {
  max-width: 98em;
 }
