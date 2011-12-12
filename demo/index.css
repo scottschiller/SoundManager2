@@ -9,13 +9,18 @@ body.home {
  background: #fff url(../demo/_image/noise.png);
 }
 
+/* below block commented out as it crashes YUI Compressor (as of 12/2011) - moved out to make-rollups script. */
+
+/*
+ * "Chunk" font by Meredith Mandel - http://work.meredithmandel.com/#379252/Typeface-Chunk-Five
+ * http://www.theleagueofmoveabletype.com/fonts/4-chunk
+ * Provided under the SIL Open Font License (OFL)
+ * http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL&_sc=1
+*/
+
+/*
 @font-face {
-    /*
-     * "Chunk" font by Meredith Mandel - http://work.meredithmandel.com/#379252/Typeface-Chunk-Five
-     * http://www.theleagueofmoveabletype.com/fonts/4-chunk
-     * Provided under the SIL Open Font License (OFL)
-     * http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL&_sc=1
-    */
+
     font-family: 'ChunkFiveRegular';
     src: url('_image/chunk-webfont.woff') format('woff'),
          url('_image/chunk-webfont.ttf') format('truetype'),
@@ -23,10 +28,11 @@ body.home {
     font-weight: normal;
     font-style: normal;
 }
+*/
 
 h1,
 h2.special {
- letter-spacing:-0.015em;
+ letter-spacing:-0.005em;
 }
 
 h2.special {
@@ -126,6 +132,10 @@ body.home #about-sm2 h3 {
  letter-spacing:0px;
 }
 
+body.home #about-sm2 h3 {
+ font-size: 2.25em;
+}
+
 a.feature {
  display: inline-block;
  -webkit-transition: all 0.25s ease-in-out;
@@ -165,9 +175,10 @@ a.feature:hover {
 }
 
 body.home #about-sm2 h3 {
- color:#555;
+ color:#444;
  font-weight: bold;
- padding-bottom:3px;
+ padding-bottom: 0px;
+ margin-bottom: 0px;
  font-weight: 300;
  letter-spacing: -0.005em;
 }
@@ -183,11 +194,11 @@ body.home h4 {
 }
 
 body.home #about-sm2 h4 {
- font-weight: bold;
+ font-weight: 300;
  color: #666;
- font-size: 1.2em;
- margin-bottom: 0.5em;
- margin-top: 1.5em;
+ font-size: 1.25em;
+ margin-bottom: 1.25em;
+ margin-top: 0.15em;
 }
 
 body.home .demo-more,
@@ -428,10 +439,15 @@ h2 {
 
 #top {
  position:relative;
- padding:1em 1em 0px 1em;
- background:#222;
+ padding:1em 1em 0px 4em;
  color:#fff;
- z-index:2;
+ z-index:3;
+ margin: 0px auto;
+}
+
+#top,
+#content { /* #top #content */
+ background: #222;
 }
 
 #top,
@@ -452,8 +468,10 @@ h2 {
  letter-spacing:-1px;
 }
 
+
 #main-wrapper {
  position: relative;
+ background: #fff url(../demo/_image/noise.png);
  /* fade out the body texture */
  border: 1px solid #fff;
  box-shadow: inset 0px 0px 16px #fff;
@@ -464,12 +482,20 @@ h2 {
  padding:0px 0px 2em 0px;
  padding-top:1px;
  margin:0px auto;
- max-width:110em;
  *padding:0px 1em 2em 1em;
  zoom:1;
+/*
+ box-shadow: 0px 0px 32px rgba(0,0,0,0.05);
+*/
+}
+
+#top,
+#main {
+ max-width: 98em;
 }
 
 body.home #main {
+ box-shadow: none;
  max-width: 104em;
 }
 
@@ -477,7 +503,7 @@ body.home #main {
  position:relative;
  margin:0px;
  padding:0px;
- margin:2em 0.5em 0.5em 0.5em;
+ margin:2em 0.5em 0.5em 1em; /* slight left tweak */
 }
 
 .columnar .c1 {
@@ -503,6 +529,7 @@ body.home #main {
  vertical-align:middle;
  background:#333;
  color:#fff;
+ text-indent: 0.25em;
 }
 
 .columnar .c1 p {
@@ -1135,9 +1162,6 @@ dd.deprecation-note {
 
 #support-wrapper {
  position: relative;
-}
-
-body.home #support-wrapper {
  background: #fff;
  border: 1px solid rgba(0,0,0,0.03);
  box-shadow: 0px 0px 1px rgba(0,0,0,0.075);
@@ -1395,7 +1419,7 @@ a.feature,
  margin:-0.3em 0px 0px -0.66em;
  color:#fff;
  font-weight:bold;
- border:3px solid #ccc;
+ border:3px solid #cce6ff;
  border:3px solid rgba(255,255,255,0.66);
  -moz-border-radius:8px;
  -webkit-border-radius:8px;
@@ -1540,6 +1564,7 @@ a.warning:hover {
  margin: -11px 0px 0px -50px;
 }
 
+.inthewild.active #audiogalaxy,
 .inthewild:hover #audiogalaxy,
 #audiogalaxy:hover {
  background-position: 0 -46px;
@@ -1559,6 +1584,7 @@ a.warning:hover {
  margin: -19px 0px 0px -40px;
 }
 
+.inthewild.active #hypem,
 .inthewild:hover #hypem,
 #hypem:hover {
  background-position: 0 -134px;
@@ -1571,6 +1597,7 @@ a.warning:hover {
  margin: -14px 0px 0px -40px;
 }
 
+.inthewild.active #lastfm,
 .inthewild:hover #lastfm,
 #lastfm:hover {
  background-position: 0 -176px;
@@ -1583,6 +1610,7 @@ a.warning:hover {
  margin: -20px 0px 0px -32px;
 }
 
+.inthewild.active #nyancat,
 .inthewild:hover #nyancat,
 #nyancat:hover {
  background-position: 0 -312px;
@@ -1595,6 +1623,7 @@ a.warning:hover {
  margin: -16px 0px 0px -40px;
 }
 
+.inthewild.active #opera,
 .inthewild:hover #opera,
 #opera:hover {
  background-position: 0 -388px;
@@ -1607,6 +1636,7 @@ a.warning:hover {
  margin: -29px 0px 0px -42px;
 } 
 
+.inthewild.active #soundcloud,
 .inthewild:hover #soundcloud,
 #soundcloud:hover {
  background-position: 0 -424px;
@@ -1619,6 +1649,7 @@ a.warning:hover {
  margin: -10px 0px 0px -50px;
 }
 
+.inthewild.active #turntable-dot-fm,
 .inthewild:hover #turntable-dot-fm,
 #turntable-dot-fm:hover {
  background-position: 0 -252px;
@@ -1631,6 +1662,7 @@ a.warning:hover {
  margin: -23px 0px 0px -42px;
 }
 
+.inthewild.active #baroque-me,
 .inthewild:hover #baroque-me,
 #baroque-me:hover {
  background-position: 0 -541px;
@@ -1643,11 +1675,16 @@ a.warning:hover {
  margin: -15px 0px 0px -50px;
 }
 
+.inthewild.active #freesound,
 .inthewild:hover #freesound,
 #freesound:hover {
  background-position: 0 -635px;
 }
 
+
+.inthewild.active li:hover {
+ border-color: #999;
+}
 
 /* homepage-specific demo shiz */
 
@@ -1948,7 +1985,8 @@ body.home #special-demo-right {
  display:inline;
  margin-top:18px;
  padding-right:15px;
- *display:none; /* overflows in IE 7, can't be arsed */
+ *width: 90px;
+ _display: none;
 }
 
 body.home #inline-playlist {
@@ -2044,7 +2082,7 @@ body.fast .xlsf-light {
 
 .xlsf-fragment {
  position:absolute;
- background:transparent url(christmas-lights/image/bulbs-50x50-fragments.png) no-repeat 0px 0px;
+ background:transparent url(demo/christmas-lights/image/bulbs-50x50-fragments.png) no-repeat 0px 0px;
  width:50px;
  height:50px;
 }
@@ -2315,9 +2353,8 @@ div.oneup .column-wrapper.spaced-out,
 div.twoup .column-wrapper.spaced-out,
 div.threeup .column-wrapper.spaced-out {
  /* spacing for columns without an <h3> header */
- padding-top: 5.3em;
+ padding-top: 6.25em;
 }
-
 
 div.threeup.first {
  padding-top: 0px;
@@ -2332,6 +2369,12 @@ body.home #main .twoup p,
 body.home #main .threeup p {
 	font-size: 1.1em;
 	line-height: 1.4em;
+}
+
+body.home #main p.sidenote {
+	/* disclaimer */
+	font-size: x-small;
+	color: #666;
 }
 
 body.home #main {

@@ -9,26 +9,21 @@
 <meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller"/>
 <meta name="language" content="en-us"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<!-- base library + a bunch of demo components (yay, they all work together) -->
-<link rel="stylesheet" type="text/css" href="demo/play-mp3-links/css/inlineplayer.css"/>
-<link rel="stylesheet" type="text/css" href="demo/page-player/css/page-player.css"/>
-<link rel="stylesheet" type="text/css" href="demo/360-player/360player.css"/>
-<link rel="stylesheet" type="text/css" href="demo/360-player/360player-visualization.css"/>
-<link rel="stylesheet" type="text/css" href="demo/mp3-player-button/css/mp3-player-button.css"/>
-<link rel="stylesheet" type="text/css" href="demo/flashblock/flashblock.css"/>
-<link rel="stylesheet" type="text/css" media="screen" href="demo/index.css"/>
+
+<!-- inline demo CSS (combined + minified for performance; see comments for raw source URLs) -->
+<link rel="stylesheet" type="text/css" href="demo/index-rollup.css"/>
+
+<!-- the SoundManager 2 API -->
 <script type="text/javascript" src="script/soundmanager2.js"></script>
-<script type="text/javascript" src="demo/mp3-player-button/script/mp3-player-button.js"></script>
-<script type="text/javascript" src="demo/page-player/script/page-player.js"></script>
-<script type="text/javascript" src="demo/play-mp3-links/script/inlineplayer.js"></script>
+
 <!-- 360 UI demo, canvas magic for IE -->
 <!--[if lt IE 9]><script type="text/javascript" src="demo/360-player/script/excanvas.js"></script><![endif]-->
-<!-- 360 UI demo, Apache-licensed animation library -->
-<script type="text/javascript" src="demo/360-player/script/berniecode-animator.js"></script>
-<script type="text/javascript" src="demo/360-player/script/360player.js"></script>
-<!-- SM2 demo/homepage stuff -->
+
+<!-- SM2 demo/homepage-specific stuff -->
 <script type="text/javascript">var is_home = true;</script>
-<script type="text/javascript" src="demo/index.js"></script>
+
+<!-- inline demo JS (combined + minified; see comments for raw source URLs) -->
+<script type="text/javascript" src="demo/index-rollup.js"></script>
 <!-- IE CSS font hax -->
 <!--[if lte IE 8]>
 <style>
@@ -51,7 +46,7 @@
 		<h1>A JavaScript Sound API supporting MP3, MPEG4 and HTML5 Audio.</h1>
 
 		<div id="nav">
-			<div id="version"></div>
+			<div id="version" title="Version of SM2 loaded on this page"></div>
 			<ul>
 				<li>
 					<strong><a href="#home">Home</a></strong>
@@ -176,9 +171,9 @@
 
 					<div class="column">
 						<div class="column-wrapper">
-							<h3>More sound, <b>in more places</b></h3>
-							<p>Despite being one of the senses, sound has largely been missing from the web due to inconsistent technology support. SoundManager 2 bridges this gap, making it easier to use audio across a growing variety of devices and platforms.</p>
-
+							<h3>Be heard</h3>
+							<h4>More sound, <b>in more places</b></h4>
+							<p>Despite being one of the senses, sound has largely been missing from the web due to inconsistent technology support. SoundManager 2 bridges this gap, making it easier to use audio across a growing variety of devices and platforms, both desktop and mobile.</p>
 
 							<p>A few live examples:</p>
 
@@ -186,8 +181,7 @@
 								<!-- "oh snap", SM2 didn't load etc. messaging -->
 							</div>
 
-
-							<div style="position:relative;width:300px;*width:auto;margin:0px auto;*zoom:1">
+							<div style="position:relative;*zoom:1">
 
 								<div id="special-demo-left" class="sm2-inline-list">
 
@@ -228,16 +222,21 @@
 
 					<div class="column">
 						<div class="column-wrapper">
-							<h3>Complexity, <b>reduced</b></h3>
-							<p>Supporting HTML5 audio can be tedious in modern browsers, let alone older HTML4-based ones. With technology ranging from mobile Safari down to IE 6, there's a lot of ground to cover.</p>
-							<p>SoundManager 2 gives you a simple but powerful API that supports both new and old, using HTML5 audio where supported and an invisible Flash fallback where needed. Ideally when using SoundManager 2, audio "just works."</p>
+							<h3>Enjoy convenience</h3>
+							<h4>Complexity, <b>reduced</b></h4>
+							<p>Supporting HTML5 audio can be tedious in modern browsers, let alone legacy ones. With real-world visitors using browsers ranging from mobile Safari to IE 6, there can be many support cases to consider.</p>
+							<p>SoundManager 2 gives you a simple but powerful API that supports both new and old, using HTML5 audio where supported and optional Flash-based fallback where needed. Ideally when using SoundManager 2, audio "just works."</p>
 						</div>
 					</div>
 
 					<div class="column">
 						<div class="column-wrapper">
-							<h3>Big&nbsp;features, <b>small footprint</b></h3>
-							<p>SoundManager 2 can pack a full-featured API into a compact <a href="doc/getstarted/#basic-inclusion" title="SoundManager 2: Build options" class="cta">10 KB</a> over the wire. The source is provided in fully-commented, -no-debug and compiler-optimized "minified" versions appropriate for development and production use.</p>
+							<h3 style="cursor:help" title="Or was it the 'Swiss Army' kind? ... I forget.">The ginsu knife:<span style="color:#ccc">*</span> <span style="white-space:nowrap">10 KB</span></h3>
+							<h4>Big&nbsp;features, <b>small footprint</b></h4>
+							<p><em>But wait, there's more!</em></p>
+							<p>SoundManager 2 packs a large, feature-rich API into a minimal <a href="doc/getstarted/#basic-inclusion" title="SoundManager 2: Build options" class="cta">10 KB</a> over the wire when optimized - a 90% savings when compared to the full file size.</p>
+							<p>The source code is BSD-licensed and is provided in fully-commented, non-debug and compiler-optimized "minified" versions appropriate for development and production use.</p>
+							<p class="sidenote">* (Or was it supposed to be the <i>Swiss Army</i> kind? ... I forget.)</p>
 						</div>
 					</div>
 
@@ -249,7 +248,8 @@
 					<div class="column">
 						<div class="column-wrapper">
 
-							<h3>Simple: <b>links and playlists</b></h3>
+							<h3>Basic</h3>
+							<h4>playable links and playlists</h4>
 
 							<p>These demos use unordered lists with MP3 links that play in-place; the UI is easily customized via CSS.</p>
 
@@ -285,7 +285,8 @@
 					<div class="column">
 						<div class="column-wrapper">
 
-							<h3>Shiny: <b>data visualization</b></h3>
+							<h3>Shiny</h3>
+							<h4>data visualization features</h4>
 
 							<p>The 360&deg; player UI demo uses &lt;canvas&gt; and includes options for waveform and spectrum analysis data display (via Flash 9), adding beautiful visual feedback to the interface.</p>
 
@@ -319,7 +320,8 @@
 					<div class="column">
 						<div class="column-wrapper">
 
-							<h3>Experimental: <b>prototypes</b></h3>
+							<h3>Experimental</h3>
+							<h4>advanced prototypes</h4>
 
 							<p>No audio API is complete without at least <em>one</em> crazy demo. The "Wheels Of Steel" started as a simple CSS prototype, and evolved to replicate most of the UI and functionality of a traditional DJ set-up. Pitch bending, scratch and EQ effects are present where supported.</p>
 							<p style="margin:1em 0px;padding:0px;text-align:center"><a href="http://wheelsofsteel.net/" title="The Wheels Of Steel: Online turntable / browser-based DJ prototype" style="margin:0px;padding:0px;background:#fff"><img src="demo/_image/wheelsofsteel-full-ui.jpg" alt="wheelsofsteel.net: Online turntable demo (screenshot)" style="display:block;width:100%;max-width:315px;margin-left:-4px;border:none" /></a></p>
@@ -330,16 +332,41 @@
 
 				</div>
 
-				<div class="oneup">
+				<div class="twoup">
 
 					<div class="column">
 						<div class="column-wrapper">
 
-							<h3>As heard on <b><span class="scratched-out">TV</span> the internets</b></h3>
+							<h3>Bonus</h3>
+							<h4>Additional <b>demos</b></h4>
+
+							<p>MPC (sampler/drum machine)</p>
+							
+							<p style="margin-left: auto;margin-right:auto">
+								<a href="#" style="display:inline-block"><img src="demo/_image/mpc-screenshot.png" alt="MPC (drum machine) demo screenshot" style="display:block;width:100%;max-width:150px" /></a>
+							</p>
+
+							<h4>Articles and presentations</h4>
+
+							<p>Some other words, pictures and video on the subject of HTML5 and web audio:</p>
+							<ul class="standard">
+								<li>Video presentation: <a href="http://www.youtube.com/watch?v=KjdPNtWV3Z0#t=56s" title="Scott Schiller: &quot;Adding Sound To HTML&quot;">Adding Sound To HTML</a> (<a href="http://isflashdeadyet.com/talks/html5/" title="&quot;Adding Sound To HTML&quot; presentation slides">slides</a>) (12/2011)</li>
+								<li>24ways.org article, <a href="http://24ways.org/2010/the-state-of-html5-audio" title="Probably, Maybe, No: The State Of HTML5 Audio (24ways.org)" class="cta">The State Of HTML5 Audio</a> (12/2010)</li>
+								<li>Video: <a href="http://www.youtube.com/watch?v=ffk65q5Rl9I" title="Yahoo!/YUI Blog, video presentation: Scott Schiller on the State of HTML5 Audio" class="cta">Probably, Maybe, No: The State of HTML5 Audio</a> + turntable demo (05/2011)</li>
+							</ul>
+
+						</div>
+					</div>
+
+					<div class="column">
+						<div class="column-wrapper">
+
+							<h3>Elsewhere</h3>
+							<h4>As heard on <b><span class="scratched-out">TV</span> the internets</b></h4>
 
 							<p>A few nifty places SoundManager 2 has been seen in use on the Wild World Web:</p>
 
-							<div class="inthewild">
+							<div class="inthewild active">
 
 								<ul>
 									<li>
@@ -406,7 +433,7 @@
 					<div class="column">
 						<div class="column-wrapper">
 
-							<h3>Technical <b>details</b></h3>
+							<h3>Technical details</h3>
 
 							<h4>HTML5 Audio Support <span class="sub-heading">(Beta-ish)</span></h4>
 
@@ -416,7 +443,6 @@
 								<li>HTML5/Flash API switching is transparent, handled internally</li>
 								<li>WAV + OGG playback via HTML5, where supported</li>
 								<li>See <a href="doc/#soundmanager-usehtml5audio" title="soundManager.useHTML5Audio HTML5 Audio() support feature documentation" class="cta">useHTML5Audio</a> for implementation details</li>
-								<li>Want more on the state of HTML5 audio? Read <a href="http://24ways.org/2010/the-state-of-html5-audio" title="Probably, Maybe, No: The State Of HTML5 Audio (24ways.org)" class="cta">the article</a> (12/2010), or watch the <a href="http://www.yuiblog.com/blog/2011/06/29/video-f2esummit2011-schiller/" title="Yahoo!/YUI Blog, video presentation: Scott Schiller on the State of HTML5 Audio" class="cta">talk + turntable demo</a> (05/2011)</li>
 							</ul>
 
 						</div>
@@ -431,6 +457,8 @@
 								<li>Events: onload(), whileloading(), whileplaying(), onfinish() and more</li>
 								<li>ID3V1 + ID3V2 tag support for MP3s (title, artist, genre etc.)*</li>
 							</ul>
+
+							<br />
 
 							<h4>Additional Flash 9-based API Features</h4>
 
@@ -458,6 +486,7 @@
 								<li id="licensing"><a href="license.txt" title="SoundManager 2 BSD license" class="cta norewrite">BSD licensed</a></li>
 							</ul>
 
+							<br />
 							<h4 class="home-shopping-network">Not only do you get the ginsu knife...</h4>
 							<p style="font-size:11px">Even more demos and examples using the SoundManager 2 API...</p>
 							<ul class="standard">
@@ -484,7 +513,8 @@
 					<div class="column">
 						<div class="column-wrapper">
 
-							<h3>Getting started: <b>loading SoundManager 2</b></h3>
+							<h3>Getting started</h3>
+							<h4>Loading SoundManager 2</h4>
 
 							<p>SoundManager 2 is easy to include; the important part is telling it where to find the flash SWF files it may need.</p>
 
@@ -507,6 +537,7 @@ soundManager.onready(function() {
 							<p>For a live example, see the <a href="demo/template/" class="cta">basic template demo</a>.</p>
 
 
+<!--
 							<h4>Additional Flash 9 features, HTML5 behaviour, flash blocking etc.</h4>
 
 							<p>You can enable additional features via <code>soundManager.flashVersion = 9</code>, configure HTML5 audio behaviour, flash blocker handling and so forth.</p>
@@ -537,13 +568,16 @@ soundManager.onready(function() {
 								Want more? See the <a href="demo/template/" class="cta">basic template demo</a>. For compressed and optimized builds, see <a href="doc/getstarted/#basic-inclusion" class="cta">basic inclusion</a>. For deferred or dynamic loading of SM2, see <a href="doc/getstarted/#lazy-loading" class="cta">lazy-loading</a>.
 							</p>
 
+-->
+
 						</div>
 					</div>
 
 					<div class="column">
 						<div class="column-wrapper">
 
-							<h3>Getting started: <b>playing audio</b></h3>
+							<h3>Playing audio</h3>
+							<h4>Basic playback control</h4>
 
 							<p>Once <code>soundManager.onready()</code> has fired, sounds can be loaded and played.</p>
 
@@ -558,6 +592,8 @@ soundManager.createSound({
 <span><span>// ...and play it</span></span>
 soundManager.play('<span>mySound</span>');
 </code></pre>
+
+<!--
 
 							<h4>Create and play, with additional parameters</h4>
 
@@ -582,6 +618,9 @@ demoSound.play({
     console.log('<span>sound </span>' + <span>this.sID</span> + '<span> finished!</span>');
   }
 });</code></pre>
+
+-->
+
 					<p>For more examples of playback features, see <a href="demo/api/" class="cta">API Demos</a>.</p>
 
 						</div>
