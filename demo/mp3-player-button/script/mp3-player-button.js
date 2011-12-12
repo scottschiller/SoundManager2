@@ -135,7 +135,7 @@ function BasicMP3Player() {
   this.stopEvent = function(e) {
    if (typeof e !== 'undefined' && typeof e.preventDefault !== 'undefined') {
       e.preventDefault();
-    } else if (typeof window.event !== 'undefined' && typeof window.event.returnValue !== 'undefined') {
+    } else if (typeof window.event !== 'undefined') {
       window.event.returnValue = false;
     }
     return false;
@@ -212,8 +212,7 @@ function BasicMP3Player() {
       thisSound.play();
     }
     self.lastSound = thisSound; // reference for next call
-    self.stopEvent(e);
-    return false;
+    return self.stopEvent(e);
   };
 
   this.stopSound = function(oSound) {
