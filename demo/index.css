@@ -1495,25 +1495,29 @@ a.warning:hover {
  transform:rotate(-15deg);
 }
 
-.inthewild {
+div.inthewild {
  position: relative;
  margin-top:1em;
 }
 
-.inthewild ul {
+ul.inthewild {
  display: inline;
  margin: 0px auto;
  list-style-type: none;
 }
 
-.inthewild ul,
-.inthewild li {
+ul.inthewild,
+ul.inthewild li {
  position: relative;
  margin: 0px;
  padding: 0px;
 }
 
-.inthewild li {
+ul.inthewild {
+ margin-bottom: 2em;
+}
+
+ul.inthewild li {
  display: inline-block;
  *float: left;
  *display: inline;
@@ -1525,13 +1529,13 @@ a.warning:hover {
  margin: 2px 0px;
 }
 
-.inthewild a,
-.inthewild a img {
+ul.inthewild a,
+ul.inthewild a img {
  border:none;
  vertical-align:middle;
 }
 
-.inthewild a {
+ul.inthewild a {
  position: absolute;
  left: 50%;
  top: 50%;
@@ -1546,11 +1550,11 @@ a.warning:hover {
  vertical-align: middle;
 }
 
-.inthewild a:hover {
+ul.inthewild a:hover {
  background-color: transparent;
 }
 
-.inthewild a span {
+ul.inthewild a span {
  position:absolute;
  text-indent:-9999em;
 }
@@ -1569,8 +1573,8 @@ a.warning:hover {
  margin: -11px 0px 0px -50px;
 }
 
-.inthewild.active #audiogalaxy,
-.inthewild:hover #audiogalaxy,
+div.inthewild.active #audiogalaxy,
+div.inthewild:hover #audiogalaxy,
 #audiogalaxy:hover {
  background-position: 0 -46px;
 }
@@ -1589,8 +1593,8 @@ a.warning:hover {
  margin: -19px 0px 0px -40px;
 }
 
-.inthewild.active #hypem,
-.inthewild:hover #hypem,
+div.inthewild.active #hypem,
+div.inthewild:hover #hypem,
 #hypem:hover {
  background-position: 0 -134px;
 }
@@ -1602,8 +1606,8 @@ a.warning:hover {
  margin: -14px 0px 0px -40px;
 }
 
-.inthewild.active #lastfm,
-.inthewild:hover #lastfm,
+div.inthewild.active #lastfm,
+div.inthewild:hover #lastfm,
 #lastfm:hover {
  background-position: 0 -176px;
 } 
@@ -1615,8 +1619,8 @@ a.warning:hover {
  margin: -20px 0px 0px -32px;
 }
 
-.inthewild.active #nyancat,
-.inthewild:hover #nyancat,
+div.inthewild.active #nyancat,
+div.inthewild:hover #nyancat,
 #nyancat:hover {
  background-position: 0 -312px;
 }
@@ -1628,8 +1632,8 @@ a.warning:hover {
  margin: -16px 0px 0px -40px;
 }
 
-.inthewild.active #opera,
-.inthewild:hover #opera,
+div.inthewild.active #opera,
+div.inthewild:hover #opera,
 #opera:hover {
  background-position: 0 -388px;
 }
@@ -1641,8 +1645,8 @@ a.warning:hover {
  margin: -29px 0px 0px -42px;
 } 
 
-.inthewild.active #soundcloud,
-.inthewild:hover #soundcloud,
+div.inthewild.active #soundcloud,
+div.inthewild:hover #soundcloud,
 #soundcloud:hover {
  background-position: 0 -424px;
 }
@@ -1654,8 +1658,8 @@ a.warning:hover {
  margin: -10px 0px 0px -50px;
 }
 
-.inthewild.active #turntable-dot-fm,
-.inthewild:hover #turntable-dot-fm,
+div.inthewild.active #turntable-dot-fm,
+div.inthewild:hover #turntable-dot-fm,
 #turntable-dot-fm:hover {
  background-position: 0 -252px;
 }
@@ -1667,8 +1671,8 @@ a.warning:hover {
  margin: -23px 0px 0px -42px;
 }
 
-.inthewild.active #baroque-me,
-.inthewild:hover #baroque-me,
+div.inthewild.active #baroque-me,
+div.inthewild:hover #baroque-me,
 #baroque-me:hover {
  background-position: 0 -541px;
 }
@@ -1680,14 +1684,14 @@ a.warning:hover {
  margin: -15px 0px 0px -50px;
 }
 
-.inthewild.active #freesound,
-.inthewild:hover #freesound,
+div.inthewild.active #freesound,
+div.inthewild:hover #freesound,
 #freesound:hover {
  background-position: 0 -635px;
 }
 
 
-.inthewild.active li:hover {
+div.inthewild.active li:hover {
  border-color: #999;
 }
 
