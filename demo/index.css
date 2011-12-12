@@ -2260,6 +2260,10 @@ body.home #about-sm2 .home-shopping-network {
  display: block;
 }
 
+#about-sm2 a img {
+	border: none;
+}
+
 /* alternate code + comment blocks */
 
 ul.code-block {
