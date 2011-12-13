@@ -5,7 +5,8 @@ body {
  font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
 }
 
-body.home {
+body.home,
+#nav ul li strong a {
  background: #fff url(../demo/_image/noise.png);
 }
 
@@ -479,7 +480,9 @@ body.home #top {
  position: relative;
  background: #fff url(../demo/_image/noise.png);
  /* fade out the body texture */
+/*
  border: 1px solid #fff;
+*/
  box-shadow: inset 0px 0px 16px #fff;
 }
 
@@ -727,8 +730,6 @@ ul {
 }
 
 #nav ul li strong a {
- background:#336699;
- background:#fff;
  color:#333;
 }
 
@@ -740,7 +741,7 @@ ul {
 #nav ul li a:hover,
 #nav>ul>li:hover>a {
  /* top-level */
- background-color: #3399cc;
+ background: #3399cc;
  color:#fff;
 }
 
