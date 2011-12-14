@@ -2619,7 +2619,7 @@ div.icons ul li,
  height: 30px;
  margin-left: 16px;
  margin-top: 5px;
- opacity: 0.9;
+ opacity: 0.85;
  cursor: default;
 }
 
@@ -2659,7 +2659,7 @@ div.icons ul li.performance {
 .icon.performance {
  width: 18px;
  height: 28px;
- margin-top: -6px;
+ margin-top: -7px;
 }
 
 .icon.music-note,
