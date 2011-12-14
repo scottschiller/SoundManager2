@@ -709,7 +709,7 @@ ul {
 
 #nav ul li a {
  display:inline-block;
- padding:0.3em 0.5em;
+ padding:0.35em 0.5em;
  padding-left:0.75em;
  padding-right:0.75em;
  text-decoration:none;
@@ -1308,6 +1308,7 @@ a.cta {
  -moz-border-radius:0.25em;
  border-radius:0.25em;
  zoom:1;
+ text-shadow: none;
 }
 
 /* redefine for simple mp3 button demo */
@@ -2331,6 +2332,14 @@ div.threeup {
  *zoom:1; /* god damn shite IE */
 }
 
+div.oneup,
+div.twoup,
+div.threeup,
+#about-sm2 h2.special,
+#about-sm2 p {
+ text-shadow: 0px 1px 0px #fff; /* eh, why not. */
+}
+
 div.oneup .column {
  position: relative;
  width: 100%;
@@ -2576,4 +2585,102 @@ div.clearfix {
  font-size: 0px;
  height: 0px;
  overflow: hidden;
+}
+
+div.icons ul {
+ list-style-type: none;
+}
+
+div.icons ul,
+div.icons ul li {
+ margin: 0px;
+ padding: 0px;
+}
+
+div.icons ul li,
+.icon {
+ position: relative;
+ display: inline-block;
+ vertical-align: middle;
+ *display: none; /* not you, crap IE. */
+ background: transparent url(data:image/png;base64,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) no-repeat;
+ width: 32px;
+ height: 24px;
+ padding-right: 4px;
+ text-indent: -999em;
+ overflow: hidden;
+ cursor: help;
+}
+
+.icon {
+ display: inline-block;
+ *display: none;
+ width: 32px;
+ height: 30px;
+ margin-left: 16px;
+ margin-top: 5px;
+ opacity: 0.9;
+ cursor: default;
+}
+
+div.icons ul li.desktop {
+ background-position: -11px -12px;
+ height: 24px;
+}
+
+div.icons ul li.laptop {
+ background-position: -59px -13px;
+ height: 22px;
+}
+
+div.icons ul li.ipad {
+ background-position: -109px -10px;
+ width: 28px;
+ height: 28px;
+}
+
+div.icons ul li.iphone {
+ background-position: -256px -9px;
+ width: 22px;
+ height: 28px;
+}
+
+div.icons ul li.android {
+ background-position: -299px -7px;
+ width: 28px;
+ height: 32px;
+}
+
+.icon.performance,
+div.icons ul li.performance {
+ background-position: -205px -9px;
+}
+
+.icon.performance {
+ width: 18px;
+ height: 28px;
+ margin-top: -6px;
+}
+
+.icon.music-note,
+div.icons ul li.music-note {
+ background-position: -155px -13px;
+}
+
+.icon.music-note {
+ width: 19px;
+ height: 23px;
+ margin-top: -4px;
+}
+
+.icon.package,
+div.icons ul li.package {
+ background-position: -347px -7px;
+ height: 28px;
+
+}
+
+.icon.package {
+ width: 22px;
+ margin-top: -8px;
 }
