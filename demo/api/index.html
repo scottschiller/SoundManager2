@@ -441,6 +441,8 @@ spliceDemo.play({
  <img src="../_image/fitter-happier-waveform.png" alt="Fitter, Happier waveform showing sound samples" />
 </p>
 
+<p>Portions of a sound can be played by specifying <b>from</b> and <b>to</b> when calling <code>play()</code>. This can be useful for performance, i.e., having an "audio sprite" that loads in a single HTTP request.</p>
+
 <pre id="demo4h" class="block"><code>var fhDemo = soundManager.createSound({
   id: '<span>fitterHappier</span>',
   url: '<span>http://freshly-ground.com/data/audio/sm2/fitter-happier-64kbps.mp3</span>'
