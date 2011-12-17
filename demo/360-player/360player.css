@@ -110,10 +110,18 @@
  display:block;
  top:50%;
  left:50%;
+/*
  width:22px;
  height:22px;
  margin-left:-11px;
  margin-top:-11px;
+*/
+ /* by default, cover whole space. make smaller when playing. */
+ width:50px;
+ height:50px;
+ margin-left:-25px;
+ margin-top:-25px;
+ border-radius: 25px;
  cursor:pointer;
  z-index:3;
 }
@@ -121,6 +129,16 @@
 .ui360 .sm2-360data {
  display:inline-block;
  font-family:helvetica;
+}
+
+.sm2-inline-block .ui360 .sm2-360btn,
+.ui360 .sm2-360ui.sm2_playing .sm2-360btn,
+.ui360 .sm2-360ui.sm2_paused .sm2-360btn {
+ /* smaller clickable button, in center */
+ width:22px;
+ height:22px;
+ margin-left:-11px;
+ margin-top:-11px;
 }
 
 .ui360 .sm2-360ui.sm2_playing .sm2-cover,

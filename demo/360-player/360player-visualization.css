@@ -40,10 +40,6 @@
 }
 
 .ui360-vis .sm2-timing {
- line-height:256px;
-}
-
-.ui360-vis .sm2-timing {
  font:bold 24px "helvetica neue",helvetica,monaco,lucida,terminal,monospace;
  color:#333;
  text-align:center;
@@ -110,11 +106,14 @@
 
 /* Use a bigger loading image for this layout */
 
-.ui360-vis .sm2-360btn {
+.ui360-vis .sm2-360btn,
+.ui360-vis .sm2-360ui.sm2_paused .sm2-360btn,
+.ui360-vis .sm2-360ui.sm2_playing .sm2-360btn {
  width:48px;
  height:48px;
  margin-left:-24px;
  margin-top:-24px;
+ border-radius: none;
 }
 
 .ui360-vis:hover .sm2-360btn {
