@@ -97,14 +97,24 @@ h5 {
  font-weight: 400;
 }
 
+body.home #about-header {
+	/* speaker image, etc. */
+	position: relative;
+	margin-left: 18%;
+	min-height: 175px;
+}
+
 body.home .sm2-speaker {
- float:left;
- display:inline;
+ position: absolute;
+ left: -1.5%;
+ top: 0px;
  *margin-top:0px; /* IE 7 buggery */
  margin-right:2em;
+ margin-bottom:8px;
  max-width:192px;
  min-width:64px;
- width:30%;
+ width:20%;
+ margin-left:-20%;
 }
 
 body.home .sm2-speaker img {
@@ -1982,9 +1992,9 @@ body.home #special-demo-left {
  position:relative;
  float:left;
  display:inline;
- margin-right:16px;
+ margin-right:14px;
  padding-right:0.9em;
- border-right:1px solid #eee;
+ border-right:1px dotted #e0e0e0;
  *border-right:none;
  _width:210px;
 }
@@ -1995,7 +2005,9 @@ body.home #special-demo-right {
  float:left;
  display:inline;
  margin-top:18px;
+/*
  padding-right:15px;
+*/
  *width: 90px;
  _display: none;
 }
@@ -2368,7 +2380,7 @@ div.threeup .column {
 div.oneup .column-wrapper,
 div.twoup .column-wrapper,
 div.threeup .column-wrapper {
- border-top: 1px dotted #e6e6e6;
+ border-top: 1px dotted #d0d0d0;
  margin: 0px 2.5em;
 }
 
@@ -2380,7 +2392,7 @@ div.threeup .column-wrapper.spaced-out {
 }
 
 div.threeup.first {
- padding-top: 0px;
+ padding-top: 0.75em;
 }
 
 div.threeup.first .column-wrapper {
@@ -2474,6 +2486,16 @@ body.home ul.graphic li a.sm2_link {
 	margin-bottom: 0.5em;
 }
 
+body.home ul li a:hover,
+body.home ul.graphic a.sm2_playing,
+body.home #inline-playlist li.sm2_paused a,
+body.home #inline-playlist li.sm2_playing a,
+body.home ul.playlist li div.timing,
+body.home #html5-support-li span {
+	/* take out shadow on most demo links */
+	text-shadow: none;
+}
+
 body.home ul.graphic li a,
 ul.playlist li a {
 	/* "..." on titles */
@@ -2509,7 +2531,7 @@ body.home #sm2-visualization .ui360 {
 body.home #sm2-visualization .ui360 .sm2-360ui {
  border-color: rgba(0,0,0,0.05);
  background-color: rgba(255,255,255,0.5);
- box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
+ box-shadow: inset 0px 0px 32px rgba(0,0,0,0.075);
 }
 
 body.home #sm2-visualization .ui360 canvas,
@@ -2546,7 +2568,7 @@ body.home #sm2-visualization .ui360:hover {
 body.home #sm2-visualization .ui360:hover a {
  background-color: rgba(0,0,0,0.01);
  border-color: rgba(0,0,0,0.1);
- box-shadow: inset 0px 0px 32px rgba(0,0,0,0.066);
+ box-shadow: inset 0px 0px 32px rgba(0,0,0,0.05);
 }
 
 body.home #sm2-visualization .ui360 .sm2_playing canvas,
@@ -2610,6 +2632,12 @@ div.icons ul li,
  text-indent: -999em;
  overflow: hidden;
  cursor: help;
+ opacity: 0.75;
+}
+
+div.icons ul li:hover,
+.icon:hover {
+ opacity: 1;
 }
 
 .icon {
