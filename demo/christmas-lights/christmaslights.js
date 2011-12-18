@@ -203,7 +203,7 @@ function initChristmasLights() {
         var mX = x;
         var mY = y;
         var type = typeMap[nType + sClass];
-        var scale = 5 + Math.random() * 5;
+        var scale = 5 + Math.random() * 10;
         var shift = 2;
 
         this.fragments.push(new ExplosionFragment(type, sClass, mX, mY, -rnd(scale), -rnd(scale)));
@@ -687,13 +687,13 @@ function initChristmasLights() {
     function smashInit() {
       var loading = document.getElementById('loading');
       xlsf = new XLSF(document.getElementById('lights'));
+      window.xlsf = xlsf; // expose to global
       xlsf.initSounds();
       if (loading) {
         loading.style.display = 'none';
       }
     }
 
-    window.xlsf = xlsf; // instance
     window.smashInit = smashInit;
 
     // start in either case
