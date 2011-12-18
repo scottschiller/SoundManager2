@@ -81,6 +81,7 @@ a:hover {
  height:100%;
  overflow:hidden;
  z-index:2;
+ pointer-events: none; /* https://developer.mozilla.org/en/CSS/pointer-events */
 }
 
 .xlsf-light {
@@ -96,6 +97,11 @@ a:hover {
 
 body.fast .xlsf-light {
  opacity:0.9;
+}
+
+.xlsf-fragment,
+.xlsf-fragment-box {
+ pointer-events: none; /* https://developer.mozilla.org/en/CSS/pointer-events */
 }
 
 .xlsf-fragment {
