@@ -3,6 +3,12 @@ body {
  margin:0px;
  padding:0px;
  font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
+ /* wacky IE 6 horizontal scrollbar hack */
+ _width:99.5%;
+}
+
+body.home {
+ min-width: 80em;
 }
 
 body.home,
@@ -1537,8 +1543,9 @@ ul.inthewild li {
  height: 64px;
  vertical-align: middle;
  text-align: center;
- border: 1px solid #eee;
  margin: 2px 0px;
+ background-color: rgba(255,255,255,0.5);
+ border-radius: 2px;
 }
 
 ul.inthewild a,
@@ -1554,8 +1561,6 @@ ul.inthewild a {
  overflow:hidden;
  margin: 0px;
  padding: 0px;
- -moz-border-radius: 0px;
- -webkit-border-radius: 0px;
  border-radius: 0px;
  background: transparent url(../demo/_image/logo-sprite.png) no-repeat 0px 0px;
  line-height: 96px;
@@ -1704,7 +1709,9 @@ div.inthewild:hover #freesound,
 
 
 div.inthewild.active li:hover {
- border-color: #999;
+ background-color: rgba(255,255,255,0.9);
+ border-color: #ccc;
+ box-shadow: 0px 0px 3px rgba(0,0,0,0.075);
 }
 
 /* homepage-specific demo shiz */
@@ -2079,14 +2086,18 @@ hr {
 
 /* seasonal decorations */
 
-#lights {
+body.home.has-lights {
+	/* prevent ugly scrollbars from explosion fragments */
+	overflow-x: hidden;
+}
+
+body.home #lights {
  position:absolute;
  border-top:1px solid #006600;
  left:0px;
  top:0px;
  width:100%;
- height:100%;
- overflow:hidden;
+ z-index:4;
  display:none;
 }
 
@@ -2103,9 +2114,17 @@ body.fast .xlsf-light {
  opacity:0.9;
 }
 
+#explosion-box {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	z-index: 10;
+}
+
 .xlsf-fragment {
  position:absolute;
- background:transparent url(demo/christmas-lights/image/bulbs-50x50-fragments.png) no-repeat 0px 0px;
+ background:transparent url(christmas-lights/image/bulbs-50x50-fragments.png) no-repeat 0px 0px;
  width:50px;
  height:50px;
 }
@@ -2118,18 +2137,6 @@ body.fast .xlsf-light {
  height:50px;
  *width:100%;
  *height:100%;
- display:none;
-}
-
-.xlsf-cover {
- position:fixed;
- left:0px;
- top:0px;
- width:100%;
- height:100%;
- background:#fff;
- opacity:1;
- z-index:999;
  display:none;
 }
 
@@ -2491,6 +2498,7 @@ body.home ul.graphic a.sm2_playing,
 body.home #inline-playlist li.sm2_paused a,
 body.home #inline-playlist li.sm2_playing a,
 body.home ul.playlist li div.timing,
+body.home .feature-hot,
 body.home #html5-support-li span {
 	/* take out shadow on most demo links */
 	text-shadow: none;

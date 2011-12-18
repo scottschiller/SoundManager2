@@ -80,6 +80,7 @@ a:hover {
  width:100%;
  height:100%;
  overflow:hidden;
+ z-index:2;
 }
 
 .xlsf-light {
@@ -112,18 +113,6 @@ body.fast .xlsf-light {
  height:50px;
  *width:100%;
  *height:100%;
- display:none;
-}
-
-.xlsf-cover {
- position:fixed;
- left:0px;
- top:0px;
- width:100%;
- height:100%;
- background:#fff;
- opacity:1;
- z-index:999;
  display:none;
 }
 

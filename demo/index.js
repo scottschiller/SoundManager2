@@ -1,5 +1,7 @@
 /* SoundManager 2 - project home utility JS */
 
+var IS_CHRISTMAS = (document.domain.match(/schillmania.com/i) && new Date().getMonth() == 11) || window.location.toString().match(/christmas/i);
+
 function _id(sID) {
   return document.getElementById(sID);
 }
@@ -21,6 +23,13 @@ function init() {
     if ((i+1)%2==0) {
   	  utils.addClass(el[i],'alt');
     }
+  }
+  var newCSS;
+  if (IS_CHRISTMAS) {
+    // overflow-x: hidden hack for homepage during christmas light season (so explosion fragments don't cause horizontal scrollbars.)
+    var newCSS = document.body.className.split(' ');
+    newCSS.push('has-lights');
+    document.body.className = newCSS.join(' ');
   }
 }
 
@@ -345,15 +354,16 @@ function doVersion() {
 }
 
 function doChristmasLights() {
-  if ((document.domain.match(/schillmania.com/i) && new Date().getMonth() == 11) || window.location.toString().match(/christmas/i)) {
-    loadScript('http://yui.yahooapis.com/combo?2.6.0/build/yahoo-dom-event/yahoo-dom-event.js&2.6.0/build/animation/animation-min.js',function(){
-      loadScript('demo/christmas-lights/christmaslights-home.js',function(){
-        if (typeof smashInit != 'undefined') {
-          setTimeout(function() {
-            smashInit()
-          },20);
-        }
-      });
+  if (IS_CHRISTMAS) {
+    // homepage overrides
+    window.XLSF_URL_BASE = 'demo/christmas-lights/';
+    window.XLSF_LIGHT_CLASS = 'pico';
+    loadScript('demo/christmas-lights/christmaslights.js',function(){
+      if (typeof smashInit != 'undefined') {
+        setTimeout(function() {
+          smashInit()
+        },20);
+      }
     });
   }
 }
