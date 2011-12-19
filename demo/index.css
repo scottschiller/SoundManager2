@@ -226,6 +226,7 @@ body.home #about-sm2 h3 + h4 {
 	color: #666;
 	font-size: 1.25em;
 	font-weight: 400;
+	margin-bottom: 2em;
 }
 
 body.home .demo-more,
