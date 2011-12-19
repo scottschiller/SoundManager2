@@ -101,7 +101,7 @@ function initChristmasLights() {
             url: (window.XLSF_URL_BASE || '') + 'sound/glass' + i + '.mp3',
             autoLoad: true,
             multiShot: true,
-            volume: 50
+            volume: 25
           });
         }
         self.initSounds = function() {} // safety net
