@@ -102,6 +102,11 @@ h5 {
   font-weight: 400;
 }
 
+h2.special a {
+	/* download SM2 link */
+	top: -0.65em;
+}
+
 body.home #about-header {
   /* speaker image, etc. */
   position: relative;
@@ -197,10 +202,6 @@ body.home #about-sm2 h3 {
   margin-bottom: 0px;
   font-weight: 300;
   letter-spacing: -0.005em;
-}
-
-body.home #about-sm2 h3 b {
-  color:#333;
 }
 
 body.home h4 {
@@ -331,9 +332,7 @@ body.home #soundmanager-debug {
   opacity:0.95;
   color:#333;
   border:1px solid #ccddee;
-  -moz-border-radius:3px;
-  -khtml-border-radius:3px;
-  -webkit-border-radius:3px;
+  border-radius:3px;
   background:#f3f9ff;
   z-index:10;
   font-size:small;
@@ -407,9 +406,7 @@ ul.code-block {
   display:table;
   *display:block;
   border:1px solid #ccc;
-  -moz-border-radius:3px;
-  -khtml-border-radius:3px;
-  -webkit-border-radius:3px;
+  border-radius:3px;
 }
 
 div.block,
@@ -1331,8 +1328,6 @@ a.cta {
   *margin: 0px -2px 0px -2px;
   text-decoration:none;
   color:#3399cc;
-  -khtml-border-radius:0.25em;
-  -moz-border-radius:0.25em;
   border-radius:0.25em;
   zoom:1;
   text-shadow: none;
@@ -1340,19 +1335,12 @@ a.cta {
 
 /* redefine for simple mp3 button demo */
 .c2 a.sm2_button {
-  -moz-border-radius:6px;
-  -webkit-border-radius:6px;
-  -o-border-radius:6px;
   border-radius:6px;
 }
 
 .c2 a.sm2_button.type-2 {
-  -moz-border-radius:9px;
-  -webkit-border-radius:9px;
-  -o-border-radius:9px;
   border-radius:9px;
 }
-
 
 .c2 a {
   margin-left:-0.2em;
@@ -1408,8 +1396,6 @@ li.html5support span {
   font-weight:bold;
   background:#ccc;
   color:#fff;
-  -moz-border-radius:5px;
-  -webkit-border-radius:5px;
   border-radius:5px;
   margin-left:0.5em;
   margin-bottom:0.25em;
@@ -1447,7 +1433,8 @@ li.html5support em.true {
 .newer a,
 a.feature,
 .feature-hot {
-  display:block;
+  position:relative;
+  display:inline-block;
   background:#3399ff;
   padding:0.3em 0.66em;
   margin:-0.3em 0px 0px -0.66em;
@@ -1455,14 +1442,12 @@ a.feature,
   font-weight:bold;
   border:3px solid #cce6ff;
   border:3px solid rgba(255,255,255,0.66);
-  -moz-border-radius:8px;
-  -webkit-border-radius:8px;
   border-radius:8px;
   line-height:1em;
   *line-height:1.1em;
   text-decoration:none;
   font-size:small;
-  vertical-align:middle;
+  /* would use vertical-align: middle here, but it screws up display inside <h2> for IE 9+ */
 }
 
 a.feature {
@@ -1748,8 +1733,6 @@ ul.playlist li a {
 ul.playlist li a,
 ul.playlist li a:hover {
   background:transparent;
-  -khtml-border-radius:0px;
-  -moz-border-radius:0px;
   border-radius:0px;
   line-height:1em;
 }
@@ -1868,9 +1851,6 @@ body.home #special-demo-left .ui360 {
   box-shadow: inset 0px 0px 8px rgba(0,0,0,0.075);
   /* a little radii, modern browsers only */
   border: 1px solid rgba(0,0,0,0.075);
-  -moz-border-radius: 32px;
-  -webkit-border-radius: 32px;
-  -ms-border-radius: 32px;
   border-radius: 32px;
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
@@ -2557,8 +2537,6 @@ body.home #sm2-visualization .ui360 .sm2-360ui {
 body.home #sm2-visualization .ui360 canvas,
 body.home #sm2-visualization .ui360 .sm2-360ui,
 body.home #sm2-visualization .ui360 a {
-  -moz-border-radius: 128px;
-  -webkit-border-radius: 128px;
   border-radius: 128px;
 }
 
