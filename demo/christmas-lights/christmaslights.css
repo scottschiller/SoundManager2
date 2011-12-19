@@ -29,6 +29,16 @@ body {
  );
 }
 
+#explosion-box-texture {
+ position:absolute;
+ left:0px;
+ top:0px;
+ width:100%;
+ height:100%;
+ background: transparent url(image/noise-pattern.png);
+ opacity: 0.035;
+}
+
 h1, h1 a {
  color:#999;
  text-decoration:none;
@@ -86,6 +96,7 @@ a:hover {
 
 .xlsf-light {
  position:absolute;
+ z-index:2;
 }
 
 .xlsf-angled {
@@ -119,6 +130,7 @@ body.fast .xlsf-light {
  height:50px;
  *width:100%;
  *height:100%;
+ z-index:2;
  display:none;
 }
 
