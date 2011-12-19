@@ -1357,6 +1357,7 @@ if (navigator.userAgent.match(/webkit/i) && navigator.userAgent.match(/mobile/i)
   soundManager.useHTML5Audio = true;
 }
 
+soundManager.html5PollingInterval = 50; // increased framerate for whileplaying() etc.
 soundManager.debugMode = (window.location.href.match(/debug=1/i)); // disable or enable debug output
 soundManager.consoleOnly = true;
 soundManager.flashVersion = 9;
