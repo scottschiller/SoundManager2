@@ -55,8 +55,6 @@ body {
  _width:37.3em;
  border:3px solid #666;
  border:3px solid rgba(255,255,255,0.25);
- -moz-border-radius:12px;
- -webkit-border-radius:12px;
  border-radius:12px;
  z-index:2;
 }
@@ -66,8 +64,6 @@ body {
  background:#333;
  background:rgba(0,0,0,0.5);
  padding:0.5em;
- -moz-border-radius:12px;
- -webkit-border-radius:12px;
  border-radius:12px;
 }
 
@@ -89,8 +85,6 @@ body {
  margin:0.5em;
  background:#999;
  border:1px solid rgba(0,0,0,0.75);
- -moz-border-radius:2px;
- -webkit-border-radius:2px;
  border-radius:2px;
  font:normal 1em/1em "helvetica",verdana,arial,system;
  padding:0.5em;

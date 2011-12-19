@@ -68,9 +68,6 @@ a.sm2_button {
  overflow:hidden; /* don't draw inner link text */
  vertical-align:middle;
  /* and, a bit of round-ness for the cool browsers. */
- -moz-border-radius:6px;
- -webkit-border-radius:6px;
- -o-border-radius:6px;
  border-radius:6px;
  margin-top:-1px; /* vertical align tweak */
  /* safari 3.1+ fun (/W3 working draft extension, TBD.) */

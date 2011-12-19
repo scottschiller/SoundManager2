@@ -27,8 +27,6 @@ ul.playlist li ul li {
  margin:0px;
  padding:2px 3px;
  border:1px solid transparent;
- -moz-border-radius:6px;
- -khtml-border-radius:6px;
  border-radius:6px;
  margin-right:1em;
  font-family:helvetica,verdana,tahoma,arial,"sans serif";
@@ -98,8 +96,6 @@ ul.playlist li .controls .statusbar .annotation span.bubble {
  background-color:#fff;
  border:1px solid #666;
  border-radius:6px;
- -moz-border-radius:6px;
- -webkit-border-radius:6px;
 }
 
 ul.playlist li .controls .statusbar .annotation span {
@@ -142,8 +138,6 @@ ul.playlist li .note {
  background-color:#fff;
  border:1px solid #ccc;
  border-radius:6px;
- -moz-border-radius:6px;
- -webkit-border-radius:6px;
  font-style:normal;
  font-weight:bold;
  font-family:arial,tahoma,verdana,"sans serif";

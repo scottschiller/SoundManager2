@@ -63,9 +63,6 @@
 .ui360 a:hover,
 .ui360 a:focus {
  background:#eee;
- -moz-border-radius:3px;
- -webkit-border-radius:3px;
- -khtml-border-radius:3px;
  border-radius:3px;
  outline:none;
 }

@@ -83,8 +83,6 @@
  line-height:488px; /* bottom vertical alignment for text */
  *line-height:480px; /* IE again */
  text-align:center;
- -moz-border-radius:0px;
- -khtml-border-radius:0px;
  border-radius:0px;
 }
 
