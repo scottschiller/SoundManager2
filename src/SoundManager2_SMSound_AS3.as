@@ -284,7 +284,7 @@ package {
 
         writeDebug("SMSound::start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
 
-        // mark for later Netstream.Play.Stop / sound completition
+        // mark for later Netstream.Play.Stop / sound completion
         this.finished = false;
 
         this.cc.onMetaData = this.metaDataHandler;
