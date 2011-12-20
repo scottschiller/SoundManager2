@@ -756,6 +756,48 @@ soundManager.defaultOptions.volume = 33; <span><span>// set global default volum
 
 			 <h5>HTML5 Audio: Support updates, technical notes, quirks, bugs and annoyances</h5>
 
+			 <p><b>As of the V2.97.20111220 release of SM2:</b></p>
+
+             <ul>
+
+			  <li>
+				<p>Multiple URLs (and/or multiple MIME types) can be specified when creating a sound, thus allowing for better native HTML5 support between OGG, MP3 and others. See <a href="#smsound-url">SMSound.url</a> for details.</p>
+			  </li>
+
+			  <li>
+				<p>Support for "audio sprites" has been added in the form of <code>from</code> and <code>to</code> sound options. See the <a href="../demo/api/#fitter-happier" title="SoundManager 2 audio sprite demo">audio sprite demo</a> for a live example.</p>
+			  </li>
+
+              <li>
+				<p>Added <code>soundManager.html5PollingInterval</code>, for increased <code>whileplaying()</code> callback frequency (higher framerates.) Excludes mobile (eg., iOS) by default.</p>
+			  </li>
+
+              <li>
+				<p>Fixed <code>Audio()</code> object <code>src</code> property re-assignment bug seen in <code>createSound()</code>-&gt;<code>play()</code>.</p>
+			  </li>
+
+              <li>
+				<p><code>mySound.load({onload:function(){}})</code> callback fixed so it works.</p>
+			  </li>
+
+              <li>
+				<p><code>onload()</code> now called immediately when <code>load({onload:function(){}})</code> is used on a sound with the same URL which has already loaded.</p>
+			  </li>
+
+              <li>
+				<p><code>onstop()</code> now mimics <code>onfinish()</code> in terms of sequence. HTML5 sets position to 0, but retains pre-<code>stop()</code> position property value (like Flash does.)</p>
+			  </li>
+
+              <li>
+				<p>Amazon Kindle Fire UA looks like Safari on OS X 10.6.3, but does not have broken HTML5 audio (i.e., intermittent playback failure) like the "isBadSafari" case.</p>
+			  </li>
+
+              <li>
+				<p>Side note: iOS ignores volume, always returns value of "1" (at least, on iOS 4 and present iOS 5 releases.) See <a href="http://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/HTML-canvas-guide/AddingSoundtoCanvasAnimations/AddingSoundtoCanvasAnimations.html">related notes</a>.</p>
+			  </li>
+
+		     </ul>
+
 			 <p><b>As of the V2.97.20111030 release of SM2:</b></p>
 
              <ul>
@@ -1495,6 +1537,23 @@ for (prop in this.id3) {
 						   <dl id="smsound-url" class="f-block s-url">
 						   <dt>url</dt>
 						   <dd>The specified URL from which the sound is loaded, typically over HTTP. Can be referenced as <code>this.url</code> from within sound object event handlers such as <code>onload()</code> or <code>whileplaying()</code>, etc.</dd>
+						   <dd><b>Experimental feature</b>: Multiple formats/encodings can now be specified for the <code>url</code> parameter by specifying an array instead of a single string.</dd>
+						   <dd>Example:
+<pre class="block"><code>soundManager.createSound({<span>
+  id: 'foo',
+  url: ['bar.ogg','bar.mp3']
+});</span></code></pre></dd>
+						   <dd>SoundManager 2 will use the first playable URL it finds (according to <code>canPlayURL()</code> and/or <code>canPlayType()</code>), and the URL property will then reflect the playable URL after that point. Note that this means the original array data will be lost.</dd>
+						   <dd>In this alternate format, the array accepts "type" attributes.</dd>
+						   <dd>
+<pre class="block"><code>soundManager.createSound({<span>
+  id: 'foo',
+  <span>// useful for URLs without obvious filetype extensions</span>
+  url: [
+    {type:'audio/mp3',url:'/path/to/play.php?song=123'},
+    {type:'audio/mp4',url:'/path/to/play.php?song=256'}
+  ]
+});</span></code></pre></dd>
 						   </dl>
 						
 						   <dl id="smsound-serverurl" class="f-block s-serverurl">
