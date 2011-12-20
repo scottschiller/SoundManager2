@@ -2249,6 +2249,7 @@ watch for mouse move</p>
         <div class='highlight'><pre>  <span class="nx">soundManager</span><span class="p">.</span><span class="nx">useHTML5Audio</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">html5PollingInterval</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span> <span class="c1">// increased framerate for whileplaying() etc.</span>
 <span class="nx">soundManager</span><span class="p">.</span><span class="nx">debugMode</span> <span class="o">=</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/debug=1/i</span><span class="p">));</span> <span class="c1">// disable or enable debug output</span>
 <span class="nx">soundManager</span><span class="p">.</span><span class="nx">consoleOnly</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 <span class="nx">soundManager</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>

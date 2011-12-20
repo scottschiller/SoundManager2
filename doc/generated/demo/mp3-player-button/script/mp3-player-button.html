@@ -396,7 +396,7 @@ and easily styled/customizable via CSS.</p>
   <span class="k">this</span><span class="p">.</span><span class="nx">stopEvent</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">e</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">window</span><span class="p">.</span><span class="nx">event</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nb">window</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">returnValue</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">window</span><span class="p">.</span><span class="nx">event</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
       <span class="nb">window</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">returnValue</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
@@ -554,8 +554,7 @@ and easily styled/customizable via CSS.</p>
       <span class="nx">thisSound</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
     <span class="p">}</span>
     <span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span> <span class="o">=</span> <span class="nx">thisSound</span><span class="p">;</span> <span class="c1">// reference for next call</span>
-    <span class="nx">self</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
-    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stopEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
   <span class="p">};</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">stopSound</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
