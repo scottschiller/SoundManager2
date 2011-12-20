@@ -157,6 +157,7 @@ body.home #about-sm2 h3 {
   font-size: 2.25em;
 }
 
+#col3 a.button, /* "newer version available" */
 a.feature {
   display: inline-block;
   -webkit-transition: all 0.25s ease-in-out;
@@ -184,7 +185,13 @@ a.feature {
   }
 }
 
-a.feature:hover {
+#col3 a.feature {
+ /* "newer version available" hack */
+ margin-top: 0px;
+}
+
+a.feature:hover,
+#col3 a.button:hover {
   -moz-animation-duration: 0.5s;
   -moz-animation-name: highlight;
   -moz-animation-iteration-count: infinite;
@@ -2198,6 +2205,7 @@ ul.file-structure li span {
 
 #sm2-filesizes {
   border:1px solid #ddd;
+  background:#fff;
 }
 
 #sm2-filesizes tr:nth-child(2n+1) {
@@ -2723,10 +2731,40 @@ div.icons ul li.music-note {
 div.icons ul li.package {
   background-position: -347px -7px;
   height: 28px;
-  
 }
 
 .icon.package {
   width: 22px;
   margin-top: -8px;
+}
+
+.bonus-demos {
+  position: relative;
+  list-style-type: none;
+}
+
+.bonus-demos,
+.bonus-demos li {
+  margin: 0px;
+  padding: 0px;
+}
+
+.bonus-demos li {
+ float: left;
+ display: inline;
+ width: 48%;
+ margin-right: 2%;
+ text-align: center;
+}
+
+.bonus-demo a,
+.bonus-demos li a {
+ opacity: 0.85;
+ -moz-transition: 0.2s opacity ease-in-out;
+ -webkit-transition: 0.2s opacity ease-in-out;
+}
+
+.bonus-demo a:hover,
+.bonus-demos li a:hover {
+ opacity: 1;
 }
