@@ -1446,7 +1446,9 @@ li.html5support em.true {
 }
 
 .newer {
-  vertical-align:middle;
+  vertical-align: middle;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 .newer a,
