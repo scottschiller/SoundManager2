@@ -1222,7 +1222,8 @@ function SoundManager(smURL, smID) {
     _oRemovedHTML = _oRemoved = _needsFlash = null;
 
     _s.enabled = _didDCLoaded = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = _s.swfLoaded = false;
-    _s.soundIDs = _s.sounds = [];
+    _s.soundIDs = [];
+    _s.sounds = {};
     _flash = null;
 
     for (i in _on_queue) {
