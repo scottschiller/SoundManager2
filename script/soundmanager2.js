@@ -4409,7 +4409,7 @@ function SoundManager(smURL, smID) {
     localURL = (_s.altURL || remoteURL),
     swfTitle = 'JS/Flash audio component (SoundManager 2)',
     oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(),
-    s, x, sClass, side = 'auto', isRTL = null,
+    s, x, sClass, side = '1', isRTL = null,
     html = _doc.getElementsByTagName('html')[0];
 
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
