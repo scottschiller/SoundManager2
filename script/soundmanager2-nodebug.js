@@ -887,7 +887,7 @@ function SoundManager(smURL, smID) {
         _t._setup_html5().play();
         _start_html5_timer();
       }
-      if (_onplay_called && _iO.onplay) {
+      if (!_onplay_called && _iO.onplay) {
         _iO.onplay.apply(_t);
         _onplay_called = true;
       } else if (_iO.onresume) {
