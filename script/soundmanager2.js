@@ -935,7 +935,7 @@ function SoundManager(smURL, smID) {
       return result;
     } else {
       // if flash 9, test netStream (movieStar) types as well.
-      return (sMIME ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
+      return (sMIME && _s.ok() ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
     }
 
   };
@@ -959,7 +959,7 @@ function SoundManager(smURL, smID) {
       // no flash, or OK
       return result;
     } else {
-      return (sURL ? !!(sURL.match(_s.filePattern)) : null);
+      return (sURL && _s.ok() ? !!(sURL.match(_s.filePattern)) : null);
     }
 
   };
@@ -1434,6 +1434,7 @@ function SoundManager(smURL, smID) {
           // given explicit load call, try to get whole file.
           // early HTML5 implementation (non-standard)
           _t._a.autobuffer = 'auto';
+
           // standard
           _t._a.preload = 'auto';
 

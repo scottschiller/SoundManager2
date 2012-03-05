@@ -448,7 +448,7 @@ function SoundManager(smURL, smID) {
     if (!_needsFlash || result) {
       return result;
     } else {
-      return (sMIME ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
+      return (sMIME && _s.ok() ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
     }
   };
   this.canPlayURL = function(sURL) {
@@ -459,7 +459,7 @@ function SoundManager(smURL, smID) {
     if (!_needsFlash || result) {
       return result;
     } else {
-      return (sURL ? !!(sURL.match(_s.filePattern)) : null);
+      return (sURL && _s.ok() ? !!(sURL.match(_s.filePattern)) : null);
     }
   };
   this.canPlayLink = function(oLink) {
