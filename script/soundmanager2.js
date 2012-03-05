@@ -3379,7 +3379,7 @@ function SoundManager(smURL, smID) {
 
     // account for known cases like audio/mp3
 
-    if (mime && _s.html5[mime] !== 'undefined') {
+    if (mime && typeof _s.html5[mime] !== 'undefined') {
       return (_s.html5[mime] && !preferFlashCheck(mime));
     }
 
