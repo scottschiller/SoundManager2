@@ -1574,7 +1574,7 @@ function SoundManager(smURL, smID) {
     function preferFlashCheck(kind) {
       return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
     }
-    if (mime && _s.html5[mime] !== 'undefined') {
+    if (mime && typeof _s.html5[mime] !== 'undefined') {
       return (_s.html5[mime] && !preferFlashCheck(mime));
     }
     if (!_html5Ext) {
