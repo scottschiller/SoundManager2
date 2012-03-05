@@ -2025,7 +2025,7 @@ function SoundManager(smURL, smID) {
     localURL = (_s.altURL || remoteURL),
     swfTitle = 'JS/Flash audio component (SoundManager 2)',
     oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(),
-    s, x, sClass, side = 'auto', isRTL = null,
+    s, x, sClass, side = null, isRTL = null,
     html = _doc.getElementsByTagName('html')[0];
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
@@ -2043,8 +2043,6 @@ function SoundManager(smURL, smID) {
       'name': smID,
       'id': smID,
       'src': smURL,
-      'width': side,
-      'height': side,
       'quality': 'high',
       'allowScriptAccess': _s.allowScriptAccess,
       'bgcolor': _s.bgColor,
@@ -2054,6 +2052,10 @@ function SoundManager(smURL, smID) {
       'wmode': _s.wmode,
       'hasPriority': 'true'
     };
+    if (side !== null) {
+      oEmbed.width = side;
+      oEmbed.height = side;
+    }
     if (_s.debugFlash) {
       oEmbed.FlashVars = 'debug=1';
     }

@@ -4410,7 +4410,7 @@ function SoundManager(smURL, smID) {
     localURL = (_s.altURL || remoteURL),
     swfTitle = 'JS/Flash audio component (SoundManager 2)',
     oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(),
-    s, x, sClass, side = 'auto', isRTL = null,
+    s, x, sClass, side = null, isRTL = null,
     html = _doc.getElementsByTagName('html')[0];
 
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
@@ -4441,8 +4441,6 @@ function SoundManager(smURL, smID) {
       'name': smID,
       'id': smID,
       'src': smURL,
-      'width': side,
-      'height': side,
       'quality': 'high',
       'allowScriptAccess': _s.allowScriptAccess,
       'bgcolor': _s.bgColor,
@@ -4453,6 +4451,12 @@ function SoundManager(smURL, smID) {
       // http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html
       'hasPriority': 'true'
     };
+
+    if (side !== null) {
+      // don't specify width/height if null.
+      oEmbed.width = side;
+      oEmbed.height = side;
+    }
 
     if (_s.debugFlash) {
       oEmbed.FlashVars = 'debug=1';
