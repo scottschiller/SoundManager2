@@ -969,7 +969,7 @@ function SoundManager(smURL, smID) {
     };
     this.onPosition = function(nPosition, oMethod, oScope) {
       _onPositionItems.push({
-        position: nPosition,
+        position: parseInt(nPosition, 10),
         method: oMethod,
         scope: (typeof oScope !== 'undefined' ? oScope : _t),
         fired: false
