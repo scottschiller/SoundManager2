@@ -389,7 +389,7 @@ function PagePlayer() {
         doWork.apply(this);
       } else {
         var d = new Date();
-        if (d && d-self.lastWLExec>30 || this.bytesLoaded === this.bytesTotal) {
+        if (d && d-self.lastWLExec > 50 || this.bytesLoaded === this.bytesTotal) {
           doWork.apply(this);
           self.lastWLExec = d;
         }
