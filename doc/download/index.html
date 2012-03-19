@@ -130,18 +130,26 @@
 			</div>
 			
 			<div class="c2">
+
 				<h3>Download SoundManager 2</h3>
-				<p><b>Latest changes:</b> HTML5 src/onload()/onstop() fixes, new HTML5 polling, <code>onPosition()</code> updates, "audio sprites" (<code>from</code>/<code>to</code>) and multiple URL support. (Also: New homepage design!) See <a href="#history">revision history</a> for details.</p>
+
+				<p><b>Latest changes:</b> <code>from</code> / <code>to</code> and <code>onplay()</code> bug fixes, <code>canPlayMIME()</code> and <code>canPlayLink()</code> Flash-specific corrections. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20111220.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20111220</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120318.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120318</a></p>
+
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
+
 				<p><b>Performance tip:</b> SM2's code size varies from over 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
+
 				<p><b>Side reading + video talks, slides etc.</b></p>
+
 				<ul>
-					<li>Article: <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>.</li>
-					<li>Video, 12/2011: <a href="http://www.youtube.com/watch?v=KjdPNtWV3Z0#t=56s" title="Scott Schiller: &quot;Adding Sound To HTML&quot;" class="cta">Adding Sound To HTML</a> (<a href="http://isflashdeadyet.com/talks/html5/" title="&quot;Adding Sound To HTML&quot; presentation slides" class="cta">slides</a>.) Overview + updated content from 06/2011 talk.</li>
+					<li>Video, 02/2012: <a href="http://www.youtube.com/watch?v=C2Tw0BeZb8Q" title="Scott Schiller: Web Audio: HTML5 + Flash (in a tree)">Web Audio: HTML5 + Flash (in a tree)</a> (<a href="http://isflashdeadyet.com/talks/html5/bayjax_yahoo_sunnyvale_02-06-2012/" title="&quot;Web Audio: HTML5 + Flash (in a tree)&quot; presentation slides" class="cta">slides</a>.) Updated HTML5 content, demos and <a href="http://www.schillmania.com/content/entries/2012/survivor-c64-html-remake/" title="SURVIVOR: Remaking a Commodore 64 game in HTML">SURVIVOR</a> C64 game demo.</li>
+					<li>Video, 12/2011: <a href="http://www.youtube.com/watch?v=KjdPNtWV3Z0#t=56s" title="Scott Schiller: &quot;Adding Sound To HTML&quot;" class="cta">Adding Sound To HTML</a> (<a href="http://isflashdeadyet.com/talks/html5/cbs_san_francisco_12-07-2011/" title="&quot;Adding Sound To HTML&quot; presentation slides" class="cta">slides</a>.) Overview + updated content from 06/2011 talk.</li>
 					<li>Video, 06/2011: <a href="http://www.youtube.com/watch?v=ffk65q5Rl9I" title="Yahoo!/YUI video presentation: Scott Schiller on the State of HTML5 Audio">The State Of HTML5 Audio</a></li>
+					<li>Article: <a href="http://24ways.org/2010/the-state-of-html5-audio">"Probably, Maybe, No": The State of HTML5 Audio</a>.</li>
 				</ul>
+
 			</div>
 			
 		</div>
@@ -166,7 +174,93 @@
 
 			  	<ul id="revision-list" class="standard">
 
-			   		<li id="sm2-20111030" class="in">
+			   		<li id="sm2-20111220" class="in">
+
+						<h3><b>V2.97a.20120318</b> - Minor updates. <code>from</code> / <code>to</code> and <code>onplay()</code> bug fixes, <code>canPlayMIME()</code> and <code>canPlayLink()</code> Flash-specific corrections.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Fix silly <code>undefined"soundID"</code> debug output message shown at <code>SMSound.onload</code> (now says <code>SMSound._onload()</code> as previously.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											<code>soundManager.sounds = {}</code> instead of <code>[]</code> on reboot (per <a href="http://getsatisfaction.com/schillmania/topics/possible_bug_in_reboot">bug report</a>)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fix logic for calling <code>onplay()</code>, was always non-truthy. D'oh!
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Add missing <code>typeof</code> to fix html5 MIME check for playability tests
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Don't apply <code>width:auto</code> to SWF (invalid per HTML5, allegedly: Related <a href="https://github.com/grEvenX/SoundManager2/commit/6f30fb600598d8618efec2a010ba1a69c5b75694">patch</a>.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Make <code>soundManager.canPlayMIME()</code> and <code>canPlayLink()</code> check flash support before returning (check after <code>ontimeout()</code> was returning truthy when flash required under Firefox, for example, for <code>'audio/mp3'</code>)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fix <code>play()</code> "<code>from</code>" + "<code>to</code>" sound sprite playback issue: In some cases, previously-fired "to" events were re-firing due to not being removed, because an equality check was comparing against a potential "to" value of a string rather than a number. (eg., 0-700 followed by 1500-2000; playback would stop in second case, saying 700 had been reached. (Related <a href="https://getsatisfaction.com/schillmania/topics/_from_to_problem_argument_for_to_is_not_updated">bug report</a>.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Re-appeased the jslint gods, removed unused variables and two-statement reverse loop <code>(for i=x; i--;) { }</code> trickery.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											The SoundManager project turned 10 years old, having originally launched in late 2001. Thanks for using it!
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+<!-- previously... -->
+
+			   		<li id="sm2-20111220" class="in">
 
 						<h3><b>V2.97a.20111220</b> - HTML5 src/onload()/onstop() fixes, new HTML5 polling, <code>onPosition()</code> updates, "audio sprites" (<code>from</code>/<code>to</code>) and multiple URL support. (Also: New homepage design!)</h3>
 
