@@ -118,13 +118,14 @@ body.home .sm2-speaker {
   position: absolute;
   left: -1.5%;
   top: 0px;
-  *margin-top:0px; /* IE 7 buggery */
-  margin-right:2em;
-  margin-bottom:8px;
-  max-width:192px;
-  min-width:64px;
-  width:20%;
-  margin-left:-20%;
+  margin-top: -20px;
+  *margin-top: 0px; /* IE 7 buggery */
+  margin-right: 2em;
+  margin-bottom: 8px;
+  max-width: 192px;
+  min-width: 64px;
+  width: 20%;
+  margin-left: -20%;
 }
 
 body.home .sm2-speaker img {
@@ -2428,7 +2429,7 @@ body.home #main .oneup p,
 body.home #main .twoup p,
 body.home #main .threeup p {
   font-size: 1.1em;
-  line-height: 1.4em;
+  line-height: 1.5em;
   margin-bottom: 1.5em;
 }
 
