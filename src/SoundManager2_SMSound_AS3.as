@@ -157,6 +157,7 @@ package {
             this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
             this.st = new SoundTransform();
             this.cc.onMetaData = this.metaDataHandler;
+  		      this.cc.setCaption = this.captionHandler;
             this.ns.client = this.cc;
             this.ns.receiveAudio(true);
             this.addNetstreamEvents();
@@ -259,6 +260,30 @@ package {
         this.cc.onMetaData = function(infoObject: Object) : void {}
       }
     }
+
+    public function captionHandler(infoObject: Object) : void {
+      if (sm.debugEnabled) {
+        var data:String = new String();
+        for (var prop:* in infoObject) {
+          data += prop+': '+infoObject[prop]+' \n';
+        }
+        //writeDebug('Caption: '+data);
+      }
+      if (!this.loaded) {
+        // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
+        // TODO: investigate loaded/total values
+        // ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
+        //ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, (infoObject.duration || this.duration))
+      }
+      // null this out for the duration of this object's existence.
+      // it may be called multiple times.
+      //this.cc.setCaption = function(infoObject: Object) : void {}
+    
+	    //writeDebug('Caption\n'+infoObject['dynamicMetadata']);
+	    //writeDebug('firing _oncaption for '+this.sID);
+      ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._oncaption", infoObject['dynamicMetadata']);
+
+	  }
 
     public function getWaveformData() : void {
       // http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum()
