@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20120318";
+    public var version:String = "V2.97a.20120318+DEV";
     public var version_as:String = "(AS3/Flash 9)";
 
     /**
@@ -416,7 +416,7 @@ package {
       isPlaying = (oSound.didLoad && !oSound.paused && (!oSound.useNetstream || (oSound.useNetstream && oSound.lastNetStatus != "NetStream.Play.Stop"))); // don't update if stream has ended
 
       // raw waveform + EQ spectrum data
-      if (isPlaying && oSoundChannel) { // || oSound.useNetstream)) {
+      if (isPlaying && (oSoundChannel || oSound.useNetstream)) {
 
         if (oSound.useWaveformData) {
           if (!areSoundsInaccessible && !oSound.handledDataError && !oSound.ignoreDataError) {
