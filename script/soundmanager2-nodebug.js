@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20120318
+ * V2.97a.20120318+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -98,7 +98,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20120318';
+  this.versionNumber = 'V2.97a.20120318+DEV';
   this.version = null;
   this.movieURL = null;
   this.url = (smURL || null);
@@ -140,7 +140,7 @@ function SoundManager(smURL, smID) {
   var SMSound,
   _s = this, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
   _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
-  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _is_firefox = _ua.match(/firefox/i), _is_android = _ua.match(/droid/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)),
+  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _is_firefox = _ua.match(/firefox/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)),
   _likesHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)),
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
@@ -211,11 +211,6 @@ function SoundManager(smURL, smID) {
       if (_fV > 8) {
         if (_tO.isMovieStar === null) {
           _tO.isMovieStar = (_tO.serverURL || (_tO.type ? _tO.type.match(_netStreamMimeTypes) : false) || _tO.url.match(_netStreamPattern));
-        }
-        if (_tO.isMovieStar) {
-          if (_tO.usePeakData) {
-            _tO.usePeakData = false;
-          }
         }
       }
       _tO = _policyFix(_tO, _cs);
@@ -608,10 +603,11 @@ function SoundManager(smURL, smID) {
           _t._html5_canplay = false;
           _t._a.autobuffer = 'auto';
           _t._a.preload = 'auto';
-          oS.load();
           oS._called_load = true;
           if (_iO.autoPlay) {
             _t.play();
+          } else {
+            oS.load();
           }
         } else {
         }
@@ -701,8 +697,8 @@ function SoundManager(smURL, smID) {
         if (_t.readyState === 0) {
           if (!_t.isHTML5) {
             _t._iO.autoPlay = true;
+            _t.load(_t._iO);
           }
-          _t.load(_t._iO);
         } else if (_t.readyState === 2) {
           return _t;
         } else {
@@ -1166,9 +1162,6 @@ function SoundManager(smURL, smID) {
       } else {
         _a = new Audio(_iO.url);
         _a._called_load = false;
-        if (_is_android) {
-          _a._called_load = true;
-        }
         if (_useGlobalHTML5Audio) {
           _s._global_a = _a;
         }
@@ -2025,7 +2018,7 @@ function SoundManager(smURL, smID) {
     localURL = (_s.altURL || remoteURL),
     swfTitle = 'JS/Flash audio component (SoundManager 2)',
     oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(),
-    s, x, sClass, side = null, isRTL = null,
+    s, x, sClass, isRTL = null,
     html = _doc.getElementsByTagName('html')[0];
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
@@ -2052,10 +2045,6 @@ function SoundManager(smURL, smID) {
       'wmode': _s.wmode,
       'hasPriority': 'true'
     };
-    if (side !== null) {
-      oEmbed.width = side;
-      oEmbed.height = side;
-    }
     if (_s.debugFlash) {
       oEmbed.FlashVars = 'debug=1';
     }
@@ -2065,7 +2054,7 @@ function SoundManager(smURL, smID) {
     if (_isIE) {
       oMovie = _doc.createElement('div');
       movieHTML = [
-        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" title="' + oEmbed.title +'" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="' + oEmbed.width + '" height="' + oEmbed.height + '">',
+        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" title="' + oEmbed.title +'" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0">',
         param('movie', smURL),
         param('AllowScriptAccess', _s.allowScriptAccess),
         param('quality', oEmbed.quality),
