@@ -2376,10 +2376,13 @@ function SoundManager(smURL, smID) {
 
     };
 
-    _resetProperties = function() {
+    _resetProperties = function(retainPosition) {
 
-      _onPositionItems = [];
-      _onPositionFired = 0;
+      if (!retainPosition) {
+        _onPositionItems = [];
+        _onPositionFired = 0;
+      }
+
       _onplay_called = false;
 
       _t._hasTimer = null;
@@ -2532,8 +2535,8 @@ function SoundManager(smURL, smID) {
           _a._t.stop();
         }
 
-        // new URL, so reset load/playstate and so on
-        _resetProperties();
+        // new URL, so reset load/playstate, onPosition and so on
+        _resetProperties(_iO.url === _oldIO.url);
 
         _a.src = _iO.url;
         _t.url = _iO.url;

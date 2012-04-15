@@ -1072,9 +1072,11 @@ function SoundManager(smURL, smID) {
         _stopTimer(_t);
       }
     };
-    _resetProperties = function() {
-      _onPositionItems = [];
-      _onPositionFired = 0;
+    _resetProperties = function(retainPosition) {
+      if (!retainPosition) {
+        _onPositionItems = [];
+        _onPositionFired = 0;
+      }
       _onplay_called = false;
       _t._hasTimer = null;
       _t._a = null;
@@ -1154,7 +1156,7 @@ function SoundManager(smURL, smID) {
         if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
           _a._t.stop();
         }
-        _resetProperties();
+        _resetProperties(_iO.url === _oldIO.url);
         _a.src = _iO.url;
         _t.url = _iO.url;
         _lastURL = _iO.url;
