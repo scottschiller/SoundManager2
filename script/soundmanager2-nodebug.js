@@ -703,6 +703,8 @@ function SoundManager(smURL, smID) {
           if (!_t.isHTML5) {
             _t._iO.autoPlay = true;
             _t.load(_t._iO);
+          } else if (_is_iDevice) {
+            _t.load(_t._iO);
           }
         } else if (_t.readyState === 2) {
           exit = _t;

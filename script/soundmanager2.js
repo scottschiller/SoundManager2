@@ -1626,6 +1626,9 @@ function SoundManager(smURL, smID) {
             // assign directly because setAutoPlay() increments the instanceCount
             _t._iO.autoPlay = true;
             _t.load(_t._iO);
+          } else if (_is_iDevice) {
+            // iOS needs this when recycling sounds, loading a new URL on an existing object.
+            _t.load(_t._iO);
           }
 
         } else if (_t.readyState === 2) {
