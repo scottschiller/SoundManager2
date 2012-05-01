@@ -179,17 +179,16 @@ function SoundManager(smURL, smID) {
   this.getMovie = function(smID) {
     return _id(smID) || _doc[smID] || _win[smID];
   };
-  this.createSound = function(oOptions) {
-    var _cs, _cs_string,
-    thisOptions = null, oSound = null, _tO = null;
+  this.createSound = function(oOptions, _url) {
+    var _cs, _cs_string, thisOptions = null, oSound = null, _tO = null;
     if (!_didInit || !_s.ok()) {
       _complain(_cs_string);
       return false;
     }
-    if (arguments.length === 2) {
+    if (typeof _url !== 'undefined') {
       oOptions = {
-        'id': arguments[0],
-        'url': arguments[1]
+        'id': oOptions,
+        'url': _url
       };
     }
     thisOptions = _mixin(oOptions);
@@ -282,9 +281,10 @@ function SoundManager(smURL, smID) {
     return _s.sounds[sID].clearOnPosition(nPosition, oMethod);
   };
   this.play = function(sID, oOptions) {
+    var result = false;
     if (!_didInit || !_s.ok()) {
       _complain(_sm+'.play(): ' + _str(!_didInit?'notReady':'notOK'));
-      return false;
+      return result;
     }
     if (!_idCheck(sID)) {
       if (!(oOptions instanceof Object)) {
@@ -294,10 +294,9 @@ function SoundManager(smURL, smID) {
       }
       if (oOptions && oOptions.url) {
         oOptions.id = sID;
-        return _s.createSound(oOptions).play();
-      } else {
-        return false;
+        result = _s.createSound(oOptions).play();
       }
+      return result;
     }
     return _s.sounds[sID].play(oOptions);
   };
@@ -440,22 +439,20 @@ function SoundManager(smURL, smID) {
     if (_s.hasHTML5) {
       result = _html5CanPlay({type:sMIME});
     }
-    if (!_needsFlash || result) {
-      return result;
-    } else {
-      return (sMIME && _s.ok() ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
+    if (!result && _needsFlash) {
+      result = (sMIME && _s.ok() ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(_s.mimePattern)) : null);
     }
+    return result;
   };
   this.canPlayURL = function(sURL) {
     var result;
     if (_s.hasHTML5) {
       result = _html5CanPlay({url: sURL});
     }
-    if (!_needsFlash || result) {
-      return result;
-    } else {
-      return (sURL && _s.ok() ? !!(sURL.match(_s.filePattern)) : null);
+    if (!result && _needsFlash) {
+      result = (sURL && _s.ok() ? !!(sURL.match(_s.filePattern)) : null);
     }
+    return result;
   };
   this.canPlayLink = function(oLink) {
     if (typeof oLink.type !== 'undefined' && oLink.type) {
@@ -473,30 +470,34 @@ function SoundManager(smURL, smID) {
     return result;
   };
   this.onready = function(oMethod, oScope) {
-    var sType = 'onready';
+    var sType = 'onready',
+        result = false;
     if (oMethod && oMethod instanceof Function) {
       if (!oScope) {
         oScope = _win;
       }
       _addOnEvent(sType, oMethod, oScope);
       _processOnEvents();
-      return true;
+      result = true;
     } else {
       throw _str('needFunction', sType);
     }
+    return result;
   };
   this.ontimeout = function(oMethod, oScope) {
-    var sType = 'ontimeout';
+    var sType = 'ontimeout',
+        result = false;
     if (oMethod && oMethod instanceof Function) {
       if (!oScope) {
         oScope = _win;
       }
       _addOnEvent(sType, oMethod, oScope);
       _processOnEvents({type:sType});
-      return true;
+      result = true;
     } else {
       throw _str('needFunction', sType);
     }
+    return result;
   };
   this._writeDebug = function(sText, sType, _bTimestamp) {
     return true;
@@ -667,8 +668,9 @@ function SoundManager(smURL, smID) {
       }
     };
     this.play = function(oOptions, _updatePlayState) {
-      var fN, allowMulti, a, onready;
-      _updatePlayState = _updatePlayState === undefined ? true : _updatePlayState;
+      var fN, allowMulti, a, onready,
+          exit = null;
+      _updatePlayState = (_updatePlayState === undefined ? true : _updatePlayState);
       if (!oOptions) {
         oOptions = {};
       }
@@ -689,9 +691,12 @@ function SoundManager(smURL, smID) {
       if (_t.playState === 1 && !_t.paused) {
         allowMulti = _t._iO.multiShot;
         if (!allowMulti) {
-          return _t;
+          exit = _t;
         } else {
         }
+      }
+      if (exit !== null) {
+        return exit;
       }
       if (!_t.loaded) {
         if (_t.readyState === 0) {
@@ -700,10 +705,13 @@ function SoundManager(smURL, smID) {
             _t.load(_t._iO);
           }
         } else if (_t.readyState === 2) {
-          return _t;
+          exit = _t;
         } else {
         }
       } else {
+      }
+      if (exit !== null) {
+        return exit;
       }
       if (!_t.isHTML5 && _fV === 9 && _t.position > 0 && _t.position === _t.duration) {
         oOptions.position = 0;
@@ -721,12 +729,15 @@ function SoundManager(smURL, smID) {
             _t.load({
               _oncanplay: onready
             });
-            return false;
+            exit = false;
           } else if (!_t.isHTML5 && !_t.loaded && (!_t.readyState || _t.readyState !== 2)) {
             _t.load({
               onload: onready
             });
-            return false;
+            exit = false;
+          }
+          if (exit !== null) {
+            return exit;
           }
           _t._iO = _applyFromTo();
         }
@@ -749,7 +760,7 @@ function SoundManager(smURL, smID) {
         _t.setVolume(_t._iO.volume, true);
         _t.setPan(_t._iO.pan, true);
         if (!_t.isHTML5) {
-          _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9?_t._iO.position:_t._iO.position / 1000));
+          _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000));
         } else {
           _start_html5_timer();
           a = _t._setup_html5();
@@ -1128,10 +1139,8 @@ function SoundManager(smURL, smID) {
           if (isNew || bForce) {
             _t._whileplaying(time,x,x,x,x);
           }
-          return isNew;
-        } else {
-          return false;
         }
+        return isNew;
       }
     };
     this._get_html5_duration = function() {
@@ -1144,13 +1153,17 @@ function SoundManager(smURL, smID) {
       var _iO = _mixin(_t._iO, oOptions), d = decodeURI,
           _a = _useGlobalHTML5Audio ? _s._global_a : _t._a,
           _dURL = d(_iO.url),
-          _oldIO = (_a && _a._t ? _a._t.instanceOptions : null);
+          _oldIO = (_a && _a._t ? _a._t.instanceOptions : null),
+          result;
       if (_a) {
         if (_a._t) {
           if (!_useGlobalHTML5Audio && _dURL === d(_lastURL)) {
-            return _a;
+            result = _a;
           } else if (_useGlobalHTML5Audio && _oldIO.url === _iO.url && (!_lastURL || (_lastURL === _oldIO.url))) {
-            return _a;
+            result = _a;
+          }
+          if (result) {
+            return result;
           }
         }
         if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
@@ -1444,12 +1457,14 @@ function SoundManager(smURL, smID) {
   }());
   function _html5_event(oFn) {
     return function(e) {
-      var t = this._t;
+      var t = this._t,
+          result;
       if (!t || !t._a) {
-        return null;
+        result = null;
       } else {
-        return oFn.call(this, e);
+        result = oFn.call(this, e);
       }
+      return result;
     };
   }
   _html5_events = {
@@ -1590,7 +1605,7 @@ function SoundManager(smURL, smID) {
     fileExt = (url ? url.toLowerCase().match(_html5Ext) : null);
     if (!fileExt || !fileExt.length) {
       if (!mime) {
-        return false;
+        result = false;
       } else {
         offset = mime.indexOf(';');
         fileExt = (offset !== -1?mime.substr(0,offset):mime).substr(6);
@@ -1599,13 +1614,14 @@ function SoundManager(smURL, smID) {
       fileExt = fileExt[1];
     }
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
-      return (_s.html5[fileExt] && !preferFlashCheck(fileExt));
+      result = (_s.html5[fileExt] && !preferFlashCheck(fileExt));
     } else {
       mime = 'audio/'+fileExt;
       result = _s.html5.canPlayType({type:mime});
       _s.html5[fileExt] = result;
-      return (result && _s.html5[mime] && !preferFlashCheck(mime));
+      result = (result && _s.html5[mime] && !preferFlashCheck(mime));
     }
+    return result;
   };
   _testHTML5 = function() {
     if (!_s.useHTML5Audio || typeof Audio === 'undefined') {
@@ -1614,9 +1630,11 @@ function SoundManager(smURL, smID) {
     var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null),
         item, support = {}, aF, i;
     function _cp(m) {
-      var canPlay, i, j, isOK = false;
+      var canPlay, i, j,
+          result = false,
+          isOK = false;
       if (!a || typeof a.canPlayType !== 'function') {
-        return false;
+        return result;
       }
       if (m instanceof Array) {
         for (i=0, j=m.length; i<j && !isOK; i++) {
@@ -1626,11 +1644,12 @@ function SoundManager(smURL, smID) {
             _s.flash[m[i]] = !!(_s.preferFlash && _hasFlash && m[i].match(_flashMIME));
           }
         }
-        return isOK;
+        result = isOK;
       } else {
         canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m) : false);
-        return !!(canPlay && (canPlay.match(_s.html5Test)));
+        result = !!(canPlay && (canPlay.match(_s.html5Test)));
       }
+      return result;
     }
     aF = _s.audioFormats;
     for (item in aF) {
@@ -1867,7 +1886,9 @@ function SoundManager(smURL, smID) {
     return hasPlugin;
   };
   _featureCheck = function() {
-    var needsFlash, item,
+    var needsFlash,
+        item,
+        result = true,
         isSpecial = (_is_iDevice && !!(_ua.match(/os (1|2|3_0|3_1)/i)));
     if (isSpecial) {
       _s.hasHTML5 = false;
@@ -1875,22 +1896,17 @@ function SoundManager(smURL, smID) {
       if (_s.oMC) {
         _s.oMC.style.display = 'none';
       }
-      return false;
-    }
-    if (_s.useHTML5Audio) {
-      if (!_s.html5 || !_s.html5.canPlayType) {
-        _s.hasHTML5 = false;
-        return true;
-      } else {
-        _s.hasHTML5 = true;
-      }
-      if (_isBadSafari) {
-        if (_detectFlash()) {
-          return true;
+      result = false;
+    } else {
+      if (_s.useHTML5Audio) {
+        if (!_s.html5 || !_s.html5.canPlayType) {
+          _s.hasHTML5 = false;
+        } else {
+          _s.hasHTML5 = true;
+        }
+        if (_isBadSafari) {
         }
       }
-    } else {
-      return true;
     }
     for (item in _s.audioFormats) {
       if (_s.audioFormats.hasOwnProperty(item)) {
@@ -1906,26 +1922,27 @@ function SoundManager(smURL, smID) {
     return (!_s.html5Only);
   };
   _parseURL = function(url) {
-    var i, j, result = 0;
+    var i, j, urlResult = 0, result;
     if (url instanceof Array) {
       for (i=0, j=url.length; i<j; i++) {
         if (url[i] instanceof Object) {
           if (_s.canPlayMIME(url[i].type)) {
-            result = i;
+            urlResult = i;
             break;
           }
         } else if (_s.canPlayURL(url[i])) {
-          result = i;
+          urlResult = i;
           break;
         }
       }
-      if (url[result].url) {
-        url[result] = url[result].url;
+      if (url[urlResult].url) {
+        url[urlResult] = url[urlResult].url;
       }
-      return url[result];
+      result = url[urlResult];
     } else {
-      return url;
+      result = url;
     }
+    return result;
   };
   _startTimer = function(oSound) {
     if (!oSound._hasTimer) {
@@ -2252,6 +2269,7 @@ function SoundManager(smURL, smID) {
       return true;
     }
     var wasTimeout = (_s.useFlashBlock && _s.flashLoadTimeout && !_s.getMoviePercent()),
+        result = true,
         error;
     if (!wasTimeout) {
       _didInit = true;
@@ -2265,16 +2283,15 @@ function SoundManager(smURL, smID) {
       }
       _processOnEvents({type:'ontimeout', error:error});
       _catchError(error);
-      return false;
+      result = false;
     } else {
     }
     if (_s.waitForWindowLoad && !_windowLoaded) {
       _event.add(_win, 'load', _initUserOnload);
-      return false;
     } else {
       _initUserOnload();
     }
-    return true;
+    return result;
   };
   _init = function() {
     if (_didInit) {
