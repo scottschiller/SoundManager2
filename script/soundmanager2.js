@@ -1567,7 +1567,7 @@ function SoundManager(smURL, smID) {
 
     this.play = function(oOptions, _updatePlayState) {
 
-      var fN, allowMulti, a, onready,
+      var fN, allowMulti, a, onready, startOK,
           exit = null;
 
       // <d>
@@ -1752,7 +1752,7 @@ function SoundManager(smURL, smID) {
 
         if (!_t.isHTML5) {
 
-          _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000));
+          startOK = _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000));
 
         } else {
 
@@ -1761,6 +1761,16 @@ function SoundManager(smURL, smID) {
           _t.setPosition(_t._iO.position);
           a.play();
 
+        }
+
+        if (_fV === 9 && !startOK) {
+          // edge case: no sound hardware, or 32-channel flash ceiling hit.
+          // applies only to Flash 9, non-NetStream/MovieStar sounds.
+          // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29
+          _s._wD(fN+ _t.sID+': No sound hardware, or 32-sound ceiling hit');
+          if (_t._iO.onplayerror) {
+            _t._iO.onplayerror.apply(_t);
+          }
         }
 
       }
@@ -4118,9 +4128,11 @@ function SoundManager(smURL, smID) {
           _s.hasHTML5 = true;
         }
 
+        // <d>
         if (_isBadSafari) {
           _s._wD(_smc+'Note: Buggy HTML5 Audio in Safari on this OS X release, see https://bugs.webkit.org/show_bug.cgi?id=32159 - '+(!_hasFlash?' would use flash fallback for MP3/MP4, but none detected.':'will use flash fallback for MP3/MP4, if available'),1);
         }
+        // </d>
 
       }/* else {
 

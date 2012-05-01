@@ -821,9 +821,10 @@ package {
       }
     }
 
-    public function _start(sID:String, nLoops: int, nMsecOffset: int) : void {
+    public function _start(sID:String, nLoops: int, nMsecOffset: int) : Boolean {
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
-      if (!s) return void;
+      var result: Boolean;
+      if (!s) return true;
       writeDebug('start: ' + nMsecOffset + (nLoops > 1 ? ', loops: ' + nLoops : ''));
       s.lastValues.paused = false; // reset pause if applicable
       s.lastValues.loops = (nLoops || 1);
@@ -832,7 +833,7 @@ package {
       }
       s.handledDataError = false; // reset this flag
       try {
-        s.start(nMsecOffset, nLoops);
+        result = s.start(nMsecOffset, nLoops);
       } catch(e: Error) {
         writeDebug('Could not start ' + sID + ': ' + e.toString());
       }
@@ -841,6 +842,7 @@ package {
       } catch(e: Error) {
         writeDebug('_start(): registerOnComplete failed');
       }
+      return result;
     }
 
     public function _pause(sID:String) : void {

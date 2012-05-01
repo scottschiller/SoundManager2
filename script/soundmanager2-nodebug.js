@@ -668,7 +668,7 @@ function SoundManager(smURL, smID) {
       }
     };
     this.play = function(oOptions, _updatePlayState) {
-      var fN, allowMulti, a, onready,
+      var fN, allowMulti, a, onready, startOK,
           exit = null;
       _updatePlayState = (_updatePlayState === undefined ? true : _updatePlayState);
       if (!oOptions) {
@@ -762,12 +762,17 @@ function SoundManager(smURL, smID) {
         _t.setVolume(_t._iO.volume, true);
         _t.setPan(_t._iO.pan, true);
         if (!_t.isHTML5) {
-          _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000));
+          startOK = _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000));
         } else {
           _start_html5_timer();
           a = _t._setup_html5();
           _t.setPosition(_t._iO.position);
           a.play();
+        }
+        if (_fV === 9 && !startOK) {
+          if (_t._iO.onplayerror) {
+            _t._iO.onplayerror.apply(_t);
+          }
         }
       }
       return _t;
@@ -1905,8 +1910,6 @@ function SoundManager(smURL, smID) {
           _s.hasHTML5 = false;
         } else {
           _s.hasHTML5 = true;
-        }
-        if (_isBadSafari) {
         }
       }
     }

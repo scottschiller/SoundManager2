@@ -278,8 +278,10 @@ package {
       }
     }
 
-    public function start(nMsecOffset: int, nLoops: int) : void {
+    public function start(nMsecOffset: int, nLoops: int) : Boolean {
+
       this.useEvents = true;
+
       if (this.useNetstream) {
 
         writeDebug("SMSound::start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
@@ -335,6 +337,10 @@ package {
         this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
         this.applyTransform();
       }
+
+      // if soundChannel is null (and not a netStream), there is no sound card (or 32-channel ceiling has been hit.)
+      // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29
+      return (!this.useNetstream && this.soundChannel === null ? false : true);
 
     }
 

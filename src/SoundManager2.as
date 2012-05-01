@@ -329,6 +329,7 @@ class SoundManager2 {
       s.lastValues.paused = false; // reset pause if applicable
       s.lastValues.nLoops = (nLoops || 1);
       s.start(nMsecOffset, nLoops);
+      return true;
     }
 
     var _pause = function(sID) {
