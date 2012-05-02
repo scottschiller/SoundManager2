@@ -1913,10 +1913,12 @@ function SoundManager(smURL, smID) {
         }
       }
     }
-    for (item in _s.audioFormats) {
-      if (_s.audioFormats.hasOwnProperty(item)) {
-        if ((_s.audioFormats[item].required && !_s.html5.canPlayType(_s.audioFormats[item].type)) || _s.flash[item] || _s.flash[_s.audioFormats[item].type]) {
-          needsFlash = true;
+    if (_s.hasHTML5) {
+      for (item in _s.audioFormats) {
+        if (_s.audioFormats.hasOwnProperty(item)) {
+          if ((_s.audioFormats[item].required && !_s.html5.canPlayType(_s.audioFormats[item].type)) || _s.flash[item] || _s.flash[_s.audioFormats[item].type]) {
+            needsFlash = true;
+          }
         }
       }
     }
