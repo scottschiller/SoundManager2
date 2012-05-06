@@ -278,7 +278,7 @@ package {
       }
     }
 
-    public function start(nMsecOffset: int, nLoops: int) : Boolean {
+    public function start(nMsecOffset: int, nLoops: int, allowMultiShot:Boolean) : Boolean {
 
       this.useEvents = true;
 
@@ -333,9 +333,20 @@ package {
 
       } else {
         // writeDebug('start: seeking to '+nMsecOffset+', '+nLoops+(nLoops==1?' loop':' loops'));
-        this.soundChannel = this.play(nMsecOffset, nLoops);
-        this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
-        this.applyTransform();
+        if (!this.soundChannel || allowMultiShot) {
+          this.soundChannel = this.play(nMsecOffset, nLoops);
+          this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
+          this.applyTransform();
+        } else {
+          // writeDebug('start: was already playing, no-multishot case. Seeking to '+nMsecOffset+', '+nLoops+(nLoops==1?' loop':' loops'));
+          // already playing and no multi-shot allowed, so re-start and set position
+          if (this.soundChannel) {
+            this.soundChannel.stop();
+          }
+          this.soundChannel = this.play(nMsecOffset, nLoops); // start playing at new position
+          this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
+          this.applyTransform();
+        }
       }
 
       // if soundChannel is null (and not a netStream), there is no sound card (or 32-channel ceiling has been hit.)

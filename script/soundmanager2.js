@@ -1752,7 +1752,7 @@ function SoundManager(smURL, smID) {
 
         if (!_t.isHTML5) {
 
-          startOK = _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000));
+          startOK = _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000), _t._iO.multiShot);
 
         } else {
 
@@ -1926,7 +1926,7 @@ function SoundManager(smURL, smID) {
         position = (_fV === 9 ? _t.position : position1K);
         if (_t.readyState && _t.readyState !== 2) {
           // if paused or not playing, will not resume (by playing)
-          _flash._setPosition(_t.sID, position, (_t.paused || !_t.playState));
+          _flash._setPosition(_t.sID, position, (_t.paused || !_t.playState), _t._iO.multiShot);
         }
 
       } else if (_t._a) {
@@ -1985,7 +1985,7 @@ function SoundManager(smURL, smID) {
 
       if (!_t.isHTML5) {
         if (_bCallFlash || _bCallFlash === undefined) {
-          _flash._pause(_t.sID);
+          _flash._pause(_t.sID, _t._iO.multiShot);
         }
       } else {
         _t._setup_html5().pause();
@@ -2032,7 +2032,7 @@ function SoundManager(smURL, smID) {
           _t.setPosition(_t.position);
         }
         // flash method is toggle-based (pause/resume)
-        _flash._pause(_t.sID);
+        _flash._pause(_t.sID, _iO.multiShot);
       } else {
         _t._setup_html5().play();
         _start_html5_timer();
@@ -4138,7 +4138,7 @@ function SoundManager(smURL, smID) {
 
     }
 
-    if (_s.hasHTML5) {
+    if (_s.useHTML5Audio && _s.hasHTML5) {
 
       for (item in _s.audioFormats) {
         if (_s.audioFormats.hasOwnProperty(item)) {

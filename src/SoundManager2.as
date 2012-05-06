@@ -223,7 +223,8 @@ class SoundManager2 {
       }
     }
 
-    var _setPosition = function(sID, nSecOffset, isPaused) {
+    var _setPosition = function(sID, nSecOffset, isPaused, _allowMultiShot) {
+      // note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
       var s = soundObjects[sID];
       // writeDebug('_setPosition()');
       s.lastValues.position = s.position;
@@ -322,7 +323,8 @@ class SoundManager2 {
       }
     }
 
-    var _start = function(sID, nLoops, nMsecOffset) {
+    var _start = function(sID, nLoops, nMsecOffset, _allowMultiShot) {
+      // note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
       // writeDebug('_start: ' + sID + ', loops: ' + nLoops + ', nMsecOffset: ' + nMsecOffset);
       registerOnComplete();
       var s = soundObjects[sID];
@@ -332,7 +334,8 @@ class SoundManager2 {
       return true;
     }
 
-    var _pause = function(sID) {
+    var _pause = function(sID, _allowMultiShot) {
+       // note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
       // writeDebug('_pause()');
       var s = soundObjects[sID];
       if (!s.paused) {
