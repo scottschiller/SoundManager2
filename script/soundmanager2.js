@@ -1729,7 +1729,7 @@ function SoundManager(smURL, smID) {
         }
 
         // if first play and onposition parameters exist, apply them now
-        if (_t.playState === 0 && _t._iO.onposition) {
+        if (_t._iO.onposition && _t.playState === 0) {
           _attachOnPosition(_t);
         }
 
@@ -2541,6 +2541,23 @@ function SoundManager(smURL, smID) {
 
     };
 
+    this._apply_loop = function(a, nLoops) {
+
+      /**
+       * boolean instead of "loop", for webkit? - spec says string. http://www.w3.org/TR/html-markup/audio.html#audio.attrs.loop
+       * note that loop is either off or infinite under HTML5, unlike Flash which allows arbitrary loop counts to be specified.
+       */
+
+      // <d>
+      if (!a.loop && nLoops > 1) {
+        _s._wD('Note: Native HTML5 looping is infinite.');
+      }
+      // </d>
+
+      a.loop = (nLoops > 1 ? 'loop' : '');
+
+    };
+
     this._setup_html5 = function(oOptions) {
 
       var _iO = _mixin(_t._iO, oOptions), d = decodeURI,
@@ -2562,6 +2579,7 @@ function SoundManager(smURL, smID) {
           }
 
           if (result) {
+            _t._apply_loop(_a, _iO.loops);
             return result;
           }
 
@@ -2579,8 +2597,9 @@ function SoundManager(smURL, smID) {
           _a._t.stop();
         }
 
-        // new URL, so reset load/playstate, onPosition and so on
-        _resetProperties(_iO.url === _oldIO.url);
+        // reset load/playstate, onPosition etc. if the URL is new.
+        // somewhat-tricky object re-use vs. new SMSound object, old vs. new URL comparisons
+        _resetProperties((_oldIO.url ? _iO.url === _oldIO.url : (_lastURL ? _lastURL === _iO.url : false)));
 
         _a.src = _iO.url;
         _t.url = _iO.url;
@@ -2609,7 +2628,8 @@ function SoundManager(smURL, smID) {
       _a._t = _t;
 
       _add_html5_events();
-      _a.loop = (_iO.loops>1?'loop':'');
+
+      _t._apply_loop(_a, _iO.loops);
 
       if (_iO.autoLoad || _iO.autoPlay) {
 
@@ -2629,9 +2649,6 @@ function SoundManager(smURL, smID) {
         }
 
       }
-
-      // boolean instead of "loop", for webkit? - spec says string. http://www.w3.org/TR/html-markup/audio.html#audio.attrs.loop
-      _a.loop = (_iO.loops > 1 ? 'loop' : '');
 
       return _a;
 

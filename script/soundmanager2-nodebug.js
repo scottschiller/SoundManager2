@@ -746,7 +746,7 @@ function SoundManager(smURL, smID) {
         if (!_t.instanceCount || _t._iO.multiShotEvents || (!_t.isHTML5 && _fV > 8 && !_t.getAutoPlay())) {
           _t.instanceCount++;
         }
-        if (_t.playState === 0 && _t._iO.onposition) {
+        if (_t._iO.onposition && _t.playState === 0) {
           _attachOnPosition(_t);
         }
         _t.playState = 1;
@@ -1156,6 +1156,9 @@ function SoundManager(smURL, smID) {
           result = (d && !isNaN(d) && d !== Infinity ? d : (_iO ? _iO.duration : null));
       return result;
     };
+    this._apply_loop = function(a, nLoops) {
+      a.loop = (nLoops > 1 ? 'loop' : '');
+    };
     this._setup_html5 = function(oOptions) {
       var _iO = _mixin(_t._iO, oOptions), d = decodeURI,
           _a = _useGlobalHTML5Audio ? _s._global_a : _t._a,
@@ -1170,13 +1173,14 @@ function SoundManager(smURL, smID) {
             result = _a;
           }
           if (result) {
+            _t._apply_loop(_a, _iO.loops);
             return result;
           }
         }
         if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
           _a._t.stop();
         }
-        _resetProperties(_iO.url === _oldIO.url);
+        _resetProperties((_oldIO.url ? _iO.url === _oldIO.url : (_lastURL ? _lastURL === _iO.url : false)));
         _a.src = _iO.url;
         _t.url = _iO.url;
         _lastURL = _iO.url;
@@ -1192,7 +1196,7 @@ function SoundManager(smURL, smID) {
       _t._a = _a;
       _a._t = _t;
       _add_html5_events();
-      _a.loop = (_iO.loops>1?'loop':'');
+      _t._apply_loop(_a, _iO.loops);
       if (_iO.autoLoad || _iO.autoPlay) {
         _t.load();
       } else {
@@ -1202,7 +1206,6 @@ function SoundManager(smURL, smID) {
           _t.load();
         }
       }
-      _a.loop = (_iO.loops > 1 ? 'loop' : '');
       return _a;
     };
     _add_html5_events = function() {
