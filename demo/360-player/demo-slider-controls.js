@@ -216,6 +216,8 @@ function Controller(o) {
 	  threeSixtyPlayer.config.eqDataLineRatio = parseInt((self.controls[3].value/100)*3*1000)/1000;
 	
 	  threeSixtyPlayer.config.eqDataDownsample = (self.controls[4].value);
+
+    threeSixtyPlayer.config.scaleArcWidth = (self.controls[5].value);
 	
 	  threeSixtyPlayer.config.useEQData = (document.getElementById('disabled-1').checked?true:false);
 	
