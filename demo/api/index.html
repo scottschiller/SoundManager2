@@ -274,7 +274,7 @@ demo2Sound.play({volume:50});
  <button onclick="soundManager._writeDebug('Demo 3',1);soundManager.play('aDrumSound')">Do this</button>
  <p>This plays an existing sound which was created by soundManager.onload() (for reference, view source of this page.)</p>
 
- <h2>Demo 4a: Play a sequence of sounds via "onfinish", with multiShot*</h2>
+ <h2>Demo 4a: Play a sequence of sounds via "onfinish", with multiShot (Flash 9-only)</h2>
 <pre>soundManager.play('<span>aDrumSound</span>',{multiShotEvents:true,onfinish:function(){soundManager.play('<span>aCymbalSound</span>');}})</pre>
 <p>Differently formatted:</p>
 <pre class="block"><code>soundManager.play('<span>aDrumSound</span>',{
@@ -323,7 +323,7 @@ loopSound(s);
 <button onclick="return doEval(document.getElementById('demo4c').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
 <p>Note that there are issues with seamlessly-looping sounds, it is "close, but not perfect" with Flash 8/9 at this point.</p>
 
-<h2 id="looping">Demo 4d: Looping a sound ("loops" parameter method)</h2>
+<h2 id="looping">Demo 4d: Looping a sound ("loops" parameter method, Flash-only)</h2>
 <pre id="demo4d" class="block"><code>var s = soundManager.createSound({
   id:'<span>hhCymbal</span>',
   url:'<span>../mpc/audio/AMB_HHOP.mp3</span>'
@@ -337,6 +337,7 @@ s.play({
 <button onclick="return doEval(document.getElementById('demo4d').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('hhCymbal')">make it stop!</button>
 <p>Looping is possible as shown above using Flash 9. <b>With flash 8, the sound must be preloaded before looping can begin</b> - eg. <code>autoLoad: true, onload: function() { this.play{loops:3} }</code>. For tighter looping, see See <a href="http://www.flickr.com/photos/schill/4499319436/" title="Seamless looping MP3 sounds in Flash">Seamless Looping MP3 in Flash</a> for further details.</p>
 
+<p><b>HTML5 support note:</b> Native HTML5 looping is infinite when enabled, and does not support arbitrary loop counts. For now, consider using your own function with <code>onfinish()</code> -&gt; <code>play()</code> if you want to loop a sound a certain number of times. Refer to the above <code>onfinish()</code> example for a basic idea.</p>
 
 <h2 id="onposition">Demo 4e: Sound timing notifications using onPosition()</h2>
 <pre id="demo4e" class="block"><code>var s = soundManager.getSoundById('<span>aCymbalSound</span>'); <span><span>// existing sound object</span></span>
