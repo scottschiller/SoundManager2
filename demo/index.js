@@ -413,6 +413,7 @@ if (window.is_home) {
 	  backgroundRingColor: '#eee',
 	  circleDiameter: 256,
 	  circleRadius: 128,
+	  scaleArcWidth: 1,
 	  animDuration: 500,
 	  animTransition: Animator.tx.bouncy,
 	  showHMSTime: true,

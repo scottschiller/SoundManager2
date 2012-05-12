@@ -102,7 +102,7 @@ function ThreeSixtyPlayer() {
 
     fontSizeMax: null, // set according to CSS
 
-    scaleArcWidth: 1, // thickness factor
+    scaleArcWidth: 1,  // thickness factor of playback progress ring
 
     useFavIcon: false // Experimental (also requires usePeakData: true).. Try to draw a "VU Meter" in the favicon area, if browser supports it (Firefox + Opera as of 2009)
 
@@ -811,7 +811,7 @@ function ThreeSixtyPlayer() {
   this.updatePlaying = function() {
 
     var timeNow = (this._360data.showHMSTime?self.getTime(this.position,true):parseInt(this.position/1000, 10));
-    var ringScaleFactor = self.config.scaleArcWidth / 100;
+    var ringScaleFactor = self.config.scaleArcWidth;
 
     if (this.bytesLoaded) {
       this._360data.lastValues.bytesLoaded = this.bytesLoaded;
@@ -907,7 +907,7 @@ function ThreeSixtyPlayer() {
         if (waveData<0 && self.config.waveformDataConstrain) {
           waveData = Math.abs(waveData);
         }
-        self.drawSolidArc(oSound._360data.oCanvas,self.config.waveformDataColor,oSound._360data.width*innerRadius,oSound._360data.radius*scale*1.25*waveData,endAngle,startAngle,true);
+        self.drawSolidArc(oSound._360data.oCanvas,self.config.waveformDataColor,oSound._360data.width*innerRadius*(2-self.config.scaleArcWidth),oSound._360data.radius*scale*1.25*waveData,endAngle,startAngle,true);
       }
     }
 

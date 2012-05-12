@@ -1,5 +1,6 @@
 /*
    Ancient fireworks slider control code (2005)
+   Kinda/sorta refactored for SM2 360 demo
    http://schillmania.com/projects/fireworks/
    --------------------------------------------
    Not required for your use!
@@ -217,7 +218,7 @@ function Controller(o) {
 	
 	  threeSixtyPlayer.config.eqDataDownsample = (self.controls[4].value);
 
-    threeSixtyPlayer.config.scaleArcWidth = (self.controls[5].value);
+	  threeSixtyPlayer.config.scaleArcWidth = (self.controls[5].value/100);
 	
 	  threeSixtyPlayer.config.useEQData = (document.getElementById('disabled-1').checked?true:false);
 	
@@ -358,12 +359,14 @@ document.getElementById('config-code').style.display = 'block'; // weird Fx fix
 */
 
   setTimeout(function(){
+    // default values for controls
 	var values = [
 	  256,
 	  65,
 	  40,
 	  72,
-	  48
+	  48,
+	  100
 	];
 	for (var i=0; i<values.length; i++) {
 	  self.controls[i].setValue(values[i]); // defaults
