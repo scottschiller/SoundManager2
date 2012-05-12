@@ -270,7 +270,7 @@ http://www.schillmania.com/projects/soundmanager2/license.txt</p>
 
   <span class="kd">public</span> <span class="kd">class</span> <span class="n">SoundManager2_AS3</span> <span class="kd">extends</span> <span class="n">Sprite</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="kd">var</span> <span class="n">version</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20120318&quot;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">var</span> <span class="n">version</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20120318+DEV&quot;</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">var</span> <span class="n">version_as</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="s2">&quot;(AS3/Flash 9)&quot;</span><span class="o">;</span></pre></div>
       </td>
     </tr>
@@ -895,7 +895,7 @@ writeDebug(&lsquo;ns: time/duration, bytesloaded/total: &rsquo;+nP+&lsquo;/&rsqu
         <p>raw waveform + EQ spectrum data</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>      <span class="k">if</span> <span class="o">(</span><span class="n">isPlaying</span> <span class="o">&amp;&amp;</span> <span class="n">oSoundChannel</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// || oSound.useNetstream)) {</span>
+        <div class='highlight'><pre>      <span class="k">if</span> <span class="o">(</span><span class="n">isPlaying</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">oSoundChannel</span> <span class="o">||</span> <span class="n">oSound</span><span class="o">.</span><span class="na">useNetstream</span><span class="o">))</span> <span class="o">{</span>
 
         <span class="k">if</span> <span class="o">(</span><span class="n">oSound</span><span class="o">.</span><span class="na">useWaveformData</span><span class="o">)</span> <span class="o">{</span>
           <span class="k">if</span> <span class="o">(!</span><span class="n">areSoundsInaccessible</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">oSound</span><span class="o">.</span><span class="na">handledDataError</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">oSound</span><span class="o">.</span><span class="na">ignoreDataError</span><span class="o">)</span> <span class="o">{</span>
