@@ -2928,7 +2928,7 @@ function SoundManager(smURL, smID) {
 
     };
 
-    this._oncaption = function(oData) {
+    this._oncaptiondata = function(oData) {
 
       /**
        * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
@@ -2936,7 +2936,7 @@ function SoundManager(smURL, smID) {
        * @param {object} oData
        */
 
-      _s._wD('SMSound._oncaption(): "' + this.sID + '" caption data received.');
+      _s._wD('SMSound._oncaptiondata(): "' + this.sID + '" caption data received.');
 
       _t.captiondata = oData;
 
