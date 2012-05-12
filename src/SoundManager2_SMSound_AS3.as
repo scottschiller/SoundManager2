@@ -276,9 +276,9 @@ package {
       // this.cc.setCaption = function(infoObject: Object) : void {}
     
       // writeDebug('Caption\n'+infoObject['dynamicMetadata']);
-      // writeDebug('firing _oncaption for '+this.sID);
+      // writeDebug('firing _oncaptiondata for '+this.sID);
 
-      ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._oncaption", infoObject['dynamicMetadata']);
+      ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._oncaptiondata", infoObject['dynamicMetadata']);
 
     }
 
