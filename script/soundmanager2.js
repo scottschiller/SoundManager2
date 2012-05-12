@@ -2928,6 +2928,24 @@ function SoundManager(smURL, smID) {
 
     };
 
+    this._oncaption = function(oData) {
+
+      /**
+       * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
+       * 
+       * @param {object} oData
+       */
+
+      _s._wD('SMSound._oncaption(): "' + this.sID + '" caption data received.');
+
+      _t.captiondata = oData;
+
+      if (_t._iO.oncaptiondata) {
+        _t._iO.oncaptiondata.apply(_t);
+      }
+
+	};
+
     this._onmetadata = function(oMDProps, oMDData) {
 
       /**

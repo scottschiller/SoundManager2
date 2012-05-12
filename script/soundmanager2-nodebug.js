@@ -1361,6 +1361,12 @@ function SoundManager(smURL, smID) {
       }
       return true;
     };
+    this._oncaption = function(oData) {
+      _t.captiondata = oData;
+      if (_t._iO.oncaptiondata) {
+        _t._iO.oncaptiondata.apply(_t);
+      }
+	};
     this._onmetadata = function(oMDProps, oMDData) {
       var oData = {}, i, j;
       for (i = 0, j = oMDProps.length; i < j; i++) {
