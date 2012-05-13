@@ -265,7 +265,7 @@ SM2 will do this by default when soundManager.debugFlash = true.</p>
 
   <span class="kd">function </span><span class="nf">SoundManager2</span><span class="o">()</span> <span class="o">{</span>
 
-    <span class="n">var</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20120318+DEV&quot;</span><span class="o">;</span>
+    <span class="n">var</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20120513&quot;</span><span class="o">;</span>
     <span class="n">var</span> <span class="n">version_as</span> <span class="o">=</span> <span class="s2">&quot;(AS2/Flash 8)&quot;</span><span class="o">;</span></pre></div>
       </td>
     </tr>
@@ -594,14 +594,24 @@ Therefore if ID3V2 data is received, ID3V1 is ignored.</p>
       <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="n">var</span> <span class="n">_setPosition</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">nSecOffset</span><span class="o">,</span> <span class="n">isPaused</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">var</span> <span class="n">s</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span></pre></div>
+    <span class="n">var</span> <span class="n">_setPosition</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">nSecOffset</span><span class="o">,</span> <span class="n">isPaused</span><span class="o">,</span> <span class="n">_allowMultiShot</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-19'>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-19">&#182;</a>
+        </div>
+        <p>note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="n">var</span> <span class="n">s</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-20'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-20">&#182;</a>
         </div>
         <p>writeDebug(&lsquo;_setPosition()&rsquo;);</p>
       </td>
@@ -620,10 +630,10 @@ Therefore if ID3V2 data is received, ID3V1 is ignored.</p>
     <span class="n">var</span> <span class="n">_load</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">sURL</span><span class="o">,</span> <span class="n">bStream</span><span class="o">,</span> <span class="n">bAutoPlay</span><span class="o">,</span> <span class="n">bCheckPolicyFile</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-20'>
+    <tr id='section-21'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-20">&#182;</a>
+          <a class="pilcrow" href="#section-21">&#182;</a>
         </div>
         <p>writeDebug(&lsquo;_load(): &rsquo;+sID+&lsquo;, &rsquo;+sURL+&lsquo;, &rsquo;+bStream+&lsquo;, &rsquo;+bAutoPlay);</p>
       </td>
@@ -639,10 +649,10 @@ Therefore if ID3V2 data is received, ID3V1 is ignored.</p>
       <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-21'>
+    <tr id='section-22'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-21">&#182;</a>
+          <a class="pilcrow" href="#section-22">&#182;</a>
         </div>
         <p>writeDebug(&lsquo;bStream: &rsquo;+bStream);
 writeDebug(&lsquo;bAutoPlay: &rsquo;+bAutoPlay);
@@ -666,10 +676,10 @@ checkProgress();</p>
     <span class="n">var</span> <span class="n">_unload</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">sURL</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-22'>
+    <tr id='section-23'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-22">&#182;</a>
+          <a class="pilcrow" href="#section-23">&#182;</a>
         </div>
         <p>effectively &ldquo;stop&rdquo; loading by loading a tiny MP3</p>
       </td>
@@ -680,10 +690,10 @@ checkProgress();</p>
       <span class="n">s</span><span class="o">.</span><span class="na">loaded</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-23'>
+    <tr id='section-24'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-23">&#182;</a>
+          <a class="pilcrow" href="#section-24">&#182;</a>
         </div>
         <p>ensure position is reset, if unload fails</p>
       </td>
@@ -715,10 +725,10 @@ checkProgress();</p>
     <span class="n">var</span> <span class="n">_destroySound</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-24'>
+    <tr id='section-25'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-24">&#182;</a>
+          <a class="pilcrow" href="#section-25">&#182;</a>
         </div>
         <p>for the power of garbage collection! .. er, Greyskull!</p>
       </td>
@@ -740,10 +750,10 @@ checkProgress();</p>
     <span class="n">var</span> <span class="n">_stop</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">bStopAll</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-25'>
+    <tr id='section-26'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-25">&#182;</a>
+          <a class="pilcrow" href="#section-26">&#182;</a>
         </div>
         <p>stop this particular instance (or &ldquo;all&rdquo;, based on parameter)</p>
       </td>
@@ -756,25 +766,7 @@ checkProgress();</p>
       <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="n">var</span> <span class="n">_start</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">,</span> <span class="n">nMsecOffset</span><span class="o">)</span> <span class="o">{</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-26'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-26">&#182;</a>
-        </div>
-        <p>writeDebug(&lsquo;_start: &rsquo; + sID + &lsquo;, loops: &rsquo; + nLoops + &lsquo;, nMsecOffset: &rsquo; + nMsecOffset);</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="n">registerOnComplete</span><span class="o">();</span>
-      <span class="n">var</span> <span class="n">s</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span>
-      <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">paused</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> <span class="c1">// reset pause if applicable</span>
-      <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">nLoops</span> <span class="o">=</span> <span class="o">(</span><span class="n">nLoops</span> <span class="o">||</span> <span class="mi">1</span><span class="o">);</span>
-      <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="n">var</span> <span class="n">_pause</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">)</span> <span class="o">{</span></pre></div>
+    <span class="n">var</span> <span class="n">_start</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">,</span> <span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">_allowMultiShot</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-27'>
@@ -782,17 +774,38 @@ checkProgress();</p>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-27">&#182;</a>
         </div>
-        <p>writeDebug(&lsquo;_pause()&rsquo;);</p>
+        <p>note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
+writeDebug(&lsquo;_start: &rsquo; + sID + &lsquo;, loops: &rsquo; + nLoops + &lsquo;, nMsecOffset: &rsquo; + nMsecOffset);</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>      <span class="n">var</span> <span class="n">s</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span>
-      <span class="k">if</span> <span class="o">(!</span><span class="n">s</span><span class="o">.</span><span class="na">paused</span><span class="o">)</span> <span class="o">{</span></pre></div>
+        <div class='highlight'><pre>      <span class="n">registerOnComplete</span><span class="o">();</span>
+      <span class="n">var</span> <span class="n">s</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span>
+      <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">paused</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> <span class="c1">// reset pause if applicable</span>
+      <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">nLoops</span> <span class="o">=</span> <span class="o">(</span><span class="n">nLoops</span> <span class="o">||</span> <span class="mi">1</span><span class="o">);</span>
+      <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">var</span> <span class="n">_pause</span> <span class="o">=</span> <span class="kd">function</span><span class="o">(</span><span class="n">sID</span><span class="o">,</span> <span class="n">_allowMultiShot</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-28'>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-28">&#182;</a>
+        </div>
+        <p>note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
+writeDebug(&lsquo;_pause()&rsquo;);</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="n">var</span> <span class="n">s</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span>
+      <span class="k">if</span> <span class="o">(!</span><span class="n">s</span><span class="o">.</span><span class="na">paused</span><span class="o">)</span> <span class="o">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-29'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-29">&#182;</a>
         </div>
         <p>reference current position, stop sound</p>
       </td>
@@ -801,10 +814,10 @@ checkProgress();</p>
         <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">position</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">position</span><span class="o">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-29'>
+    <tr id='section-30'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-29">&#182;</a>
+          <a class="pilcrow" href="#section-30">&#182;</a>
         </div>
         <p>writeDebug(&lsquo;_pause(): position: &rsquo;+s.lastValues.position);</p>
       </td>
@@ -813,10 +826,10 @@ checkProgress();</p>
       <span class="o">}</span> <span class="k">else</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-30'>
+    <tr id='section-31'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-30">&#182;</a>
+          <a class="pilcrow" href="#section-31">&#182;</a>
         </div>
         <p>resume playing from last position
 writeDebug(&lsquo;resuming &ndash; playing at &rsquo;+s.lastValues.position+&lsquo;, &rsquo;+s.lastValues.nLoops+&lsquo; times&rsquo;);</p>
@@ -853,10 +866,10 @@ writeDebug(&lsquo;resuming &ndash; playing at &rsquo;+s.lastValues.position+&lsq
     <span class="n">var</span> <span class="n">_init</span> <span class="o">=</span> <span class="kd">function</span><span class="o">()</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-31'>
+    <tr id='section-32'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-31">&#182;</a>
+          <a class="pilcrow" href="#section-32">&#182;</a>
         </div>
         <p>OK now stuff should be available</p>
       </td>
@@ -881,10 +894,10 @@ writeDebug(&lsquo;resuming &ndash; playing at &rsquo;+s.lastValues.position+&lsq
       <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-32'>
+    <tr id='section-33'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-32">&#182;</a>
+          <a class="pilcrow" href="#section-33">&#182;</a>
         </div>
         <p>try to talk to JS, do init etc.</p>
       </td>
@@ -892,10 +905,10 @@ writeDebug(&lsquo;resuming &ndash; playing at &rsquo;+s.lastValues.position+&lsq
         <div class='highlight'><pre>      <span class="n">_externalInterfaceTest</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-33'>
+    <tr id='section-34'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-33">&#182;</a>
+          <a class="pilcrow" href="#section-34">&#182;</a>
         </div>
         <p>flashDebug(&lsquo;Init OK&rsquo;);</p>
       </td>
@@ -910,10 +923,10 @@ writeDebug(&lsquo;resuming &ndash; playing at &rsquo;+s.lastValues.position+&lsq
     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-34'>
+    <tr id='section-35'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-34">&#182;</a>
+          <a class="pilcrow" href="#section-35">&#182;</a>
         </div>
         <p>d'oh! &ndash; may be from a corrupt install, ancient (pre-Netscape 6?) browser etc.</p>
       </td>
@@ -925,10 +938,10 @@ writeDebug(&lsquo;resuming &ndash; playing at &rsquo;+s.lastValues.position+&lsq
   <span class="o">}</span> <span class="c1">// SoundManager2()</span></pre></div>
       </td>
     </tr>
-    <tr id='section-35'>
+    <tr id='section-36'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-35">&#182;</a>
+          <a class="pilcrow" href="#section-36">&#182;</a>
         </div>
         <p>entry point</p>
 

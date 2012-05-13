@@ -387,6 +387,8 @@ http://www.berniecode.com/writing/animator.html</p>
 
     <span class="nx">fontSizeMax</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span> <span class="c1">// set according to CSS</span>
 
+    <span class="nx">scaleArcWidth</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1">// thickness factor of playback progress ring</span>
+
     <span class="nx">useFavIcon</span><span class="o">:</span> <span class="kc">false</span> <span class="c1">// Experimental (also requires usePeakData: true).. Try to draw a &quot;VU Meter&quot; in the favicon area, if browser supports it (Firefox + Opera as of 2009)</span>
 
   <span class="p">};</span>
@@ -1403,6 +1405,7 @@ watch for mouse move</p>
   <span class="k">this</span><span class="p">.</span><span class="nx">updatePlaying</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
     <span class="kd">var</span> <span class="nx">timeNow</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">showHMSTime</span><span class="o">?</span><span class="nx">self</span><span class="p">.</span><span class="nx">getTime</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">position</span><span class="p">,</span><span class="kc">true</span><span class="p">)</span><span class="o">:</span><span class="nb">parseInt</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">position</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
+    <span class="kd">var</span> <span class="nx">ringScaleFactor</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">scaleArcWidth</span><span class="p">;</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">bytesLoaded</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">bytesLoaded</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">bytesLoaded</span><span class="p">;</span>
@@ -1415,11 +1418,7 @@ watch for mouse move</p>
 
     <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">durationEstimate</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">durationEstimate</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">durationEstimate</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">backgroundRingColor</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">deg2rad</span><span class="p">(</span><span class="nx">fullCircle</span><span class="p">),</span><span class="kc">false</span><span class="p">);</span>
-
-    <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">metadata</span><span class="o">?</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadRingColorMetadata</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadRingColor</span><span class="p">),</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">deg2rad</span><span class="p">(</span><span class="nx">fullCircle</span><span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">bytesLoaded</span><span class="o">/</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">bytesTotal</span><span class="p">)),</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span></pre></div>
+    <span class="p">}</span></pre></div>
       </td>
     </tr>
     <tr id='section-46'>
@@ -1427,18 +1426,40 @@ watch for mouse move</p>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-46">&#182;</a>
         </div>
-        <p>don&rsquo;t draw if 0 (full black circle in Opera)</p>
+        <p>background ring</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">position</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">metadata</span><span class="o">?</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">playRingColorMetadata</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">playRingColor</span><span class="p">),</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">deg2rad</span><span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">didFinish</span><span class="o">===</span><span class="mi">1</span><span class="o">?</span><span class="nx">fullCircle</span><span class="o">:</span><span class="nx">fullCircle</span><span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">position</span><span class="o">/</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">durationEstimate</span><span class="p">))),</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
-    <span class="p">}</span></pre></div>
+        <div class='highlight'><pre>    <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">backgroundRingColor</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span> <span class="o">*</span> <span class="nx">ringScaleFactor</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">deg2rad</span><span class="p">(</span><span class="nx">fullCircle</span><span class="p">),</span><span class="kc">false</span><span class="p">);</span></pre></div>
       </td>
     </tr>
     <tr id='section-47'>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-47">&#182;</a>
+        </div>
+        <p>loaded ring</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">metadata</span><span class="o">?</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadRingColorMetadata</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadRingColor</span><span class="p">),</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span> <span class="o">*</span> <span class="nx">ringScaleFactor</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">deg2rad</span><span class="p">(</span><span class="nx">fullCircle</span><span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">bytesLoaded</span><span class="o">/</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">bytesTotal</span><span class="p">)),</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-48'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-48">&#182;</a>
+        </div>
+        <p>don&rsquo;t draw if 0 (full black circle in Opera)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">position</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">metadata</span><span class="o">?</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">playRingColorMetadata</span><span class="o">:</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">playRingColor</span><span class="p">),</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span> <span class="o">*</span> <span class="nx">ringScaleFactor</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">deg2rad</span><span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">didFinish</span><span class="o">===</span><span class="mi">1</span><span class="o">?</span><span class="nx">fullCircle</span><span class="o">:</span><span class="nx">fullCircle</span><span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">position</span><span class="o">/</span><span class="k">this</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">lastValues</span><span class="p">.</span><span class="nx">durationEstimate</span><span class="p">))),</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
+    <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-49'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-49">&#182;</a>
         </div>
         <p>metadata goes here</p>
       </td>
@@ -1453,10 +1474,10 @@ watch for mouse move</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-48'>
+    <tr id='section-50'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-48">&#182;</a>
+          <a class="pilcrow" href="#section-50">&#182;</a>
         </div>
         <p>draw spectrum, if applicable</p>
       </td>
@@ -1476,10 +1497,10 @@ watch for mouse move</p>
     <span class="k">if</span> <span class="p">((</span><span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">sm</span><span class="p">.</span><span class="nx">features</span><span class="p">.</span><span class="nx">waveformData</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">sm</span><span class="p">.</span><span class="nx">features</span><span class="p">.</span><span class="nx">eqData</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-49'>
+    <tr id='section-51'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-49">&#182;</a>
+          <a class="pilcrow" href="#section-51">&#182;</a>
         </div>
         <p>feature not enabled..</p>
       </td>
@@ -1490,10 +1511,10 @@ watch for mouse move</p>
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">waveformData</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">length</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">eqData</span><span class="p">.</span><span class="nx">length</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">peakData</span><span class="p">.</span><span class="nx">left</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-50'>
+    <tr id='section-52'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-50">&#182;</a>
+          <a class="pilcrow" href="#section-52">&#182;</a>
         </div>
         <p>no data (or errored out/paused/unavailable?)</p>
       </td>
@@ -1514,10 +1535,10 @@ watch for mouse move</p>
         <span class="nx">scale</span> <span class="o">=</span> <span class="nx">offY</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="c1">// Y axis (+/- this distance from 0)</span></pre></div>
       </td>
     </tr>
-    <tr id='section-51'>
+    <tr id='section-53'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-51">&#182;</a>
+          <a class="pilcrow" href="#section-53">&#182;</a>
         </div>
         <p>lineWidth = Math.floor(oSound.<em>360data.circleDiameter-(oSound.</em>360data.circleDiameter*0.175)/(oSound._360data.circleDiameter/255)); // width for each line</p>
       </td>
@@ -1531,10 +1552,10 @@ watch for mouse move</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useWaveformData</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-52'>
+    <tr id='section-54'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-52">&#182;</a>
+          <a class="pilcrow" href="#section-54">&#182;</a>
         </div>
         <p>raw waveform</p>
       </td>
@@ -1556,17 +1577,17 @@ watch for mouse move</p>
         <span class="k">if</span> <span class="p">(</span><span class="nx">waveData</span><span class="o">&lt;</span><span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">waveformDataConstrain</span><span class="p">)</span> <span class="p">{</span>
           <span class="nx">waveData</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">waveData</span><span class="p">);</span>
         <span class="p">}</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">waveformDataColor</span><span class="p">,</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">,</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span><span class="o">*</span><span class="nx">scale</span><span class="o">*</span><span class="mf">1.25</span><span class="o">*</span><span class="nx">waveData</span><span class="p">,</span><span class="nx">endAngle</span><span class="p">,</span><span class="nx">startAngle</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">drawSolidArc</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oCanvas</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">waveformDataColor</span><span class="p">,</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">width</span><span class="o">*</span><span class="nx">innerRadius</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">scaleArcWidth</span><span class="p">),</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">radius</span><span class="o">*</span><span class="nx">scale</span><span class="o">*</span><span class="mf">1.25</span><span class="o">*</span><span class="nx">waveData</span><span class="p">,</span><span class="nx">endAngle</span><span class="p">,</span><span class="nx">startAngle</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
       <span class="p">}</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">useEQData</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-53'>
+    <tr id='section-55'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-53">&#182;</a>
+          <a class="pilcrow" href="#section-55">&#182;</a>
         </div>
         <p>EQ spectrum</p>
       </td>
@@ -1597,10 +1618,10 @@ watch for mouse move</p>
         <span class="nx">nPeak</span> <span class="o">=</span> <span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">peakData</span><span class="p">.</span><span class="nx">left</span><span class="o">||</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">peakData</span><span class="p">.</span><span class="nx">right</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-54'>
+    <tr id='section-56'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-54">&#182;</a>
+          <a class="pilcrow" href="#section-56">&#182;</a>
         </div>
         <p>GIANT HACK: use EQ spectrum data for bass frequencies</p>
       </td>
@@ -1633,10 +1654,10 @@ watch for mouse move</p>
   <span class="k">this</span><span class="p">.</span><span class="nx">uiTest</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sClass</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-55'>
+    <tr id='section-57'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-55">&#182;</a>
+          <a class="pilcrow" href="#section-57">&#182;</a>
         </div>
         <p>fake a 360 UI so we can get some numbers from CSS, etc.</p>
       </td>
@@ -1670,10 +1691,10 @@ watch for mouse move</p>
     <span class="k">if</span> <span class="p">(</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">fontSizeMax</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-56'>
+    <tr id='section-58'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-56">&#182;</a>
+          <a class="pilcrow" href="#section-58">&#182;</a>
         </div>
         <p>getStyle() etc. didn&rsquo;t work.</p>
       </td>
@@ -1682,10 +1703,10 @@ watch for mouse move</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-57'>
+    <tr id='section-59'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-57">&#182;</a>
+          <a class="pilcrow" href="#section-59">&#182;</a>
         </div>
         <p>soundManager._writeDebug(&lsquo;diameter, font size: &rsquo;+circleDiameter+&lsquo;,&rsquo;+fontSizeMax);</p>
       </td>
@@ -1713,10 +1734,10 @@ watch for mouse move</p>
       <span class="nx">oLinks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">oItems</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-58'>
+    <tr id='section-60'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-58">&#182;</a>
+          <a class="pilcrow" href="#section-60">&#182;</a>
         </div>
         <p>remove &ldquo;fake&rdquo; play button (unsupported case)</p>
       </td>
@@ -1725,10 +1746,10 @@ watch for mouse move</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-59'>
+    <tr id='section-61'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-59">&#182;</a>
+          <a class="pilcrow" href="#section-61">&#182;</a>
         </div>
         <p>grab all links, look for .mp3</p>
       </td>
@@ -1745,10 +1766,10 @@ watch for mouse move</p>
     <span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">circleRadius</span> <span class="o">=</span> <span class="nx">uiData</span><span class="p">.</span><span class="nx">circleRadius</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-60'>
+    <tr id='section-62'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-60">&#182;</a>
+          <a class="pilcrow" href="#section-62">&#182;</a>
         </div>
         <p>self.config.fontSizeMax = uiData.fontSizeMax;</p>
       </td>
@@ -1758,10 +1779,10 @@ watch for mouse move</p>
     <span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">fontSizeMax</span> <span class="o">=</span> <span class="nx">uiDataVis</span><span class="p">.</span><span class="nx">fontSizeMax</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-61'>
+    <tr id='section-63'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-61">&#182;</a>
+          <a class="pilcrow" href="#section-63">&#182;</a>
         </div>
         <p>canvas needs inline width and height, doesn&rsquo;t quite work otherwise</p>
       </td>
@@ -1783,10 +1804,10 @@ watch for mouse move</p>
         <span class="nx">radius</span> <span class="o">=</span> <span class="p">(</span><span class="nx">is_vis</span> <span class="o">?</span> <span class="nx">uiDataVis</span> <span class="o">:</span> <span class="nx">uiData</span><span class="p">).</span><span class="nx">circleRadius</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-62'>
+    <tr id='section-64'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-62">&#182;</a>
+          <a class="pilcrow" href="#section-64">&#182;</a>
         </div>
         <p>add canvas shiz</p>
       </td>
@@ -1807,10 +1828,10 @@ watch for mouse move</p>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> </pre></div>
       </td>
     </tr>
-    <tr id='section-63'>
+    <tr id='section-65'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-63">&#182;</a>
+          <a class="pilcrow" href="#section-65">&#182;</a>
         </div>
         <p>add a handler for the button</p>
       </td>
@@ -1847,10 +1868,10 @@ watch for mouse move</p>
 <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-64'>
+    <tr id='section-66'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-64">&#182;</a>
+          <a class="pilcrow" href="#section-66">&#182;</a>
         </div>
         <p>Optional: VU Meter component</p>
       </td>
@@ -1929,10 +1950,10 @@ watch for mouse move</p>
       <span class="k">for</span> <span class="p">(</span><span class="nx">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">j</span><span class="o">&lt;</span><span class="mi">16</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-65'>
+    <tr id='section-67'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-65">&#182;</a>
+          <a class="pilcrow" href="#section-67">&#182;</a>
         </div>
         <p>reset/erase canvas</p>
       </td>
@@ -1941,10 +1962,10 @@ watch for mouse move</p>
         <span class="nx">me</span><span class="p">.</span><span class="nx">vuDataCanvas</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span><span class="mi">16</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-66'>
+    <tr id='section-68'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-66">&#182;</a>
+          <a class="pilcrow" href="#section-68">&#182;</a>
         </div>
         <p>draw new stuffs</p>
       </td>
@@ -1955,10 +1976,10 @@ watch for mouse move</p>
         <span class="cm">/*</span></pre></div>
       </td>
     </tr>
-    <tr id='section-67'>
+    <tr id='section-69'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-67">&#182;</a>
+          <a class="pilcrow" href="#section-69">&#182;</a>
         </div>
         <p>shadow</p>
       </td>
@@ -1972,10 +1993,10 @@ watch for mouse move</p>
         <span class="nx">canvas</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="o">-</span><span class="nx">j</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">16</span><span class="o">-</span><span class="p">(</span><span class="mi">16</span><span class="o">-</span><span class="nx">j</span><span class="p">));</span></pre></div>
       </td>
     </tr>
-    <tr id='section-68'>
+    <tr id='section-70'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-68">&#182;</a>
+          <a class="pilcrow" href="#section-70">&#182;</a>
         </div>
         <p>and now, clear out some bits.</p>
       </td>
@@ -1986,10 +2007,10 @@ watch for mouse move</p>
         <span class="nx">me</span><span class="p">.</span><span class="nx">vuMeterData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="o">=</span> <span class="nx">me</span><span class="p">.</span><span class="nx">vuDataCanvas</span><span class="p">.</span><span class="nx">toDataURL</span><span class="p">(</span><span class="s1">&#39;image/png&#39;</span><span class="p">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-69'>
+    <tr id='section-71'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-69">&#182;</a>
+          <a class="pilcrow" href="#section-71">&#182;</a>
         </div>
         <p>for debugging VU images</p>
       </td>
@@ -2008,10 +2029,10 @@ watch for mouse move</p>
   <span class="k">this</span><span class="p">.</span><span class="nx">testCanvas</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-70'>
+    <tr id='section-72'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-70">&#182;</a>
+          <a class="pilcrow" href="#section-72">&#182;</a>
         </div>
         <p>canvas + toDataURL();</p>
       </td>
@@ -2027,10 +2048,10 @@ watch for mouse move</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-71'>
+    <tr id='section-73'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-71">&#182;</a>
+          <a class="pilcrow" href="#section-73">&#182;</a>
         </div>
         <p>just in case..</p>
       </td>
@@ -2040,10 +2061,10 @@ watch for mouse move</p>
     <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-72'>
+    <tr id='section-74'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-72">&#182;</a>
+          <a class="pilcrow" href="#section-74">&#182;</a>
         </div>
         <p>no canvas or no toDataURL()</p>
       </td>
@@ -2052,10 +2073,10 @@ watch for mouse move</p>
     <span class="p">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-73'>
+    <tr id='section-75'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-73">&#182;</a>
+          <a class="pilcrow" href="#section-75">&#182;</a>
         </div>
         <p>assume we&rsquo;re all good.</p>
       </td>
@@ -2071,10 +2092,10 @@ watch for mouse move</p>
       <span class="k">if</span> <span class="p">(</span><span class="nx">me</span><span class="p">.</span><span class="nx">vuDataCanvas</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">isFirefox</span> <span class="o">||</span> <span class="nx">isOpera</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-74'>
+    <tr id='section-76'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-74">&#182;</a>
+          <a class="pilcrow" href="#section-76">&#182;</a>
         </div>
         <p>these browsers support dynamically-updating the favicon</p>
       </td>
@@ -2083,10 +2104,10 @@ watch for mouse move</p>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-75'>
+    <tr id='section-77'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-75">&#182;</a>
+          <a class="pilcrow" href="#section-77">&#182;</a>
         </div>
         <p>browser doesn&rsquo;t support doing this</p>
       </td>
@@ -2102,10 +2123,10 @@ watch for mouse move</p>
 <span class="p">};</span></pre></div>
       </td>
     </tr>
-    <tr id='section-76'>
+    <tr id='section-78'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-76">&#182;</a>
+          <a class="pilcrow" href="#section-78">&#182;</a>
         </div>
         <p>completely optional: Metadata/annotations/segments code</p>
       </td>
@@ -2151,10 +2172,10 @@ watch for mouse move</p>
   <span class="k">this</span><span class="p">.</span><span class="nx">refresh</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-77'>
+    <tr id='section-79'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-77">&#182;</a>
+          <a class="pilcrow" href="#section-79">&#182;</a>
         </div>
         <p>Display info as appropriate</p>
       </td>
@@ -2172,10 +2193,10 @@ watch for mouse move</p>
     <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">!==</span> <span class="nx">metadata</span><span class="p">.</span><span class="nx">currentItem</span> <span class="o">&amp;&amp;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">metadata</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-78'>
+    <tr id='section-80'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-78">&#182;</a>
+          <a class="pilcrow" href="#section-80">&#182;</a>
         </div>
         <p>update</p>
       </td>
@@ -2183,10 +2204,10 @@ watch for mouse move</p>
         <div class='highlight'><pre>      <span class="nx">oSound</span><span class="p">.</span><span class="nx">_360data</span><span class="p">.</span><span class="nx">oLink</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">metadata</span><span class="p">.</span><span class="nx">mainTitle</span><span class="o">+</span><span class="s1">&#39; &lt;span class=&quot;metadata&quot;&gt;&lt;span class=&quot;sm2_divider&quot;&gt; | &lt;/span&gt;&lt;span class=&quot;sm2_metadata&quot;&gt;&#39;</span><span class="o">+</span><span class="nx">metadata</span><span class="p">[</span><span class="nx">index</span><span class="p">].</span><span class="nx">title</span><span class="o">+</span><span class="s1">&#39;&lt;/span&gt;&lt;/span&gt;&#39;</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-79'>
+    <tr id='section-81'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-79">&#182;</a>
+          <a class="pilcrow" href="#section-81">&#182;</a>
         </div>
         <p>self.setPageTitle(metadata[index].title+&lsquo; | &rsquo;+metadata.mainTitle);</p>
       </td>
@@ -2238,10 +2259,10 @@ watch for mouse move</p>
 <span class="k">if</span> <span class="p">(</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/webkit/i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/mobile/i</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-80'>
+    <tr id='section-82'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-80">&#182;</a>
+          <a class="pilcrow" href="#section-82">&#182;</a>
         </div>
         <p>iPad, iPhone etc.</p>
       </td>
@@ -2257,10 +2278,10 @@ watch for mouse move</p>
 <span class="nx">soundManager</span><span class="p">.</span><span class="nx">useFlashBlock</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-81'>
+    <tr id='section-83'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-81">&#182;</a>
+          <a class="pilcrow" href="#section-83">&#182;</a>
         </div>
         <p>soundManager.useFastPolling = true; // for more aggressive, faster UI updates (higher CPU use)</p>
       </td>
@@ -2268,10 +2289,10 @@ watch for mouse move</p>
         <div class='highlight'><pre></pre></div>
       </td>
     </tr>
-    <tr id='section-82'>
+    <tr id='section-84'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-82">&#182;</a>
+          <a class="pilcrow" href="#section-84">&#182;</a>
         </div>
         <p>FPS data, testing/debug only</p>
       </td>
@@ -2293,10 +2314,10 @@ watch for mouse move</p>
 <span class="nx">threeSixtyPlayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThreeSixtyPlayer</span><span class="p">();</span></pre></div>
       </td>
     </tr>
-    <tr id='section-83'>
+    <tr id='section-85'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-83">&#182;</a>
+          <a class="pilcrow" href="#section-85">&#182;</a>
         </div>
         <p>hook into SM2 init</p>
 

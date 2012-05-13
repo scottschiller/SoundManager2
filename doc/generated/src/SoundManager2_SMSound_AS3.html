@@ -430,6 +430,7 @@ this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);</p
         <div class='highlight'><pre>            <span class="k">this</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">bufferTime</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">bufferTime</span><span class="o">;</span> <span class="c1">// set to 0.1 or higher. 0 is reported to cause playback issues with static files.</span>
             <span class="k">this</span><span class="o">.</span><span class="na">st</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">SoundTransform</span><span class="o">();</span>
             <span class="k">this</span><span class="o">.</span><span class="na">cc</span><span class="o">.</span><span class="na">onMetaData</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">metaDataHandler</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">cc</span><span class="o">.</span><span class="na">setCaption</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">captionHandler</span><span class="o">;</span>
             <span class="k">this</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">client</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">cc</span><span class="o">;</span>
             <span class="k">this</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">receiveAudio</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
             <span class="k">this</span><span class="o">.</span><span class="na">addNetstreamEvents</span><span class="o">();</span>
@@ -620,13 +621,50 @@ ExternalInterface.call(baseJSObject + &ldquo;[&lsquo;&rdquo; + this.sID + &ldquo
       <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">function </span><span class="nf">getWaveformData</span><span class="o">()</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
+    <span class="kd">public</span> <span class="kd">function </span><span class="nf">captionHandler</span><span class="o">(</span><span class="n">infoObject</span><span class="o">:</span> <span class="kt">Object</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span>
+
+      <span class="k">if</span> <span class="o">(</span><span class="n">sm</span><span class="o">.</span><span class="na">debugEnabled</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">var</span> <span class="n">data</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">String</span><span class="o">();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">var</span> <span class="n">prop</span><span class="o">:*</span> <span class="k">in</span> <span class="n">infoObject</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">data</span> <span class="o">+=</span> <span class="n">prop</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="n">infoObject</span><span class="o">[</span><span class="n">prop</span><span class="o">]+</span><span class="s1">&#39; \n&#39;</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;Caption: &#39;</span><span class="o">+</span><span class="n">data</span><span class="o">);</span>
+      <span class="o">}</span></pre></div>
       </td>
     </tr>
     <tr id='section-17'>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-17">&#182;</a>
+        </div>
+        <p>null this out for the duration of this object&rsquo;s existence.
+it may be called multiple times.
+this.cc.setCaption = function(infoObject: Object) : void {}</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    </pre></div>
+      </td>
+    </tr>
+    <tr id='section-18'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-18">&#182;</a>
+        </div>
+        <p>writeDebug(&lsquo;Caption\n&rsquo;+infoObject[&lsquo;dynamicMetadata&rsquo;]);
+writeDebug(&lsquo;firing _oncaptiondata for &rsquo;+this.sID);</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="n">ExternalInterface</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sm</span><span class="o">.</span><span class="na">baseJSObject</span> <span class="o">+</span> <span class="s2">&quot;[&#39;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">sID</span> <span class="o">+</span> <span class="s2">&quot;&#39;]._oncaptiondata&quot;</span><span class="o">,</span> <span class="n">infoObject</span><span class="o">[</span><span class="s1">&#39;dynamicMetadata&#39;</span><span class="o">]);</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">function </span><span class="nf">getWaveformData</span><span class="o">()</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-19'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-19">&#182;</a>
         </div>
         <p>http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum()</p>
       </td>
@@ -641,10 +679,10 @@ ExternalInterface.call(baseJSObject + &ldquo;[&lsquo;&rdquo; + this.sID + &ldquo
     <span class="kd">public</span> <span class="kd">function </span><span class="nf">getEQData</span><span class="o">()</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-18'>
+    <tr id='section-20'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-18">&#182;</a>
+          <a class="pilcrow" href="#section-20">&#182;</a>
         </div>
         <p>http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum()</p>
       </td>
@@ -656,17 +694,19 @@ ExternalInterface.call(baseJSObject + &ldquo;[&lsquo;&rdquo; + this.sID + &ldquo
       <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">function </span><span class="nf">start</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">:</span> <span class="kt">int</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">:</span> <span class="kt">int</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">function </span><span class="nf">start</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">:</span> <span class="kt">int</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">:</span> <span class="kt">int</span><span class="o">,</span> <span class="n">allowMultiShot</span><span class="o">:</span><span class="kt">Boolean</span><span class="o">)</span> <span class="o">:</span> <span class="kt">Boolean</span> <span class="o">{</span>
+
       <span class="k">this</span><span class="o">.</span><span class="na">useEvents</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+
       <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">useNetstream</span><span class="o">)</span> <span class="o">{</span>
 
         <span class="n">writeDebug</span><span class="o">(</span><span class="s2">&quot;SMSound::start nMsecOffset &quot;</span><span class="o">+</span> <span class="n">nMsecOffset</span><span class="o">+</span> <span class="s1">&#39; nLoops &#39;</span><span class="o">+</span><span class="n">nLoops</span> <span class="o">+</span> <span class="s1">&#39; current bufferTime &#39;</span><span class="o">+</span><span class="k">this</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">bufferTime</span><span class="o">+</span><span class="s1">&#39; current bufferLength &#39;</span><span class="o">+</span><span class="k">this</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">bufferLength</span><span class="o">+</span> <span class="s1">&#39; this.lastValues.position &#39;</span><span class="o">+</span><span class="k">this</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">position</span><span class="o">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-19'>
+    <tr id='section-21'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-19">&#182;</a>
+          <a class="pilcrow" href="#section-21">&#182;</a>
         </div>
         <p>mark for later Netstream.Play.Stop / sound completion</p>
       </td>
@@ -676,10 +716,10 @@ ExternalInterface.call(baseJSObject + &ldquo;[&lsquo;&rdquo; + this.sID + &ldquo
         <span class="k">this</span><span class="o">.</span><span class="na">cc</span><span class="o">.</span><span class="na">onMetaData</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">metaDataHandler</span><span class="o">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-20'>
+    <tr id='section-22'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-20">&#182;</a>
+          <a class="pilcrow" href="#section-22">&#182;</a>
         </div>
         <p>Don&rsquo;t seek if we don&rsquo;t have to because it destroys the buffer</p>
       </td>
@@ -689,10 +729,10 @@ ExternalInterface.call(baseJSObject + &ldquo;[&lsquo;&rdquo; + this.sID + &ldquo
         <span class="k">if</span> <span class="o">(</span><span class="n">set_position</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-21'>
+    <tr id='section-23'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-21">&#182;</a>
+          <a class="pilcrow" href="#section-23">&#182;</a>
         </div>
         <p>Minimize the buffer so playback starts ASAP</p>
       </td>
@@ -716,10 +756,10 @@ ExternalInterface.call(baseJSObject + &ldquo;[&lsquo;&rdquo; + this.sID + &ldquo
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-22'>
+    <tr id='section-24'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-22">&#182;</a>
+          <a class="pilcrow" href="#section-24">&#182;</a>
         </div>
         <p>previously loaded, perhaps stopped/finished. play again?</p>
       </td>
@@ -730,10 +770,10 @@ ExternalInterface.call(baseJSObject + &ldquo;[&lsquo;&rdquo; + this.sID + &ldquo
         <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-23'>
+    <tr id='section-25'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-23">&#182;</a>
+          <a class="pilcrow" href="#section-25">&#182;</a>
         </div>
         <p>KJV seek after calling play otherwise some streams get a NetStream.Seek.Failed
 Should only apply to the !didLoad case, but do it for all for simplicity.
@@ -747,10 +787,10 @@ download.</p>
         <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-24'>
+    <tr id='section-26'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-24">&#182;</a>
+          <a class="pilcrow" href="#section-26">&#182;</a>
         </div>
         <p>this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);</p>
       </td>
@@ -760,18 +800,50 @@ download.</p>
       <span class="o">}</span> <span class="k">else</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-25'>
+    <tr id='section-27'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-25">&#182;</a>
+          <a class="pilcrow" href="#section-27">&#182;</a>
         </div>
         <p>writeDebug(&lsquo;start: seeking to &rsquo;+nMsecOffset+&lsquo;, &rsquo;+nLoops+(nLoops==1?&lsquo; loop&rsquo;:&lsquo; loops&rsquo;));</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>        <span class="k">this</span><span class="o">.</span><span class="na">soundChannel</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">play</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">addEventListener</span><span class="o">(</span><span class="n">Event</span><span class="o">.</span><span class="na">SOUND_COMPLETE</span><span class="o">,</span> <span class="n">_onfinish</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">applyTransform</span><span class="o">();</span>
-      <span class="o">}</span>
+        <div class='highlight'><pre>        <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">soundChannel</span> <span class="o">||</span> <span class="n">allowMultiShot</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">soundChannel</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">play</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">addEventListener</span><span class="o">(</span><span class="n">Event</span><span class="o">.</span><span class="na">SOUND_COMPLETE</span><span class="o">,</span> <span class="n">_onfinish</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">applyTransform</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-28'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-28">&#182;</a>
+        </div>
+        <p>writeDebug(&lsquo;start: was already playing, no-multishot case. Seeking to &rsquo;+nMsecOffset+&lsquo;, &rsquo;+nLoops+(nLoops==1?&lsquo; loop&rsquo;:&lsquo; loops&rsquo;));
+already playing and no multi-shot allowed, so re-start and set position</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">soundChannel</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">soundChannel</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+          <span class="o">}</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">soundChannel</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">play</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">);</span> <span class="c1">// start playing at new position</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">addEventListener</span><span class="o">(</span><span class="n">Event</span><span class="o">.</span><span class="na">SOUND_COMPLETE</span><span class="o">,</span> <span class="n">_onfinish</span><span class="o">);</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">applyTransform</span><span class="o">();</span>
+        <span class="o">}</span>
+      <span class="o">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-29'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-29">&#182;</a>
+        </div>
+        <p>if soundChannel is null (and not a netStream), there is no sound card (or 32-channel ceiling has been hit.)
+http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">return</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">useNetstream</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">soundChannel</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span><span class="o">);</span>
 
     <span class="o">}</span>
 
@@ -791,10 +863,10 @@ download.</p>
         <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-26'>
+    <tr id='section-30'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-26">&#182;</a>
+          <a class="pilcrow" href="#section-30">&#182;</a>
         </div>
         <p>this.addEventListener(Event.SOUND_COMPLETE, _onfinish);</p>
       </td>
@@ -813,10 +885,10 @@ download.</p>
     <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-27'>
+    <tr id='section-31'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-27">&#182;</a>
+          <a class="pilcrow" href="#section-31">&#182;</a>
         </div>
         <p>Set the value of autoPlay</p>
       </td>
@@ -852,10 +924,10 @@ download.</p>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-28'>
+    <tr id='section-32'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-28">&#182;</a>
+          <a class="pilcrow" href="#section-32">&#182;</a>
         </div>
         <p>writeDebug(&lsquo;applyTransform(): Note: No active netStream&rsquo;);</p>
       </td>
@@ -867,10 +939,10 @@ download.</p>
     <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-29'>
+    <tr id='section-33'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-29">&#182;</a>
+          <a class="pilcrow" href="#section-33">&#182;</a>
         </div>
         <p>Handle FMS bandwidth check callback.
 @see http://www.adobe.com/devnet/flashmediaserver/articles/dynamic<em>stream</em>switching_04.html
@@ -880,10 +952,10 @@ download.</p>
         <div class='highlight'><pre>    <span class="kd">public</span> <span class="kd">function </span><span class="nf">onBWDone</span><span class="o">()</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-30'>
+    <tr id='section-34'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-30">&#182;</a>
+          <a class="pilcrow" href="#section-34">&#182;</a>
         </div>
         <p>writeDebug(&lsquo;onBWDone: called and ignored&rsquo;);</p>
       </td>
@@ -891,10 +963,10 @@ download.</p>
         <div class='highlight'><pre>    <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-31'>
+    <tr id='section-35'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-31">&#182;</a>
+          <a class="pilcrow" href="#section-35">&#182;</a>
         </div>
         <p>NetStream client callback. Invoked when the song is complete.</p>
       </td>
@@ -912,10 +984,10 @@ download.</p>
       <span class="n">ExternalInterface</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">baseJSObject</span> <span class="o">+</span> <span class="s2">&quot;[&#39;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">sID</span> <span class="o">+</span> <span class="s2">&quot;&#39;]._onload&quot;</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span> <span class="c1">// call onload, assume it failed.</span></pre></div>
       </td>
     </tr>
-    <tr id='section-32'>
+    <tr id='section-36'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-32">&#182;</a>
+          <a class="pilcrow" href="#section-36">&#182;</a>
         </div>
         <p>there was a connection drop, a loss of internet connection, or something else wrong. 404 error too.</p>
       </td>
@@ -929,10 +1001,10 @@ download.</p>
     <span class="kd">public</span> <span class="kd">function </span><span class="nf">doNetStatus</span><span class="o">(</span><span class="n">e</span><span class="o">:</span> <span class="kt">NetStatusEvent</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-33'>
+    <tr id='section-37'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-33">&#182;</a>
+          <a class="pilcrow" href="#section-37">&#182;</a>
         </div>
         <p>Handle failures</p>
       </td>
@@ -951,10 +1023,10 @@ download.</p>
       <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;netStatusEvent: &#39;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">info</span><span class="o">.</span><span class="na">code</span><span class="o">);</span>  <span class="c1">// KJV we like to see all events</span></pre></div>
       </td>
     </tr>
-    <tr id='section-34'>
+    <tr id='section-38'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-34">&#182;</a>
+          <a class="pilcrow" href="#section-38">&#182;</a>
         </div>
         <p>When streaming, Stop is called when buffering stops, not when the stream is actually finished.
 @see http://www.actionscript.org/forums/archive/index.php3/t-159194.html</p>
@@ -965,10 +1037,10 @@ download.</p>
         <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">finished</span> <span class="o">&amp;&amp;</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">useNetstream</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">serverUrl</span><span class="o">))</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-35'>
+    <tr id='section-39'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-35">&#182;</a>
+          <a class="pilcrow" href="#section-39">&#182;</a>
         </div>
         <p>finished playing, and not RTMP</p>
       </td>
@@ -976,10 +1048,10 @@ download.</p>
         <div class='highlight'><pre>          <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;calling onfinish for a sound&#39;</span><span class="o">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-36'>
+    <tr id='section-40'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-36">&#182;</a>
+          <a class="pilcrow" href="#section-40">&#182;</a>
         </div>
         <p>reset the sound? Move back to position 0?</p>
       </td>
@@ -993,10 +1065,10 @@ download.</p>
       <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">info</span><span class="o">.</span><span class="na">code</span> <span class="o">==</span> <span class="s2">&quot;NetStream.Play.Start&quot;</span> <span class="o">||</span> <span class="n">e</span><span class="o">.</span><span class="na">info</span><span class="o">.</span><span class="na">code</span> <span class="o">==</span> <span class="s2">&quot;NetStream.Buffer.Empty&quot;</span> <span class="o">||</span> <span class="n">e</span><span class="o">.</span><span class="na">info</span><span class="o">.</span><span class="na">code</span> <span class="o">==</span> <span class="s2">&quot;NetStream.Buffer.Full&quot;</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-37'>
+    <tr id='section-41'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-37">&#182;</a>
+          <a class="pilcrow" href="#section-41">&#182;</a>
         </div>
         <p>RTMP case..
 We wait for the buffer to fill up before pausing the just-loaded song because only if the
@@ -1009,10 +1081,10 @@ buffer is full will the song continue to buffer until the user hits play.</p>
           <span class="k">this</span><span class="o">.</span><span class="na">pauseOnBufferFull</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span></pre></div>
       </td>
     </tr>
-    <tr id='section-38'>
+    <tr id='section-42'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-38">&#182;</a>
+          <a class="pilcrow" href="#section-42">&#182;</a>
         </div>
         <p>Call pause in JS.  This will call back to us to pause again, but
 that should be harmless.</p>
@@ -1025,10 +1097,10 @@ that should be harmless.</p>
         <span class="kd">var</span> <span class="n">isNetstreamBuffering</span><span class="p">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">info</span><span class="o">.</span><span class="na">code</span> <span class="o">==</span> <span class="s2">&quot;NetStream.Buffer.Empty&quot;</span> <span class="o">||</span> <span class="n">e</span><span class="o">.</span><span class="na">info</span><span class="o">.</span><span class="na">code</span> <span class="o">==</span> <span class="s2">&quot;NetStream.Play.Start&quot;</span><span class="o">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-39'>
+    <tr id='section-43'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-39">&#182;</a>
+          <a class="pilcrow" href="#section-43">&#182;</a>
         </div>
         <p>assume buffering when we start playing, eg. initial load.</p>
       </td>
@@ -1039,10 +1111,10 @@ that should be harmless.</p>
         <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-40'>
+    <tr id='section-44'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-40">&#182;</a>
+          <a class="pilcrow" href="#section-44">&#182;</a>
         </div>
         <p>We can detect the end of the stream when Play.Stop is called followed by Buffer.Empty.
 However, if you pause and let the whole song buffer, Buffer.Flush is called followed by
@@ -1064,10 +1136,10 @@ Buffer.Empty, so handle that case too.</p>
         <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">info</span><span class="o">.</span><span class="na">code</span> <span class="o">==</span> <span class="s2">&quot;NetStream.Buffer.Empty&quot;</span><span class="o">)</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-41'>
+    <tr id='section-45'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-41">&#182;</a>
+          <a class="pilcrow" href="#section-45">&#182;</a>
         </div>
         <p>The buffer is empty.  Start from the smallest buffer again.</p>
       </td>
@@ -1077,10 +1149,10 @@ Buffer.Empty, so handle that case too.</p>
       <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-42'>
+    <tr id='section-46'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-42">&#182;</a>
+          <a class="pilcrow" href="#section-46">&#182;</a>
         </div>
         <p>Remember the last NetStatus event</p>
       </td>
@@ -1089,10 +1161,10 @@ Buffer.Empty, so handle that case too.</p>
     <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-43'>
+    <tr id='section-47'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-43">&#182;</a>
+          <a class="pilcrow" href="#section-47">&#182;</a>
         </div>
         <p>KJV The sound adds some of its own netstatus handlers so we don&rsquo;t need to do it here.</p>
       </td>
@@ -1110,10 +1182,10 @@ Buffer.Empty, so handle that case too.</p>
       <span class="n">ns</span><span class="o">.</span><span class="na">removeEventListener</span><span class="o">(</span><span class="n">IOErrorEvent</span><span class="o">.</span><span class="na">IO_ERROR</span><span class="o">,</span> <span class="n">doIOError</span><span class="o">);</span></pre></div>
       </td>
     </tr>
-    <tr id='section-44'>
+    <tr id='section-48'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-44">&#182;</a>
+          <a class="pilcrow" href="#section-48">&#182;</a>
         </div>
         <p>KJV Stop listening for NetConnection events on the sound</p>
       </td>
@@ -1122,10 +1194,10 @@ Buffer.Empty, so handle that case too.</p>
     <span class="o">}</span></pre></div>
       </td>
     </tr>
-    <tr id='section-45'>
+    <tr id='section-49'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-45">&#182;</a>
+          <a class="pilcrow" href="#section-49">&#182;</a>
         </div>
         <p>Prevents possible &lsquo;Unhandled NetStatusEvent&rsquo; condition if a sound is being
 destroyed and interacted with at the same time.</p>
@@ -1134,10 +1206,10 @@ destroyed and interacted with at the same time.</p>
         <div class='highlight'><pre>    <span class="kd">public</span> <span class="kd">function </span><span class="nf">dummyNetStatusHandler</span><span class="o">(</span><span class="n">e</span><span class="o">:</span> <span class="kt">NetStatusEvent</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
-    <tr id='section-46'>
+    <tr id='section-50'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-46">&#182;</a>
+          <a class="pilcrow" href="#section-50">&#182;</a>
         </div>
         <p>Don&rsquo;t do anything</p>
 

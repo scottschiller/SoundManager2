@@ -270,7 +270,7 @@ http://www.schillmania.com/projects/soundmanager2/license.txt</p>
 
   <span class="kd">public</span> <span class="kd">class</span> <span class="n">SoundManager2_AS3</span> <span class="kd">extends</span> <span class="n">Sprite</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="kd">var</span> <span class="n">version</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20120318+DEV&quot;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">var</span> <span class="n">version</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="s2">&quot;V2.97a.20120513&quot;</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">var</span> <span class="n">version_as</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="s2">&quot;(AS3/Flash 9)&quot;</span><span class="o">;</span></pre></div>
       </td>
     </tr>
@@ -1208,7 +1208,7 @@ a crossdomain.xml file would fix the problem easily</p>
       <td class=code>
         <div class='highlight'><pre>    <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">function </span><span class="nf">_setPosition</span><span class="o">(</span><span class="n">sID</span><span class="o">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">nSecOffset</span><span class="o">:</span><span class="kt">Number</span><span class="o">,</span> <span class="n">isPaused</span><span class="o">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">function </span><span class="nf">_setPosition</span><span class="o">(</span><span class="n">sID</span><span class="o">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">nSecOffset</span><span class="o">:</span><span class="kt">Number</span><span class="o">,</span> <span class="n">isPaused</span><span class="o">:</span> <span class="kt">Boolean</span><span class="o">,</span> <span class="n">allowMultiShot</span><span class="o">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span>
       <span class="kd">var</span> <span class="n">s</span><span class="p">:</span> <span class="kt">SoundManager2_SMSound_AS3</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span>
       <span class="k">if</span> <span class="o">(!</span><span class="n">s</span><span class="o">)</span> <span class="k">return</span> <span class="kc">void</span><span class="o">;</span></pre></div>
       </td>
@@ -1247,7 +1247,7 @@ a crossdomain.xml file would fix the problem easily</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>        <span class="n">s</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">bufferTime</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">bufferTime</span><span class="o">;</span>
-        <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;setPosition: setting buffer to &#39;</span><span class="o">+</span><span class="n">s</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">bufferTime</span><span class="o">+</span><span class="s1">&#39; secs&#39;</span><span class="o">);</span>
+        <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;setPosition (&#39;</span><span class="o">+</span> <span class="n">sID</span> <span class="o">+</span> <span class="s1">&#39;): setting buffer to &#39;</span><span class="o">+</span><span class="n">s</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">bufferTime</span><span class="o">+</span><span class="s1">&#39; secs&#39;</span><span class="o">);</span>
 
         <span class="n">nSecOffset</span> <span class="o">=</span> <span class="n">nSecOffset</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="n">nSecOffset</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
         <span class="n">s</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">seek</span><span class="o">(</span><span class="n">nSecOffset</span><span class="o">);</span>
@@ -1256,13 +1256,13 @@ a crossdomain.xml file would fix the problem easily</p>
         <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">soundChannel</span><span class="o">)</span> <span class="o">{</span>
           <span class="n">s</span><span class="o">.</span><span class="na">soundChannel</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
         <span class="o">}</span>
-        <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;setPosition: &#39;</span> <span class="o">+</span> <span class="n">nSecOffset</span><span class="o">);</span> <span class="c1">// +&#39;, &#39;+(s.lastValues.loops?s.lastValues.loops:1));</span>
+        <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;setPosition (&#39;</span><span class="o">+</span> <span class="n">sID</span> <span class="o">+</span> <span class="s1">&#39;): &#39;</span> <span class="o">+</span> <span class="n">nSecOffset</span><span class="o">);</span> <span class="c1">// +&#39;, &#39;+(s.lastValues.loops?s.lastValues.loops:1));</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">loops</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">nSecOffset</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
           <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;Warning: Looping functionality being disabled due to Flash limitation.&#39;</span><span class="o">);</span>
           <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">loops</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="k">try</span> <span class="o">{</span>
-          <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">nSecOffset</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">loops</span> <span class="o">||</span> <span class="mi">1</span><span class="o">);</span> <span class="c1">// start playing at new position</span>
+          <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">nSecOffset</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">loops</span> <span class="o">||</span> <span class="mi">1</span><span class="o">,</span> <span class="n">allowMultiShot</span><span class="o">);</span> <span class="c1">// start playing at new position</span>
         <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">e</span><span class="o">:</span> <span class="n">Error</span><span class="o">)</span> <span class="o">{</span>
           <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;Warning: Could not set position on &#39;</span> <span class="o">+</span> <span class="n">sID</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
         <span class="o">}</span>
@@ -1674,10 +1674,11 @@ s.ns = null;</p>
       <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">function </span><span class="nf">_start</span><span class="o">(</span><span class="n">sID</span><span class="o">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">:</span> <span class="kt">int</span><span class="o">,</span> <span class="n">nMsecOffset</span><span class="o">:</span> <span class="kt">int</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">function </span><span class="nf">_start</span><span class="o">(</span><span class="n">sID</span><span class="o">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">:</span> <span class="kt">int</span><span class="o">,</span> <span class="n">nMsecOffset</span><span class="o">:</span> <span class="kt">int</span><span class="o">,</span> <span class="n">allowMultiShot</span><span class="o">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="o">:</span> <span class="kt">Boolean</span> <span class="o">{</span>
       <span class="kd">var</span> <span class="n">s</span><span class="p">:</span> <span class="kt">SoundManager2_SMSound_AS3</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span>
-      <span class="k">if</span> <span class="o">(!</span><span class="n">s</span><span class="o">)</span> <span class="k">return</span> <span class="kc">void</span><span class="o">;</span>
-      <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;start: &#39;</span> <span class="o">+</span> <span class="n">nMsecOffset</span> <span class="o">+</span> <span class="o">(</span><span class="n">nLoops</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">?</span> <span class="s1">&#39;, loops: &#39;</span> <span class="o">+</span> <span class="n">nLoops</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="o">));</span>
+      <span class="kd">var</span> <span class="n">result</span><span class="p">:</span> <span class="kt">Boolean</span><span class="o">;</span>
+      <span class="k">if</span> <span class="o">(!</span><span class="n">s</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;start (&#39;</span> <span class="o">+</span> <span class="n">sID</span> <span class="o">+</span> <span class="s1">&#39;): &#39;</span> <span class="o">+</span> <span class="n">nMsecOffset</span> <span class="o">+</span> <span class="o">(</span><span class="n">nLoops</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">?</span> <span class="s1">&#39;, loops: &#39;</span> <span class="o">+</span> <span class="n">nLoops</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="o">));</span>
       <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">paused</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> <span class="c1">// reset pause if applicable</span>
       <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">loops</span> <span class="o">=</span> <span class="o">(</span><span class="n">nLoops</span> <span class="o">||</span> <span class="mi">1</span><span class="o">);</span>
       <span class="k">if</span> <span class="o">(!</span><span class="n">s</span><span class="o">.</span><span class="na">useNetstream</span><span class="o">)</span> <span class="o">{</span>
@@ -1685,7 +1686,7 @@ s.ns = null;</p>
       <span class="o">}</span>
       <span class="n">s</span><span class="o">.</span><span class="na">handledDataError</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> <span class="c1">// reset this flag</span>
       <span class="k">try</span> <span class="o">{</span>
-        <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">);</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">nMsecOffset</span><span class="o">,</span> <span class="n">nLoops</span><span class="o">,</span> <span class="n">allowMultiShot</span><span class="o">);</span>
       <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">e</span><span class="o">:</span> <span class="n">Error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;Could not start &#39;</span> <span class="o">+</span> <span class="n">sID</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
       <span class="o">}</span>
@@ -1694,9 +1695,10 @@ s.ns = null;</p>
       <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">e</span><span class="o">:</span> <span class="n">Error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">writeDebug</span><span class="o">(</span><span class="s1">&#39;_start(): registerOnComplete failed&#39;</span><span class="o">);</span>
       <span class="o">}</span>
+      <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">function </span><span class="nf">_pause</span><span class="o">(</span><span class="n">sID</span><span class="o">:</span><span class="kt">String</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
+    <span class="kd">public</span> <span class="kd">function </span><span class="nf">_pause</span><span class="o">(</span><span class="n">sID</span><span class="o">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">allowMultiShot</span><span class="o">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="o">:</span> <span class="kt">void</span> <span class="o">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-74'>
@@ -1704,7 +1706,7 @@ s.ns = null;</p>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-74">&#182;</a>
         </div>
-        <p>writeDebug(&lsquo;_pause()&rsquo;);</p>
+        <p>writeDebug(&lsquo;_pause(): &rsquo; + sID);</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>      <span class="kd">var</span> <span class="n">s</span><span class="p">:</span> <span class="kt">SoundManager2_SMSound_AS3</span> <span class="o">=</span> <span class="n">soundObjects</span><span class="o">[</span><span class="n">sID</span><span class="o">];</span>
@@ -1770,7 +1772,7 @@ writeDebug('resuming &ndash; playing at &rsquo;+s.lastValues.position+&lsquo;, &
         <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">useNetstream</span><span class="o">)</span> <span class="o">{</span>
           <span class="n">s</span><span class="o">.</span><span class="na">ns</span><span class="o">.</span><span class="na">resume</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-          <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">position</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">loops</span><span class="o">);</span>
+          <span class="n">s</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">position</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="na">lastValues</span><span class="o">.</span><span class="na">loops</span><span class="o">,</span> <span class="n">allowMultiShot</span><span class="o">);</span>
         <span class="o">}</span>
         <span class="k">try</span> <span class="o">{</span>
           <span class="n">registerOnComplete</span><span class="o">(</span><span class="n">sID</span><span class="o">);</span>
