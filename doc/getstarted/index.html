@@ -142,7 +142,7 @@
 
 			  <h4 id="basic-inclusion">Including SoundManager 2</h4>
 
-			  <p>The soundmanager2.js core can get down to 10 KB over the wire, depending on what version you use. A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds.</p>
+			  <p>The soundmanager2.js core can get down to 11 KB over the wire, depending on what version you use. A few versions of the SM2 script are available, balancing code size between commented, debug-enabled and production-optimized builds.</p>
 			  <p>Regardless of which build you use, take advantage of <a href="http://developer.yahoo.com/performance/rules.html#gzip" title="Best Practices for Speeding Up Your Web Site (Yahoo Developer Network)">gzip compression</a> on your server for big savings. As shown below, SoundManager 2 compresses quite well with gzip; the full debug-enabled version served <i>with</i> gzip is smaller than even the minified, no-debug version served without.</p>
 			
 			  <table id="sm2-filesizes" cellpadding="0" cellspacing="0">
@@ -160,7 +160,7 @@
 				  <pre>&lt;script src="<span>soundmanager2.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Development, testing, debugging</td>
-				 <td class="nw">128 KB</td>
+				 <td class="nw">131 KB</td>
 				 <td class="nw">35 KB</td>
 			   </tr>
 
@@ -170,7 +170,7 @@
 				  <pre>&lt;script src="<span>soundmanager2-nodebug.js</span>"&gt;&lt;/script&gt;</pre>
 				 </td>
 				 <td>Production, "clean" no-debug code</td>
-				 <td class="nw">70 KB</td>
+				 <td class="nw">71 KB</td>
 				 <td class="nw">16 KB</td>
 			   </tr>
 
@@ -191,7 +191,7 @@
 				 </td>
 				 <td>Production-optimized, debug code removed</td>
 				 <td class="nw">32 KB</td>
-				 <td class="nw booyaa" title="Best-case scenario for load time/performance">10.9 KB!</td>
+				 <td class="nw booyaa" title="Best-case scenario for load time/performance">11 KB!</td>
 			   </tr>
 
 			  </table>
@@ -367,7 +367,7 @@ soundManager.onerror = function() {
     alert('<span>The sound </span>'+<span>this.sID</span>+'<span> loaded!</span>');
   }</span>,
   volume: <span>50</span>
-</span>});</code></pre>
+});</code></pre>
 
 						  <p>This object can also be passed as an optional argument to the <code class="in">play</code> method, overriding options set at creation time.</p>
 
@@ -505,7 +505,7 @@ soundManager.onerror = function() {
 
 				<h3 id="flashdebug">Flash Movie Debug Output</h3>
 				<p>When <code>soundManager.debugFlash = true</code>, Flash will write debug info as text to the flash movie. This can be helpful for troubleshooting Flash/JS issues when timeouts or security errors are involved which prevent Flash from talking to Javascript, potentially hiding useful debug information. A CSS class of <code>flash_debug</code> will also be appended to the Flash <code>#sm2-container</code> DIV element when enabled, if you wish to style it differently.</p>
-				<p>You can also specify ?debug=1 in the URL to the SWF, and it will write debug output. Try <a href="../../swf/soundmanager2_debug.swf?debug=1" title="Test debug output" class="norewrite">soundmanager2_debug.swf?debug=1</a>, or <a href="../../swf/soundmanager2_flash9_debug.swf?debug=1" title="Test debug output, Flash 9" class="norewrite">soundmanager2_flash9_debug.swf?debug=1</a>.
+				<p>You can also specify ?debug=1 in the URL to the SWF, and it will write debug output. Try <a href="../../swf/soundmanager2_debug.swf?debug=1" title="Test debug output" class="norewrite">soundmanager2_debug.swf?debug=1</a>, or <a href="../../swf/soundmanager2_flash9_debug.swf?debug=1" title="Test debug output, Flash 9" class="norewrite">soundmanager2_flash9_debug.swf?debug=1</a>.</p>
 
 				<div id="sm2-container">
 					<!-- flash movie with debug output goes here -->

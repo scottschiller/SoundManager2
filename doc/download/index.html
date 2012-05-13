@@ -135,11 +135,11 @@
 
 				<p><b>Latest changes:</b> <code>from</code> / <code>to</code> and <code>onplay()</code> bug fixes, <code>canPlayMIME()</code> and <code>canPlayLink()</code> Flash-specific corrections. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120318.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120318</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120513.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120513</a></p>
 
 				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
 
-				<p><b>Performance tip:</b> SM2's code size varies from over 100 KB (commented, debug-enabled) down to 10 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
+				<p><b>Performance tip:</b> SM2's code size varies from over 100 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
 				<p><b>Side reading + video talks, slides etc.</b></p>
 
@@ -174,9 +174,113 @@
 
 			  	<ul id="revision-list" class="standard">
 
-			   		<li id="sm2-20111220" class="in">
 
-						<h3><b>V2.97a.20120318</b> - Minor updates. <code>from</code> / <code>to</code> and <code>onplay()</code> bug fixes, <code>canPlayMIME()</code> and <code>canPlayLink()</code> Flash-specific corrections.</h3>
+			   		<li id="sm2-20120513" class="in">
+
+						<h3><b>V2.97a.20120513</b> - Fixes for Android 2.3 playback, <code>onPosition()</code> in HTML5, Flash 9 double-play edge case. Minor new Flash 9-specific features.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Android 2.3 playback fix (some sounds started only after 2+ play attempts due to Android not liking <code>load()</code> immediately followed by <code>play()</code>?)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											<code>onPosition()</code> fix for HTML5 playback, items were mistakenly being removed.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fix RTMP stream duration reporting via <code>onmetadata()</code> (wrong value was being returned, previously.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fix for Flash 9 <a href="https://getsatisfaction.com/schillmania/topics/sound_playing_double">double-play edge case</a> found with <code>pause()</code> + <code>setPosition()</code> calls.
+										</p>
+									</li>
+
+
+									<li>
+										<p>
+											JSLINT validation per 04-15-2012 edition rules, mostly removal of multiple return statements within <code>if ... else</code> blocks and inverted loop tricks.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API updates</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Enabled waveform/eq/spectrum data features for MovieStar (H.264/NetStream content.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Added <code>oncaptiondata()</code> callback for caption data from Flash 9 (NetStream/RTMP-only, similar to <code>onmetadata()</code>. Contributor: GitHub user <a href="https://github.com/scottschiller/SoundManager2/pull/19">karma</a>.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Added <code>SMSound.onplayerror()</code>, presently for Flash 9 (non-MovieStar/NetStream) which can detect lack of available sound hardware or 32-channel ceiling as reasons for playback failure.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Added <code>oncaptiondata()</code> callback for caption data from Flash 9 (NetStream/RTMP-only, similar to <code>onmetadata()</code>.)
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Scaling added to 360 UI (via GitHub user <a href="https://github.com/scottschiller/SoundManager2/commit/dbc6c46e4904e204add961c7f9fb127d66447242">tomasdev</a>)
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+<!-- previously.. -->
+
+			   		<li id="sm2-20120318" class="in">
+
+						<h3><b>V2.97a.20120318</b> - Minor updates. <code>from</code> / <code>to</code> and <code>onplay()</code> bug fixes, <code>canPlayMIME()</code> and <code>canPlayLink()</code> Flash-specific corrections. (<a href="../../download/soundmanagerv297a-20120318.zip" class="norewrite">Download archived version</a>)</h3>
 
 						<ul>
 
@@ -1908,11 +2012,182 @@ soundManager.ontimeout(function(){
 			  
 				<!-- <script type="text/javascript">document.getElementById('revision-list').className += ' hide-old';</script> -->
 
-			  </div>
-				
-			</div>
+
+                        <div id="html5-audio-notes">
+
+			 <h5>HTML5 Audio: Support updates, technical notes, quirks, bugs and annoyances</h5>
+
+			 <p class="note">Note: This section is archived content and has been rolled into <a href="#revision-history">Revision History</a>.</p>
+
+			 <p><b>As of the V2.97.20111220 release of SM2:</b></p>
+
+             <ul>
+
+			  <li>
+				<p>Multiple URLs (and/or multiple MIME types) can be specified when creating a sound, thus allowing for better native HTML5 support between OGG, MP3 and others. See <a href="#smsound-url">SMSound.url</a> for details.</p>
+			  </li>
+
+			  <li>
+				<p>Support for "audio sprites" has been added in the form of <code>from</code> and <code>to</code> sound options. See the <a href="../demo/api/#fitter-happier" title="SoundManager 2 audio sprite demo">audio sprite demo</a> for a live example.</p>
+			  </li>
+
+              <li>
+				<p>Added <code>soundManager.html5PollingInterval</code>, for increased <code>whileplaying()</code> callback frequency (higher framerates.) Excludes mobile (eg., iOS) by default.</p>
+			  </li>
+
+              <li>
+				<p>Fixed <code>Audio()</code> object <code>src</code> property re-assignment bug seen in <code>createSound()</code>-&gt;<code>play()</code>.</p>
+			  </li>
+
+              <li>
+				<p><code>mySound.load({onload:function(){}})</code> callback fixed so it works.</p>
+			  </li>
+
+              <li>
+				<p><code>onload()</code> now called immediately when <code>load({onload:function(){}})</code> is used on a sound with the same URL which has already loaded.</p>
+			  </li>
+
+              <li>
+				<p><code>onstop()</code> now mimics <code>onfinish()</code> in terms of sequence. HTML5 sets position to 0, but retains pre-<code>stop()</code> position property value (like Flash does.)</p>
+			  </li>
+
+              <li>
+				<p>Amazon Kindle Fire UA looks like Safari on OS X 10.6.3, but does not have broken HTML5 audio (i.e., intermittent playback failure) like the "isBadSafari" case.</p>
+			  </li>
+
+              <li>
+				<p>Side note: iOS ignores volume, always returns value of "1" (at least, on iOS 4 and present iOS 5 releases.) See <a href="http://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/HTML-canvas-guide/AddingSoundtoCanvasAnimations/AddingSoundtoCanvasAnimations.html">related notes</a>.</p>
+			  </li>
+
+		     </ul>
+
+			 <p><b>As of the V2.97.20111030 release of SM2:</b></p>
+
+             <ul>
+
+              <li>
+				<p>Fixes for HTML5 <code>unload()</code> on Webkit (connection was not closing) due to src being set to <code>''</code> (OK only in Firefox, presently?) vs. an "empty" URL.</p>
+			  </li>
+
+              <li>
+				<p>HTML5 <code>suspend</code> events are now listened for and fired via SMSound option <code>onsuspend()</code>. This event may be the best way to detect when mobile Safari (eg. iOS) is blocking autoplay-style behaviour, and user interaction is required to start or resume playback. (iOS does not allow auto-play of audio; user interaction is required for audio playback to start.)</p>
+			  </li>
+
+              <li>
+				<p>Added try...catch for dumb IE 9 <code>Audio()</code> "not implemented" error in Windows server case without "desktop experience" installed, means no HTML5 audio/video support. Hat tip: Modernizr issue 224.</p>
+			  </li>
+
+			 </ul>
+
+			 <p><b>As of the V2.97.20110801 release of SM2:</b></p>
+
+             <ul>
+              <li><p>A regression was introduced in V2.97.20110706 where SM2 would fail to start in HTML5-only mode on supported desktop browsers when flash was disabled or not installed, eg., Safari on new Macs or IE 9 without flash. (iOS was not affected.) This has been fixed with the 2.97.20110801 release.</p></li>
+              <li>
+               <p><code>soundManager.useHTML5Audio</code> is now <code>true</code> by default; however, <code>soundManager.preferFlash</code> is also <code>true</code> and HTML5 browsers will still attempt to use flash for playing MP3/MP4 by default, if those formats are marked as "required".</p>
+               <p>If you wish to have 100% HTML5 mode in more cases, set <code>soundManager.preferFlash = false</code>. Presently, the MP3 links and MP3 button SM2 demos are more HTML5-friendly and will serve as a test for exposing bugs that may be in the wild.</p>
+              </li>
+              <li>
+               <p><code>soundManager.html5Test</code> has been relaxed to use <code>(probably|maybe)</code> for Audio's <code>canPlayType()</code> test (previously, was only "probably") - so formats will be more likely to work on HTML5-only devices that conservatively report "maybe" for MIME types like <code>audio/mpeg; codecs="mp3"</code> at this point.</p>
+	          </li>
+              <li>
+               <p>Certain mobile and tablet-like devices are special-cased as preferring HTML5, and will ignore checking for flash altogether; this presently includes the iPad, iPhone and iPod, Palm Pre and Motorola Xoom.</p>
+              </li>
+              <li>
+               <p>The HTML5 audio "loadeddata" event triggers an SMSound <code>onload()</code> event, which now fires <code>whileplaying()</code> and tries to pass identical <code>bytesLoaded, bytesTotal</code> parameters so that UIs will correctly show the sound as fully-"loaded" - even if in truth, not all bytes have actually been fetched (depending on the browser and server, etc.) because of the ability to do arbitrary seeking.</p>
+              </li>
+              <li>
+				<p>The experimental <code>soundManager.useGlobalHTML5Audio</code> and <code>soundManager.requireFlash</code> properties were removed. Internally the global HTML5 audio logic still applies to iOS, but it does not seem to be necessary for other devices at this time.</p>
+			  </li>
+             </ul>
+
+			 <p><b>As of the V2.97.20110706 release of SM2:</b></p>
+
+             <ul>
+              <li><p>HTML5 audio appears to have been <i>fixed</i> in Safari with Snow Leopard 10.6.8, the "pre-Lion release", from 06/2011. SM2 will now only blacklist Safari + OS X 10.6.3 through 10.6.7 as having broken HTML5 audio (intermittent load/playback failures), and falling back to Flash where available.</p></li>
+              <li>
+               <p>New, experimental <code>soundManager.preferFlash</code> for handling "mixed-mode" HTML5 + flash cases. In the event HTML5 supports MP3/MP4 and <code>preferFlash</code> is true (and flash is installed), flash will be used for MP3/MP4 content while allowing HTML5 to play OGG, WAV and other formats etc.</p>
+               <p><em>Important note:</em> Because HTML5 audio is still quirky and has bugs, <code>preferFlash</code> is <code>true</code> by default to help ensure MP3/MP4 play consistently. If set to <code>false</code> or flash is not available, "HTML5-only" mode will kick in and will apply to all formats.</p>
+              </li>
+             </ul>
+
+			 <p><b>As of the V2.97.20110424 release of SM2:</b></p>
+
+             <ul>
+              <li><p>HTML5 audio in Safari on Snow Leopard 10.6.3 through 10.6.9 (10.6.7 was released 03/2011) are blacklisted and will fall back to Flash. 10.6.8 and 10.6.9 are preemptive guesses. According to beta testers, OS X 10.7 ("Lion") has fixed the intermittent <a href="https://bugs.webkit.org/show_bug.cgi?id=32159">HTML5 audio load/playback issue</a>.</p></li>
+              <li><p><code>new Audio(null)</code> is no longer used for iOS, as iOS would attempt to load a URL called "null".</p></li>
+              <li><p>iOS 4.2 or 4.3 may have introduced new security restrictions around <code>onfinish()</code>-&gt;<code>unload()</code>-&gt;<code>play()</code> that prevents the "play-through" behaviour previously allowed in certain cases. The <code>unload()</code> attempts to nullify the audio's <code>src</code> attribute, breaking the future <code>play()</code> request. The Muxtape/button/link demos were affected by this, and have been fixed with this release. To prevent this issue in your own apps, avoid <code>unload()</code> and simply use <code>onfinish()</code>-&gt;<code>play()</code> for iOS.</p></li>
+             </ul>
+
+			 <p><b>As of the V2.97.20110306 release of SM2:</b></p>
+
+			 <ul>
+              <li><p>Testing suggests that auto-play ("auto-annoy?") does work on iOS 4.1, but are aggressively blocked as of iOS 4.2.</p></li>
+              <li><p><code>_resetProperties()</code> when setting Audio().src, fix sound1.play() -&gt; sound2.play() -&gt; sound1.play() case on iOS 4.1 not correctly re-assigning original sound URL (related to global audio object.)</p></li>
+              <li><p>If no flash is detected, try forcing <code>useHTML5Audio = true</code> (eg. desktop safari on new Macs which don't come with Flash.) Related: flash detection code tweak.</p></li>
+              <li><p>isNaN() check for HTML5 loading (saw one under Safari, in testing).</p></li>
+              <li><p>Use new Audio(null) vs (), Opera 9.64 expects URL argument; throws WRONG_ARGUMENTS_ERR otherwise. Doesn't implement canPlayType() either, but both are fixed in future releases.</p></li>
+			 </ul>
+
+			 <p><b>As of the V2.97.20110123 release of SM2:</b></p>
 			
-		</div>
+			 <ul>
+			  <li><p>New (experimental) <code>soundManager.useGlobalHTML5Audio</code> attribute, enabled by default for mobile + iOS. Enables use of a single audio object, re-used for loading and playing all sounds. iOS currently can only play one sound at a time, so this limitation is safe for now. The global object fixes previous regression of play-through/playNext()-style behaviours.</p></li>
+			  <li><p>Sound recycling with new global audio feature should work better than in prior (development) versions.</p></li>
+			  <li><p>Improved broken Safari/Snow Leopard HTML5 audio situation: HTML5 mode is no longer disabled - and if available, Flash is used to play MP3/MP4 content to work around known playback issues with native HTML5 audio.</p></li>
+			  <li><p>New (experimental) <code>soundManager.requireFlash</code> property (default: false.) If true, prevents HTML5-only mode on devices with both HTML5 and Flash. May be useful when HTML5 is enabled (and can play MP3), but Flash is desired to play RTMP content etc. As of this version, will only use Flash for RTMP.</p></li>
+			  <li><p>Fix for <code>type:'audio/mp3'</code> returning false on <code>canPlay()</code>. Timer update-while-paused tweak.</p></li>
+			  <li><p>More event listeners, ignore events on destroyed sounds, improved event clean-up, "seek before load" fix</p></li>
+			 </ul>
+
+ 			 <p><b>As of the January 1, 2011 (V2.97a.20110101) and December, 2010 releases of SM2 (V2.97a.20101221):</b></p>
+                         <ul>
+                          <li><p>The <code>bytesLoaded</code> and <code>bytesTotal</code> properties may become less-relevant under HTML5 due to non-linear HTTP downloading (using ranges and partials), but they are still provided under Firefox at this time.</p></li>
+                          <li><p>Related to bytes loading/total, a sound's <code>onload</code> event may not always be fired (Mozilla currently discourage use of the DOM <code>loaded</code> event), again because of range requests and the ability to arbitrarily seek within a file.</p></li>
+                          <li><p>Basic support for the W3 <code>TimeRanges</code> implementation of sound buffering (ie., loaded data) has been implemented. This gives an idea of "total time loaded", but again, is not necessarily sequential.</p></li>
+                          <li><p>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 - 10.6.5) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>. HTML5 audio in Safari on Windows (provided QuickTime is installed) does not have the same fatal bug.</p></li>
+                         </ul>
+
+             <p><b>As of the October, 2010 release of SM2 (V2.97a.20101010):</b></p>
+			 <ul>
+			  <li><p>HTML5 audio is disabled for all versions of Safari (4 and 5) on Snow Leopard (OS X 10.6.3 and 10.6.4) until Apple fixes issues with audio loading and playback due to bugs in "underlying frameworks." See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</p></li>
+		         </ul>
+
+			 <p><b>As of the August, 2010 release of SM2 (V2.96a.20100822):</b></p>
+			 <ul>
+			  <li><p>Safari 5.0.1 (533.17.18) on Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour. Apple are aware of the regression, which began with Safari 4.0 on Snow Leopard (perhaps with the new QuickTime.) See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a>.</p></li>
+			  <li><p>iPad/iPhone iOS4 will now play a sequence of sounds if using <code>onfinish()</code> to create/start the next (eg., the Muxtape-style playlist on the SM2 homepage will play through once the user starts it.) In any event, user interaction is always required to start the first sound.</p></li>
+		         </ul>
+			
+			 <p><b>As of the June, 2010 release of SM2 (V2.96a.20100624):</b></p>
+			 <ul>
+			  <li><p>Safari 5.0 (533.16) on OS X Snow Leopard (10.6.x) continues to show buggy HTML5 audio load/playback behaviour, same as with Safari 4.0.5 on Snow Leopard only - may be related to underlying QuickTime implementation (a guess, at this point.) SM2 will disable HTML5 audio support by default for this specific browser + OS combo. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases.</p></li>
+			 </ul>
+			
+			 <p><b>As of the May, 2010 release of SM2 (V2.96a.20100520):</b></p>
+			 <ul>
+			  <li><p>Safari 4.0.5 on OS X Snow Leopard (10.6.x) appears to have an annoying bug where audio inconsistently fails to load / play; SM2 will currently disable or ignore the HTML5 feature on this exact browser + OS version. See <a href="https://bugs.webkit.org/show_bug.cgi?id=32159#c9" title="Safari Snow Leopard HTML5 Audio Bug">Webkit #32159</a> for discussion + testcases. Note that Safari on OS X 10.5 "Leopard" and on Windows <i>do not</i> appear to have this bug; it seems to be limited to Snow Leopard, seen on OS X 10.6.3.</p></li>
+			  <li><p>Some browsers (and iPad 3.2?) do not fire <code>progress</code> events, and/or do not implement bytesLoaded/bytesTotal-style attributes.</p></li>
+			  <li><p>iPad 3.2 appears to be able to only play one sound at a time, and will terminate other sounds.</p></li>
+			  <li><p>iPad 3.2 may also loop AAC+ (HE-AAC) and WAV sounds, perhaps not firing onfinish() and resetting the position to 0 each time, but is fine with MP3s. This has been observed, but not fully-tested.</p></li>
+			  <li><p>Looping in HTML5 is either "infinite" or "none". A wrapper may be created for SM2 so that a number of loops can be specified, as with Flash. This is not yet implemented.</p></li>
+			  <li><p>Panning (left/right channel balance) does not appear to be in HTML5.</p></li>
+			  <li><p>Flash-only features such as ID3 tag reading, waveform and spectrum data will simply be ignored, and their related events will not fire on SMSound objects which are using HTML5.</p></li>
+			 </ul>
+
+                        </div>
+
+
+	
+			
+		    </div>
+
+
+		  </div>
+				
+
+           </div>
+
 
 	
 	<div id="col3" class="c3">
