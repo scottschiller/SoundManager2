@@ -1828,13 +1828,13 @@ function SoundManager(smURL, smID) {
   _processOnEvents = function(oOptions) {
     if (!oOptions) {
       oOptions = {
-        type: 'onready'
+        type: (_s.ok() ? 'onready' : 'ontimeout')
       };
     }
     if (!_didInit && oOptions && !oOptions.ignoreInit) {
       return false;
     }
-    if (oOptions.type === 'ontimeout' && _s.ok()) {
+    if (oOptions.type === 'ontimeout' && (_s.ok() || (_disabled && !oOptions.ignoreInit))) {
       return false;
     }
     var status = {

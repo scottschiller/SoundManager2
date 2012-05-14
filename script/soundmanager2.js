@@ -4014,11 +4014,11 @@ function SoundManager(smURL, smID) {
 
   _processOnEvents = function(oOptions) {
 
-    // assume onready, if unspecified
+    // if unspecified, assume OK/error
 
     if (!oOptions) {
       oOptions = {
-        type: 'onready'
+        type: (_s.ok() ? 'onready' : 'ontimeout')
       };
     }
 
@@ -4027,7 +4027,7 @@ function SoundManager(smURL, smID) {
       return false;
     }
 
-    if (oOptions.type === 'ontimeout' && _s.ok()) {
+    if (oOptions.type === 'ontimeout' && (_s.ok() || (_disabled && !oOptions.ignoreInit))) {
       // invalid case
       return false;
     }
