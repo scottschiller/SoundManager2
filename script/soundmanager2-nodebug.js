@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20120513
+ * V2.97a.20120513+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -98,7 +98,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20120513';
+  this.versionNumber = 'V2.97a.20120513+DEV';
   this.version = null;
   this.movieURL = null;
   this.url = (smURL || null);
@@ -2297,7 +2297,7 @@ function SoundManager(smURL, smID) {
       if (_s.useFlashBlock && _s.oMC) {
         _s.oMC.className = _getSWFCSS() + ' ' + (_s.getMoviePercent() === null?_swfCSS.swfTimedout:_swfCSS.swfError);
       }
-      _processOnEvents({type:'ontimeout', error:error});
+      _processOnEvents({type:'ontimeout', error:error, ignoreInit: true});
       _catchError(error);
       result = false;
     } else {
