@@ -2031,11 +2031,7 @@ function SoundManager(smURL, smID) {
     if (_isBadSafari) {
       _badSafariFix();
     }
-    if (_isIE) {
-      setTimeout(_init, 100);
-    } else {
-      _init();
-    }
+    setTimeout(_init, _isIE ? 100 : 1);
   };
   _createMovie = function(smID, smURL) {
     if (_didAppend && _appendSuccess) {
@@ -2302,10 +2298,12 @@ function SoundManager(smURL, smID) {
       result = false;
     } else {
     }
-    if (_s.waitForWindowLoad && !_windowLoaded) {
-      _event.add(_win, 'load', _initUserOnload);
-    } else {
-      _initUserOnload();
+    if (!_disabled) {
+      if (_s.waitForWindowLoad && !_windowLoaded) {
+        _event.add(_win, 'load', _initUserOnload);
+      } else {
+        _initUserOnload();
+      }
     }
     return result;
   };

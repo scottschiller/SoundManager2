@@ -208,9 +208,10 @@ package {
           var d: Date = new Date();
           ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime(), version);
           flashDebug('Flash -&gt; JS OK');
+          flashDebug('Waiting for JS -&gt; Flash...');
         } else {
           writeDebug('SM2 SWF ' + version + ' ' + version_as);
-          flashDebug('JS -> Flash OK');
+          flashDebug('JS -&gt; Flash OK');
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
           writeDebug('JS to/from Flash OK');
         }

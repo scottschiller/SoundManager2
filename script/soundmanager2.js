@@ -3594,27 +3594,27 @@ function SoundManager(smURL, smID) {
     tryDebug: 'Try ' + _sm + '.debugFlash = true for more security details (output goes to SWF.)',
     checkSWF: 'See SWF output for more debug info.',
     localFail: _sm + ': Non-HTTP page (' + _doc.location.protocol + ' URL?) Review Flash player security settings for this special case:\nhttp://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html\nMay need to add/allow path, eg. c:/sm2/ or /users/me/sm2/',
-    waitFocus: _sm + ': Special case: Waiting for focus-related event..',
+    waitFocus: _sm + ': Special case: Waiting for focus-related event...',
     waitImpatient: _sm + ': Getting impatient, still waiting for Flash%s...',
     waitForever: _sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
     needFunction: _sm + ': Function object expected for %s',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
     currentObj: '--- ' + _sm + '._debug(): Current sound objects ---',
-    waitEI: _smc + 'initMovie(): Waiting for ExternalInterface call from Flash..',
+    waitEI: _smc + 'initMovie(): Waiting for ExternalInterface call from Flash...',
     waitOnload: _sm + ': Waiting for window.onload()',
     docLoaded: _sm + ': Document already loaded',
     onload: _smc + 'initComplete(): calling soundManager.onload()',
     onloadOK: _sm + '.onload() complete',
     init: _smc + 'init()',
     didInit: _smc + 'init(): Already called?',
-    flashJS: _sm + ': Attempting to call Flash from JS..',
+    flashJS: _sm + ': Attempting JS to Flash call...',
     secNote: 'Flash security note: Network/internet URLs will not load due to security restrictions. Access can be configured via Flash Player Global Security Settings Page: http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html',
     badRemove: 'Warning: Failed to remove flash movie.',
     shutdown: _sm + '.disable(): Shutting down',
     queue: _sm + ': Queueing %s handler',
     smFail: _sm + ': Failed to initialise.',
     smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
-    fbTimeout: 'No flash response, applying .'+_swfCSS.swfTimedout+' CSS..',
+    fbTimeout: 'No flash response, applying .'+_swfCSS.swfTimedout+' CSS...',
     fbLoaded: 'Flash loaded',
     fbHandler: _smc+'flashBlockHandler()',
     manURL: 'SMSound.load(): Using manually-assigned URL',
@@ -4186,7 +4186,7 @@ function SoundManager(smURL, smID) {
 
     }
 
-    // sanity check..
+    // sanity check...
     if (_s.ignoreFlash) {
       needsFlash = false;
     }
@@ -4443,12 +4443,8 @@ function SoundManager(smURL, smID) {
     }
     // </d>
 
-    if (_isIE) {
-      // IE needs a timeout OR delay until window.onload - may need TODO: investigating
-      setTimeout(_init, 100);
-    } else {
-      _init();
-    }
+    // slight delay before init
+    setTimeout(_init, _isIE ? 100 : 1);
 
   };
 
@@ -4870,16 +4866,18 @@ function SoundManager(smURL, smID) {
       _debugTS('onload', true);
     }
 
-    if (_s.waitForWindowLoad && !_windowLoaded) {
-      _wDS('waitOnload');
-      _event.add(_win, 'load', _initUserOnload);
-    } else {
-      // <d>
-      if (_s.waitForWindowLoad && _windowLoaded) {
-        _wDS('docLoaded');
+    if (!_disabled) {
+      if (_s.waitForWindowLoad && !_windowLoaded) {
+        _wDS('waitOnload');
+        _event.add(_win, 'load', _initUserOnload);
+      } else {
+        // <d>
+        if (_s.waitForWindowLoad && _windowLoaded) {
+          _wDS('docLoaded');
+        }
+        // </d>
+        _initUserOnload();
       }
-      // </d>
-      _initUserOnload();
     }
 
     return result;

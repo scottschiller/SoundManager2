@@ -142,6 +142,7 @@ class SoundManager2 {
           ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime(), version);
           if (!didSandboxMessage) {
             flashDebug('Flash -&gt; JS OK');
+            flashDebug('Waiting for JS -&gt; Flash...');
           }
         } else {
           writeDebug('SM2 SWF ' + version + ' ' + version_as);
