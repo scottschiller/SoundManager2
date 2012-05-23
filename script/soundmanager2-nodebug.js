@@ -146,6 +146,7 @@ function SoundManager(smURL, smID) {
   _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
   _emptyURL = 'about:blank',
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
+  _isFunction,
   _http = (!_overHTTP ? 'http:/'+'/' : ''),
   _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mpeg4|aac|flv|mov|mp4||m4v|m4a|mp4v|3gp|3g2)\s*(?:$|;)/i,
   _netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2'],
@@ -472,7 +473,7 @@ function SoundManager(smURL, smID) {
   this.onready = function(oMethod, oScope) {
     var sType = 'onready',
         result = false;
-    if (oMethod && oMethod instanceof Function) {
+    if (_isFunction(oMethod)) {
       if (!oScope) {
         oScope = _win;
       }
@@ -487,7 +488,7 @@ function SoundManager(smURL, smID) {
   this.ontimeout = function(oMethod, oScope) {
     var sType = 'ontimeout',
         result = false;
-    if (oMethod && oMethod instanceof Function) {
+    if (_isFunction(oMethod)) {
       if (!oScope) {
         oScope = _win;
       }
@@ -1412,6 +1413,9 @@ function SoundManager(smURL, smID) {
       }
     };
   };
+  _isFunction = function(o) {
+    return (typeof o === 'function');
+  };
   _getDocument = function() {
     return (_doc.body || _doc._docElement || _doc.getElementsByTagName('div')[0]);
   };
@@ -1649,7 +1653,7 @@ function SoundManager(smURL, smID) {
       var canPlay, i, j,
           result = false,
           isOK = false;
-      if (!a || typeof a.canPlayType !== 'function') {
+      if (!a || !_isFunction(a.canPlayType)) {
         return result;
       }
       if (m instanceof Array) {
@@ -1662,7 +1666,7 @@ function SoundManager(smURL, smID) {
         }
         result = isOK;
       } else {
-        canPlay = (a && typeof a.canPlayType === 'function' ? a.canPlayType(m) : false);
+        canPlay = (a && _isFunction(a.canPlayType) ? a.canPlayType(m) : false);
         result = !!(canPlay && (canPlay.match(_s.html5Test)));
       }
       return result;
@@ -1714,7 +1718,7 @@ function SoundManager(smURL, smID) {
   _disableObject = function(o) {
     var oProp;
     for (oProp in o) {
-      if (o.hasOwnProperty(oProp) && typeof o[oProp] === 'function') {
+      if (o.hasOwnProperty(oProp) && _isFunction(o[oProp])) {
         o[oProp] = _doNothing;
       }
     }
@@ -1872,7 +1876,7 @@ function SoundManager(smURL, smID) {
         _flashBlockHandler();
       }
       _processOnEvents();
-      if (_s.onload instanceof Function) {
+      if (_isFunction(_s.onload)) {
         _s.onload.apply(_win);
       }
       if (_s.waitForWindowLoad) {
@@ -1994,7 +1998,7 @@ function SoundManager(smURL, smID) {
   };
   _catchError = function(options) {
     options = (typeof options !== 'undefined' ? options : {});
-    if (_s.onerror instanceof Function) {
+    if (_isFunction(_s.onerror)) {
       _s.onerror.apply(_win, [{type:(typeof options.type !== 'undefined' ? options.type : null)}]);
     }
     if (typeof options.fatal !== 'undefined' && options.fatal) {
@@ -2202,7 +2206,7 @@ function SoundManager(smURL, smID) {
       }
       _flash = _s.getMovie(_s.id);
     }
-    if (_s.oninitmovie instanceof Function) {
+    if (_isFunction(_s.oninitmovie)) {
       setTimeout(_s.oninitmovie, 1);
     }
     return true;
