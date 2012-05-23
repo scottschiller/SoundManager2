@@ -1607,14 +1607,8 @@ ul.inthewild a span {
 #audiogalaxy {
   width: 100px;
   height: 22px;
-  background-position: 0 -24px;
+  background-position: 0 -37px;
   margin: -11px 0px 0px -50px;
-}
-
-div.inthewild.active #audiogalaxy,
-div.inthewild:hover #audiogalaxy,
-#audiogalaxy:hover {
-  background-position: 0 -46px;
 }
 
 #discogs {
@@ -1625,109 +1619,67 @@ div.inthewild:hover #audiogalaxy,
 }
 
 #hypem {
-  background-position: 0 -96px;
+  background-position: 0 -111px;
   width: 80px;
   height: 38px;
   margin: -19px 0px 0px -40px;
 }
 
-div.inthewild.active #hypem,
-div.inthewild:hover #hypem,
-#hypem:hover {
-  background-position: 0 -134px;
-}
-
 #lastfm {
-  background-position: 0 -204px;
+  background-position: 0 -176px;
   width: 80px;
   height: 28px;
   margin: -14px 0px 0px -40px;
 }
 
-div.inthewild.active #lastfm,
-div.inthewild:hover #lastfm,
-#lastfm:hover {
-  background-position: 0 -176px;
-}
-
-#nyancat {
-  background-position: 0 -272px;
-  width: 64px;
-  height: 40px;
-  margin: -20px 0px 0px -32px;
-}
-
-div.inthewild.active #nyancat,
-div.inthewild:hover #nyancat,
-#nyancat:hover {
-  background-position: 0 -312px;
-}
-
-#opera {
-  background-position: 0 -356px;
-  width: 79px;
-  height: 32px;
-  margin: -16px 0px 0px -40px;
-}
-
-div.inthewild.active #opera,
-div.inthewild:hover #opera,
-#opera:hover {
-  background-position: 0 -388px;
-}
-
-#soundcloud {
-  background-position: 0 -483px;
-  width: 83px;
-  height: 58px;
-  margin: -29px 0px 0px -42px;
-}
-
-div.inthewild.active #soundcloud,
-div.inthewild:hover #soundcloud,
-#soundcloud:hover {
-  background-position: 0 -424px;
-}
-
-#turntable-dot-fm {
-  background-position: 0 -232px;
+#pitchfork {
+  background-position: 0 -688px;
   width: 100px;
   height: 20px;
   margin: -10px 0px 0px -50px;
 }
 
-div.inthewild.active #turntable-dot-fm,
-div.inthewild:hover #turntable-dot-fm,
-#turntable-dot-fm:hover {
+#nyancat {
+  background-position: 0 -312px;
+  width: 64px;
+  height: 40px;
+  margin: -20px 0px 0px -32px;
+}
+
+#opera {
+  background-position: 0 -373px;
+  width: 79px;
+  height: 32px;
+  margin: -16px 0px 0px -40px;
+}
+
+#soundcloud {
+  background-position: 0 -424px;
+  width: 83px;
+  height: 58px;
+  margin: -29px 0px 0px -42px;
+}
+
+#turntable-dot-fm {
   background-position: 0 -252px;
+  width: 100px;
+  height: 20px;
+  margin: -10px 0px 0px -50px;
 }
 
 #baroque-me {
-  background-position: 0 -588px;
+  background-position: 0 -541px;
   width: 88px;
   height: 47px;
   margin: -23px 0px 0px -42px;
 }
 
-div.inthewild.active #baroque-me,
-div.inthewild:hover #baroque-me,
-#baroque-me:hover {
-  background-position: 0 -541px;
-}
-
 #freesound {
-  background-position: 0 -662px;
+  background-position: 0 -635px;
   width: 100px;
   height: 27px;
   margin: -15px 0px 0px -50px;
 }
-
-div.inthewild.active #freesound,
-div.inthewild:hover #freesound,
-#freesound:hover {
-  background-position: 0 -635px;
-}
-
 
 div.inthewild.active li:hover {
   background-color: rgba(255,255,255,0.9);
