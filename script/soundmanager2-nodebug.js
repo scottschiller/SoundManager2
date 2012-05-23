@@ -143,7 +143,7 @@ function SoundManager(smURL, smID) {
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _is_firefox = _ua.match(/firefox/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)),
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)),
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
   _emptyURL = 'about:blank',
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _isFunction,
@@ -2250,7 +2250,6 @@ function SoundManager(smURL, smID) {
   _handleFocus = function() {
     function cleanup() {
       _event.remove(_win, 'focus', _handleFocus);
-      _event.remove(_win, 'load', _handleFocus);
     }
     if (_isFocused || !_tryInitOnFocus) {
       cleanup();
@@ -2258,9 +2257,6 @@ function SoundManager(smURL, smID) {
     }
     _okToDisable = true;
     _isFocused = true;
-    if (_isSafari && _tryInitOnFocus) {
-      _event.remove(_win, 'mousemove', _handleFocus);
-    }
     _waitingForEI = false;
     cleanup();
     return true;
@@ -2383,12 +2379,8 @@ function SoundManager(smURL, smID) {
   };
   _detectFlash();
   _event.add(_win, 'focus', _handleFocus);
-  _event.add(_win, 'load', _handleFocus);
   _event.add(_win, 'load', _delayWaitForEI);
   _event.add(_win, 'load', _winOnLoad);
-  if (_isSafari && _tryInitOnFocus) {
-    _event.add(_win, 'mousemove', _handleFocus);
-  }
   if (_doc.addEventListener) {
     _doc.addEventListener('DOMContentLoaded', _domContentLoaded, false);
   } else if (_doc.attachEvent) {

@@ -269,7 +269,7 @@ function SoundManager(smURL, smID) {
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _is_firefox = _ua.match(/firefox/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && typeof _doc.hasFocus === 'undefined'), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
   _emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _isFunction,
@@ -3601,7 +3601,7 @@ function SoundManager(smURL, smID) {
     tryDebug: 'Try ' + _sm + '.debugFlash = true for more security details (output goes to SWF.)',
     checkSWF: 'See SWF output for more debug info.',
     localFail: _sm + ': Non-HTTP page (' + _doc.location.protocol + ' URL?) Review Flash player security settings for this special case:\nhttp://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html\nMay need to add/allow path, eg. c:/sm2/ or /users/me/sm2/',
-    waitFocus: _sm + ': Special case: Waiting for focus-related event...',
+    waitFocus: _sm + ': Special case: Waiting for SWF to load with window focus...',
     waitImpatient: _sm + ': Getting impatient, still waiting for Flash%s...',
     waitForever: _sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
     needFunction: _sm + ': Function object expected for %s',
@@ -4730,7 +4730,7 @@ function SoundManager(smURL, smID) {
     _event.remove(_win, 'load', _delayWaitForEI);
 
     if (_tryInitOnFocus && !_isFocused) {
-      // giant Safari 3.1 hack - assume mousemove = focus given lack of focus event
+      // Safari won't load flash in background tabs, only when focused.
       _wDS('waitFocus');
       return false;
     }
@@ -4794,7 +4794,6 @@ function SoundManager(smURL, smID) {
 
     function cleanup() {
       _event.remove(_win, 'focus', _handleFocus);
-      _event.remove(_win, 'load', _handleFocus);
     }
 
     if (_isFocused || !_tryInitOnFocus) {
@@ -4804,11 +4803,7 @@ function SoundManager(smURL, smID) {
 
     _okToDisable = true;
     _isFocused = true;
-    _s._wD(_smc+'handleFocus()');
-
-    if (_isSafari && _tryInitOnFocus) {
-      _event.remove(_win, 'mousemove', _handleFocus);
-    }
+    _s._wD(_sm+': Got window focus.');
 
     // allow init to restart
     _waitingForEI = false;
@@ -5055,15 +5050,8 @@ function SoundManager(smURL, smID) {
 
   // focus and window load, init (primarily flash-driven)
   _event.add(_win, 'focus', _handleFocus);
-  _event.add(_win, 'load', _handleFocus);
   _event.add(_win, 'load', _delayWaitForEI);
   _event.add(_win, 'load', _winOnLoad);
-
-
-  if (_isSafari && _tryInitOnFocus) {
-    // massive Safari 3.1 focus detection hack
-    _event.add(_win, 'mousemove', _handleFocus);
-  }
 
   if (_doc.addEventListener) {
 
