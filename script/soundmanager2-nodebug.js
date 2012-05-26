@@ -2260,6 +2260,7 @@ function SoundManager(smURL, smID) {
     _okToDisable = true;
     _isFocused = true;
     _waitingForEI = false;
+    _delayWaitForEI();
     cleanup();
     return true;
   };

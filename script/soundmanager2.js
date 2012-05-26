@@ -4803,6 +4803,7 @@ function SoundManager(smURL, smID) {
     }
 
     if (_isFocused || !_tryInitOnFocus) {
+      // already focused, or not special Safari background tab case
       cleanup();
       return true;
     }
@@ -4813,6 +4814,9 @@ function SoundManager(smURL, smID) {
 
     // allow init to restart
     _waitingForEI = false;
+
+    // kick off ExternalInterface timeout, now that the SWF has started
+    _delayWaitForEI();
 
     cleanup();
     return true;
