@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20120513+DEV
+ * V2.97a.20120527
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -98,7 +98,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20120513+DEV';
+  this.versionNumber = 'V2.97a.20120527';
   this.version = null;
   this.movieURL = null;
   this.url = (smURL || null);
@@ -1965,7 +1965,7 @@ function SoundManager(smURL, smID) {
       oSound._hasTimer = true;
       if (!_mobileHTML5 && _s.html5PollingInterval) {
         if (_h5IntervalTimer === null && _h5TimerCount === 0) {
-          _h5IntervalTimer = window.setInterval(_timerExecute, _s.html5PollingInterval);
+          _h5IntervalTimer = _win.setInterval(_timerExecute, _s.html5PollingInterval);
         }
         _h5TimerCount++;
       }
@@ -1982,7 +1982,7 @@ function SoundManager(smURL, smID) {
   _timerExecute = function() {
     var i;
     if (_h5IntervalTimer !== null && !_h5TimerCount) {
-      window.clearInterval(_h5IntervalTimer);
+      _win.clearInterval(_h5IntervalTimer);
       _h5IntervalTimer = null;
       return false;
     }
@@ -2211,6 +2211,8 @@ function SoundManager(smURL, smID) {
     setTimeout(_waitForEI, 1000);
   };
   _waitForEI = function() {
+    var p,
+        loadIncomplete = false;
     if (_waitingForEI) {
       return false;
     }
@@ -2219,12 +2221,19 @@ function SoundManager(smURL, smID) {
     if (_tryInitOnFocus && !_isFocused) {
       return false;
     }
-    var p;
     if (!_didInit) {
       p = _s.getMoviePercent();
+      if (p > 0 && p < 100) {
+        loadIncomplete = true;
+      }
     }
     setTimeout(function() {
       p = _s.getMoviePercent();
+      if (loadIncomplete) {
+        _waitingForEI = false;
+        _win.setTimeout(_delayWaitForEI, 1);
+        return false;
+      }
       if (!_didInit && _okToDisable) {
         if (p === null) {
           if (_s.useFlashBlock || _s.flashLoadTimeout === 0) {

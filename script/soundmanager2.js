@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20120513+DEV
+ * V2.97a.20120527
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -173,7 +173,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20120513+DEV';
+  this.versionNumber = 'V2.97a.20120527';
   this.version = null;
   this.movieURL = null;
   this.url = (smURL || null);
@@ -3598,6 +3598,7 @@ function SoundManager(smURL, smID) {
     waitFocus: _sm + ': Special case: Waiting for SWF to load with window focus...',
     waitImpatient: _sm + ': Getting impatient, still waiting for Flash%s...',
     waitForever: _sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
+    waitSWF: _sm + ': Retrying, waiting for 100% SWF load...',
     needFunction: _sm + ': Function object expected for %s',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
     currentObj: '--- ' + _sm + '._debug(): Current sound objects ---',
@@ -4260,7 +4261,7 @@ function SoundManager(smURL, smID) {
 
         if (_h5IntervalTimer === null && _h5TimerCount === 0) {
 
-          _h5IntervalTimer = window.setInterval(_timerExecute, _s.html5PollingInterval);
+          _h5IntervalTimer = _win.setInterval(_timerExecute, _s.html5PollingInterval);
    
         }
 
@@ -4306,7 +4307,7 @@ function SoundManager(smURL, smID) {
 
       // no active timers, stop polling interval.
 
-      window.clearInterval(_h5IntervalTimer);
+      _win.clearInterval(_h5IntervalTimer);
 
       _h5IntervalTimer = null;
 
@@ -4716,6 +4717,9 @@ function SoundManager(smURL, smID) {
 
   _waitForEI = function() {
 
+    var p,
+        loadIncomplete = false;
+
     if (_waitingForEI) {
       return false;
     }
@@ -4729,15 +4733,25 @@ function SoundManager(smURL, smID) {
       return false;
     }
 
-    var p;
     if (!_didInit) {
       p = _s.getMoviePercent();
-      _s._wD(_str('waitImpatient', (p === 100?' (SWF loaded)':(p > 0?' (SWF ' + p + '% loaded)':''))));
+      _s._wD(_str('waitImpatient', (p > 0 ? ' (SWF ' + p + '% loaded)' : '')));
+      if (p > 0 && p < 100) {
+        loadIncomplete = true;
+      }
     }
 
     setTimeout(function() {
 
-      p = _s.getMoviePercent();
+      p = _s.getMoviePercent();      
+
+      if (loadIncomplete) {
+        // special case: if movie *partially* loaded, retry until it's 100% before assuming failure.
+        _waitingForEI = false;
+        _s._wD(_str('waitSWF'));
+        _win.setTimeout(_delayWaitForEI, 1);
+        return false;
+      }
 
       // <d>
       if (!_didInit) {
