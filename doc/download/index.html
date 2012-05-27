@@ -133,13 +133,11 @@
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> <code>from</code> / <code>to</code> and <code>onplay()</code> bug fixes, <code>canPlayMIME()</code> and <code>canPlayLink()</code> Flash-specific corrections. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> Fix for <code>ontimeout()</code> regression. GWI/JSNI compatibility, slow connection and Safari "background tab" SWF load handling improvements. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120513.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120513</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120527.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120527</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
-				<p style="padding-top:0.5em">Also on Github (dev branches, forks etc.): <a href="http://github.com/scottschiller/SoundManager2">github.com/scottschiller/SoundManager2</a> - Related: <a href="http://www.flickr.com/photos/schill/5305386425/">A year of commits</a> (Gource visualization)</p>
-
-				<p><b>Performance tip:</b> SM2's code size varies from over 100 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
+				<p><b>Performance tip:</b> SM2's code size varies from over 128 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
 				<p><b>Side reading + video talks, slides etc.</b></p>
 
@@ -174,6 +172,82 @@
 
 			  	<ul id="revision-list" class="standard">
 
+			   		<li id="sm2-20120527" class="in">
+
+						<h3><b>V2.97a.20120527</b> - Fix for <code>ontimeout()</code> regression. GWT/JSNI compatibility, slow connection and Safari "background tab" SWF load handling improvements</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Fix for <code>ontimeout()</code> regression seen when using lazy-loading / SM2_DEFER introduced with V2.97a.20120513; bug introduced when making edits to pass newer jslint rules regarding <code>return</code> within <code>if...else</code> blocks.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Replaced <code>instanceof Function</code> with "safer" <code>typeof x === 'function'</code> for <code>onready()</code>, <code>ontimeout()</code> and related callback argument checks as GWT + JSNI was passing arguments that failed the <code>instanceof</code> check. (Related <a href="https://getsatisfaction.com/schillmania/topics/gwt_jsni_problems_with_onready_and_ontimeout-ucvp8">bug report</a>.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Corrected another small regression for the <code>ontimeout()</code> -&gt; <code>onready()</code> "recovery" edge case, ensuring "ready" does not fire after a timeout when init was unsuccessful.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+				 				<ul class="nested compact flat">
+
+
+									<li>
+										<p>
+											Improved handling for special Safari page load case: When a new tab is opened that does not have focus, the Flash SWF does not load/init until the tab is brought to the foreground. SM2 now recognizes this special case and waits until <code>window.onfocus()</code> before attempting to do the JS/Flash part of init. Previously, it would fail with a timeout.
+										</p>
+										<p>
+											Code written to originally handle Safari 3.1, which did not support <code>document.hasFocus()</code>, was modified and updated for this purpose. The Safari 3.1 logic previously deferred SM2's start-up in a similar fashion. (The old Safari 3.1 <code>mousemove()</code> focus-detection hack has been removed as Safari 4 has been out since mid-2009, and Safari 5 since mid-2010.)
+										</p>
+
+									</li>
+
+									<li>
+										<p>
+											SM2 init process will now delay and retry if no Flash response, and SWF has loaded &gt; 0 and &lt; 100%. Timeout will now happen only after delay and when SWF has loaded 100%. Should help prevent first-visit (non-cached) failure on very slow or laggy connections.
+										</p>
+
+									</li>
+
+									<li>
+										<p>
+											Added note about potential Firefox regression: Offline JS/Flash start-up (viewing HTML pages via <code>file://</code> and/or <code>c:/</code> and so forth), possibly not working as of Firefox 9 and newer (at time of writing, also up to and including Firefox 12), even despite special security whitelisting under Flash Player "trusted locations" preferences / control panel.
+										</p>
+										<p>
+											After successful Flash -&gt; JS call, SM2's "return" JS -&gt; Flash call fails with unusual JS/Flash exception, "Error in ActionScript" error with no further detail. Offline viewing still works in other browsers.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+<!-- previously.. -->
 
 			   		<li id="sm2-20120513" class="in">
 
