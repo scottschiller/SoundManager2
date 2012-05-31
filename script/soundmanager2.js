@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20120527
+ * V2.97a.20120527+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -46,26 +46,35 @@ var soundManager = null;
 
 function SoundManager(smURL, smID) {
 
-  // Top-level configuration options
+  /**
+   * soundManager configuration options list
+   * defines top-level configuration properties to be applied to the soundManager instance (eg. soundManager.flashVersion)
+   * to set these properties, use the pattern soundManager.setup({url: '/swf/', flashVersion: 9})
+   */
 
-  this.flashVersion = 8;             // flash build to use (8 or 9.) Some API features require 9.
-  this.debugMode = true;             // enable debugging output (console.log() with HTML fallback)
-  this.debugFlash = false;           // enable debugging output inside SWF, troubleshoot Flash/browser issues
-  this.useConsole = true;            // use console.log() if available (otherwise, writes to #soundmanager-debug element)
-  this.consoleOnly = true;           // if console is being used, do not create/write to #soundmanager-debug
-  this.waitForWindowLoad = false;    // force SM2 to wait for window.onload() before trying to call soundManager.onload()
-  this.bgColor = '#ffffff';          // SWF background color. N/A when wmode = 'transparent'
-  this.useHighPerformance = false;   // position:fixed flash movie can help increase js/flash speed, minimize lag
-  this.flashPollingInterval = null;  // msec affecting whileplaying/loading callback frequency. If null, default of 50 msec is used.
-  this.html5PollingInterval = null;  // msec affecting whileplaying() for HTML5 audio, excluding mobile devices. If null, native HTML5 update events are used.
-  this.flashLoadTimeout = 1000;      // msec to wait for flash movie to load before failing (0 = infinity)
-  this.wmode = null;                 // flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index to work)
-  this.allowScriptAccess = 'always'; // for scripting the SWF (object/embed property), 'always' or 'sameDomain'
-  this.useFlashBlock = false;        // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
-  this.useHTML5Audio = true;         // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
-  this.html5Test = /^(probably|maybe)$/i; // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
-  this.preferFlash = true;           // overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
-  this.noSWFCache = false;           // if true, appends ?ts={date} to break aggressive SWF caching.
+  this.setupOptions = {
+
+    'url': (smURL || null),             // path (directory) where SoundManager 2 SWFs exist, eg., /path/to/swfs/
+    'flashVersion': 8,                  // flash build to use (8 or 9.) Some API features require 9.
+    'debugMode': true,                  // enable debugging output (console.log() with HTML fallback)
+    'debugFlash': false,                // enable debugging output inside SWF, troubleshoot Flash/browser issues
+    'useConsole': true,                 // use console.log() if available (otherwise, writes to #soundmanager-debug element)
+    'consoleOnly': true,                // if console is being used, do not create/write to #soundmanager-debug
+    'waitForWindowLoad': false,         // force SM2 to wait for window.onload() before trying to call soundManager.onload()
+    'bgColor': '#ffffff',               // SWF background color. N/A when wmode = 'transparent'
+    'useHighPerformance': false,        // position:fixed flash movie can help increase js/flash speed, minimize lag
+    'flashPollingInterval': null,       // msec affecting whileplaying/loading callback frequency. If null, default of 50 msec is used.
+    'html5PollingInterval': null,       // msec affecting whileplaying() for HTML5 audio, excluding mobile devices. If null, native HTML5 update events are used.
+    'flashLoadTimeout': 1000,           // msec to wait for flash movie to load before failing (0 = infinity)
+    'wmode': null,                      // flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index to work)
+    'allowScriptAccess': 'always',      // for scripting the SWF (object/embed property), 'always' or 'sameDomain'
+    'useFlashBlock': false,             // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
+    'useHTML5Audio': true,              // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
+    'html5Test': /^(probably|maybe)$/i, // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
+    'preferFlash': true,                // overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
+    'noSWFCache': false                 // if true, appends ?ts={date} to break aggressive SWF caching.
+
+  };
 
   this.audioFormats = {
 
@@ -163,6 +172,20 @@ function SoundManager(smURL, smID) {
 
   };
 
+  /**
+   * apply this.setupOptions as local properties, eg., this.setupOptions.flashVersion -> this.flashVersion (soundManager.flashVersion)
+   * this maintains backward compatibility, and allows properties to be defined separately for use by soundManager.setup() etc.
+   */
+
+  (function(that, o) {
+    var i;
+    for (i in o) {
+      if (o.hasOwnProperty(i)) {
+        that[i] = o[i];
+      }
+    }
+  }(this, this.setupOptions));
+
   // HTML attributes (id + class names) for the SWF container
 
   this.movieID = 'sm2-container';
@@ -176,7 +199,6 @@ function SoundManager(smURL, smID) {
   this.versionNumber = 'V2.97a.20120527';
   this.version = null;
   this.movieURL = null;
-  this.url = (smURL || null);
   this.altURL = null;
   this.swfLoaded = false;
   this.enabled = false;
@@ -264,7 +286,7 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  _s = this, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
+  _s = this, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
   _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _is_firefox = _ua.match(/firefox/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
@@ -283,6 +305,7 @@ function SoundManager(smURL, smID) {
 
   // use altURL if not "online"
   this.useAltURL = !_overHTTP;
+
   this._global_a = null;
 
   _swfCSS = {
@@ -317,6 +340,24 @@ function SoundManager(smURL, smID) {
    * Public SoundManager API
    * -----------------------
    */
+
+  /**
+   * Configures top-level soundManager properties.
+   *
+   * @param {object} options Option parameters, eg. { flashVersion: 9, url: '/path/to/swfs/' }
+   */
+
+  this.setup = function(options) {
+
+    _s._wD('soundManager.setup', options);
+
+    // TODO: if loadMovie request / init already happened and .flashVersion or .url is set, warn user
+
+    // TODO: defer: true?
+
+    return _assign(options);
+
+  };
 
   this.ok = function() {
 
@@ -3061,22 +3102,160 @@ function SoundManager(smURL, smID) {
   _mixin = function(oMain, oAdd) {
 
     // non-destructive merge
-    var o1 = {}, i, o2, o;
+    var o1 = oMain, o2, o;
 
-    // clone c1
-    for (i in oMain) {
-      if (oMain.hasOwnProperty(i)) {
-        o1[i] = oMain[i];
-      }
-    }
+    // if unspecified, o2 is the default options object
+    o2 = (typeof oAdd === 'undefined' ? _s.defaultOptions : oAdd);
 
-    o2 = (typeof oAdd === 'undefined'?_s.defaultOptions:oAdd);
     for (o in o2) {
+
       if (o2.hasOwnProperty(o) && typeof o1[o] === 'undefined') {
-        o1[o] = o2[o];
+
+        if (typeof o2[o] !== 'object' || o2[o] === null) {
+
+          // assign directly
+          o1[o] = o2[o];
+
+        } else {
+
+          // recurse through o2
+          o1[o] = _mixin(o1[o], o2[o]);
+
+        }
+
       }
+
     }
+
     return o1;
+
+  };
+
+  // additional soundManager properties that soundManager.setup() will accept
+
+  _extraOptions = {
+    'onready': 1,
+    'ontimeout': 1,
+    'audioFormats': 1,
+    'defaultOptions': 1,
+    'flash9Options': 1,
+    'movieStarOptions': 1
+  };
+
+  _assign = function(o) {
+
+    /**
+     * recursive assignment of properties, soundManager.setup() helper
+     * allows property assignment based on whitelist
+     */
+
+    var i,
+        result = true,
+        setupOptions = _s.setupOptions,
+        extraOptions = _extraOptions;
+
+    // <d>
+
+    // if soundManager.setup() called, show accepted parameters.
+
+    if (typeof o === 'undefined') {
+
+      result = [];
+
+      for (i in setupOptions) {
+
+        if (setupOptions.hasOwnProperty(i)) {
+          result.push(i);
+        }
+
+      }
+
+      for (i in extraOptions) {
+
+        if (extraOptions.hasOwnProperty(i)) {
+
+          if (typeof _s[i] === 'object') {
+
+            result.push(i+': {...}');
+
+          } else if (_s[i] instanceof Function) {
+
+            result.push(i+': function() {...}');
+
+          } else {
+
+            result.push(i);
+
+          }
+
+        }
+
+      }
+
+      _s._wD(_str('setup', result.join(', ')));
+
+      return false;
+
+    }
+
+    // </d>
+
+    for (i in o) {
+
+      if (o.hasOwnProperty(i)) {
+
+        // if not an {object} we want to recurse through...
+
+        if (typeof o[i] !== 'object' || o[i] === null || o[i] instanceof Array) {
+
+          // check "allowed" options
+
+          if (typeof setupOptions[i] !== 'undefined') {
+
+            // special case: assign to setupOptions object, which soundManager property references
+            _s.setupOptions[i] = o[i];
+
+            // assign directly to soundManager, too
+            _s[i] = o[i];
+
+          } else if (typeof extraOptions[i] === 'undefined') {
+
+            // invalid or disallowed parameter. complain.
+            _complain(_str((typeof _s[i] === 'undefined' ? 'setupUndef' : 'setupError'), i), 2);
+
+            result = false;
+
+          } else {
+
+            // valid extraOptions parameter.
+
+            // is it a method, like onready/ontimeout? call it. multiple parameters should be in an array, eg. soundManager.setup({onready: [myHandler, myScope]});
+
+            if (_s[i] instanceof Function) {
+
+              _s[i].apply(_s, (o[i] instanceof Array? o[i] : [o[i]]));
+
+            } else {
+
+              // good old-fashioned direct assignment
+              _s[i] = o[i];
+
+            }
+
+          }
+
+        } else {
+
+          // recurse through object
+          return _assign(o[i]);
+
+        }
+
+      }
+
+    }
+
+    return result;
 
   };
 
@@ -3627,7 +3806,10 @@ function SoundManager(smURL, smID) {
     needfl9: 'Note: Switching to flash 9, required for MP4 formats.',
     mfTimeout: 'Setting flashLoadTimeout = 0 (infinite) for off-screen, mobile flash case',
     mfOn: 'mobileFlash::enabling on-screen flash repositioning',
-    policy: 'Enabling usePolicyFile for data access'
+    policy: 'Enabling usePolicyFile for data access',
+    setup: _sm + '.setup(): allowed parameters: %s',
+    setupError: _sm + '.setup(): "%s" cannot be assigned with this method.',
+    setupUndef: _sm + '.setup(): Could not find property "%s"'
     // </d>
 
   };
