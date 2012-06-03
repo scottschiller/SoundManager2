@@ -4345,6 +4345,7 @@ function SoundManager(smURL, smID) {
     var needsFlash,
         item,
         result = true,
+        formats = _s.audioFormats,
         // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (original iPad) + iOS4 works.
         isSpecial = (_is_iDevice && !!(_ua.match(/os (1|2|3_0|3_1)/i)));
 
@@ -4385,9 +4386,9 @@ function SoundManager(smURL, smID) {
 
     if (_s.useHTML5Audio && _s.hasHTML5) {
 
-      for (item in _s.audioFormats) {
-        if (_s.audioFormats.hasOwnProperty(item)) {
-          if ((_s.audioFormats[item].required && !_s.html5.canPlayType(_s.audioFormats[item].type)) || _s.flash[item] || _s.flash[_s.audioFormats[item].type]) {
+      for (item in formats) {
+        if (formats.hasOwnProperty(item)) {
+          if ((formats[item].required && !_s.html5.canPlayType(formats[item].type)) || _s.flash[item] || _s.flash[formats[item].type]) {
             // flash may be required, or preferred for this format
             needsFlash = true;
           }
