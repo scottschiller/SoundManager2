@@ -77,14 +77,16 @@ var mpc = new MPC();
 soundManager.flashVersion = (window.location.toString().match(/#flash8/i)?8:9);
 if (soundManager.flashVersion != 8) {
   soundManager.useHighPerformance = true;
-  soundManager.useFastPolling = true;
 }
-soundManager.url = '../../swf/'; // path to load SWF from (overriding default)
-soundManager.bgcolor = '#333333';
-soundManager.wmode = 'transparent';
-soundManager.debugMode = false;
-soundManager.consoleOnly = false;
-soundManager.useFlashBlock = true;
+
+soundManager.setup({
+  url: '../../swf/', // path to load SWF from (overriding default)
+  bgColor: '#333333',
+  wmode: 'transparent',
+  debugMode: false,
+  consoleOnly: false,
+  useFlashBlock: true
+});
 
 soundManager.onready(function() {
 
@@ -94,13 +96,17 @@ soundManager.onready(function() {
 
   // set up some default options / event handlers - so all sounds created are given these handlers
 
-  soundManager.defaultOptions.autoLoad = true;
-  soundManager.defaultOptions.whileloading = mpc.showProgress;
-  soundManager.defaultOptions.onid3 = mpc.onid3;
-  soundManager.defaultOptions.onload = mpc.onload;
-  soundManager.defaultOptions.onplay = mpc.onplay;
-  soundManager.defaultOptions.whileplaying = mpc.whileplaying;
-  soundManager.defaultOptions.onfinish = mpc.onfinish;
+  soundManager.setup({
+    defaultOptions: {
+      autoLoad: true,
+      whileloading: mpc.showProgress,
+      onid3: mpc.onid3,
+      onload: mpc.onload,
+      onplay: mpc.onplay,
+      whileplaying: mpc.whileplaying,
+      onfinish: mpc.onfinish
+    }
+  });
 
   if (!soundManager.html5.needsFlash) {
     document.getElementById('isHTML5').style.display = 'inline';

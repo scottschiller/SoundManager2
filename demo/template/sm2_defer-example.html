@@ -46,9 +46,11 @@ window.onload = function() {
   window.soundManager = new SoundManager();
 
   // assign flash url, flashVersion and other SM2 options as usual
-  soundManager.url = '../../swf/';
-  soundManager.flashVersion = 9;
-  // etc...
+  soundManager.setup({
+    url: '../../swf/',
+    flashVersion: 9
+    // etc...
+  });
 
   // finally, kick-start init process.
   // (old IE etc. may miss domloaded/ready/window.load if they've already fired.)

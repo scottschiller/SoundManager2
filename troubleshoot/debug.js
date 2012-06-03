@@ -13,7 +13,6 @@ if (winLoc.match(/flash9/i)) {
   soundManager.flashVersion = 9;
   if (winLoc.match(/highperformance/i)) {
 	soundManager.useHighPerformance = true;
-	soundManager.useFastPolling = true;
   }
 } else if (winLoc.match(/flash8/i)) {
   soundManager.flashVersion = 8;

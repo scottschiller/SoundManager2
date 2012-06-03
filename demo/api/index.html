@@ -88,21 +88,38 @@ p {
 
 // flash version URL switch (for this demo page)
 var winLoc = window.location.toString();
-soundManager.preferFlash = (winLoc.match(/usehtml5audio=1/i) ? false : true);
+
+soundManager.setup({
+  preferFlash: (winLoc.match(/usehtml5audio=1/i) ? false : true)
+});
+
 if (winLoc.match(/flash9/i)) {
-  soundManager.flashVersion = 9;
+
+  soundManager.setup({
+    flashVersion: 9
+  });
+
   if (winLoc.match(/highperformance/i)) {
-	soundManager.useHighPerformance = true;
-	soundManager.useFastPolling = true;
+    soundManager.setup({
+      useHighPerformance: true
+    });
+
   }
+
 } else if (winLoc.match(/flash8/i)) {
-  soundManager.flashVersion = 8;
+
+  soundManager.setup({
+    flashVersion: 8
+  });
+
 }
 
-soundManager.useFlashBlock = true;
-soundManager.url = '../../swf/'; // path to SoundManager2 SWF files (note trailing slash)
-soundManager.debugMode = true;
-soundManager.consoleOnly = false;
+soundManager.setup({
+  useFlashBlock: true,
+  url: '../../swf/', // path to SoundManager2 SWF files (note trailing slash)
+  debugMode: true,
+  consoleOnly: false
+});
 
 soundManager.onready(function(oStatus) {
   if (!oStatus.success) {
@@ -186,22 +203,7 @@ function getRandomMP3URL() {
    <!-- flash is appended here -->
  </div>
 
- <h2>The basics (old-skool style): onload() + onerror()</h2>
-
- <p>Once you have SM2 included in your page, you merely need to hook into its <code>onload()</code>/<code>onerror()</code> events:</p>
-
-<pre class="block"><code>soundManager.onload = function() {
-  <span><span>// soundManager is ready to use.
-  // createSound() / play() etc. can now be called</span>
-</span>}
-soundManager.onerror = function() {
-  <span><span>// Oh no! No sound support.
-  // Maybe configure your app to ignore sound calls.
-  // (SM2 calls will silently return false after this point.)</span>
-</span>}
-</code></pre>
-
- <h2>The modern method: Adding "onready" listeners</h2>
+ <h2>Adding "onready" listeners</h2>
 
  <p>You can register listeners by passing a function to <code>onready()</code>, and it will be called when SoundManager has finished starting up:</p>
 
@@ -219,15 +221,16 @@ soundManager.onerror = function() {
 
 <p>SoundManager first processes the <code>onready</code> or <code>ontimeout</code> queue in the order items were added, and then fires <code>soundManager.onload()</code> or <code>onerror()</code>. If you call <code>onready()</code> after SM2 has loaded, your callback will be fired immediately.</p>
 
+<p>These methods can also be passed as <code>onready</code> and <code>ontimeout</code> parameters to <code>soundManager.setup()</code>.</p>
+
  <h2>A note about initialization</h2>
  
- <p class="compact">Keep in mind SoundManager's core methods (createSound, etc.) will not be available until soundManager.onload() fires. The initialization time for SM2 can vary across browsers/platforms, and should effectively be assumed to be "asynchronous." Because of this, it is recommended you write your code to handle soundManager.onload() being called either before or after window.onload().</p>
- <p class="compact">If you wish to have SM2 always wait for window.onload() before calling soundManager.onload()/onerror(), you can apply the following:</p>
-<pre>soundManager.waitForWindowLoad = true;</pre>
+ <p class="compact">Keep in mind SoundManager's core methods (createSound, etc.) will not be available until soundManager.onready() fires. The initialization time for SM2 can vary across browsers/platforms, and should effectively be assumed to be "asynchronous." Because of this, it is recommended you write your code to handle soundManager.onready() being called either before or after window.onload().</p>
+ <p class="compact">If you wish to have SM2 always wait for window.onload() before calling soundManager.onready/ontimeout(), you can pass <code>waitForWindowLoad: true</code> to <code>soundManager.setup()</code>.</p>
 
  <h2>Debug Output, disabling and minified versions</h2>
  <p class="compact">SoundManager 2 has debug mode enabled by default and will write to agents supporting <em>console.log</em>-style debugging, and/or a custom &lt;div&gt; element in the absence of a console.</p>
- <p>To disable debug output, set <code>soundManager.debugMode = false;</code></p>
+ <p>To disable debug output, pass <code>debugMode: false</code> to <code>soundManager.setup()</code>.</p>
  <p>Alternately, you may use the no-debug, minified version of the SM2 javascript library (which has internal debug code removed, and will silently return false.)</p>
 
  <h2>Demo 1a: Create + play (simple method)</h2>
@@ -272,7 +275,7 @@ demo2Sound.play({volume:50});
  <h2>Demo 3: Play a pre-existing sound</h2>
 <pre>soundManager.play('<span>aDrumSound</span>');</pre>
  <button onclick="soundManager._writeDebug('Demo 3',1);soundManager.play('aDrumSound')">Do this</button>
- <p>This plays an existing sound which was created by soundManager.onload() (for reference, view source of this page.)</p>
+ <p>This plays an existing sound which was created by soundManager.onready() (for reference, view source of this page.)</p>
 
  <h2>Demo 4a: Play a sequence of sounds via "onfinish", with multiShot (Flash 9-only)</h2>
 <pre>soundManager.play('<span>aDrumSound</span>',{multiShotEvents:true,onfinish:function(){soundManager.play('<span>aCymbalSound</span>');}})</pre>
@@ -430,7 +433,7 @@ spliceDemo.play({
 
 <button onclick="return doEval(document.getElementById('demo4g').innerHTML);return false">Do this</button> | <button onclick="soundManager.stop('spliceSound');soundManager.play('spliceSound','../mpc/audio/AMB_HHOP.mp3');return false">Play full sound</button>
 <p>By specifying "from" and "to" parameters to methods like play() and createSound(), you may play a sample (or segment) of audio from a larger file. An audio "sprite" of one file with many sounds is one way to think of this. Given timing accuracy of the "to" target may vary a lot, it is safest to have perhaps 500-msec gaps of silence between distinct sounds to ensure that no accidental overlaps occur.</p>
-<p>To tighten the accuracy of the "to" timing, <a href="?flash9-highperformance#from-to" onclick="window.location.replace(this.href);window.location.reload()">try using soundManager.useHighPerformance and soundManager.useFastPolling</a>.</p>
+<p>To tighten the accuracy of the "to" timing, <a href="?flash9-highperformance#from-to" onclick="window.location.replace(this.href);window.location.reload()">try using soundManager.useHighPerformance</a>.</p>
 <p>If HTML5 audio is being used, the sound should begin playing once a "canplay" event fires (after a connection has established), and the sound will then seek to the correct start position. When using flash, the whole audio file will be loaded before playback can begin.</p>
 <p>Given limitations, Flash 9's multiShot (chorusing) mode does not apply here. If you wish to trigger a sound numerous times, call stop() before play() to reset the sound each time, or make multiple sound objects that reuse the same sprite.</p>
 

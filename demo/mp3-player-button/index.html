@@ -93,8 +93,10 @@ pre code {
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="script/mp3-player-button.js"></script>
 <script>
-soundManager.useFlashBlock = true; // optional - if used, required flashblock.css
-soundManager.url = '../../swf/'; // required: path to directory containing SM2 SWF files
+soundManager.setup({
+  useFlashBlock: true, // optional - if used, required flashblock.css
+  url: '../../swf/' // required: path to directory containing SM2 SWF files
+});
 </script>
 
 </head>

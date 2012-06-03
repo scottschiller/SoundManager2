@@ -15,11 +15,11 @@
 <script type="text/javascript" src="../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../demo/index.js"></script>
 <script type="text/javascript">
-	soundManager.useFlashBlock = false;
-	soundManager.debugMode = false;
-	soundManager.url = '../swf/';
-	soundManager.onload = function() {
-	}
+soundManager.setup({
+  useFlashBlock: false,
+  debugMode: false,
+  url: '../swf/'
+});
 </script>
 </head>
 
@@ -41,6 +41,7 @@
 	  <li>
 	   <a href="#">Demos</a>
 	   <ul>
+		<li><a href="../demo/template/">Basic Template</a></li>
 		<li><a href="../demo/api/">API Examples</a></li>
 	    <li><a href="../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 	    <li><a href="../demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
@@ -49,7 +50,6 @@
 	    <li><a href="../demo/mpc/">Drum Machine (MPC)</a></li>
 		<li><a href="../demo/animation/">DOM/Animation Demos</a></li>
 		<li><a href="../demo/flashblock/">FlashBlock Handling</a></li>
-		<li><a href="../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
 
@@ -189,9 +189,6 @@
      <li class="recent" title="Beta-ish feature"><a href="#soundmanager-usehtml5audio">useHTML5Audio</a></li>
 	 <li class="flash9" title="Flash 9.0r115+ only"><a href="#soundmanager-wmode">wmode</a></li>
 	 <li>waitForWindowLoad</li>
-	 <li class="removed" title="Removed after v2.97a.20110801">allowPolling</li>
-     <li class="removed" title="Removed after v2.97a.20110801"><a href="#nullurl">nullURL</a></li>
-     <li class="flash9 removed" title="Flash 9.0r115+ only, removed after V2.97a.20110801 and auto-enabled">useMovieStar</li>
 	</ul>
 
     <h4>Methods</h4>
@@ -263,8 +260,6 @@
      <li><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
      <li>volume</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-waveformdata">waveformData</a></li>
-     <li class="removed" title="Removed after v2.97a.20110801">onbeforefinishtime</li>
-     <li class="removed" title="Removed after v2.97a.20110801">onjustbeforefinishtime</li>
     </ul>
 
     <h4>Dynamic Properties</h4>
@@ -282,8 +277,6 @@
      <li><a href="#smsound-playstate">playState</a></li>
      <li><a href="#smsound-position">position</a></li>
      <li><a href="#smsound-readystate">readyState</a></li>
-     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-didbeforefinish">didBeforeFinish</a></li>
-     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-didjustbeforefinish">didJustBeforeFinish</a></li>
     </ul>
 
     <h4>Events</h4>
@@ -304,9 +297,6 @@
      <li><a href="#smsound-onid3">onid3</a></li>
      <li><a href="#smsound-whileloading">whileloading</a></li>
      <li><a href="#smsound-whileplaying">whileplaying</a></li>
-     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-onbeforefinishcomplete">onbeforefinishcomplete</a></li>
-     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-onbeforefinish">onbeforefinish</a></li>
-     <li class="removed" title="Removed after v2.97a.20110801"><a href="#smsound-onjustbeforefinish">onjustbeforefinish</a></li>
     </ul>
 
     <h4>Methods</h4>
@@ -371,9 +361,9 @@
 			
 		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowpolling f-allowscriptaccess">
 
-		  <p class="in">The soundManager object has many configurable properties which set debug mode, determine the flash movie path and other behaviours. Below are the <i>default</i> settings for SoundManager 2, which are appropriate for the majority of use cases - you shouldn't need to change them.</p>
+		  <p class="in">The soundManager object has many configurable properties which set debug mode, determine the flash movie path and other behaviours. When assigning allowed top-level properties and objects, <code>soundManager.setup({ propertyName: propertyValue })</code> can be used. Below are the <i>default</i> settings for SoundManager 2, which are appropriate for the majority of use cases - you shouldn't need to change them.</p>
 
-          <p><b>Note</b>: The only property requiring customization is <code>soundManager.url</code>, which must be assigned a path used to look for the appropriate flash SWF for driving audio when HTML5 is not available. (If not specified, the current working path is used.)</p>
+          <p><b>Note</b>: The only property requiring customization is <code>soundManager.url</code> (assigned via <code>soundManager.setup({ url: ... })</code>), which must be assigned a path used to look for the appropriate flash SWF for driving audio when HTML5 is not available. (If not specified, the current working path is used.)</p>
 
 <div id="sm2-properties" class="code block">
 
@@ -640,7 +630,7 @@ soundManager.defaultOptions.volume = 33; <span><span>// set global default volum
 		   <div class="f-block f-url">
 		    <h4 id="soundmanager-url">soundManager.url</h4>
 		    <p class="in"><code>soundManager.url</code> specifies the "online", generally HTTP-based path which SM2 will load .SWF movies from. The "local" (current) directory will be used by default. The appropriate .SWF required (depending on the desired Flash version) will be appended to the URL.</p>
-		    <p class="in">Example: <code>soundManager.url = '<span>/path/to/swf-directory/</span>';</code> (Note trailing slash)</p>
+		    <p class="in">Example: <code>soundManager.setup({ url: '<span>/path/to/swf-directory/</span>' });</code> (Note trailing slash)</p>
 			<p>For a simple demo of this in action, see the <a href="../demo/template/">basic template</a>.</p>
 		    <p class="in">For cases where SM2 is being used "offline" in non-HTTP cases (eg., development environments), see <code>altURL</code>.</p>
 		   </div>

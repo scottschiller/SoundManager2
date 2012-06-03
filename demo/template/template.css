@@ -10,6 +10,11 @@ body {
  font-size:75%;
 }
 
+pre {
+ padding: 0.5em;
+ background: #f9f9f9;
+}
+
 code, pre {
  font-family:"lucida console",monaco,courier,system;
  font-size:100%;
@@ -24,7 +29,7 @@ em em {
 
 h1,
 h2.special {
- letter-spacing:-1px;
+ letter-spacing: -0.005em;
 }
 
 h1, h2, h3, h4 {
@@ -37,11 +42,18 @@ h1, h2, h3, h4 {
 
 h1 {
  font-size:2em;
+ border-bottom: 1px dotted #999;
 }
 
 h2 {
  font-family:helvetica,arial,verdana,tahoma,"sans serif";
  font-size:1.5em;
+ margin-top: 1.5em;
+ margin-bottom: 0px;
+}
+
+h2 code {
+ font-size: 85%;
 }
 
 h3 {

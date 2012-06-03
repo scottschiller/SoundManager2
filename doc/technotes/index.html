@@ -14,12 +14,12 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
-	soundManager.debugMode = true;
-	soundManager.consoleOnly = false;
-	soundManager.debugFlash = true;
-	soundManager.url = '../../swf/';
-	soundManager.onload = function() {
-	}
+soundManager.setup({
+  url: '../../swf/',
+  debugMode: true,
+  consoleOnly: false,
+  debugFlash: true
+});
 </script>
 </head>
 
@@ -41,6 +41,7 @@
 	  <li>
 	   <a href="#">Demos</a>
 	   <ul>
+		<li><a href="../../demo/template/">Basic Template</a></li>
 		<li><a href="../../demo/api/">API Examples</a></li>
 	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 	    <li><a href="../../demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
@@ -49,7 +50,6 @@
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
 		<li><a href="../../demo/animation/">DOM/Animation Demos</a></li>
 		<li><a href="../../demo/flashblock/">FlashBlock Handling</a></li>
-		<li><a href="../../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
 
@@ -201,7 +201,7 @@
 			  <p>JavaScript-to-Flash communication is not instantaneous on slower systems, but can be much better on more modern systems. Latency (timing lag/delays) can be noted in some cases from function call to sound execution. It is possible some performance analysis can help to speed up this area for timing-critical applications involving animation etc., but this area has not been thoroughly investigated yet. Brad Neuberg has some notes on <a href="http://codinginparadise.org/weblog/2006/02/how-to-speed-up-flash-8s.html" title="Brad Neuberg - How To Speed Up ExternalInterface">speeding up ExternalInterface</a> which may be relevant.</p>
 			  <p>Flash-to-OS/hardware latency (where flash reports progress, but no sound is heard for a number of milliseconds) may also be an unfortunate reality of Flash-based audio, varying between platform and OS version etc.</p>
 			  <p>Additionally, MP3 files may contain audible gaps at the beginning or end by default when encoded, even if the source (eg. WAVE) file did not. Using optional "nogap" encoding options with programs such as LAME may help to remedy this.</p>
-			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X. As well, <code class="in">useFastPolling</code> will use a lower timer interval within Flash, making polling calls run as quickly as reasonably possible and increasing the frequency of calls to <code class="in">whileplaying()</code>, <code class="in">whileloading()</code> and other time-related events.</p>
+			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X. As well, <code class="in">flashPollingInterval</code> will use a lower timer value, making polling calls run as quickly as reasonably possible and increasing the frequency of calls to <code class="in">whileplaying()</code>, <code class="in">whileloading()</code> and other time-related events.</p>
 
 			  </div>
 

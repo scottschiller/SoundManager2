@@ -12,13 +12,13 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 
 <script type="text/javascript">
-// enable flash block handling
-soundManager.useFlashBlock = true;
-
-// custom demo options, not for your needs
-soundManager.debugMode = true;
-soundManager.url = '../../swf/';
-
+soundManager.setup({
+  // enable flash block handling
+  useFlashBlock: true,
+  // custom demo options, not for your needs
+  debugMode: true,
+  url: '../../swf/'
+});
 </script>
 </head>
 <body>

@@ -67,7 +67,9 @@ window.onload = function() {
 
       // SM2 script has loaded
 
-      soundManager.url = '../../swf/';
+      soundManager.setup({
+        url: '../../swf/'
+      });
 
       soundManager.onready(function() {
 
@@ -160,7 +162,9 @@ window.onload = function() {</span>
 
       <span>// SM2 script has loaded</span>
 
-      soundManager.url = '../../swf/';
+      soundManager.setup({
+        url: '../../swf/'
+      });
 
       soundManager.onready(function() {
         soundManager.createSound({
@@ -187,7 +191,7 @@ window.onload = function() {</span>
  <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info on this, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">Flashblock</a> example.</p>
 
  <h2>Making SM2 wait for window.onload()</h2>
- <p>If you prefer to have the library wait for window.onload() before calling soundManager.onload()/onerror() methods, you can modify SM2's "waitForWindowLoad" property:</p>
+ <p>If you prefer to have the library wait for window.onload() before calling soundManager.ready()/ontimeout() methods, you can modify SM2's "waitForWindowLoad" property:</p>
 <code>soundManager.waitForWindowLoad = true;</code>
 
  <h2 style="margin-top:1em">Preventing auto-init using SM2_DEFER</h2>

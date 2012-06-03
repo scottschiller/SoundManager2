@@ -15,15 +15,16 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
-	soundManager.useFlashBlock = true;
-	soundManager.consoleOnly = false;
-    soundManager.bgColor = '#f6f6f6';
-	soundManager.debugMode = true;
-	soundManager.debugFlash = true; // enable flash debug output for this page
-	soundManager.preferFlash = true;
-	soundManager.url = '../../swf/';
-	soundManager.onload = function() {
-	}
+soundManager.setup({
+  url: '../../swf/',
+  useFlashBlock: true,
+  consoleOnly: false,
+  bgColor: '#f6f6f6',
+  debugMode: true,
+  // enable flash debug output for this page
+  debugFlash: true,
+  preferFlash: true
+});
 </script>
 <script type="text/javascript" src="../../troubleshoot/debug.js"></script>
 </head>
@@ -46,6 +47,7 @@
 	  <li>
 	   <a href="#">Demos</a>
 	   <ul>
+		<li><a href="../../demo/template/">Basic Template</a></li>
 		<li><a href="../../demo/api/">API Examples</a></li>
 	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 	    <li><a href="../../demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
@@ -54,7 +56,6 @@
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
 		<li><a href="../../demo/animation/">DOM/Animation Demos</a></li>
 		<li><a href="../../demo/flashblock/">FlashBlock Handling</a></li>
-		<li><a href="../../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
 
@@ -303,20 +304,6 @@ soundManager.onready(function() {
 <pre class="block"><code>soundManager.ontimeout(function() {
     <span><span>// SM2 could not start. Flash blocked, missing or security error? Complain, etc.?</span></span>
 });</code></pre>
-
-			  <h4>SoundManager onload() + onerror()</h4>
-
-<p>A more traditional, less-flexible style of event handling is to assign single onload() / onerror() handlers. You should use <code>onready()</code> as it can be assigned at any time once soundManager has been defined, and is more robust.</p>
-			
-<pre class="block"><code>soundManager.onload = function() {
-  <span><span>// SM2 is ready to go!</span></span>
-  makeSomeNoise(); <span><span>// soundManager.createSound(), etc.</span></span>
-}
-
-soundManager.onerror = function() {
-  <span><span>// SM2 could not start, no sound support, something broke etc. Handle gracefully.</span></span>
-  disableSoundInMyApp(); <span><span>// for example</span></span>
-}</code></pre>
 
 			  <h4 id="lazy-loading">Lazy-loading SM2 (deferred start-up): SM2_DEFER</h4>
 

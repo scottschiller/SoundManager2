@@ -29,7 +29,10 @@ body {
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="script/mp3-player-button.js"></script>
 <script>
-soundManager.url = '../../swf/'; // required: path to directory containing SM2 SWF files
+soundManager.setup({
+  // required: path to directory containing SM2 SWF files
+  url: '../../swf/'
+});
 </script>
 
 </head>

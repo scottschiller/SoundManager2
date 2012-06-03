@@ -31,7 +31,9 @@ body {
 <script type="text/javascript" src="script/page-player.js"></script>
 <script type="text/javascript">
 
-soundManager.url = '../../swf/';
+soundManager.setup({
+  url: '../../swf/'
+});
 
 // demo only..
 function setTheme(sTheme) {

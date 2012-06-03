@@ -1393,6 +1393,10 @@ a.cta:hover,
   background-color:#cc3333;
 }
 
+dt a:hover span {
+	color: #fff;
+}
+
 a.cta-more {
   color:#ddeeff;
   font-size:0.8em;

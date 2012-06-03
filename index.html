@@ -69,6 +69,7 @@
 				<li>
 					<a href="#">Demos</a>
 					<ul>
+						<li><a href="demo/template/">Basic Template</a></li>
 						<li><a href="demo/api/">API Examples</a></li>
 						<li><a href="demo/play-mp3-links/">Playable MP3 links</a></li>
 						<li><a href="demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
@@ -77,7 +78,6 @@
 						<li><a href="demo/mpc/">Drum Machine (MPC)</a></li>
 						<li><a href="demo/animation/">DOM/Animation Demos</a></li>
 						<li><a href="demo/flashblock/">FlashBlock Handling</a></li>
-						<li><a href="demo/template/">Basic Template</a></li>
 					</ul>
 				</li>
 				<li>
@@ -650,11 +650,12 @@
 
 <pre class="block"><code>&lt;script src="soundmanager2.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-<span><span>// where to find flash SWFs, if needed...</span></span>
-soundManager.url = '<span>/path/to/swf-files/</span>';
-
-soundManager.onready(function() {
-  <span><span>// SM2 is ready to play audio!</span></span>
+soundManager.setup({
+  <span><span>// where to find flash SWFs, if needed...</span></span>
+  url: '<span>/path/to/swf-files/</span>',
+  onready: function() {
+    <span><span>// SM2 is ready to play audio!</span></span>
+  })
 });
 &lt;/script&gt;</code></pre>
 
@@ -671,26 +672,29 @@ soundManager.onready(function() {
 							<p>You can enable additional features via <code>soundManager.flashVersion = 9</code>, configure HTML5 audio behaviour, flash blocker handling and so forth.</p>
 
 <pre class="block"><code>&lt;script&gt;
-soundManager.url = '<span>/path/to/swf-files/</span>';
+soundManager.setup({
 
-<span><span>// enable extra API features via flash 9 SWF build (default = 8)</span></span>
-soundManager.flashVersion = 9;
+  url: '<span>/path/to/swf-files/</span>',
 
-<span><span>// optional: <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">flash block handling</a></span></span>
-soundManager.useFlashBlock = false;
+  <span><span>// enable extra API features via flash 9 SWF build (default = 8)</span></span>
+  flashVersion: 9,
 
-<span><span>/**
- * tweak: if both flash + HTML5 are available, try HTML5 first.
- * iPad/iPhone and non-flash clients will always try HTML5 mode.
- * further reading: see <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>
- */</span></span>
-soundManager.preferFlash = <span>false</span>;
+  <span><span>// optional: <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">flash block handling</a></span></span>
+  <span><span>// useFlashBlock = true,</span></span>
 
-soundManager.onready(function() {
-  <span><span>// Ready to use.</span></span>
+  <span><span>/**
+   * tweak: if both flash + HTML5 are available, try HTML5 first.
+   * iPad/iPhone and non-flash clients will always try HTML5 mode.
+   * further reading: see <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>
+   */</span></span>
+  preferFlash: <span>false</span>,
+
+  onready: function() {
+    <span><span>// Ready to use.</span></span>
+  })
+
 });
 &lt;/script&gt;</code></pre>
-
 
 							<p>
 								Want more? See the <a href="demo/template/" class="cta">basic template demo</a>. For compressed and optimized builds, see <a href="doc/getstarted/#basic-inclusion" class="cta">basic inclusion</a>. For deferred or dynamic loading of SM2, see <a href="doc/getstarted/#lazy-loading" class="cta">lazy-loading</a>.

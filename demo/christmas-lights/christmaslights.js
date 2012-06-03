@@ -749,9 +749,11 @@ function initChristmasLights() {
 
 }());
 
-soundManager.url = '../../swf/';
-soundManager.preferFlash = true;
-soundManager.flashVersion = 9;
-soundManager.useHighPerformance = true;
-soundManager.wmode = 'transparent';
-soundManager.debugMode = false;
+soundManager.setup({
+  url: '../../swf/',
+  preferFlash: true,
+  flashVersion: 9,
+  useHighPerformance: true,
+  wmode: 'transparent',
+  debugMode: false
+});

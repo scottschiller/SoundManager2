@@ -28,10 +28,9 @@
 </style>
 <script type="text/javascript" src="../script/soundmanager2.js"></script>
 <script type="text/javascript">
-// optional
-soundManager.url = '../swf/'; 
-soundManager.onload = function() {}
-
+soundManager.setup({
+  url: '../swf/'
+});
 </script>
 
 <script type="text/javascript" src="debug.js"></script>
@@ -89,8 +88,8 @@ soundManager.onload = function() {}
      <div id="ss-box" style="display:none">
 	  <h4>Illustrated guide: Adding a "trusted location" in Flash</h4>
       <p>Below: Adding a location, and selecting "Browse for folder" (or directory), to whitelist the SoundManager 2 project directory for offline viewing.</p>
-      <p><img src="../../troubleshoot/fpgss-add-location.png" alt="Adding a location: Browse for the file or directory to whitelist" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
-      <p><img src="../../troubleshoot/fpgss-added-location.png" alt="Whitelisted location has now been added, JS + Flash will work under this path" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
+      <p><img src="fpgss-add-location.png" alt="Adding a location: Browse for the file or directory to whitelist" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
+      <p><img src="fpgss-added-location.png" alt="Whitelisted location has now been added, JS + Flash will work under this path" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
      </div>
      <p><a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html" target="_blank" class="feature">Launch the Flash Security Settings Panel</a></p>
     </div>

@@ -1359,17 +1359,19 @@ ThreeSixtyPlayer.prototype.Metadata = function(oSound, oParent) {
 
 if (navigator.userAgent.match(/webkit/i) && navigator.userAgent.match(/mobile/i)) {
   // iPad, iPhone etc.
-  soundManager.useHTML5Audio = true;
+  soundManager.setup({
+    useHTML5Audio: true
+  });
 }
 
-soundManager.html5PollingInterval = 50; // increased framerate for whileplaying() etc.
-soundManager.debugMode = (window.location.href.match(/debug=1/i)); // disable or enable debug output
-soundManager.consoleOnly = true;
-soundManager.flashVersion = 9;
-soundManager.useHighPerformance = true;
-soundManager.useFlashBlock = true;
-
-// soundManager.useFastPolling = true; // for more aggressive, faster UI updates (higher CPU use)
+soundManager.setup({
+  html5PollingInterval: 50, // increased framerate for whileplaying() etc.
+  debugMode: (window.location.href.match(/debug=1/i)), // disable or enable debug output
+  consoleOnly: true,
+  flashVersion: 9,
+  useHighPerformance: true,
+  useFlashBlock: true
+});
 
 // FPS data, testing/debug only
 if (soundManager.debugMode) {

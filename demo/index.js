@@ -372,26 +372,27 @@ function doChristmasLights() {
 
 if (window.is_home) {
 
-	// by default, enable native audio (with all its potential caveats.)
-	soundManager.useHTML5Audio = true;
+    // by default, enable native audio (with all its potential caveats.)
+    soundManager.useHTML5Audio = true;
 
-    // even if HTML5 supports MP3, prefer flash so the visualization features can be used.
-    soundManager.preferFlash = true;
+    // URL overrides for demo/testing..
+    if (document.location.href.match(/sm2-usehtml5audio=1/i)) {
+      soundManager.useHTML5Audio = true; // w00t.
+    } else if (document.location.href.match(/sm2-usehtml5audio=0/i)) {
+      soundManager.useHTML5Audio = false;
+    }
 
-	// URL overrides for demo/testing..
-	if (document.location.href.match(/sm2-usehtml5audio=1/i)) {
-	  soundManager.useHTML5Audio = true; // w00t.
-	} else if (document.location.href.match(/sm2-usehtml5audio=0/i)) {
-	  soundManager.useHTML5Audio = false;
-	}
-
-	soundManager.useFlashBlock = true;
-	soundManager.useHighPerformance = true;
-	soundManager.useFastPolling = true;
-	soundManager.bgColor = '#ffffff';
-	soundManager.debugMode = false;
-	soundManager.url = 'swf/';
-	soundManager.wmode = 'transparent'; // hide initial flash of white on everything except firefox, IE 8 and Safari on Windoze
+    soundManager.setup({
+      // even if HTML5 supports MP3, prefer flash so the visualization features can be used.
+      preferFlash: true,
+      useFlashBlock: true,
+      useHighPerformance: true,
+      bgColor: '#ffffff',
+      debugMode: false,
+      url: 'swf/',
+      // hide initial flash of white on everything except firefox, IE 8 and Safari on Windoze
+      wmode: 'transparent'
+    });
 
 	var PP_CONFIG = {
 	  autoStart: false,      // begin playing first sound when page loads
@@ -445,8 +446,6 @@ if (window.is_home) {
 	  soundManager.useHighPerformance = false;
 	}
 
-	soundManager.useFastPolling = true;
-
 	function checkBadSafari() {
 	  var _ua = navigator.userAgent;
 	  if (!document.location.href.match(/sm2-usehtml5audio/i) && !window.location.toString().match(/sm2\-ignorebadua/i) && _ua.match(/safari/i) && !_ua.match(/chrome/i) && _ua.match(/OS X 10_6_([3-7])/i)) { // Safari 4 and 5 occasionally fail to load/play HTML5 audio on Snow Leopard due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Known Apple "radar" bug. https://bugs.webkit.org/show_bug.cgi?id=32159
@@ -470,31 +469,32 @@ if (window.is_home) {
 
 	  doChristmasLights();
 
-    // hat tip: Flash Detect library (BSD, (C) 2007) by Carl "DocYes" S. Yestrau - http://featureblend.com/javascript-flash-detection-library.html / http://featureblend.com/license.txt
+      // hat tip: Flash Detect library (BSD, (C) 2007) by Carl "DocYes" S. Yestrau - http://featureblend.com/javascript-flash-detection-library.html / http://featureblend.com/license.txt
 
-    var _hasFlash;
-    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = window.ActiveXObject;
+      var _hasFlash;
+      var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = window.ActiveXObject;
 
-    if (nP && nP.length) {
+      if (nP && nP.length) {
 
-      type = 'application/x-shockwave-flash';
-      types = n.mimeTypes;
-      if (types && types[type] && types[type].enabledPlugin && types[type].enabledPlugin.description) {
-        hasPlugin = true;
-      }
+        type = 'application/x-shockwave-flash';
+        types = n.mimeTypes;
 
-    } else if (typeof AX !== 'undefined') {
+        if (types && types[type] && types[type].enabledPlugin && types[type].enabledPlugin.description) {
+          hasPlugin = true;
+        }
 
-      try {
-        obj = new AX('ShockwaveFlash.ShockwaveFlash');
-      } catch(e) {
-        // oh well
-      }
-      hasPlugin = (!!obj);
+      } else if (typeof AX !== 'undefined') {
 
-    }
+        try {
+          obj = new AX('ShockwaveFlash.ShockwaveFlash');
+        } catch(e) {
+          // oh well
+        }
+        hasPlugin = (!!obj);
 
-    _hasFlash = hasPlugin;
+        }
+
+      _hasFlash = hasPlugin;
 
 	  // if using HTML5, show some additional format support info
 	  // written while watching The Big Lebowski for the Nth time. Donny, you're out of your element!

@@ -315,13 +315,15 @@ function doInit() {
   cursor = new Cursor();
 }
 
-soundManager.preferFlash = true;
-soundManager.flashVersion = 9;
-soundManager.url = '../../swf/';
-soundManager.useHighPerformance = true;
-soundManager.wmode = 'transparent';
-soundManager.debugMode = false;
-soundManager.onload = doInit;
+soundManager.setup({
+  preferFlash: true,
+  flashVersion: 9,
+  url: '../../swf/',
+  useHighPerformance: true,
+  wmode: 'transparent',
+  debugMode: false,
+  onready: doInit
+});
 
 </script>
 </head>

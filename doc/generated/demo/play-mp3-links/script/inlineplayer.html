@@ -567,11 +567,7 @@ and easily styled/customizable via CSS.</p>
 
 <span class="kd">var</span> <span class="nx">inlinePlayer</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
 
-<span class="nx">soundManager</span><span class="p">.</span><span class="nx">debugMode</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// disable or enable debug output</span>
-
-<span class="nx">soundManager</span><span class="p">.</span><span class="nx">preferFlash</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// use HTML5 audio for MP3/MP4, if available</span>
-<span class="nx">soundManager</span><span class="p">.</span><span class="nx">useFlashBlock</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-<span class="nx">soundManager</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="s1">&#39;../../swf/&#39;</span><span class="p">;</span> <span class="c1">// path to directory containing SM2 SWF</span></pre></div>
+<span class="nx">soundManager</span><span class="p">.</span><span class="nx">setup</span><span class="p">({</span></pre></div>
       </td>
     </tr>
     <tr id='section-14'>
@@ -579,10 +575,10 @@ and easily styled/customizable via CSS.</p>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-14">&#182;</a>
         </div>
-        <p>optional: enable MPEG-4/AAC support (requires flash 9)</p>
+        <p>disable or enable debug output</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nx">soundManager</span><span class="p">.</span><span class="nx">flashVersion</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span></pre></div>
+        <div class='highlight'><pre>  <span class="nx">debugMode</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span></pre></div>
       </td>
     </tr>
     <tr id='section-15'>
@@ -590,16 +586,51 @@ and easily styled/customizable via CSS.</p>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-15">&#182;</a>
         </div>
-        <hr>
+        <p>use HTML5 audio for MP3/MP4, if available</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nx">soundManager</span><span class="p">.</span><span class="nx">onready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
+        <div class='highlight'><pre>  <span class="nx">preferFlash</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nx">useFlashBlock</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span></pre></div>
       </td>
     </tr>
     <tr id='section-16'>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-16">&#182;</a>
+        </div>
+        <p>path to directory containing SM2 SWF</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;../../swf/&#39;</span><span class="p">,</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-17'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-17">&#182;</a>
+        </div>
+        <p>optional: enable MPEG-4/AAC support (requires flash 9)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="nx">flashVersion</span><span class="o">:</span> <span class="mi">9</span>
+<span class="p">});</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-18'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-18">&#182;</a>
+        </div>
+        <hr>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nx">soundManager</span><span class="p">.</span><span class="nx">onready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-19'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-19">&#182;</a>
         </div>
         <p>soundManager.createSound() etc. may now be called</p>
 
