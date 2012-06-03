@@ -109,7 +109,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20120527';
+  this.versionNumber = 'V2.97a.20120527+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -183,7 +183,11 @@ function SoundManager(smURL, smID) {
     }
   }
   this.setup = function(options) {
-    return _assign(options);
+    if (_didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
+      _complain(_str('setupLate'));
+    }
+    _assign(options);
+    return _s;
   };
   this.ok = function() {
     return (_needsFlash?(_didInit && !_disabled):(_s.useHTML5Audio && _s.hasHTML5));
@@ -1448,20 +1452,22 @@ function SoundManager(smURL, smID) {
   _extraOptions = {
     'onready': 1,
     'ontimeout': 1,
-    'audioFormats': 1,
     'defaultOptions': 1,
     'flash9Options': 1,
     'movieStarOptions': 1
   };
-  _assign = function(o) {
+  _assign = function(o, oParent) {
     var i,
         result = true,
+        hasParent = (typeof oParent !== 'undefined'),
         setupOptions = _s.setupOptions,
         extraOptions = _extraOptions;
     for (i in o) {
       if (o.hasOwnProperty(i)) {
         if (typeof o[i] !== 'object' || o[i] === null || o[i] instanceof Array) {
-          if (typeof setupOptions[i] !== 'undefined') {
+          if (hasParent && typeof extraOptions[oParent] !== 'undefined') {
+            _s[oParent][i] = o[i];
+          } else if (typeof setupOptions[i] !== 'undefined') {
             _s.setupOptions[i] = o[i];
             _s[i] = o[i];
           } else if (typeof extraOptions[i] === 'undefined') {
@@ -1475,7 +1481,12 @@ function SoundManager(smURL, smID) {
             }
           }
         } else {
-          return _assign(o[i]);
+          if (typeof extraOptions[i] === 'undefined') {
+            _complain(_str((typeof _s[i] === 'undefined' ? 'setupUndef' : 'setupError'), i), 2);
+            result = false;
+          } else {
+            return _assign(o[i], i);
+          }
         }
       }
     }

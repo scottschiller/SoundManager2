@@ -196,7 +196,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20120527';
+  this.versionNumber = 'V2.97a.20120527+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -349,13 +349,17 @@ function SoundManager(smURL, smID) {
 
   this.setup = function(options) {
 
-    _s._wD('soundManager.setup', options);
+    // warn if flash options have already been applied
 
-    // TODO: if loadMovie request / init already happened and .flashVersion or .url is set, warn user
+    if (_didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
+      _complain(_str('setupLate'));
+    }
 
     // TODO: defer: true?
 
-    return _assign(options);
+    _assign(options);
+
+    return _s;
 
   };
 
@@ -3136,13 +3140,12 @@ function SoundManager(smURL, smID) {
   _extraOptions = {
     'onready': 1,
     'ontimeout': 1,
-    'audioFormats': 1,
     'defaultOptions': 1,
     'flash9Options': 1,
     'movieStarOptions': 1
   };
 
-  _assign = function(o) {
+  _assign = function(o, oParent) {
 
     /**
      * recursive assignment of properties, soundManager.setup() helper
@@ -3151,6 +3154,7 @@ function SoundManager(smURL, smID) {
 
     var i,
         result = true,
+        hasParent = (typeof oParent !== 'undefined'),
         setupOptions = _s.setupOptions,
         extraOptions = _extraOptions;
 
@@ -3210,7 +3214,12 @@ function SoundManager(smURL, smID) {
 
           // check "allowed" options
 
-          if (typeof setupOptions[i] !== 'undefined') {
+          if (hasParent && typeof extraOptions[oParent] !== 'undefined') {
+
+            // valid recursive / nested object option, eg., { defaultOptions: { volume: 50 } }
+            _s[oParent][i] = o[i];
+
+          } else if (typeof setupOptions[i] !== 'undefined') {
 
             // special case: assign to setupOptions object, which soundManager property references
             _s.setupOptions[i] = o[i];
@@ -3227,9 +3236,11 @@ function SoundManager(smURL, smID) {
 
           } else {
 
-            // valid extraOptions parameter.
-
-            // is it a method, like onready/ontimeout? call it. multiple parameters should be in an array, eg. soundManager.setup({onready: [myHandler, myScope]});
+            /**
+             * valid extraOptions parameter.
+             * is it a method, like onready/ontimeout? call it.
+             * multiple parameters should be in an array, eg. soundManager.setup({onready: [myHandler, myScope]});
+             */
 
             if (_s[i] instanceof Function) {
 
@@ -3246,8 +3257,21 @@ function SoundManager(smURL, smID) {
 
         } else {
 
-          // recurse through object
-          return _assign(o[i]);
+          // recursion case, eg., { defaultOptions: { ... } }
+
+          if (typeof extraOptions[i] === 'undefined') {
+
+            // invalid or disallowed parameter. complain.
+            _complain(_str((typeof _s[i] === 'undefined' ? 'setupUndef' : 'setupError'), i), 2);
+
+            result = false;
+
+          } else {
+
+            // recurse through object
+            return _assign(o[i], i);
+
+          }
 
         }
 
@@ -3767,7 +3791,7 @@ function SoundManager(smURL, smID) {
   _strings = {
 
     // <d>
-    notReady: 'Not loaded yet - wait for soundManager.onload()/onready()',
+    notReady: 'Not loaded yet - wait for soundManager.onready()',
     notOK: 'Audio support is not available.',
     domError: _smc + 'createMovie(): appendChild/innerHTML call failed. DOM not ready or other error.',
     spcWmode: _smc + 'createMovie(): Removing wmode, preventing known SWF loading issue(s)',
@@ -3810,7 +3834,8 @@ function SoundManager(smURL, smID) {
     policy: 'Enabling usePolicyFile for data access',
     setup: _sm + '.setup(): allowed parameters: %s',
     setupError: _sm + '.setup(): "%s" cannot be assigned with this method.',
-    setupUndef: _sm + '.setup(): Could not find property "%s"'
+    setupUndef: _sm + '.setup(): Could not find property "%s"',
+    setupLate: _sm + '.setup(): url + flashVersion changes will not take effect until reboot().'
     // </d>
 
   };
