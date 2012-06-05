@@ -140,20 +140,6 @@ function SoundManager(smURL, smID) {
 
   };
 
-  /**
-   * apply this.setupOptions as local properties, eg., this.setupOptions.flashVersion -> this.flashVersion (soundManager.flashVersion)
-   * this maintains backward compatibility, and allows properties to be defined separately for use by soundManager.setup() etc.
-   */
-
-  (function(that, o) {
-    var i;
-    for (i in o) {
-      if (o.hasOwnProperty(i)) {
-        that[i] = o[i];
-      }
-    }
-  }(this, this.setupOptions));
-
   this.audioFormats = {
 
     /**
@@ -286,7 +272,7 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  _s = this, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
+  _s = this, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _setProperties, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
   _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
@@ -5108,6 +5094,40 @@ function SoundManager(smURL, smID) {
 
   };
 
+  /**
+   * apply top-level setupOptions object as local properties, eg., this.setupOptions.flashVersion -> this.flashVersion (soundManager.flashVersion)
+   * this maintains backward compatibility, and allows properties to be defined separately for use by soundManager.setup().
+   */
+
+  _setProperties = function() {
+
+    var i,
+        o = _s.setupOptions;
+
+    for (i in o) {
+
+      if (o.hasOwnProperty(i)) {
+
+        // assign local property if not already defined
+
+        if (typeof _s[i] === 'undefined') {
+
+          _s[i] = o[i];
+
+        } else if (_s[i] !== o[i]) {
+
+          // legacy support: write manually-assigned property (eg., soundManager.url) back to setupOptions to keep things in sync
+          _s.setupOptions[i] = _s[i];
+
+        }
+
+      }
+
+    }
+
+  };
+
+
   _init = function() {
 
     _wDS('init');
@@ -5190,6 +5210,10 @@ function SoundManager(smURL, smID) {
     }
 
     _didDCLoaded = true;
+
+    // assign top-level soundManager properties eg. soundManager.url
+    _setProperties();
+
     _initDebug();
 
     /**
@@ -5199,15 +5223,21 @@ function SoundManager(smURL, smID) {
     // <d>
     (function(){
 
-      var a = 'sm2-usehtml5audio=', l = _wl.toLowerCase(), b = null,
-      a2 = 'sm2-preferflash=', b2 = null, hasCon = (typeof console !== 'undefined' && typeof console.log === 'function');
+      var a = 'sm2-usehtml5audio=',
+          a2 = 'sm2-preferflash=',
+          b = null, 
+          b2 = null,
+          hasCon = (typeof console !== 'undefined' && typeof console.log === 'function'),
+          l = _wl.toLowerCase();
 
       if (l.indexOf(a) !== -1) {
         b = (l.charAt(l.indexOf(a)+a.length) === '1');
         if (hasCon) {
           console.log((b?'Enabling ':'Disabling ')+'useHTML5Audio via URL parameter');
         }
-        _s.useHTML5Audio = b;
+        _s.setup({
+          'useHTML5Audio': b
+        });
       }
 
       if (l.indexOf(a2) !== -1) {
@@ -5215,7 +5245,9 @@ function SoundManager(smURL, smID) {
         if (hasCon) {
           console.log((b2?'Enabling ':'Disabling ')+'preferFlash via URL parameter');
         }
-        _s.preferFlash = b2;
+        _s.setup({
+          'preferFlash': b2
+        });
       }
 
     }());
@@ -5223,10 +5255,12 @@ function SoundManager(smURL, smID) {
 
     if (!_hasFlash && _s.hasHTML5) {
       _s._wD('SoundManager: No Flash detected'+(!_s.useHTML5Audio?', enabling HTML5.':'. Trying HTML5-only mode.'));
-      _s.useHTML5Audio = true;
-      // make sure we aren't preferring flash, either
-      // TODO: preferFlash should not matter if flash is not installed. Currently, stuff breaks without the below tweak.
-      _s.preferFlash = false;
+      _s.setup({
+        'useHTML5Audio': true,
+        // make sure we aren't preferring flash, either
+        // TODO: preferFlash should not matter if flash is not installed. Currently, stuff breaks without the below tweak.
+        'preferFlash': false
+      });
     }
 
     _testHTML5();
@@ -5238,7 +5272,9 @@ function SoundManager(smURL, smID) {
       _s._wD('SoundManager: Fatal error: Flash is needed to play some required formats, but is not available.');
       // TODO: Fatal here vs. timeout approach, etc.
       // hack: fail sooner.
-      _s.flashLoadTimeout = 1;
+      _s.setup({
+        'flashLoadTimeout': 1
+      });
     }
 
     if (_doc.removeEventListener) {
