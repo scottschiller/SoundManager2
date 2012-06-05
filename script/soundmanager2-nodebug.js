@@ -38,25 +38,6 @@ function SoundManager(smURL, smID) {
     'preferFlash': true,
     'noSWFCache': false
   };
-  this.audioFormats = {
-    'mp3': {
-      'type': ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
-      'required': true
-    },
-    'mp4': {
-      'related': ['aac','m4a'],
-      'type': ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
-      'required': false
-    },
-    'ogg': {
-      'type': ['audio/ogg; codecs=vorbis'],
-      'required': false
-    },
-    'wav': {
-      'type': ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
-      'required': false
-    }
-  };
   this.defaultOptions = {
     'autoLoad': false,
     'autoPlay': false,
@@ -105,6 +86,25 @@ function SoundManager(smURL, smID) {
       }
     }
   }(this, this.setupOptions));
+  this.audioFormats = {
+    'mp3': {
+      'type': ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
+      'required': true
+    },
+    'mp4': {
+      'related': ['aac','m4a'],
+      'type': ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
+      'required': false
+    },
+    'ogg': {
+      'type': ['audio/ogg; codecs=vorbis'],
+      'required': false
+    },
+    'wav': {
+      'type': ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
+      'required': false
+    }
+  };
   this.movieID = 'sm2-container';
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
@@ -183,7 +183,7 @@ function SoundManager(smURL, smID) {
     }
   }
   this.setup = function(options) {
-    if (_didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
+    if (typeof options !== 'undefined' && _didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
       _complain(_str('setupLate'));
     }
     _assign(options);
@@ -685,7 +685,7 @@ function SoundManager(smURL, smID) {
       }
     };
     this.play = function(oOptions, _updatePlayState) {
-      var fN, allowMulti, a, onready, startOK,
+      var fN, allowMulti, a, onready, startOK = true,
           exit = null;
       _updatePlayState = (typeof _updatePlayState === 'undefined' ? true : _updatePlayState);
       if (!oOptions) {

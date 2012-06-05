@@ -49,7 +49,7 @@ function SoundManager(smURL, smID) {
   /**
    * soundManager configuration options list
    * defines top-level configuration properties to be applied to the soundManager instance (eg. soundManager.flashVersion)
-   * to set these properties, use the pattern soundManager.setup({url: '/swf/', flashVersion: 9})
+   * to set these properties, use the setup() method - eg., soundManager.setup({url: '/swf/', flashVersion: 9})
    */
 
   this.setupOptions = {
@@ -73,38 +73,6 @@ function SoundManager(smURL, smID) {
     'html5Test': /^(probably|maybe)$/i, // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
     'preferFlash': true,                // overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
     'noSWFCache': false                 // if true, appends ?ts={date} to break aggressive SWF caching.
-
-  };
-
-  this.audioFormats = {
-
-    /**
-     * determines HTML5 support + flash requirements.
-     * if no support (via flash and/or HTML5) for a "required" format, SM2 will fail to start.
-     * flash fallback is used for MP3 or MP4 if HTML5 can't play it (or if preferFlash = true)
-     * multiple MIME types may be tested while trying to get a positive canPlayType() response.
-     */
-
-    'mp3': {
-      'type': ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
-      'required': true
-    },
-
-    'mp4': {
-      'related': ['aac','m4a'], // additional formats under the MP4 container
-      'type': ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
-      'required': false
-    },
-
-    'ogg': {
-      'type': ['audio/ogg; codecs=vorbis'],
-      'required': false
-    },
-
-    'wav': {
-      'type': ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
-      'required': false
-    }
 
   };
 
@@ -185,6 +153,38 @@ function SoundManager(smURL, smID) {
       }
     }
   }(this, this.setupOptions));
+
+  this.audioFormats = {
+
+    /**
+     * determines HTML5 support + flash requirements.
+     * if no support (via flash and/or HTML5) for a "required" format, SM2 will fail to start.
+     * flash fallback is used for MP3 or MP4 if HTML5 can't play it (or if preferFlash = true)
+     * multiple MIME types may be tested while trying to get a positive canPlayType() response.
+     */
+
+    'mp3': {
+      'type': ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
+      'required': true
+    },
+
+    'mp4': {
+      'related': ['aac','m4a'], // additional formats under the MP4 container
+      'type': ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
+      'required': false
+    },
+
+    'ogg': {
+      'type': ['audio/ogg; codecs=vorbis'],
+      'required': false
+    },
+
+    'wav': {
+      'type': ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
+      'required': false
+    }
+
+  };
 
   // HTML attributes (id + class names) for the SWF container
 
@@ -345,13 +345,14 @@ function SoundManager(smURL, smID) {
    * Configures top-level soundManager properties.
    *
    * @param {object} options Option parameters, eg. { flashVersion: 9, url: '/path/to/swfs/' }
+   * onready and ontimeout are also accepted parameters. call soundManager.setup() to see the full list.
    */
 
   this.setup = function(options) {
 
     // warn if flash options have already been applied
 
-    if (_didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
+    if (typeof options !== 'undefined' && _didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
       _complain(_str('setupLate'));
     }
 
@@ -1613,7 +1614,7 @@ function SoundManager(smURL, smID) {
 
     this.play = function(oOptions, _updatePlayState) {
 
-      var fN, allowMulti, a, onready, startOK,
+      var fN, allowMulti, a, onready, startOK = true,
           exit = null;
 
       // <d>
