@@ -205,21 +205,23 @@ function getRandomMP3URL() {
 
  <h2>Adding "onready" listeners</h2>
 
+ <p>Before you can create and play sounds, you need to wait for the "onready" event to fire.</p>
+
  <p>You can register listeners by passing a function to <code>onready()</code>, and it will be called when SoundManager has finished starting up:</p>
 
 <pre class="block"><code>soundManager.onready(function() {<span>
-    <span>// createSound() / play() etc. can now be called</span>
+    <span>// ready to go! createSound() and play() etc. can now be called</span>
 </span>});
 </code></pre>
 
  <p>You may also listen for a startup timeout, a form of failure (eg., Flash was required, but was blocked from loading etc.):</p>
 
 <pre class="block"><code>soundManager.ontimeout(function() {<span>
-    <span>// uh-oh, SM2 failed to start - error, unsupported etc.</span>
+    <span>// uh-oh, SM2 failed to start - error, unsupported or other issue</span>
 </span>});
 </code></pre>
 
-<p>SoundManager first processes the <code>onready</code> or <code>ontimeout</code> queue in the order items were added, and then fires <code>soundManager.onload()</code> or <code>onerror()</code>. If you call <code>onready()</code> after SM2 has loaded, your callback will be fired immediately.</p>
+<p>SoundManager processes the <code>onready</code> or <code>ontimeout</code> queue in the order items were added. If you call <code>onready()</code> after SM2 has loaded, your callback will be fired immediately.</p>
 
 <p>These methods can also be passed as <code>onready</code> and <code>ontimeout</code> parameters to <code>soundManager.setup()</code>.</p>
 
@@ -233,29 +235,23 @@ function getRandomMP3URL() {
  <p>To disable debug output, pass <code>debugMode: false</code> to <code>soundManager.setup()</code>.</p>
  <p>Alternately, you may use the no-debug, minified version of the SM2 javascript library (which has internal debug code removed, and will silently return false.)</p>
 
- <h2>Demo 1a: Create + play (simple method)</h2>
-<pre>soundManager.play('<span>mySound0</span>','<span>../mpc/audio/AMB_SN_5.mp3</span>');</pre>
- <button onclick="soundManager._writeDebug('Demo 1a',1);soundManager.play('mySound0','../mpc/audio/AMB_SN_5.mp3')">Do this</button>
- <p>Creates and plays a sound with ID "mySound0", at the specified URL. The sound can then be referenced by that ID later, eg. soundManager.play('mySound0');</p>
- <p>Note that this method is only provided for convenience, and allows only ID and URL as parameters. If you want to specify other options (volume, loop, event handlers), you must use the object literal syntax as given below.</p>
-
- <h2>Demo 1b: Create + play (better method)</h2>
+ <h2 id="create">Demo 1: Create + play a sound by ID</h2>
 
 <pre class="block"><code>soundManager.createSound({
  id:'<span>mySound1</span>',
  url:'<span>../mpc/audio/CHINA_1.mp3</span>'
 });
 soundManager.play('<span>mySound1</span>');</code></pre>
- <button onclick="soundManager._writeDebug('Demo 1b',1);soundManager.createSound({id:'mySound1',url:'../mpc/audio/CHINA_1.mp3'});soundManager.play('mySound1')">Do this</button>
+ <button onclick="soundManager._writeDebug('Demo 1',1);soundManager.createSound({id:'mySound1',url:'../mpc/audio/CHINA_1.mp3'});soundManager.play('mySound1')">Do this</button>
  <p>Creates, then plays a sound. This object literal method allows for other parameters to be used (see demo 2)</p>
 
- <h3>Variant: Use object returned from createSound() (best method)</h3>
+ <h3>Variant: Create + play sound by object (best method)</h3>
 
-<pre class="block"><code>var aSoundObject = soundManager.createSound({
+<pre class="block"><code>var soundObject = soundManager.createSound({
  id:'<span>mySound2</span>',
  url:'<span>../mpc/audio/CHINA_1.mp3</span>'
 });
-aSoundObject.play();</code></pre>
+soundObject.play();</code></pre>
  <button onclick="soundManager._writeDebug('Demo 1b variant',1);var aSoundObject = soundManager.createSound({id:'mySound2',url:'../mpc/audio/CHINA_1.mp3'});aSoundObject.play()">Do this</button>
  <p>Creates, then plays a sound. This object literal method allows for other parameters to be used (see demo 2)</p>
 
@@ -272,7 +268,7 @@ demo2Sound.play({volume:50});
 <button onclick="return doEval(document.getElementById('demo2').innerHTML)">Do this</button>
  <p>(creates, then plays a new sound - a function is called when the sound finishes playing)</p>
 
- <h2>Demo 3: Play a pre-existing sound</h2>
+ <h2>Demo 3: Play a pre-existing sound by ID</h2>
 <pre>soundManager.play('<span>aDrumSound</span>');</pre>
  <button onclick="soundManager._writeDebug('Demo 3',1);soundManager.play('aDrumSound')">Do this</button>
  <p>This plays an existing sound which was created by soundManager.onready() (for reference, view source of this page.)</p>
