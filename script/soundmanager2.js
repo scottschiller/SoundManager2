@@ -427,7 +427,7 @@ function SoundManager(smURL, smID) {
     if (_html5OK(_tO)) {
 
       oSound = make();
-      _s._wD('Loading sound '+_tO.id+' via HTML5');
+      _s._wD('Creating sound '+_tO.id+', using HTML5');
       oSound._setup_html5(_tO);
 
     } else {
@@ -1466,9 +1466,28 @@ function SoundManager(smURL, smID) {
         if (!oS._called_load) {
 
           _s._wD(_h5+'load: '+_t.sID);
+
           _t._html5_canplay = false;
 
-          // given explicit load call, try to get whole file.
+          // TODO: review called_load / html5_canplay logic
+
+          // if url provided directly to load(), assign it here.
+
+          if (_t._a.src !== _iO.url) {
+
+            _s._wD(_wDS('manURL') + ': ' + _iO.url);
+
+            _t._a.src = _iO.url;
+
+            // TODO: review / re-apply all relevant options (volume, loop, onposition etc.)
+
+            // reset position for new URL
+            _t.setPosition(0);
+
+          }
+
+          // given explicit load call, try to preload.
+
           // early HTML5 implementation (non-standard)
           _t._a.autobuffer = 'auto';
 
@@ -1479,12 +1498,12 @@ function SoundManager(smURL, smID) {
 
           if (_iO.autoPlay) {
             _t.play();
-          } else {
-            oS.load();
           }
 
         } else {
+
           _s._wD(_h5+'ignoring request to load again: '+_t.sID);
+
         }
 
       } else {
@@ -1529,17 +1548,27 @@ function SoundManager(smURL, smID) {
         _s._wD('SMSound.unload(): "' + _t.sID + '"');
 
         if (!_t.isHTML5) {
+
           if (_fV === 8) {
             _flash._unload(_t.sID, _emptyURL);
           } else {
             _flash._unload(_t.sID);
           }
+
         } else {
+
           _stop_html5_timer();
+
           if (_t._a) {
+
             _t._a.pause();
-            _html5Unload(_t._a);
+            _html5Unload(_t._a, _emptyURL);
+
+            // reset local URL for next load / play call, too
+            _t.url = _emptyURL;
+
           }
+
         }
 
         // reset load/status flags
@@ -1659,7 +1688,7 @@ function SoundManager(smURL, smID) {
             // assign directly because setAutoPlay() increments the instanceCount
             _t._iO.autoPlay = true;
             _t.load(_t._iO);
-          } else if (_is_iDevice) {
+          } else {
             // iOS needs this when recycling sounds, loading a new URL on an existing object.
             _t.load(_t._iO);
           }
@@ -1787,23 +1816,27 @@ function SoundManager(smURL, smID) {
 
           startOK = _flash._start(_t.sID, _t._iO.loops || 1, (_fV === 9 ? _t._iO.position : _t._iO.position / 1000), _t._iO.multiShot);
 
+          if (_fV === 9 && !startOK) {
+            // edge case: no sound hardware, or 32-channel flash ceiling hit.
+            // applies only to Flash 9, non-NetStream/MovieStar sounds.
+            // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29
+            _s._wD(fN+ _t.sID+': No sound hardware, or 32-sound ceiling hit');
+            if (_t._iO.onplayerror) {
+              _t._iO.onplayerror.apply(_t);
+            }
+
+          }
+
         } else {
 
           _start_html5_timer();
+
           a = _t._setup_html5();
+
           _t.setPosition(_t._iO.position);
+
           a.play();
 
-        }
-
-        if (_fV === 9 && !startOK) {
-          // edge case: no sound hardware, or 32-channel flash ceiling hit.
-          // applies only to Flash 9, non-NetStream/MovieStar sounds.
-          // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29
-          _s._wD(fN+ _t.sID+': No sound hardware, or 32-sound ceiling hit');
-          if (_t._iO.onplayerror) {
-            _t._iO.onplayerror.apply(_t);
-          }
         }
 
       }
@@ -2604,21 +2637,27 @@ function SoundManager(smURL, smID) {
         if (_a._t) {
 
           if (!_useGlobalHTML5Audio && _dURL === d(_lastURL)) {
+
             // same url, ignore request
             result = _a; 
+
           } else if (_useGlobalHTML5Audio && _oldIO.url === _iO.url && (!_lastURL || (_lastURL === _oldIO.url))) {
+
             // iOS-type reuse case
             result = _a;
+
           }
 
           if (result) {
+
             _t._apply_loop(_a, _iO.loops);
             return result;
+
           }
 
         }
 
-        _s._wD('setting new URL on existing object: ' + _dURL + (_lastURL ? ', old URL: ' + _lastURL : ''));
+        _s._wD('setting URL on existing object: ' + _dURL + (_lastURL ? ', old URL: ' + _lastURL : ''));
 
         /**
          * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
@@ -2627,7 +2666,9 @@ function SoundManager(smURL, smID) {
          */
 
         if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
+
           _a._t.stop();
+
         }
 
         // reset load/playstate, onPosition etc. if the URL is new.
@@ -2641,13 +2682,28 @@ function SoundManager(smURL, smID) {
 
       } else {
 
-        _s._wD('creating HTML5 Audio() element with URL: '+_dURL);
-        _a = new Audio(_iO.url);
+        _wDS('h5a');
+
+        if (_iO.autoLoad || _iO.autoPlay) {
+
+          _t._a = new Audio(_iO.url);
+
+        } else {
+
+          // null for stupid Opera 9.64 case
+          _t._a = (_isOpera ? new Audio(null) : new Audio());
+
+        }
+
+        // assign local reference
+        _a = _t._a;
 
         _a._called_load = false;
 
         if (_useGlobalHTML5Audio) {
+
           _s._global_a = _a;
+
         }
 
       }
@@ -2673,13 +2729,8 @@ function SoundManager(smURL, smID) {
         // early HTML5 implementation (non-standard)
         _a.autobuffer = false;
 
-        // standard
-        _a.preload = 'none';
-
-        if (!_mobileHTML5) {
-          // android 2.3 doesn't like load() -> play(). Others do.
-          _t.load();
-        }
+        // standard ('none' is also an option.)
+        _a.preload = 'auto';
 
       }
 
@@ -2699,7 +2750,6 @@ function SoundManager(smURL, smID) {
         return _t._a ? _t._a.addEventListener(oEvt, oFn, bCapture||false) : null;
       }
 
-      _s._wD(_h5+'adding event listeners: '+_t.sID);
       _t._a._added_events = true;
 
       for (f in _html5_events) {
@@ -2849,6 +2899,11 @@ function SoundManager(smURL, smID) {
           _t._iO = {};
           _stop_html5_timer();
 
+          // reset position, too
+          if (_t.isHTML5) {
+            _t.position = 0;
+          }
+
         }
 
         if (!_t.instanceCount || _t._iO.multiShotEvents) {
@@ -2911,7 +2966,9 @@ function SoundManager(smURL, smID) {
         return false;
       }
 
-      _t.position = nPosition;
+      // Safari HTML5 play() may return small -ve values when starting from position: 0, eg. -50.120396875. Unexpected/invalid per W3, I think. Normalize to 0.
+      _t.position = Math.max(0, nPosition);
+
       _t._processOnPosition();
 
       if (!_t.isHTML5 && _fV > 8) {
@@ -3387,7 +3444,9 @@ function SoundManager(smURL, smID) {
       t._html5_canplay = true;
       _s._wD(_h5+'canplay: '+t.sID+', '+t.url);
       t._onbufferchange(0);
-      position1K = (!isNaN(t.position)?t.position/1000:null);
+
+      // position according to instance options
+      position1K = (typeof t._iO.position !== 'undefined' && !isNaN(t._iO.position)?t._iO.position/1000:null);
 
       // set the position if position was set before the sound loaded
       if (t.position && this.currentTime !== position1K) {
@@ -3395,7 +3454,7 @@ function SoundManager(smURL, smID) {
         try {
           this.currentTime = position1K;
         } catch(ee) {
-          _s._wD(_h5+'setting position failed: '+ee.message, 2);
+          _s._wD(_h5+'setting position of ' + position1K + ' failed: '+ee.message, 2);
         }
       }
 
@@ -3601,7 +3660,7 @@ function SoundManager(smURL, smID) {
 
   };
 
-  _html5Unload = function(oAudio) {
+  _html5Unload = function(oAudio, url) {
 
     /**
      * Internal method: Unload media, and cancel any current/pending network requests.
@@ -3613,7 +3672,7 @@ function SoundManager(smURL, smID) {
 
     if (oAudio) {
       // Firefox likes '' for unload (used to work?) - however, may request hosting page URL (bad.) Most other UAs dislike '' and fail to unload.
-      oAudio.src = _emptyURL;
+      oAudio.src = url;
     }
 
   };
@@ -3822,7 +3881,8 @@ function SoundManager(smURL, smID) {
     setup: _sm + '.setup(): allowed parameters: %s',
     setupError: _sm + '.setup(): "%s" cannot be assigned with this method.',
     setupUndef: _sm + '.setup(): Could not find property "%s"',
-    setupLate: _sm + '.setup(): url + flashVersion changes will not take effect until reboot().'
+    setupLate: _sm + '.setup(): url + flashVersion changes will not take effect until reboot().',
+    h5a: 'creating HTML5 Audio() object'
     // </d>
 
   };
