@@ -2713,16 +2713,20 @@ div.icons ul li.package {
 .bonus-demos li {
  float: left;
  display: inline;
- width: 48%;
- margin-right: 2%;
+ width: 32%;
+ margin-right: 1%;
  text-align: center;
 }
 
 .bonus-demo a,
 .bonus-demos li a {
  opacity: 0.85;
- -moz-transition: 0.2s opacity ease-in-out;
- -webkit-transition: 0.2s opacity ease-in-out;
+ -moz-transition: 0.1s opacity ease-in-out;
+ -webkit-transition: 0.1s opacity ease-in-out;
+}
+
+.bonus-demos li img {
+ border-radius: 4px;
 }
 
 .bonus-demo a:hover,
