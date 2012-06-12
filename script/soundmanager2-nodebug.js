@@ -1192,7 +1192,7 @@ function SoundManager(smURL, smID) {
         if (_useGlobalHTML5Audio && _a._t && _a._t.playState && _iO.url !== _oldIO.url) {
           _a._t.stop();
         }
-        _resetProperties((_oldIO.url ? _iO.url === _oldIO.url : (_lastURL ? _lastURL === _iO.url : false)));
+        _resetProperties((_oldIO && _oldIO.url ? _iO.url === _oldIO.url : (_lastURL ? _lastURL === _iO.url : false)));
         _a.src = _iO.url;
         _t.url = _iO.url;
         _lastURL = _iO.url;

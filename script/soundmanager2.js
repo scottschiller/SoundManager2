@@ -2673,7 +2673,7 @@ function SoundManager(smURL, smID) {
 
         // reset load/playstate, onPosition etc. if the URL is new.
         // somewhat-tricky object re-use vs. new SMSound object, old vs. new URL comparisons
-        _resetProperties((_oldIO.url ? _iO.url === _oldIO.url : (_lastURL ? _lastURL === _iO.url : false)));
+        _resetProperties((_oldIO && _oldIO.url ? _iO.url === _oldIO.url : (_lastURL ? _lastURL === _iO.url : false)));
 
         _a.src = _iO.url;
         _t.url = _iO.url;
