@@ -1239,15 +1239,17 @@ function SoundManager(smURL, smID) {
 
     // trash ze flash
 
-    try {
-      if (_isIE) {
-        _oRemovedHTML = _flash.innerHTML;
+    if (_flash) {
+      try {
+        if (_isIE) {
+          _oRemovedHTML = _flash.innerHTML;
+        }
+        _oRemoved = _flash.parentNode.removeChild(_flash);
+        _s._wD('Flash movie removed.');
+      } catch(e) {
+        // uh-oh.
+        _wDS('badRemove', 2);
       }
-      _oRemoved = _flash.parentNode.removeChild(_flash);
-      _s._wD('Flash movie removed.');
-    } catch(e) {
-      // uh-oh.
-      _wDS('badRemove', 2);
     }
 
     // actually, force recreate of movie.

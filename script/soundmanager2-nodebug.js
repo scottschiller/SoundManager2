@@ -519,12 +519,14 @@ function SoundManager(smURL, smID) {
     for (i = _s.soundIDs.length-1; i >= 0; i--) {
       _s.sounds[_s.soundIDs[i]].destruct();
     }
-    try {
-      if (_isIE) {
-        _oRemovedHTML = _flash.innerHTML;
+    if (_flash) {
+      try {
+        if (_isIE) {
+          _oRemovedHTML = _flash.innerHTML;
+        }
+        _oRemoved = _flash.parentNode.removeChild(_flash);
+      } catch(e) {
       }
-      _oRemoved = _flash.parentNode.removeChild(_flash);
-    } catch(e) {
     }
     _oRemovedHTML = _oRemoved = _needsFlash = null;
     _s.enabled = _didDCLoaded = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = _s.swfLoaded = false;
