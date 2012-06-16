@@ -710,7 +710,9 @@ if (window.location.toString().match(/#customize/i)) {
 if (window.location.toString().match(/hifi/i)) {
 	soundManager.onready(function(){
 		document.getElementById('hifi').style.display = 'none';
+
 		threeSixtyPlayer.config = {
+
 		  playNext: false,
 		  autoPlay: false,
 		  loadRingColor: '#ccc',
@@ -739,9 +741,10 @@ if (window.location.toString().match(/hifi/i)) {
 		  peakDataColor: '#ff33ff',
 		  peakDataOutside: true,
 		  peakDataLineRatio: 0.5,
-
+                  scaleArcWidth: 1,  // thickness factor of playback progress ring
 		  useAmplifier: true
 
 		}
+
 	});
 }
