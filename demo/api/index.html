@@ -260,7 +260,7 @@ soundObject.play();</code></pre>
  id:'<span>mySound4</span>',
  url:'<span>../mpc/audio/CHINA_1.mp3</span>',
  onfinish:function() {
-   soundManager._writeDebug(this.sID+'<span> finished playing</span>');
+   soundManager._writeDebug(this.id+'<span> finished playing</span>');
  }
 });
 demo2Sound.play({volume:50});
@@ -347,11 +347,11 @@ if (typeof addedListeners === '<span>undefined</span>') {
   addedListeners = true;
 
   s.onPosition(<span>500</span>, function(eventPosition) { <span><span>// fire at 0.5 seconds</span></span>
-    soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
+    soundManager._writeDebug(<span>'Sound '+this.id+' has reached position '+eventPosition</span>);
   });
 
   s.onPosition(<span>1000</span>, function(eventPosition) { <span><span>// fire at 1 second</span></span>
-    soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
+    soundManager._writeDebug(<span>'Sound '+this.id+' has reached position '+eventPosition</span>);
   });
 }
 
@@ -382,7 +382,7 @@ if (typeof addedListeners !== '<span>undefined</span>') {
 
 s.onPosition(<span>750</span>, function(eventPosition) { <span><span>// fire at 0.75 seconds</span></span>
 
-  soundManager._writeDebug(<span>'Sound '+this.sID+' has reached position '+eventPosition</span>);
+  soundManager._writeDebug(<span>'Sound '+this.id+' has reached position '+eventPosition</span>);
   <span><span>// and now, remove the listener using the eventPosition specified in this callback</span></span>
   <span><span>// so next time the sound plays, this listener will not fire</span></span>
   this.clearOnPosition(eventPosition);
@@ -399,7 +399,7 @@ s.play({
     soundManager._writeDebug(<span>'Playing once more, onPosition() should not fire'</span>);
     this.play({
       onfinish: function() {
-        soundManager._writeDebug(<span>'"' + this.sID + '" finished.'</span>);
+        soundManager._writeDebug(<span>'"' + this.id + '" finished.'</span>);
       }
     });
   }
@@ -692,7 +692,7 @@ foo.play();
 
 <span><span>// note: assign .options before calling .play(), as that "bakes" the options into a play instance object.
 // the below "late" event handler assignment will have no effect on the already-playing instance.</span></span>
-foo.options.onfinish = function() { soundManager._writeDebug(this.sID+'<span> stopped.</span>'); }
+foo.options.onfinish = function() { soundManager._writeDebug(this.id+'<span> stopped.</span>'); }
 </code></pre>
 <button onclick="return doEval(document.getElementById('demo11').innerHTML)">Do this</button>
 
@@ -725,10 +725,10 @@ if (!fortyeight.loaded) {
    id: '<span>autoLoadTest</span>',
    url: getRandomMP3URL(),
    onload: function() {
-	soundManager._writeDebug(this.sID+'<span> loaded.</span>');
+	soundManager._writeDebug(this.id+'<span> loaded.</span>');
    },
    onplay: function() {
-     soundManager._writeDebug('<span>Starting sound: </span>'+this.sID);
+     soundManager._writeDebug('<span>Starting sound: </span>'+this.id);
    },
    autoPlay: false,
    autoLoad: true,
@@ -746,7 +746,7 @@ if (!fortyeight.loaded) {
  id: '<span>demo14</span>',
  url: '<span>../mpc/audio/AMB_SN13.mp3</span>',
  onfinish: function() {
-  soundManager._writeDebug(this.sID+'<span> finished (now destroying)</span>');
+  soundManager._writeDebug(this.id+'<span> finished (now destroying)</span>');
   <span><span>// destroy this sound</span></span>
   this.destruct();
  },
@@ -762,7 +762,7 @@ if (!fortyeight.loaded) {
  id: '<span>demo15</span>',
  url: getRandomMP3URL(),
  onstop: function() {
-  soundManager.unload(this.sID);
+  soundManager.unload(this.id);
  },
  onload: function() {
    soundManager._writeDebug('<span>loaded</span>');
@@ -783,7 +783,7 @@ setTimeout(sound15.stop,1500);
       soundManager._writeDebug('<span>Buffering </span>'+(this.isBuffering?'<span>started</span>':'<span>stopped</span>')+'<span>.</span>');
     },
     onload: function() {
-      soundManager._writeDebug(this.sID+'<span> loaded.</span>');
+      soundManager._writeDebug(this.id+'<span> loaded.</span>');
     }
   });
   sound16.play();

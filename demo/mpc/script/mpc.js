@@ -13,8 +13,8 @@ var MPC = function() {
 
   this.showProgress = function() {
     // sound is loading, update bytes received using this.bytesLoaded / this.bytesTotal
-    if (self._getButton(this.sID).className != 'loading') self._getButton(this.sID).className = 'loading'; // a bit inefficient here..
-    self._showStatus(this.sID,this.bytesLoaded,this.bytesTotal);
+    if (self._getButton(this.id).className != 'loading') self._getButton(this.id).className = 'loading'; // a bit inefficient here..
+    self._showStatus(this.id,this.bytesLoaded,this.bytesTotal);
   }
 
   this.onid3 = function() {
@@ -26,22 +26,22 @@ var MPC = function() {
   }
 
   this.onload = function() {
-    var sID = this.sID;
-    self._getButton(this.sID).className = '';
-    self._getButton(this.sID).title = ('Sound ID: '+this.sID+' ('+this.url+')');
+    var sID = this.id;
+    self._getButton(this.id).className = '';
+    self._getButton(this.id).title = ('Sound ID: '+this.id+' ('+this.url+')');
   }
 
   this.onfinish = function() {
-    self._getButton(this.sID).className = '';
-    self._reset(this.sID);
+    self._getButton(this.id).className = '';
+    self._reset(this.id);
   }
 
   this.onplay = function() {
-    self._getButton(this.sID).className = 'active';
+    self._getButton(this.id).className = 'active';
   }
 
   this.whileplaying = function() {
-    self._showStatus(this.sID,this.position,this.duration);
+    self._showStatus(this.id,this.position,this.duration);
   }
 
   this._keyHandler = function(e) {
@@ -128,7 +128,7 @@ soundManager.onready(function() {
    *  stream: true,
    *  autoPlay: true,
    *  multiShot: false,
-   *  whileloading: function() { alert('sound '+this.sID+': '+this.bytesLoaded+' of '+this.bytesTotal+' bytes loaded.'); } // event handler: "this" is scoped to SMSound() object instance for easy access to methods/properties
+   *  whileloading: function() { alert('sound '+this.id+': '+this.bytesLoaded+' of '+this.bytesTotal+' bytes loaded.'); } // event handler: "this" is scoped to SMSound() object instance for easy access to methods/properties
    * });
    *
    * - OR -

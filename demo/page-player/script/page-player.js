@@ -813,10 +813,10 @@ function PagePlayer() {
   };
 
   this.stopSound = function(oSound) {
-    sm._writeDebug('stopping sound: '+oSound.sID);
-    sm.stop(oSound.sID);
+    sm._writeDebug('stopping sound: '+oSound.id);
+    sm.stop(oSound.id);
     if (!isTouchDevice) { // iOS 4.2+ security blocks onfinish() -> playNext() if we set a .src in-between(?)
-      sm.unload(oSound.sID);
+      sm.unload(oSound.id);
     }
   };
 

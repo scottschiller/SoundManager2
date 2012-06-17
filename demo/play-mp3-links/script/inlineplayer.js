@@ -160,7 +160,7 @@ function InlinePlayer() {
         thisSound.togglePause();
       } else {
         // different sound
-        sm._writeDebug('sound different than last sound: '+self.lastSound.sID);
+        sm._writeDebug('sound different than last sound: '+self.lastSound.id);
         if (self.lastSound) {
           self.stopSound(self.lastSound);
         }
@@ -202,8 +202,8 @@ function InlinePlayer() {
   }
 
   this.stopSound = function(oSound) {
-    soundManager.stop(oSound.sID);
-    soundManager.unload(oSound.sID);
+    soundManager.stop(oSound.id);
+    soundManager.unload(oSound.id);
   }
 
   this.init = function() {
