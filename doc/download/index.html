@@ -790,7 +790,7 @@ soundManager.defaultOptions.onjustbeforefinishtime: 200;</code></pre>
 										</p>
 
 <pre class="block"><code>mySound.onposition(10000, function() {
-  console.log('the sound ' + this.sID + ' is now at position ' + this.position);
+  console.log('the sound ' + this.id + ' is now at position ' + this.position);
 });</code></pre>
 
 										<p>
@@ -800,7 +800,7 @@ soundManager.defaultOptions.onjustbeforefinishtime: 200;</code></pre>
 <pre class="block"><code>mySound.load({
   onload: function() {
     this.onposition(this.duration - 5000, function() {
-      console.log('the sound ' + this.sID + ' is now at position ' + this.position);
+      console.log('the sound ' + this.id + ' is now at position ' + this.position);
     }
   }
 });</code></pre>

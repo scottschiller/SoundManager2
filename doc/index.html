@@ -881,7 +881,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 	   <dt><span>object:SMSound</span> onPosition(<span>id:string, msecOffset:integer, callback:function, [scope]</span>)</dt>
 	   <dd>Registers an event listener, fired when a sound reaches or passes a certain position while playing. Position being "listened" for is passed back to event handler. Will also fire if a sound is "rewound" (eg. via <code>setPosition()</code> to an earlier point) and the given position is reached again. Listeners will be removed if a sound is unloaded. An optional scope can be passed as well.</dd>
 	   <dd>Note that for <code>multiShot</code> cases, only the first play instance's <code>position</code> is tracked in Flash; therefore, subsequent "shots" will not have onPosition() events being fired.</dd>
-	   <dd>Example: <code>soundManager.onPosition('mySound', 3000, function(eventPosition){<span>console.log(this.sID+' reached '+eventPosition</span>});</code></dd>
+	   <dd>Example: <code>soundManager.onPosition('mySound', 3000, function(eventPosition){<span>console.log(this.id+' reached '+eventPosition</span>});</code></dd>
    </dl>
 
 	   <dl id="soundmanager-onready" class="f-block f-onready">
@@ -1087,12 +1087,12 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   <dt><span>object:SMSound</span> onPosition(<span>msecOffset:integer, callback:function, [scope]</span>)</dt>
 				   <dd>Registers an event listener, fired when a sound reaches or passes a certain position while playing. Position being "listened" for is passed back to event handler. Will also fire if a sound is "rewound" (eg. via <code>setPosition()</code> to an earlier point) and the given position is reached again. Listeners will be removed if a sound is unloaded. An optional scope can be passed as well.</dd>
 				   <dd>Note that for <code>multiShot</code> cases, only the first play instance's <code>position</code> is tracked in Flash; therefore, subsequent "shots" will not have onPosition() events being fired.</dd>
-				   <dd>Example: <code>mySound.onPosition(3000, function(eventPosition){<span>console.log(this.sID+' reached '+eventPosition</span>});</code></dd>
+				   <dd>Example: <code>mySound.onPosition(3000, function(eventPosition){<span>console.log(this.id+' reached '+eventPosition</span>});</code></dd>
 				   <dd>If you need to fire an event relative to the true duration of the sound, reference its duration once the sound has fully-loaded - ie., at or after the <code>onload()</code> event - as the duration will not be completely accurate until that time. <code>durationEstimate</code> may be referenced before <code>onload()</code>, but it should not be relied on when "precise" timings of say, &lt; 1 second are desired.</dd>
 				   <dd>Example:<pre class="block"><code>mySound.load({
   onload: function() {
     this.onPosition(this.duration - 5000, function() {
-      console.log(<span>'the sound '</span> + this.sID + <span>' is now at position '</span> + this.position);
+      console.log(<span>'the sound '</span> + this.id + <span>' is now at position '</span> + this.position);
     });
   }
 });</code></pre>
@@ -1193,11 +1193,11 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				  <div>
 <pre class="block"><code>soundManager.play('<span>mySound</span>',{
   onfinish: function() {
-    alert('<span>The sound </span>'+this.sID+' <span>finished playing.</span>');
+    alert('<span>The sound </span>'+this.id+' <span>finished playing.</span>');
   }
 });</code></pre>
 				  </div>
-				  <p>Event handlers are scoped to the relevant sound object, so the <code>this</code> keyword will point to the sound object on which the event fired such that its properties can easily be accessed - eg. within an <code>SMSound</code> event handler, <code>this.sID</code> will give the sound ID.</p>
+				  <p>Event handlers are scoped to the relevant sound object, so the <code>this</code> keyword will point to the sound object on which the event fired such that its properties can easily be accessed - eg. within an <code>SMSound</code> event handler, <code>this.id</code> will give the sound ID.</p>
 
 				  </div>
 
@@ -1237,7 +1237,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
   url: 'song.mp3',
   onconnect: function(bConnect) {
     <span><span>// <b>this.connected</b> can also be used</span></span>
-    soundManager._writeDebug(this.sID+' connected: '+(bConnect?'true':'false'));
+    soundManager._writeDebug(this.id+' connected: '+(bConnect?'true':'false'));
   }
 </span>}).play();<span><span> // will result in connection being made</span></span></code></pre>
                    </dd>
@@ -1255,7 +1255,7 @@ mySoundObject.play(); <span><span>// SMSound object reference, same as soundMana
 				   <dd>
 				     Example handler code:
 				    <div>
-<pre class="block"><code>soundManager._writeDebug(<span>'sound '+this.sID+' ID3 data received'</span>);
+<pre class="block"><code>soundManager._writeDebug(<span>'sound '+this.id+' ID3 data received'</span>);
 var prop = null;
 var data = '';
 for (prop in this.id3) {
@@ -1318,14 +1318,14 @@ for (prop in this.id3) {
 				   <dl id="smsound-whileloading" class="f-block s-whileloading s-bytesloaded s-bytestotal">
 				   <dt>whileloading()</dt>
 				   <dd>Fires at a regular interval when a sound is loading and new data has been received. The relevant, updated property is <code>bytesLoaded</code>.</dd>
-				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.sID+' loading, '+this.bytesLoaded+' of '+this.bytesTotal</span>);</code></dd>
+				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.id+' loading, '+this.bytesLoaded+' of '+this.bytesTotal</span>);</code></dd>
 				   <dd>Note that the <code>duration</code> property starts from 0 and is updated during <code>whileloading()</code> to reflect the duration of currently-loaded sound data (ie. when a 4:00 MP3 has loaded 50%, the duration will be reported as 2:00 in milliseconds.) However, an estimate of final duration can be calculated using <code>bytesLoaded</code>, <code>bytesTotal</code> and <code>duration</code> while loading. Once fully-loaded, <code>duration</code> will reflect the true and accurate value.</dd>
 				   </dl>
 
 				   <dl id="smsound-whileplaying" class="f-block s-whileplaying">
 				   <dt>whileplaying()</dt>
 				   <dd>Fires at a regular interval when a sound is playing, and a position (time) change is detected. The relevant, updated property is <code>position</code>.</dd>
-				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.sID+' playing, '+this.position+' of '+this.duration</span>);</code></dd>
+				   <dd>Example handler code: <code>soundManager._writeDebug(<span>'sound '+this.id+' playing, '+this.position+' of '+this.duration</span>);</code></dd>
 				   </dl>
 
 				  </div>
@@ -1365,7 +1365,7 @@ for (prop in this.id3) {
 
 						   <dl id="smsound-sid" class="f-block s-sid">
 						   <dt>sID</dt>
-						   <dd>Sound ID string as provided from the <code>id</code> parameter via <code>createSound()</code> or <code>play()</code>. Can be referenced as <code>this.sID</code> from within sound object event handlers such as <code>onload()</code>, <code>whileloading()</code> or <code>whileplaying()</code>, etc.</dd>
+						   <dd>Sound ID string as provided from the <code>id</code> parameter via <code>createSound()</code> or <code>play()</code>. Can be referenced as <code>this.id</code> from within sound object event handlers such as <code>onload()</code>, <code>whileloading()</code> or <code>whileplaying()</code>, etc.</dd>
 						   <dd>If an ID is known, the related SMSound object can be retrieved via <code>getSoundById</code> or directly referencing <code>sounds[sID]</code> on the SoundManager global object.</dd>
 						   </dl>
 
@@ -1877,7 +1877,7 @@ soundManager.movieStarOptions = {<span>
   autoLoad: true,
   autoPlay: false,
   onload: function() {
-    alert('The sound '+this.sID+' loaded!');
+    alert('The sound '+this.id+' loaded!');
   },
   volume: 50
 </span>});</code></pre>
