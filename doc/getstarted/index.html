@@ -201,15 +201,17 @@ soundManager.setup({
 
 <pre>
 &lt;script&gt;
-soundManager.url = '<span>/path/to/swf-files/</span>';
-soundManager.flashVersion = 9; <span><span>// optional: shiny features (default = 8)</span></span>
-soundManager.useFlashBlock = false; <span><span>// optionally, enable when you're ready to <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">dive in</a></span></span>
-<span><span>/*
- * read up on <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.
- * iPad/iPhone and devices without flash installed will always attempt to use it.
-*/</span></span>
-soundManager.onready(function() {
-  <span><span>// Ready to use; <a href="../#soundmanager-createsound">soundManager.createSound()</a> etc. can now be called.</span></span>
+soundManager.setup({
+  url: '<span>/path/to/swf-files/</span>',
+  flashVersion: 9, <span><span>// optional: shiny features (default = 8)</span></span>
+  useFlashBlock: false, <span><span>// optionally, enable when you're ready to <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">dive in</a></span></span>
+  <span><span>/**
+   * read up on <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.
+   * iPad/iPhone and devices without flash installed will always attempt to use it.
+   */</span></span>
+  onready: function() {
+    <span><span>// Ready to use; <a href="../#soundmanager-createsound">soundManager.createSound()</a> etc. can now be called.</span></span>
+  }
 });
 &lt;/script&gt;</pre>
 
@@ -351,7 +353,7 @@ soundManager.onready(function() {
   autoLoad: <span>true</span>,
   autoPlay: <span>false</span>,
   onload: <span>function() {
-    alert('<span>The sound </span>'+<span>this.sID</span>+'<span> loaded!</span>');
+    alert('<span>The sound </span>'+<span>this.id</span>+'<span> loaded!</span>');
   }</span>,
   volume: <span>50</span>
 });</code></pre>
