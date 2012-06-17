@@ -158,6 +158,11 @@ body.home #about-sm2 h3 {
   font-size: 2.25em;
 }
 
+body.home #about-sm2 strong {
+ color: #333;
+ font-weight: 500;
+}
+
 #col3 a.button, /* "newer version available" */
 a.feature-hot,
 a.feature {
@@ -1334,7 +1339,12 @@ div#gsfn_list_widget div#gsfn_content p.gsfn_summary {
 }
 
 .compact {
-  margin-bottom:0.25em;
+  margin-bottom:0.25em !important;
+}
+
+.smaller {
+ margin-top: 0px !important;
+ margin-bottom: 0.25em !important;
 }
 
 .c2 a,
