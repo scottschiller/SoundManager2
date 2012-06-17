@@ -457,7 +457,7 @@ and easily styled/customizable via CSS.</p>
         <p>different sound</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>        <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;sound different than last sound: &#39;</span><span class="o">+</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+        <div class='highlight'><pre>        <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;sound different than last sound: &#39;</span><span class="o">+</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">)</span> <span class="p">{</span>
           <span class="nx">self</span><span class="p">.</span><span class="nx">stopSound</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">lastSound</span><span class="p">);</span>
         <span class="p">}</span>
@@ -526,8 +526,8 @@ and easily styled/customizable via CSS.</p>
   <span class="p">}</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">stopSound</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">soundManager</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
-    <span class="nx">soundManager</span><span class="p">.</span><span class="nx">unload</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+    <span class="nx">soundManager</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+    <span class="nx">soundManager</span><span class="p">.</span><span class="nx">unload</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
   <span class="p">}</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>

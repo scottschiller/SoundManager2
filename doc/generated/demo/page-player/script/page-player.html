@@ -1366,10 +1366,10 @@ note that if Flash 9 is required, you must set soundManager.flashVersion = 9 in 
   <span class="p">};</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">stopSound</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oSound</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;stopping sound: &#39;</span><span class="o">+</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
-    <span class="nx">sm</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+    <span class="nx">sm</span><span class="p">.</span><span class="nx">_writeDebug</span><span class="p">(</span><span class="s1">&#39;stopping sound: &#39;</span><span class="o">+</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+    <span class="nx">sm</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isTouchDevice</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// iOS 4.2+ security blocks onfinish() -&gt; playNext() if we set a .src in-between(?)</span>
-      <span class="nx">sm</span><span class="p">.</span><span class="nx">unload</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">sID</span><span class="p">);</span>
+      <span class="nx">sm</span><span class="p">.</span><span class="nx">unload</span><span class="p">(</span><span class="nx">oSound</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">};</span>
 
