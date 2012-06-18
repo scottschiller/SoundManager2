@@ -199,8 +199,7 @@ soundManager.setup({
 			
 			  <p>You then need to tell SM2 where to find the flash .SWF it will need (depending on HTML5 support), and optionally what version of Flash (~2.8 KB for flash 8, and ~8.5 KB for flash 9) depending on what API features you want:</p>
 
-<pre>
-&lt;script&gt;
+<pre class="block"><code>&lt;script&gt;
 soundManager.setup({
   url: '<span>/path/to/swf-files/</span>',
   flashVersion: 9, <span><span>// optional: shiny features (default = 8)</span></span>
@@ -213,7 +212,7 @@ soundManager.setup({
     <span><span>// Ready to use; <a href="../#soundmanager-createsound">soundManager.createSound()</a> etc. can now be called.</span></span>
   }
 });
-&lt;/script&gt;</pre>
+&lt;/script&gt;</code></pre>
 
 <p>If you plan to eventually use the flash block handling feature (disabled in this example), you'll want to look at the <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">flash block demo</a> and include the relevant CSS it uses.</p>
 
@@ -292,7 +291,7 @@ soundManager.setup({
 			
 			  <p>If you want to lazy-load or defer SM2, see <a href="#lazy-loading" title="Lazy-loading SM2 and SM2_DEFER object">Lazy-loading and SM2_DEFER</a>.</p>
 			
-			  <h4>SoundManager onready() / ontimeout() and onload() / onerror() Event Handlers</h4>
+			  <h4>SoundManager onready() / ontimeout() Event Handlers</h4>
 			
 			<p><code>onready()</code> is a flexible method that can be used to queue numerous listeners for SM2's successful start-up. Simply pass a callback function, which will be called when SM2 has successfully started:</p>
 
@@ -319,7 +318,10 @@ soundManager.setup({
   load_script('<span>/path/to/soundmanager2.js</span>', function() {
     <span><span>// once soundmanager2.js has loaded and has parsed, construct + init.</span></span>
     window.soundManager = new SoundManager(); <span><span>// Flash expects window.soundManager.</span></span>
-    soundManager.beginDelayedInit(); <span><span>// start SM2 init.</span></span>
+    <span><span>// once constructed, call SM2 <a href="../#soundmanager-setup">setup()</a> with your configuration options</span></span>
+    <span><span>// soundManager.setup({ ... });
+    <span><span>// ... and begin SM2 init.</span></span>
+    soundManager.beginDelayedInit();
   });
 }</code></pre>
 
