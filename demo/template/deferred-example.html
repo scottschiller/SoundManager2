@@ -68,27 +68,30 @@ window.onload = function() {
       // SM2 script has loaded
 
       soundManager.setup({
-        url: '../../swf/'
+
+        url: '../../swf/',
+
+        onready: function() {
+
+          soundManager.createSound({
+            id:'foo',
+            url:'../_mp3/mouseover.mp3'
+          }).play();
+
+          msg('started OK');
+
+        },
+
+        ontimeout: function() {
+
+          msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
+
+        }
+
       });
 
-      soundManager.onready(function() {
-
-        soundManager.createSound({
-          id:'foo',
-          url:'../_mp3/mouseover.mp3'
-        }).play();
-
-        msg('started OK');
-
-      });
-
-      soundManager.ontimeout(function() {
-
-        msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
-
-      });
-
-      soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+      // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+      soundManager.beginDelayedInit();
 
     });
 
@@ -163,22 +166,28 @@ window.onload = function() {</span>
       <span>// SM2 script has loaded</span>
 
       soundManager.setup({
-        url: '../../swf/'
+
+        url: '../../swf/',
+
+        onready: function() {
+
+          soundManager.createSound({
+            id:'foo',
+            url:'../_mp3/mouseover.mp3'
+          }).play();
+
+          msg('started OK');
+  
+        },
+
+        ontimeout: function() {
+          msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
+        }
+
       });
 
-      soundManager.onready(function() {
-        soundManager.createSound({
-          id:'foo',
-          url:'../_mp3/mouseover.mp3'
-        }).play();
-        msg('started OK');
-      });
-
-      soundManager.ontimeout(function() {
-        msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
-      });
-
-      soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+      <span>// ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable</span>
+      soundManager.beginDelayedInit();
 
     });
 
@@ -190,16 +199,12 @@ window.onload = function() {</span>
  <h2 id="flashblock-handling">Handling flash blockers</h2>
  <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info on this, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">Flashblock</a> example.</p>
 
- <h2>Making SM2 wait for window.onload()</h2>
- <p>If you prefer to have the library wait for window.onload() before calling soundManager.ready()/ontimeout() methods, you can modify SM2's "waitForWindowLoad" property:</p>
-<code>soundManager.waitForWindowLoad = true;</code>
-
  <h2 style="margin-top:1em">Preventing auto-init using SM2_DEFER</h2>
  <p>If you want to completely defer the normal start-up of SM2 and call the SoundManager() constructor yourself, you can declare an SM2_DEFER global and set it to true. See the <a href="sm2_defer-example.html" title="SoundManager 2: SM2_DEFER example">SM2_DEFER example</a> for details.</p>
 
  <h2 style="margin-top:1em">Disabling debug output</h2>
  <p>SoundManager 2 will write to a debug &lt;div&gt; element or a javascript console if available, by default. To disable it, simply set the relevant property to false:</p>
-<code>soundManager.debugMode = false;</code>
+<code>soundManager.setup({ debugMode: false });</code>
  <p>To see related configuration code, refer to the source of this page which basically does all of the above "for real."</p>
  <h2>Troubleshooting</h2>
  <p>If SM2 is failing to start and throwing errors due to flash security, timeouts or other issues, check out the <a href="../../doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href.replace(/\#/,'index.html#')">troubleshooting tool</a> which can help you fix things.</p>

@@ -86,7 +86,24 @@ function checkDomain() {
  <p>The minimal code needed to get SoundManager 2 going is below, with <em><em>configurable parts highlighted</em></em>. You can copy/paste it to get started. This page is also running the template code; If available, look at your JavaScript console for debug output from SM2.</p>
 
  <h2>Dependencies</h2>
+
  <p>You'll need to copy the files inside the <b>script/</b> and <b>swf/</b> subdirectories included with the SoundManager 2 package into your project.</p>
+
+ <ul class="file-structure">
+  <li>
+   soundmanager2/
+   <ul>
+    <li class="core">
+     script/ <span>- API core, soundmanager2.js</span>
+    </li>
+    <li class="core">
+     swf/ <span>- API core, SoundManager 2 .SWF files</span>
+    </li>
+   </ul>
+  </li>
+ </ul>
+
+
  <p>At the bare minimum, you will need <b>soundmanager2.js</b>, <b>soundmanager2.swf</b> and <b>soundmanager2_debug.swf</b> for the default flash 8-based configuration. (Optionally, SM2 can use a Flash 9-based audio API which has MP4 support, data visualization and a few other features.)</p>
 
  <h2>Template Code</h2>
@@ -149,9 +166,6 @@ soundManager.setup({
 
  <h2 id="flashblock-handling">Handling flash blockers</h2>
  <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="checkDomain()">Flashblock</a> example.</p>
-
- <h2>Making SM2 wait for <code>window.onload()</code></h2>
- <p>If you prefer to have the library wait for <code>window.onload()</code> before making <code>onready()</code> / <code>ontimeout()</code> callbacks, you can specify <code>waitForWindowLoad: true</code>.</p>
 
  <h2 style="margin-top:1em">Disabling debug output</h2>
  <p>SoundManager 2 will write debug output via <code>console.log()</code> if available, by default. To disable it, simply specify <code>debugMode: false</code>.</p>
