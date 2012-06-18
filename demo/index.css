@@ -866,7 +866,7 @@ ul.standard ul {
   display: block;
   text-decoration:none;
   color:#000;
-  min-height: 21px;
+  line-height: 21px;
 }
 
 .c3 ul li a:hover {
