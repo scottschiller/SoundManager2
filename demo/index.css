@@ -11,7 +11,7 @@ body.home {
   min-width: 80em;
 }
 
-body.home,
+body,
 #nav ul li strong a {
   background: #fff url(../demo/_image/noise.png);
 }
@@ -866,6 +866,7 @@ ul.standard ul {
   display: block;
   text-decoration:none;
   color:#000;
+  min-height: 21px;
 }
 
 .c3 ul li a:hover {
@@ -2314,7 +2315,7 @@ ul.code-block li div {
 ul.code-block li span {
   position: relative;
   display: block;
-  padding-left: 29em; /* room for left gutter */
+  padding-left: 24em; /* room for left gutter */
   text-indent: -2em;
 }
 
