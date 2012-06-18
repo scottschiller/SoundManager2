@@ -10,12 +10,18 @@ return obj;};var parseActiveXVersion=function(str){var versionArray=str.split(",
 // flash version URL switch (for this demo page)
 var winLoc = window.location.toString();
 if (winLoc.match(/flash9/i)) {
-  soundManager.flashVersion = 9;
+  soundManager.setup({
+    flashVersion: 9
+  });
   if (winLoc.match(/highperformance/i)) {
-	soundManager.useHighPerformance = true;
+    soundManager.setup({
+      useHighPerformance: true
+    });
   }
 } else if (winLoc.match(/flash8/i)) {
-  soundManager.flashVersion = 8;
+  soundManager.setup({
+    flashVersion: 8
+  });
 }
 
 var sm2Debugger = null;
@@ -154,10 +160,11 @@ function SM2Debugger() {
   this.doFlashTest = function() {
     var fd = FlashDetect;
     var hasFlash = fd.installed;
-    var isSupported = (hasFlash && fd.major >= soundManager.flashVersion);
+    var fv = soundManager.setupOptions.flashVersion;
+    var isSupported = (hasFlash && fd.major >= fv);
     var flashVersion = fd.major+'.'+fd.minor+'.'+fd.revisionStr;
-    var flashInfo = ' version '+(!isSupported?'unsupported ('+flashVersion+', SWF version '+soundManager.flashVersion+')':flashVersion);
-    document.getElementById('d-flashversion').innerHTML = 'soundManager.flashVersion = '+soundManager.flashVersion+';';
+    var flashInfo = ' version '+(!isSupported?'unsupported ('+flashVersion+', SWF version '+fv+')':flashVersion);
+    document.getElementById('d-flashversion').innerHTML = 'soundManager.flashVersion = '+fv+';';
     if (hasFlash) {
       self.handleEvent('hasflash',isSupported,hasFlash?flashInfo:null);
     } else {
@@ -165,7 +172,9 @@ function SM2Debugger() {
     }
   }
 
-  soundManager.debugFlash = true; // try to get flash debug output, as well
+  soundManager.setup({
+    debugFlash: true // try to get flash debug output, as well
+  });
 
   this.init();
 
