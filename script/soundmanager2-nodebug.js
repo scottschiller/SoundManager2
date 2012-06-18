@@ -1256,7 +1256,8 @@ function SoundManager(smURL, smID) {
       }
     };
     this._onload = function(nSuccess) {
-      var fN, loadOK = !!(nSuccess);
+      var fN,
+          loadOK = (!!(nSuccess) || (!_t.isHTML5 && _fV === 8 && _t.duration));
       _t.loaded = loadOK;
       _t.readyState = loadOK?3:2;
       _t._onbufferchange(0);

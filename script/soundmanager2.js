@@ -1114,7 +1114,7 @@ function SoundManager(smURL, smID) {
 
   /**
    * Writes console.log()-style debug output to a console or in-browser element.
-   * Applies when SoundManager.debugMode = true
+   * Applies when debugMode = true
    *
    * @param {string} sText The console message
    * @param {string} sType Optional: Log type of 'info', 'warn' or 'error'
@@ -2803,7 +2803,9 @@ function SoundManager(smURL, smID) {
     this._onload = function(nSuccess) {
 
 
-      var fN, loadOK = !!(nSuccess);
+      var fN,
+          // check for duration to prevent false positives from flash 8 when loading from cache.
+          loadOK = (!!(nSuccess) || (!_t.isHTML5 && _fV === 8 && _t.duration));
 
       // <d>
       fN = 'SMSound._onload(): ';
