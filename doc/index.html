@@ -168,6 +168,7 @@ soundManager.setup({
 	 <li>allowScriptAccess</li>
      <li><a href="#soundmanager-alturl">altURL</a></li>
 	 <li><a href="#soundmanager-audioformats">audioFormats</a></li>
+	 <li><a href="#soundmanager-bgcolor">bgColor</a></li>
 	 <li>consoleOnly</li>
 	 <li><a href="#soundmanager-debugflash">debugFlash</a></li>
 	 <li><a href="#soundmanager-debugmode">debugMode</a></li>
@@ -356,7 +357,7 @@ soundManager.setup({
 
 		  <h3 id="soundmanager-setup">SoundManager Properties: soundManager.setup()</h3>
 			
-		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowscriptaccess f-setup">
+		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowscriptaccess f-bgcolor f-setup">
 
 		  <p class="in">The soundManager object has many configurable properties which set debug mode, determine the flash movie path and other behaviours.</p>
 		
@@ -486,21 +487,21 @@ soundManager.setup({
 				<li><code>flash9Options: {...}</code> (API feature options specific to Flash 9)</li>
 				<li><code>movieStarOptions: {...}</code> (Flash 9-only NetStream/RTMP-specific options)</li>
 			</ul>
-
-			<pre class="block"><code>soundManager.setup({
-			  url: <span>'/path/to/swfs/'</span>,
-			  flashVersion: <span>9</span>,
-			  onready: function() {
-			    <span><span>// console.log('SM2 ready!');</span></span>
-			  },
-			  ontimeout: function() {
-			    <span><span>// console.log('SM2 init failed!');</span></span>
-			  },
-			  defaultOptions: {
-			    <span><span>// set global default volume for all sound objects</span></span>
-			    volume: <span>33</span>
-			  }
-			});</code></pre>
+			
+<pre class="block"><code>soundManager.setup({
+  url: <span>'/path/to/swfs/'</span>,
+  flashVersion: <span>9</span>,
+  onready: function() {
+    <span><span>// console.log('SM2 ready!');</span></span>
+  },
+  ontimeout: function() {
+    <span><span>// console.log('SM2 init failed!');</span></span>
+  },
+  defaultOptions: {
+    <span><span>// set global default volume for all sound objects</span></span>
+    volume: <span>33</span>
+  }
+});</code></pre>
 
 			</div>
 
