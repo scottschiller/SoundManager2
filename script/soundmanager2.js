@@ -2955,17 +2955,15 @@ function SoundManager(smURL, smID) {
           _t.durationEstimate = _t.duration;
         }
 
-        if (_t.readyState !== 3 && _iO.whileloading) {
-          _iO.whileloading.apply(_t);
-        }
-
       } else {
 
         _t.durationEstimate = _t.duration;
-        if (_t.readyState !== 3 && _iO.whileloading) {
-          _iO.whileloading.apply(_t);
-        }
 
+      }
+
+      // allow whileloading to fire even if "load" fired under HTML5, due to HTTP range/partials
+      if ((_t.readyState !== 3 || _t.isHTML5) && _iO.whileloading) {
+        _iO.whileloading.apply(_t);
       }
 
     };
@@ -3479,13 +3477,12 @@ function SoundManager(smURL, smID) {
 
     }),
 
-    load: _html5_event(function() {
+    canplaythrough: _html5_event(function() {
 
       var t = this._t;
 
       if (!t.loaded) {
         t._onbufferchange(0);
-        // should be 1, and the same
         t._whileloading(t.bytesTotal, t.bytesTotal, t._get_html5_duration());
         t._onload(true);
       }
@@ -3520,18 +3517,13 @@ function SoundManager(smURL, smID) {
 
     loadeddata: _html5_event(function() {
 
-      var t = this._t,
-          // at least 1 byte, so math works
-          bytesTotal = t.bytesTotal || 1;
+      var t = this._t;
 
       _s._wD(_h5+'loadeddata: '+this._t.id);
 
       // safari seems to nicely report progress events, eventually totalling 100%
       if (!t._loaded && !_isSafari) {
         t.duration = t._get_html5_duration();
-        // fire whileloading() with 100% values
-        t._whileloading(bytesTotal, bytesTotal, t._get_html5_duration());
-        t._onload(true);
       }
 
     }),
@@ -3569,6 +3561,8 @@ function SoundManager(smURL, smID) {
 
     progress: _html5_event(function(e) {
 
+      // note: can fire repeatedly after "loaded" event, due to use of HTTP range/partials
+
       var t = this._t,
           i, j, str, buffered = 0,
           isProgress = (e.type === 'progress'),
@@ -3576,10 +3570,6 @@ function SoundManager(smURL, smID) {
           // firefox 3.6 implements e.loaded/total (bytes)
           loaded = (e.loaded||0),
           total = (e.total||1);
-
-      if (t.loaded) {
-        return false;
-      }
 
       if (ranges && ranges.length) {
 
@@ -3614,10 +3604,11 @@ function SoundManager(smURL, smID) {
 
         // if progress, likely not buffering
         t._onbufferchange(0);
+        // TODO: prevent calls with duplicate values.
         t._whileloading(loaded, total, t._get_html5_duration());
         if (loaded && total && loaded === total) {
           // in case "onload" doesn't fire (eg. gecko 1.9.2)
-          _html5_events.load.call(this, e);
+          _html5_events.canplaythrough.call(this, e);
         }
 
       }

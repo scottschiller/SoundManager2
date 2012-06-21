@@ -1332,14 +1332,11 @@ function SoundManager(smURL, smID) {
         if (typeof _t.durationEstimate === 'undefined') {
           _t.durationEstimate = _t.duration;
         }
-        if (_t.readyState !== 3 && _iO.whileloading) {
-          _iO.whileloading.apply(_t);
-        }
       } else {
         _t.durationEstimate = _t.duration;
-        if (_t.readyState !== 3 && _iO.whileloading) {
-          _iO.whileloading.apply(_t);
-        }
+      }
+      if ((_t.readyState !== 3 || _t.isHTML5) && _iO.whileloading) {
+        _iO.whileloading.apply(_t);
       }
     };
     this._whileplaying = function(nPosition, oPeakData, oWaveformDataLeft, oWaveformDataRight, oEQData) {
@@ -1570,7 +1567,7 @@ function SoundManager(smURL, smID) {
         t._iO._oncanplay();
       }
     }),
-    load: _html5_event(function() {
+    canplaythrough: _html5_event(function() {
       var t = this._t;
       if (!t.loaded) {
         t._onbufferchange(0);
@@ -1586,12 +1583,9 @@ function SoundManager(smURL, smID) {
       this._t._onload(false);
     }),
     loadeddata: _html5_event(function() {
-      var t = this._t,
-          bytesTotal = t.bytesTotal || 1;
+      var t = this._t;
       if (!t._loaded && !_isSafari) {
         t.duration = t._get_html5_duration();
-        t._whileloading(bytesTotal, bytesTotal, t._get_html5_duration());
-        t._onload(true);
       }
     }),
     loadedmetadata: _html5_event(function() {
@@ -1612,9 +1606,6 @@ function SoundManager(smURL, smID) {
           ranges = e.target.buffered,
           loaded = (e.loaded||0),
           total = (e.total||1);
-      if (t.loaded) {
-        return false;
-      }
       if (ranges && ranges.length) {
         for (i=ranges.length-1; i >= 0; i--) {
           buffered = (ranges.end(i) - ranges.start(i));
@@ -1625,7 +1616,7 @@ function SoundManager(smURL, smID) {
         t._onbufferchange(0);
         t._whileloading(loaded, total, t._get_html5_duration());
         if (loaded && total && loaded === total) {
-          _html5_events.load.call(this, e);
+          _html5_events.canplaythrough.call(this, e);
         }
       }
     }),
