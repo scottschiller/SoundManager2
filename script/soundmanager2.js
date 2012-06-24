@@ -2507,6 +2507,7 @@ function SoundManager(smURL, smID) {
       _t.bytesTotal = null;
       _t.duration = (_t._iO && _t._iO.duration ? _t._iO.duration : null);
       _t.durationEstimate = null;
+      _t.buffered = [];
 
       // legacy: 1D array
       _t.eqData = [];
@@ -2944,11 +2945,10 @@ function SoundManager(smURL, smID) {
       if (!_iO.isMovieStar) {
 
         if (_iO.duration) {
-          // use options, if specified and larger
+          // use duration from options, if specified and larger
           _t.durationEstimate = (_t.duration > _iO.duration) ? _t.duration : _iO.duration;
         } else {
           _t.durationEstimate = parseInt((_t.bytesTotal / _t.bytesLoaded) * _t.duration, 10);
-
         }
 
         if (typeof _t.durationEstimate === 'undefined') {
@@ -2959,6 +2959,14 @@ function SoundManager(smURL, smID) {
 
         _t.durationEstimate = _t.duration;
 
+      }
+
+      // for flash, reflect sequential-load-style buffering
+      if (!_t.isHTML5) {
+        _t.buffered = [{
+          'start': 0,
+          'end': _t.duration
+        }];
       }
 
       // allow whileloading to fire even if "load" fired under HTML5, due to HTTP range/partials
@@ -3490,7 +3498,7 @@ function SoundManager(smURL, smID) {
 
       if (!t.loaded) {
         t._onbufferchange(0);
-        t._whileloading(t.bytesTotal, t.bytesTotal, t._get_html5_duration());
+        t._whileloading(t.bytesLoaded, t.bytesTotal, t._get_html5_duration());
         t._onload(true);
       }
 
@@ -3578,14 +3586,24 @@ function SoundManager(smURL, smID) {
           loaded = (e.loaded||0),
           total = (e.total||1);
 
+      // reset the "buffered" (loaded byte ranges) array
+      t.buffered = [];
+
       if (ranges && ranges.length) {
 
         // if loaded is 0, try TimeRanges implementation as % of load
         // https://developer.mozilla.org/en/DOM/TimeRanges
 
-        for (i=ranges.length-1; i >= 0; i--) {
-          buffered = (ranges.end(i) - ranges.start(i));
+        // re-build "buffered" array
+        for (i=0, j=ranges.length; i<j; i++) {
+          t.buffered.push({
+            'start': ranges.start(i),
+            'end': ranges.end(i)
+          });
         }
+
+        // use the last value locally
+        buffered = (ranges.end(0) - ranges.start(0));
 
         // linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges
         loaded = buffered/e.target.duration;

@@ -1119,6 +1119,7 @@ function SoundManager(smURL, smID) {
       _t.bytesTotal = null;
       _t.duration = (_t._iO && _t._iO.duration ? _t._iO.duration : null);
       _t.durationEstimate = null;
+      _t.buffered = [];
       _t.eqData = [];
       _t.eqData.left = [];
       _t.eqData.right = [];
@@ -1334,6 +1335,12 @@ function SoundManager(smURL, smID) {
         }
       } else {
         _t.durationEstimate = _t.duration;
+      }
+      if (!_t.isHTML5) {
+        _t.buffered = [{
+          'start': 0,
+          'end': _t.duration
+        }];
       }
       if ((_t.readyState !== 3 || _t.isHTML5) && _iO.whileloading) {
         _iO.whileloading.apply(_t);
@@ -1574,7 +1581,7 @@ function SoundManager(smURL, smID) {
       var t = this._t;
       if (!t.loaded) {
         t._onbufferchange(0);
-        t._whileloading(t.bytesTotal, t.bytesTotal, t._get_html5_duration());
+        t._whileloading(t.bytesLoaded, t.bytesTotal, t._get_html5_duration());
         t._onload(true);
       }
     }),
@@ -1609,10 +1616,15 @@ function SoundManager(smURL, smID) {
           ranges = e.target.buffered,
           loaded = (e.loaded||0),
           total = (e.total||1);
+      t.buffered = [];
       if (ranges && ranges.length) {
-        for (i=ranges.length-1; i >= 0; i--) {
-          buffered = (ranges.end(i) - ranges.start(i));
+        for (i=0, j=ranges.length; i<j; i++) {
+          t.buffered.push({
+            'start': ranges.start(i),
+            'end': ranges.end(i)
+          });
         }
+        buffered = (ranges.end(0) - ranges.start(0));
         loaded = buffered/e.target.duration;
       }
       if (!isNaN(loaded)) {
