@@ -145,7 +145,7 @@ function SoundManager(smURL, smID) {
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)),
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)),
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa|m4a)/i,
   _emptyURL = 'about:blank',
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _http = (!_overHTTP ? 'http:/'+'/' : ''),
@@ -1533,6 +1533,9 @@ function SoundManager(smURL, smID) {
       'remove': remove
     };
   }());
+  function _preferFlashCheck(kind) {
+    return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
+  }
   function _html5_event(oFn) {
     return function(e) {
       var t = this._t,
@@ -1638,7 +1641,13 @@ function SoundManager(smURL, smID) {
     })
   };
   _html5OK = function(iO) {
-    return (!iO.serverURL && (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay({url:iO.url})||_s.html5Only));
+    var result;
+    if (iO.serverURL || (iO.type && _preferFlashCheck(iO.type))) {
+      result = false;
+    } else {
+      result = ((iO.type ? _html5CanPlay({type:iO.type}) : _html5CanPlay({url:iO.url}) || _s.html5Only));
+    }
+    return result;
   };
   _html5Unload = function(oAudio, url) {
     if (oAudio) {
@@ -1656,11 +1665,8 @@ function SoundManager(smURL, smID) {
         offset,
         fileExt,
         item;
-    function preferFlashCheck(kind) {
-      return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
-    }
     if (mime && typeof _s.html5[mime] !== 'undefined') {
-      return (_s.html5[mime] && !preferFlashCheck(mime));
+      return (_s.html5[mime] && !_preferFlashCheck(mime));
     }
     if (!_html5Ext) {
       _html5Ext = [];
@@ -1686,12 +1692,12 @@ function SoundManager(smURL, smID) {
       fileExt = fileExt[1];
     }
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
-      result = (_s.html5[fileExt] && !preferFlashCheck(fileExt));
+      result = (_s.html5[fileExt] && !_preferFlashCheck(fileExt));
     } else {
       mime = 'audio/'+fileExt;
       result = _s.html5.canPlayType({type:mime});
       _s.html5[fileExt] = result;
-      result = (result && _s.html5[mime] && !preferFlashCheck(mime));
+      result = (result && _s.html5[mime] && !_preferFlashCheck(mime));
     }
     return result;
   };
@@ -1700,7 +1706,7 @@ function SoundManager(smURL, smID) {
       return false;
     }
     var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null),
-        item, support = {}, aF, i;
+        item, lookup, support = {}, aF, i;
     function _cp(m) {
       var canPlay, i, j,
           result = false,
@@ -1713,7 +1719,7 @@ function SoundManager(smURL, smID) {
           if (_s.html5[m[i]] || a.canPlayType(m[i]).match(_s.html5Test)) {
             isOK = true;
             _s.html5[m[i]] = true;
-            _s.flash[m[i]] = !!(_s.preferFlash && _hasFlash && m[i].match(_flashMIME));
+            _s.flash[m[i]] = !!(m[i].match(_flashMIME));
           }
         }
         result = isOK;
@@ -1726,12 +1732,15 @@ function SoundManager(smURL, smID) {
     aF = _s.audioFormats;
     for (item in aF) {
       if (aF.hasOwnProperty(item)) {
+        lookup = 'audio/' + item;
         support[item] = _cp(aF[item].type);
-        support['audio/'+item] = support[item];
-        if (_s.preferFlash && !_s.ignoreFlash && item.match(_flashMIME)) {
+        support[lookup] = support[item];
+        if (item.match(_flashMIME)) {
           _s.flash[item] = true;
+          _s.flash[lookup] = true;
         } else {
           _s.flash[item] = false;
+          _s.flash[lookup] = false;
         }
         if (aF[item] && aF[item].related) {
           for (i=aF[item].related.length-1; i >= 0; i--) {
@@ -1982,7 +1991,7 @@ function SoundManager(smURL, smID) {
     if (_s.useHTML5Audio && _s.hasHTML5) {
       for (item in formats) {
         if (formats.hasOwnProperty(item)) {
-          if ((formats[item].required && !_s.html5.canPlayType(formats[item].type)) || _s.flash[item] || _s.flash[formats[item].type]) {
+          if ((formats[item].required && !_s.html5.canPlayType(formats[item].type)) || (_s.preferFlash && (_s.flash[item] || _s.flash[formats[item].type]))) {
             needsFlash = true;
           }
         }

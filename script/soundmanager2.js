@@ -277,7 +277,7 @@ function SoundManager(smURL, smID) {
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa)/i,
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa|m4a)/i,
   _emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _http = (!_overHTTP ? 'http:/'+'/' : ''),
@@ -3398,6 +3398,13 @@ function SoundManager(smURL, smID) {
 
   }());
 
+  function _preferFlashCheck(kind) {
+
+    // whether flash should play a given type
+    return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
+
+  }
+
   /**
    * Internal HTML5 event handling
    * -----------------------------
@@ -3660,8 +3667,23 @@ function SoundManager(smURL, smID) {
 
   _html5OK = function(iO) {
 
-    // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
-    return (!iO.serverURL && (iO.type?_html5CanPlay({type:iO.type}):_html5CanPlay({url:iO.url})||_s.html5Only));
+    // playability test based on URL or MIME type
+
+    var result;
+
+    if (iO.serverURL || (iO.type && _preferFlashCheck(iO.type))) {
+
+      // RTMP, or preferring flash
+      result = false;
+
+    } else {
+
+      // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
+      result = ((iO.type ? _html5CanPlay({type:iO.type}) : _html5CanPlay({url:iO.url}) || _s.html5Only));
+
+    }
+
+    return result;
 
   };
 
@@ -3704,17 +3726,10 @@ function SoundManager(smURL, smID) {
         fileExt,
         item;
 
-    function preferFlashCheck(kind) {
-
-      // whether flash should play a given type
-      return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
-
-    }
-
     // account for known cases like audio/mp3
 
     if (mime && typeof _s.html5[mime] !== 'undefined') {
-      return (_s.html5[mime] && !preferFlashCheck(mime));
+      return (_s.html5[mime] && !_preferFlashCheck(mime));
     }
 
     if (!_html5Ext) {
@@ -3749,13 +3764,13 @@ function SoundManager(smURL, smID) {
 
     if (fileExt && typeof _s.html5[fileExt] !== 'undefined') {
       // result known
-      result = (_s.html5[fileExt] && !preferFlashCheck(fileExt));
+      result = (_s.html5[fileExt] && !_preferFlashCheck(fileExt));
     } else {
       mime = 'audio/'+fileExt;
       result = _s.html5.canPlayType({type:mime});
       _s.html5[fileExt] = result;
       // _s._wD('canPlayType, found result: '+result);
-      result = (result && _s.html5[mime] && !preferFlashCheck(mime));
+      result = (result && _s.html5[mime] && !_preferFlashCheck(mime));
     }
 
     return result;
@@ -3770,7 +3785,7 @@ function SoundManager(smURL, smID) {
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
     var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null),
-        item, support = {}, aF, i;
+        item, lookup, support = {}, aF, i;
 
     function _cp(m) {
 
@@ -3788,8 +3803,8 @@ function SoundManager(smURL, smID) {
           if (_s.html5[m[i]] || a.canPlayType(m[i]).match(_s.html5Test)) {
             isOK = true;
             _s.html5[m[i]] = true;
-            // if flash can play and preferred, also mark it for use.
-            _s.flash[m[i]] = !!(_s.preferFlash && _hasFlash && m[i].match(_flashMIME));
+            // note flash support, too
+            _s.flash[m[i]] = !!(m[i].match(_flashMIME));
           }
         }
         result = isOK;
@@ -3807,29 +3822,46 @@ function SoundManager(smURL, smID) {
     aF = _s.audioFormats;
 
     for (item in aF) {
+
       if (aF.hasOwnProperty(item)) {
+
+        lookup = 'audio/' + item;
+
         support[item] = _cp(aF[item].type);
 
         // write back generic type too, eg. audio/mp3
-        support['audio/'+item] = support[item];
+        support[lookup] = support[item];
 
         // assign flash
-        if (_s.preferFlash && !_s.ignoreFlash && item.match(_flashMIME)) {
+        if (item.match(_flashMIME)) {
+
           _s.flash[item] = true;
+          _s.flash[lookup] = true;
+
         } else {
+
           _s.flash[item] = false;
+          _s.flash[lookup] = false;
+
         }
 
         // assign result to related formats, too
+
         if (aF[item] && aF[item].related) {
+
           for (i=aF[item].related.length-1; i >= 0; i--) {
+
             // eg. audio/m4a
             support['audio/'+aF[item].related[i]] = support[item];
             _s.html5[aF[item].related[i]] = support[item];
             _s.flash[aF[item].related[i]] = support[item];
+
           }
+
         }
+
       }
+
     }
 
     support.canPlayType = (a?_cp:null);
@@ -4440,7 +4472,7 @@ function SoundManager(smURL, smID) {
 
       for (item in formats) {
         if (formats.hasOwnProperty(item)) {
-          if ((formats[item].required && !_s.html5.canPlayType(formats[item].type)) || _s.flash[item] || _s.flash[formats[item].type]) {
+          if ((formats[item].required && !_s.html5.canPlayType(formats[item].type)) || (_s.preferFlash && (_s.flash[item] || _s.flash[formats[item].type]))) {
             // flash may be required, or preferred for this format
             needsFlash = true;
           }
