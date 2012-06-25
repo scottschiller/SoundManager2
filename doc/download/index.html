@@ -312,7 +312,7 @@ soundManager.setup({
 										<p>SMSound <code>buffered</code> is updated during <code>whileloading()</code> calls, where values are provided by the browser. For flash, will always be one item with <code>{ start: 0, end: SMSound.duration }</code> assigned. Also stopped sending 1/1 values to <code>whileplaying()</code> at <code>onload()</code>, since HTML5 can fire <code>onload()</code> (via <code>canplaythrough</code>) very early followed by many progress (<code>whileloading()</code>) events.
 										</p>
 										<p>
-											<b>Support note:</b> Not all browsers (eg., Safari 5.1.7) appear to provide buffer / TimeRange data for HTML5 audio objects. At time of writing (06/2012), Firefox, Chrome Canary and Opera appear to work.
+											<b>Support note:</b> Not all browsers (eg., Safari 5.1.7) appear to provide buffer / TimeRanges data for HTML5 audio objects. At time of writing (06/2012), Firefox, Chrome Canary, IE 9 and Opera provide TimeRanges alongside progress events.
 										</p>
 									</li>
 
