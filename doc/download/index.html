@@ -132,9 +132,9 @@ soundManager.setup({
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> Fix for <code>ontimeout()</code> regression. GWI/JSNI compatibility, slow connection and Safari "background tab" SWF load handling improvements. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> New <code>soundManager.setup()</code> method, numerous HTML5 improvements for <code>createSound()</code>, <code>load()</code>, progress and reuse cases, and minor flash audio bug fixes. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120527.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120527</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120624.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120624</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 128 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -171,9 +171,183 @@ soundManager.setup({
 
 			  	<ul id="revision-list" class="standard">
 
+			   		<li id="sm2-20120624" class="in">
+
+						<h3><b>V2.97a.20120624</b> - New <code>soundManager.setup()</code> method, numerous HTML5 improvements for <code>createSound()</code>, <code>load()</code>, progress and reuse cases, and minor flash audio bug fixes</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">API: New sugar-like stuff</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+
+										<p>
+											 New <code>soundManager.setup()</code> mixin-style method for assigning properties and common start-up callbacks. Collects top-level soundManager configuration properties and object collections - <code>onready</code>, <code>ontimeout</code>, <code>defaultOptions</code>, <code>flash9Options</code> and <code>movieStarOptions</code> - under a single method call.
+										</p>
+										<p>
+											<b>Upgrade / legacy note:</b> This is a modern replacement for the direct property assignment method used in all previous versions - eg., <code>soundManager.url = '/swfs/'</code> - the old method continues to work for legacy support, but you should migrate to using the new method as it's much cleaner. All included demos use the new method where applicable.</p>
+										</p>
+
+										<p>
+											<b>New <code>soundManager.setup()</code> method example</b>
+										</p>
+
+<pre class="block"><code>soundManager.setup({
+  <span><span>// required</span></span>
+  url: <span>'/path/to/swfs/'</span>,
+  <span><span>// optional</span></span>
+  flashVersion: <span>9</span>,
+  <span><span>// convenience</span></span>
+  onready: function() {
+    <span>console.log('Ready to play sound!');</span>
+  },
+  ontimeout: function() {
+    <span>console.log('SM2 start-up failed.');</span>
+  },
+  <span><span>// more custom parameters</span></span>
+  defaultOptions: {
+    <span>volume: 50</span>
+  }
+});</code></pre>
+
+										<p>
+											See <a href="../#soundmanager-setup" title="soundManager.setup() method documentation">soundManager.setup()</a> for details.
+										</p>
+
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Improve HTML5 audio load/playback reliability + stability on iOS, and for object reuse cases (<code>play()</code> -&gt; <code>load({url: ...})</code>. Prior behaviour was making initial HTTP request when object was created (meta/preload, not necessarily loading entire file.) Request now only happens with preload/load/play-related calls.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											HTML5: Firefox seems to have changed when unloading HTML5 audio, <code>url = ''</code> now loads hosting page HTML (boo) instead of <code>null</code> / no request. Changed to <code>about:blank</code> like everyone else. Also fixed boolean logic on <code>isMovieStar</code> assignment.
+										</p>
+									</li>
+
+									<li>
+										<p>
+										    Add <code>audio/mp3</code> and related MIME checks for flash, correct edge case where <code>play({type:'audio/mp3'})</code> would use HTML5 when <code>preferFlash = true</code>, due to seeming lack of Flash support for the MIME type.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fixed old Flash 8 <code>onload()</code> edge case where loading from cache might return incorrect <code>didLoad: false</code> result - corrected by checking for a non-zero sound duration.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Properly reset <code>SMSound.id3 = {}</code> with internal resetProperty and public methods like <code>load()</code>.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Edge case fix: Don't attempt to remove flash unless reference exists (prevent false warning when <code>reboot()</code> called in 100% HTML5 mode.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Correct empty options JS error on internal <code>_setup_html5()</code> when reusing HTML5 audio object per <a href="https://getsatisfaction.com/schillmania/topics/possible_bug_when_html5_audio_tag_is_reused_20120527_release">V2.97a.20120527 bug report</a>
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fix minor false positive (undocumented error handler case) with HTML5 <code>play()</code> falsely reporting 32-sound ceiling edge case and calling <code>SMSound.onplayerror()</code> (if assigned) when using flashVersion = 9. Should only apply when flash 9 is being used for playback, and ceiling hit.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+				 				<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Finally assign + use <code>SMSound.id</code> (instead of sID), matching <code>createSound({id: 'foo'})</code> pattern; maintain legacy sID property (ancient behaviour, originally intended to avoid potential namespace conflicts many years ago - now silly and not a concern.)</p>
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Improved handling of <code>whileloading()</code> vs. HTML5 <code>onload</code> (when using HTTP range/partial requests).
+										</p>
+										<p>
+												HTML5 <code>onload()</code> (now triggered via native <code>canplaythrough</code> event) may fire early, followed by numerous HTML5 <code>progress</code> requests during playback as the audio object requests and buffers more audio ranges (eg., 0-10 seconds), eventually matching the total sound duration.
+										</p>
+										<p>
+												Bytes loaded / total are not available, so bytesLoaded instead reflects a fraction of "duration loaded", between 0 and 1 as data is buffered in. Previously, <code>whileloading</code> events would not fire once <code>onload</code> had fired under HTML5.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											New (undocumented, for now) <code>buffered</code> array on SMSound objects; list of objects following the pattern <code>SMSound.buffered = [{ start: 0, end: 706 }]</code> representing loaded time ranges (somewhat similar to HTML5 TimeRanges spec, but using static properties instead of method calls with an index parameter.) Array will initially be empty, zero-length. This can be looped through to show overlays of "loaded" time fragments on progress bars, for example.</p>
+										<p>SMSound <code>buffered</code> is updated during <code>whileloading()</code> calls, where values are provided by the browser. For flash, will always be one item with <code>{ start: 0, end: SMSound.duration }</code> assigned. Also stopped sending 1/1 values to <code>whileplaying()</code> at <code>onload()</code>, since HTML5 can fire <code>onload()</code> (via <code>canplaythrough</code>) very early followed by many progress (<code>whileloading()</code>) events.
+										</p>
+										<p>
+											<b>Support note:</b> Not all browsers (eg., Safari 5.1.7) appear to provide buffer / TimeRange data for HTML5 audio objects. At time of writing (06/2012), Firefox, Chrome Canary and Opera appear to work.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Upgraded demos to use to <code>soundManager.setup({...})</code> for most configuration cases (vs. setting <code>soundManager.url</code>, <code>soundManager.defaultOptions.autoLoad</code> directly etc.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Warn if <code>soundManager.setup()</code> called with <code>url</code> or <code>flashVersion</code>, and init has already fired (ie., flash options already set + movie already loaded) where changes will not take effect until <code>soundManager.reboot()</code>.
+										</p>
+
+									</li>
+
+									<li>
+										<p>
+											Assign top-level soundManager properties (eg. <code>soundManager.url</code>) from <code>soundManager.setupOptions</code> at <code>DOMReady</code> time; this allows legacy <code>soundManager.url = ...</code> assignment to work, and helps to ensure legacy-style, directly-assigned top-level property values get written back to <code>soundManager.setupOptions</code>.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+					<!-- previously ... -->
+
 			   		<li id="sm2-20120527" class="in">
 
-						<h3><b>V2.97a.20120527</b> - Fix for <code>ontimeout()</code> regression. GWT/JSNI compatibility, slow connection and Safari "background tab" SWF load handling improvements</h3>
+						<h3><b>V2.97a.20120527</b> - Fix for <code>ontimeout()</code> regression. GWT/JSNI compatibility, slow connection and Safari "background tab" SWF load handling improvements (<a href="../../download/soundmanagerv297a-20120527.zip" class="norewrite">Download archived version</a>)</h3>
 
 						<ul>
 
@@ -250,7 +424,7 @@ soundManager.setup({
 
 			   		<li id="sm2-20120513" class="in">
 
-						<h3><b>V2.97a.20120513</b> - Fixes for Android 2.3 playback, <code>onPosition()</code> in HTML5, Flash 9 double-play edge case. Minor new Flash 9-specific features.</h3>
+						<h3><b>V2.97a.20120513</b> - Fixes for Android 2.3 playback, <code>onPosition()</code> in HTML5, Flash 9 double-play edge case. Minor new Flash 9-specific features (<a href="../../download/soundmanagerv297a-20120513.zip" class="norewrite">Download archived version</a>)</h3>
 
 						<ul>
 
