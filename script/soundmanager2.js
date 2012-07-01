@@ -2613,8 +2613,9 @@ function SoundManager(smURL, smID) {
     this._get_html5_duration = function() {
 
       var _iO = _t._iO,
-          d = (_t._a ? _t._a.duration*1000 : (_iO ? _iO.duration : null)),
-          result = (d && !isNaN(d) && d !== Infinity ? d : (_iO && !isNaN(_iO.duration) ? _iO.duration : null));
+          // if audio object exists, use its duration - else, instance option duration (if provided - it's a hack, really, and should be retired) OR null
+          d = (_t._a && _t._a.duration ? _t._a.duration*1000 : (_iO && _iO.duration ? _iO.duration : null)),
+          result = (d && !isNaN(d) && d !== Infinity ? d : null);
 
       return result;
 
@@ -2942,17 +2943,13 @@ function SoundManager(smURL, smID) {
       _t.duration = Math.floor(nDuration);
       _t.bufferLength = nBufferLength;
 
-      if (!_iO.isMovieStar) {
+      if (!_t.isHTML5 && !_iO.isMovieStar) {
 
         if (_iO.duration) {
-          // use duration from options, if specified and larger
+          // use duration from options, if specified and larger. nobody should be specifying duration in options, actually, and it should be retired.
           _t.durationEstimate = (_t.duration > _iO.duration) ? _t.duration : _iO.duration;
         } else {
           _t.durationEstimate = parseInt((_t.bytesTotal / _t.bytesLoaded) * _t.duration, 10);
-        }
-
-        if (typeof _t.durationEstimate === 'undefined') {
-          _t.durationEstimate = _t.duration;
         }
 
       } else {

@@ -1170,8 +1170,8 @@ function SoundManager(smURL, smID) {
     };
     this._get_html5_duration = function() {
       var _iO = _t._iO,
-          d = (_t._a ? _t._a.duration*1000 : (_iO ? _iO.duration : null)),
-          result = (d && !isNaN(d) && d !== Infinity ? d : (_iO && !isNaN(_iO.duration) ? _iO.duration : null));
+          d = (_t._a && _t._a.duration ? _t._a.duration*1000 : (_iO && _iO.duration ? _iO.duration : null)),
+          result = (d && !isNaN(d) && d !== Infinity ? d : null);
       return result;
     };
     this._apply_loop = function(a, nLoops) {
@@ -1324,14 +1324,11 @@ function SoundManager(smURL, smID) {
       _t.bytesTotal = nBytesTotal;
       _t.duration = Math.floor(nDuration);
       _t.bufferLength = nBufferLength;
-      if (!_iO.isMovieStar) {
+      if (!_t.isHTML5 && !_iO.isMovieStar) {
         if (_iO.duration) {
           _t.durationEstimate = (_t.duration > _iO.duration) ? _t.duration : _iO.duration;
         } else {
           _t.durationEstimate = parseInt((_t.bytesTotal / _t.bytesLoaded) * _t.duration, 10);
-        }
-        if (typeof _t.durationEstimate === 'undefined') {
-          _t.durationEstimate = _t.duration;
         }
       } else {
         _t.durationEstimate = _t.duration;
