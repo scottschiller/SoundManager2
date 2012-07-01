@@ -851,7 +851,7 @@ function SoundManager(smURL, smID) {
       }
       var original_pos,
           position, position1K,
-          offset = (_t.isHTML5 ? Math.max(nMsecOffset,0) : Math.min(_t.duration || _t._iO.duration, Math.max(nMsecOffset, 0)));
+          offset = (_t.isHTML5 ? Math.max(nMsecOffset, 0) : Math.min(_t.duration || _t._iO.duration, Math.max(nMsecOffset, 0)));
       original_pos = _t.position;
       _t.position = offset;
       position1K = _t.position/1000;
@@ -1170,8 +1170,8 @@ function SoundManager(smURL, smID) {
     };
     this._get_html5_duration = function() {
       var _iO = _t._iO,
-          d = (_t._a ? _t._a.duration*1000 : (_iO ? _iO.duration : undefined)),
-          result = (d && !isNaN(d) && d !== Infinity ? d : (_iO ? _iO.duration : null));
+          d = (_t._a ? _t._a.duration*1000 : (_iO ? _iO.duration : null)),
+          result = (d && !isNaN(d) && d !== Infinity ? d : (_iO && !isNaN(_iO.duration) ? _iO.duration : null));
       return result;
     };
     this._apply_loop = function(a, nLoops) {
