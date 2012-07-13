@@ -1,5 +1,6 @@
 body {
   background:#fff;
+  color: #272727; /* scandalous. */
   margin:0px;
   padding:0px;
   font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
@@ -65,6 +66,20 @@ body,
 }
 */
 
+@font-face {
+  /**
+   * DejaVu font license
+   * http://dejavu-fonts.org/wiki/index.php?title=Main_Page
+   */
+  font-family: 'DejaVuSansMonoBook';
+  src: url('../demo/_image/dejavusansmono-webfont.eot');
+  src: url('../demo/_image/dejavusansmono-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../demo/_image/dejavusansmono-webfont.woff') format('woff'),
+       url('../demo/_image/dejavusansmono-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 h1,
 h2.special {
   letter-spacing:-0.005em;
@@ -99,10 +114,26 @@ h2 {
 }
 
 h3 {
-  font-size:1.17em;
-  border-bottom:1px solid #ccc;
-  padding-bottom:0.25em;
-  _margin-top:1.5em; /* fark IE6 */
+  font-size: 1.17em;
+  border-top: 0.25em solid #333;
+  border-bottom: 1px dotted #999;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  _margin-top: 1.5em; /* fark IE6 */
+}
+
+body.home h3 {
+  border-top: 0.25em solid #444;
+  margin-top: 1.25em;
+}
+
+#doc .c2 h3 {
+  position: relative;
+  background: #333;
+  color: #fff;
+  padding: 0.25em 0.75em;
+  border: none;
+  line-height: 1.4em; /* windoze alignment */
 }
 
 h3,
@@ -279,6 +310,8 @@ body.home #about-sm2 h3 + h4 {
 	font-size: 1.25em;
 	font-weight: 400;
 	margin-bottom: 2em;
+	border-bottom: 1px dotted #b0b0b0;
+	padding-bottom: 0.75em;
 }
 
 body.home .demo-more,
@@ -315,7 +348,6 @@ pre {
 
 dl pre {
   border-color:#e9f3ff;
-  margin-left:-0.5em;
 }
 
 dl.alt pre {
@@ -328,8 +360,9 @@ pre code,
 .code,
 .code-block,
 dt,
-#soundmanager-debug {
-  font-family:monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
+#soundmanager-debug,
+.c3 ul li ul li {
+  font-family:"DejaVu Sans Mono","DejaVuSansMonoBook",monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
 }
 
 pre,
@@ -337,15 +370,27 @@ code,
 .code,
 dt,
 #soundmanager-debug {
-  font-size: 100%;
   font-weight:normal;
   line-height:auto;
   color:#006699;
   background:#f6fcff;
 }
 
+pre,
+#soundmanager-debug {
+  font-size: 100%;
+}
+
+body.home p code {
+  font-size: 91%;
+}
+
+pre code {
+  /* don't scale further down, of course... */
+  font-size: 100%;
+}
+
 pre {
-  font-size: 85%; /* small or x-small */
   line-height:1.75em;
 }
 
@@ -353,7 +398,7 @@ pre.specialcommentblock span span {
   *line-height:1.75em;
 }
 
-pre.small {
+.block.small {
   font-size:92%;
 }
 
@@ -472,29 +517,33 @@ pre.block code,
   background:#fff;
   border:1px solid #ccddee;
   padding:0.5em;
-  font-size: 110%;
+  font-size: 100%;
   line-height:1.75em;
+}
+
+pre.block code {
+  padding: 1em;
 }
 
 dl {
   background:#f9fcff;
-  padding-bottom:1px;
+  padding-bottom: 1px;
+  border: 1px solid #ccddee;
+  border-radius: 3px;
+  margin-top: 1em;
 }
 
 dd {
   margin:1em 0px;
-  padding:0px 0.5em;
-  line-height:1.5em;
+  padding:0px 1em;
+  line-height:1.75em;
 }
 
 dt {
-  margin:0px;
   padding:0px;
-  margin:0.5em 0px 1em 0px;
+  margin:0px;
   border-bottom:1px solid #ddeeff;
-  padding:0.3em 0.3em 0.4em 0.3em;
-  padding-top:0.5em;
-  text-indent:0.25em;
+  padding:0.5em 0.5em 0.5em 0.75em;
   background:#eef6ff;
   font-size:1.15em;
 }
@@ -504,9 +553,23 @@ dt.alt {
   border-bottom-color:#e6e6e6;
 }
 
+dl:nth-child(2n+1),
 dl.alt {
   background:#fcfcfc;
   padding:0px 0px 1px 0px;
+  border-color:#ddd;
+}
+
+dl.tight dt.alt {
+  background: #fcfcfc;
+}
+
+#smsound-methods dl a {
+  font-weight: normal;
+}
+
+#smsound-methods dt:last-of-type {
+  border-bottom: none;
 }
 
 h2 {
@@ -585,7 +648,7 @@ body.home #main {
   position:relative;
   margin:0px;
   padding:0px;
-  margin:2em 0.5em 0.5em 1em; /* slight left tweak */
+  margin:1.9em 0.5em 0.5em 1em; /* slight left tweak */
 }
 
 .columnar .c1 {
@@ -624,15 +687,12 @@ body.home #main {
 }
 
 .columnar .c1 p code {
-  font-size:85%;
   color:#336699;
 }
 
 .columnar .c2 {
   position:relative;
-  margin-top:2.33em;
-  margin-top:1px;
-  border-top:0.25em solid #333;
+  margin-top:0px;
   margin-left:22em;
   margin-bottom:1.5em;
 }
@@ -648,6 +708,12 @@ body.home #main {
   _margin-right:0px; /* not you, IE 6. */
 }
 
+#doc.special .triple .columnar .c2 {
+  /* override case: make c2 extra-wide. */
+  margin-right: 0.75em;
+  max-width: 70em;
+}
+
 #doc .triple .columnar .c1 {
   margin-right:0px;
   margin-left:21.25em;
@@ -655,12 +721,6 @@ body.home #main {
 
 .columnar .c2 p:first-child {
   margin-top:0.2em;
-}
-
-.columnar .c2 h3:first-child {
-  margin-top:0.2em;
-  padding-bottom:0.3em;
-  font-weight:bold;
 }
 
 .columnar .c2 > .f-block:first-child > h4 {
@@ -676,7 +736,9 @@ body.home #main {
 }
 
 .columnar .c2 p {
-  line-height:1.65em;
+  line-height:1.75em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
 }
 
 .three .columnar {
@@ -879,10 +941,6 @@ ul.standard ul {
   padding-left:1.2em;
 }
 
-.c3 {
-  background:#fcfcfc;
-}
-
 .c3 ul {
   list-style-type:none;
 }
@@ -901,22 +959,33 @@ ul.standard ul {
 .c3 ul li a {
   display: block;
   text-decoration:none;
-  color:#000;
   line-height: 21px;
 }
 
-.c3 ul li a:hover {
-  color:#000;
-  _color:#000;
-}
-
+.c3 ul li,
+.c3 ul li a,
+.c3 ul li a:hover,
 .c3 ul li a:focus {
-  color:#000;
+  color:#222;
+  _color:#222;
   outline:none;
 }
 
+.c3 ul li.active {
+  box-shadow: 0 0 6px #003366 inset;
+  border-radius: 1px;
+}
+
 .c3 ul li.active a {
-  color:#fff;
+  border-radius: 2px;
+  text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
+}
+
+.c3 ul li.active,
+.c3 ul li.active a,
+.c3 ul li ul li:hover,
+.c3 ul li ul li:hover a {
+  color: #fff;
 }
 
 .c3 ul li.active a:hover {
@@ -941,6 +1010,11 @@ ul.standard ul {
 .c3 h2 {
   height:2em;
   line-height:2em;
+}
+
+.c3 h2,
+#doc .c2 h3 {
+  text-shadow: 0px 1px 0px #000;
 }
 
 .wedge {
@@ -1005,10 +1079,10 @@ ul.standard ul {
 }
 
 .wedge .r {
-  margin-top:-16px;
+  margin-top:-15px;
   border-top:none;
   height:16px;
-  border-bottom:1.7em solid #3399cc;
+  border-bottom:2em solid #3399cc;
   background-position:0px -192px;
 }
 
@@ -1043,8 +1117,6 @@ ul.standard ul {
 .c3 ul {
   margin:0px;
   padding:0px;
-  margin-top:0.125em;
-  margin-bottom:0.25em;
   list-style-type:none;
 }
 
@@ -1064,20 +1136,18 @@ ul.standard ul {
 }
 
 .c3 ul li ul li {
-  font-family:monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
+  background-color: #fcfcfc;
+  background-color: rgba(255,255,255,0.5);
   font-size: 100%;
   line-height:1.5em;
   text-indent:0.5em;
   padding:0.25em 0.25em 0.25em 0.25em;
   cursor:hand;
-}
-
-.c3 ul li ul li.alt {
-  background-color:#f8f8f8;
+  border-bottom: 1px dotted #eee;
 }
 
 .c3 ul li ul li:hover {
-  background-color:#ccddff;
+  background-color:#999;
   cursor:pointer;
   cursor:hand;
 }
@@ -1088,30 +1158,34 @@ ul.standard ul {
 }
 
 .c3 h3 {
-  margin:0px;
-  padding:0px;
-  background:#3399cc;
-  border:none;
-  color:#fff;
-  font-size:1.3em;
-  text-indent:0.5em;
-  font-size:1em;
-  height:1.67em;
-  padding:0.25em 0.5em;
-  padding:0px;
+  margin: 0px;
+  padding: 0px;
+  height: auto;
+  min-height: 25px;
+  background: #3399cc;
+  border: none;
+  color: #fff;
+  text-indent: 0.5em;
+  font-size: 1em;
+  line-height: 2em;
+  text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
 }
 
 .c3 h4 {
   font-size:1em;
-  margin:1em 0.25em 0.25em 0.25em;
-  padding:0px 0.25em;
-  padding:0.2em 0.2em 0.2em 0.5em;
-  vertical-align:middle;
   margin:0px;
+  padding:0.4em 0.2em 0.4em 0.75em;
+  vertical-align:middle;
   color:#333;
-  background:#eef6ff;
-  border-top:1px solid #fff;
-  border-bottom:1px solid #ddeeff;
+  background-color: #f3f3f3;
+  background-color: rgba(0,0,0,0.05);
+  border-top: 1px dotted #d6d6d6;
+  border-bottom: 1px dashed #e9e9e9;
+  text-shadow: 0px 1px 0px #fff;
+}
+
+.c3 h4:first-of-type {
+  border-top-color: transparent;
 }
 
 #get-satisfaction h2 a {
@@ -1146,6 +1220,7 @@ li.flash9 {
   background-position:bottom right;
 }
 
+.flash9:hover,
 .flash9.active {
   background-image:url(../demo/_image/flash9-dark.png);
   _background-image:none;
@@ -1165,19 +1240,19 @@ li.flash9 {
   _background-image:none;
 }
 
-.deprecated {
-  font-style: italic;
-  color: #333 !important;
-}
-
+.new:hover,
 .new.active,
+.recent:hover,
 .recent.active {
   background-image:url(../demo/_image/new-dark.png);
+  background-repeat:no-repeat;
+  background-position:bottom right;
   _background-image:none;
 }
 
-li.new {
-  background-position:top right;
+.deprecated {
+  font-style: italic;
+  color: #333 !important;
 }
 
 span.nevermind,
@@ -1202,13 +1277,12 @@ dd.deprecation-note {
 
 .c3 p {
   font-size:0.9em;
-  padding-left:0.5em;
+  padding-left:0.75em;
   padding-right:0.5em;
 }
 
 .c1 pre code {
   margin-top:0px;
-  font-size:85%;
   color:#336699;
   margin-left:0px;
 }
@@ -1397,7 +1471,16 @@ a.cta {
   color:#3399cc;
   border-radius:0.25em;
   zoom:1;
-  text-shadow: none;
+}
+
+body.home .c2 a,
+body.home a.cta {
+ text-shadow: 0px 1px 0px #fff;
+}
+
+body.home .c2 a:hover,
+body.home a.cta:hover {
+ text-shadow: none;
 }
 
 /* redefine for simple mp3 button demo */
@@ -2316,6 +2399,7 @@ ul.code-block {
   list-style-type: none;
   position: relative;
   padding: 3px;
+  font-size: 85%;
 }
 
 ul.code-block,
@@ -2323,16 +2407,15 @@ ul.code-block li {
   position: relative;
   margin: 0px;
   padding: 0px;
-  font-size: 85%;
   line-height: 1.5em;
 }
 
 ul.code-block li {
-  padding: 0.75em 0px;
+  padding: 0.75em 0.5em;
 }
 
 ul.code-block li:nth-child(2n+1) {
-  background-color: #f9fcff;
+  background-color: #fcfcfc;
 }
 
 ul.code-block li:last-child {
@@ -2341,16 +2424,16 @@ ul.code-block li:last-child {
 
 ul.code-block li div {
   position: absolute;
-  left: 0px;
+  left: 0.5em;
   top: 0.75em; /* note: match LI padding */
-  width: 28em; /* left gutter */
+  width: 22em; /* left gutter */
   z-index: 2; /* sit on top */
 }
 
 ul.code-block li span {
   position: relative;
   display: block;
-  padding-left: 24em; /* room for left gutter */
+  padding-left: 22.5em; /* room for left gutter */
   text-indent: -2em;
 }
 
@@ -2408,7 +2491,9 @@ div.threeup .column {
 div.oneup .column-wrapper,
 div.twoup .column-wrapper,
 div.threeup .column-wrapper {
+/*
   border-top: 1px dotted #d0d0d0;
+*/
   margin: 0px 2.5em;
 }
 

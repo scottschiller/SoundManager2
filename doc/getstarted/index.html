@@ -319,7 +319,7 @@ soundManager.setup({
     <span><span>// once soundmanager2.js has loaded and has parsed, construct + init.</span></span>
     window.soundManager = new SoundManager(); <span><span>// Flash expects window.soundManager.</span></span>
     <span><span>// once constructed, call SM2 <a href="../#soundmanager-setup">setup()</a> with your configuration options</span></span>
-    <span><span>// soundManager.setup({ ... });
+    <span><span>// soundManager.setup({ ... });</span></span>
     <span><span>// ... and begin SM2 init.</span></span>
     soundManager.beginDelayedInit();
   });
@@ -505,7 +505,7 @@ soundManager.setup({
 
 				<h3>Live Debug Output</h3>
 				<p>SoundManager 2 relies on Javascript and Flash communicating via ExternalInterface, and this is subject to a number of timing, loading and browser security conditions. Because of this complexity, debug information is essential for troubleshooting start-up, loading, initialization and error conditions between Flash and Javascript.</p>
-				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to javascript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
+				<p class="in">With debug mode enabled via <code>debugMode = true</code>, SM2 can write helpful troubleshooting information to javascript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
 				<p>If loading from the local filesystem (offline eg. file://, not over HTTP), Flash security is likely preventing SM2 from talking to Javascript. You will need to add this project's directory to the trusted locations in the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash global security settings panel</a>, or simply view this page over HTTP.</p>
 				<p>Below is a live example of debug output.</p>
 				<div id="live-debug" class="block">

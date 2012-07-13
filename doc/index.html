@@ -23,7 +23,7 @@ soundManager.setup({
 </script>
 </head>
 
-<body id="doc">
+<body id="doc" class="special">
 	
 <div id="content">
 
@@ -211,7 +211,7 @@ soundManager.setup({
      <li><a href="#soundmanager-reboot">reboot()</a></li>
      <li><a href="#soundmanager-resume">resume()</a></li>
   	 <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
-     <li><a href="#soundmanager-setup" title="Newly-added feature" class="new">setup()</a></li>
+     <li class="new"><a href="#soundmanager-setup" title="Newly-added feature">setup()</a></li>
      <li><a href="#soundmanager-setpan" title="Flash-only feature">setPan()</a></li>
      <li><a href="#soundmanager-setposition">setPosition()</a></li>
      <li><a href="#soundmanager-setvolume">setVolume()</a></li>
@@ -242,7 +242,7 @@ soundManager.setup({
      <li>autoPlay</li>
      <li title="Flash 9.0r115+ only" class="flash9">bufferTime</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
-     <li><a href="#smsound-from" title="Recently-added feature" class="recent">from</a></li>
+     <li class="recent"><a href="#smsound-from" title="Recently-added feature">from</a></li>
      <li><a href="#smsound-id">id</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
      <li>loops</li>
@@ -253,7 +253,7 @@ soundManager.setup({
      <li><a href="#smsound-position">position</a></li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-serverurl">serverURL</a></li>
      <li>stream</li>
-     <li><a href="#smsound-to" title="Recently-added feature" class="recent">to</a></li>
+     <li class="recent"><a href="#smsound-to" title="Recently-added feature">to</a></li>
      <li><a href="#smsound-type">type</a></li>
      <li><a href="#smsound-url">url</a></li>
      <li><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
@@ -334,7 +334,7 @@ soundManager.setup({
 
 	 <div class="c1">
 	  <div id="reset-filter"></div>
-         </div>
+     </div>
 
 	 <div class="c2">
 	  <div id="search-results"><!-- search results for %s --></div>
@@ -344,19 +344,14 @@ soundManager.setup({
 
 	<div id="soundmanager-properties" class="columnar">
 
-		<div class="c1">
-			<h2>SoundManager Configuration</h2>
-			<p>Flash URLs, version + performance options</p>
-		</div>
-
 		<div class="c2">
 
+		  <h3 id="soundmanager-setup">SoundManager Properties: soundManager.setup()</h3>
+
 	      <p>
-			Just getting started? See <a href="getstarted/#basic-inclusion">the basics</a>. For nicely-formatted, commented source code, see the <a href="generated/script/soundmanager2.html">generated docs</a>.
+			Just getting started? See <a href="getstarted/#basic-inclusion">the basics</a>. For nicely-formatted, annotated source code, see the <a href="generated/script/soundmanager2.html">pretty-printed version</a>.
 		  </p>
 
-		  <h3 id="soundmanager-setup">SoundManager Properties: soundManager.setup()</h3>
-			
 		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowscriptaccess f-bgcolor f-setup">
 
 		  <p class="in">The soundManager object has many configurable properties which set debug mode, determine the flash movie path and other behaviours.</p>
@@ -369,7 +364,7 @@ soundManager.setup({
 
           <p><b>Note</b>: The only property requiring customization is <code>url</code> - this defines the path used to look for the appropriate flash SWF for driving audio when HTML5 is not available. (If not specified, the current working path is used.) Aside from flash-specific items like <code>url</code> and <code>flashVersion</code>, most properties can be set after "DOM Ready" without issue.</p>
 
-<div id="sm2-properties" class="code block">
+<div id="sm2-properties" class="small code block">
 
 	<ul class="code code-block">
 
@@ -465,7 +460,7 @@ soundManager.setup({
 
 		<li>
 			<div>wmode: <em>null</em></div>
-			<span>// flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index to work)</span>
+			<span>// flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index)</span>
 		</li>
 
 	</ul>
@@ -526,7 +521,7 @@ soundManager.setup({
 
 		      <p class="in">SoundManager 2 started with a Flash 8 base requirement, but can also use Flash 9 and take advantages of some unique features Flash 9 offers. By default Flash 8 will be used, but the version can be easily changed by setting <code>flashVersion</code> appropriately.</p>
 
-		      <p class="in">Example: <code>soundManager.flashVersion = 9;</code></p>
+		      <p class="in">Example: <code>soundManager.setup({ <span>flashVersion: 9</span> });</code></p>
 
 		      <p class="in">The Flash 8 version is <code>soundmanager2.swf</code>, and the flash 9 version is <code>soundmanager2_flash9.swf</code>, accordingly. Note that only Flash 8 and Flash 9 are supported at this time; other values will result in errors.</p>
 
@@ -591,7 +586,7 @@ soundManager.setup({
 			<p>When starting up, CSS classes are appended to the <code>#sm2-container</code> DIV (which you can provide, or SM2 will create and append to the document.) The CSS classes change with the state of SM2's start-up, eg. <code>#sm2-container.swf_timedout { border:1px solid red; }</code> could be used to highlight the movie to the user for unblocking and so on.</p>
 			<p>Setting <code>useFlashBlock = true</code> will cause SM2 to wait infinitely for the Flash content to load after an initial (non-fatal) timeout, having already waited for <code>flashLoadTimeout</code> to pass. If <code>flashLoadTimeout = 0</code>, SM2 will immediately go into "flash block mode" on start-up.</p>
 			<p>The relevant CSS is as follows:</p>
-<pre class="block"><code>#sm2-container {
+<pre class="small block"><code>#sm2-container {
  <span><span>/**
   * Initial/default state...
   * position:absolute/off-screen, or left/top:0
@@ -708,9 +703,14 @@ soundManager.setup({
 			<p>Additionally, <code>soundManager.specialWmodeCase</code> will be set to <code>true</code> if wmode has been reset due to this special condition.</p>
 		  </div>
 
+
+		  <div class="f-block">
+
 		   <h3>SoundManager Top-Level Properties</h3>
 
-                   <p>A few additional properties that hang off the <code>soundManager</code> instance object:</p>
+                   <p>A few additional properties that hang off the <code>soundManager</code> instance object</p>
+
+		  </div>
 
 		   <div class="f-block f-alturl">
 		    <h4 id="soundmanager-alturl">soundManager.altURL</h4>
@@ -730,7 +730,7 @@ soundManager.setup({
 			<p><code>soundManager.audioFormats</code> defines a structure listing the audio codecs that will be tested for support under both HTML5 and Flash. Each type is defined by a file extension and MIME types, and optionally, a list of related extensions (eg. MPEG-4 content can be in an .mp4 file, but may also be .aac, or .m4a.)</p>
 
 			<p>Additionally, each format can be defined as "required", meaning that SM2 can fail to start if playback support is not found via either HTML5 or Flash. By default, MP3 is a required format.</p>
-<pre class="block"><code>soundManager.audioFormats = {
+<pre class="small block"><code>soundManager.audioFormats = {
 
   <span><span>/**
    * determines HTML5 support + flash requirements.
@@ -772,11 +772,6 @@ soundManager.setup({
 	
 	<div id="api" class="columnar">
 		
-	 <div class="c1">
-	  	<h2>SoundManager Core API</h2>
-		<p>Methods for the soundManager object.</p>
-	 </div>
-
 	 <div class="c2">
 
 				  <div class="f-block">
@@ -834,7 +829,7 @@ if (soundManager.canPlayURL(sURL)) {
 
 				  <dl id="soundmanager-createsound" class="f-block f-createsound s-autoplay">
 
-				   <dt style="margin-top:2em"><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
+				   <dt><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
 				   <dd title="object:options">Creates a sound with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. Requires <code>id</code> and <code>url</code> at a minimum.</dd>
 				   <dd>
 				    Example:
@@ -1052,14 +1047,6 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 
 			<div id="smsoundmethods" class="columnar">
 
-			 <div class="c1">
-			 	<h2>SMSound (Sound Object) API</h2>
-				<p class="in">Each <code>createSound()</code> call generates a matching <code>SMSound</code> (sound instance) object, which lasts for the life of the page or until explicitly destroyed. Each instance stores stateful information (eg. <code>playState</code>) and provides event handlers for state changes (eg. <code>onload()</code>.)</p>
-			 	<p>SoundManager is a convenient wrapper for most sound object methods: It will check for and gracefully exit if a sound object (specified by ID) does not exist, and provides convenient global functionality, eg. muting or pausing of all sounds.</p>
-			   	<p class="in">Nonetheless, each <code>SMSound</code> object can have its methods called directly. eg. <code>mySound.mute()</code> instead of <code>soundManager.mute('mySound')</code>, and so on.</p>
-			    <p class="in">Note that for code examples, <code>mySound</code> is assumed to be a valid SMSound instance object - eg.,<br /><code>var mySound = soundManager.createSound();</code> or<br /> <code>var mySound = soundManager.getSoundById();</code></p>
-			 </div>
-
 			 <div class="c2">
 
 				  <div>
@@ -1095,8 +1082,8 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 				   <dd>If you need to fire an event relative to the true duration of the sound, reference its duration once the sound has fully-loaded - ie., at or after the <code>onload()</code> event - as the duration will not be completely accurate until that time. <code>durationEstimate</code> may be referenced before <code>onload()</code>, but it should not be relied on when "precise" timings of say, &lt; 1 second are desired.</dd>
 				   <dd>Example:<pre class="block"><code>mySound.load({
   onload: function() {
-    this.onPosition(this.duration - 5000, function() {
-      console.log(<span>'the sound '</span> + this.id + <span>' is now at position '</span> + this.position);
+    this.onPosition(this.duration * 0.5, function(eventPosition) {
+      console.log(<span>'the sound '</span> + this.id + <span>' is now at position '</span> + this.position + ' (event position: ' + eventPosition + ')');
     });
   }
 });</code></pre>
@@ -1181,11 +1168,6 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 </div>
 
 		<div id="smsoundevents" class="columnar">
-			
-			<div class="c1">
-			  <h2 id="soundmanager-sound-events">SMSound Events</h2>
-			  <p>Event handlers for SMSound objects.</p>
-			</div>
 			
 			<div class="c2">
 				
@@ -1346,21 +1328,6 @@ for (prop in this.id3) {
 
 
 				<div id="sound-object-properties" class="columnar">
-
-					<div class="c1">
-						<h2>SMSound Properties</h2>
-						<p>Instance Option properties (parameters) can be used with <code>createSound()</code> and <code>play()</code>.</p>
-						<p style="margin-bottom:0px">Example:</p>
-<pre class="block"><code>soundManager.createSound({
- id: 'foo',
- url: '/path/to/an.mp3'
-});</code></pre>
-						<p>Dynamic Properties can be read to monitor the state of a sound object.</p>
-						<p style="margin-bottom:0px">Example:</p>
-<pre class="block"><code>alert(mySound.playState);</code></pre>
-
-
-					</div>
 
 					<div class="c2">
 
@@ -1609,10 +1576,7 @@ for (prop in this.id3) {
 				</div>
 
 				<div id="smsound-methods" class="columnar">
-					<div class="c1">
-						<h2>SMSound Methods</h2>
-						<p>Functions which may be called directly on sound objects.</p>
-					</div>
+
 					<div class="c2">
 						
 					  <div class="f-block">
@@ -1621,7 +1585,8 @@ for (prop in this.id3) {
 					   <p>The following methods can be called directly on a SMSound instance. The method calls are the same as the SoundManager global methods documented above for existing sound objects, minus the sound ID parameter.</p>
 					  </div>
 
-					  <div class="f-block s-play s-setposition s-pause s-resume s-togglepause s-mute s-setvolume s-setpan s-stop s-unload s-destruct">
+
+					  <div class="f-block"> <!-- s-play s-setposition s-pause s-resume s-togglepause s-mute s-setvolume s-setpan s-stop s-unload s-destruct -->
 
 					  <dl class="tight">
 
@@ -1650,57 +1615,40 @@ for (prop in this.id3) {
 			<!-- options -->
 			<div id="smdefaults" class="columnar">
 				
-				<div class="c1">
-					<h2>SoundManager Default Options</h2>
-					<p>An optional object specifying event handlers etc., passed to <code>createSound()</code> and <code>play()</code>.</p>
-				</div>
-				
 				<div class="c2">
 					
-					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-from s-to s-pan s-volume s-ismoviestar s-flash9options s-moviestaroptions s-buffertime s-serverurl s-onconnect">
+					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-from s-to s-pan s-volume">
 
-					  <h3 id="sound-properties">SoundManager Global Sound Object Defaults</h3>
+					  <h3 id="sound-properties">SoundManager: Default Sound Options</h3>
 
-					  <p>The <code class="in">soundManager.defaultOptions</code> object contains default parameters inherited by sound objects made via <code class="in">createSound()</code>. They can be overridden on a per-sound basis at create time, or changed dynamically in some cases. Note that none of these options are required when calling <code class="in">createSound()</code> except for <code>id</code> and <code>url</code>; the others will inherit the default values if unspecified.</p>
+					  <p>Sound objects inherit properties from <code>soundManager.defaultOptions</code> when they are created.</p>
+					  <p>Sound parameters can be overridden on a per-sound basis at create time, or changed dynamically in some cases. Note that none of these options are required when calling <code class="in">createSound()</code> except for <code>id</code> and <code>url</code>; the others will inherit the default values if unspecified.</p>
 					  <p><code class="in">soundManager.defaultOptions</code> apply the properties and event handlers as specified above. Defaults are shown below as an example.</p>
 
 <pre class="small block"><code>soundManager.defaultOptions = {<span>
-  autoLoad: false,       <span>// enable automatic loading (otherwise .load() will call with .play())</span>
-  autoPlay: false,       <span>// enable playing of file ASAP (much faster if "stream" is true)</span>
-  from: null,            <span>// position to start playback within a sound (msec), see <a href="../demo/api/#fitter-happier">demo</a></span>
-  loops: 1,              <span>// number of times to play the sound. Related: <a href="../demo/api/#looping">looping</a> (API demo)</span>
-  multiShot: true,       <span>// let sounds "restart" or "chorus" when played multiple times..</span>
-  multiShotEvents: false,<span>// allow events (onfinish()) to fire for each shot, if supported.</span>
-  onid3: null,           <span>// callback function for "ID3 data is added/available"</span>
-  onload: null,          <span>// callback function for "load finished"</span>
-  onstop: null,          <span>// callback for "user stop"</span>
-  onfinish: null,        <span>// callback function for "sound finished playing"</span>
-  onpause: null,         <span>// callback for "pause"</span>
-  onplay: null,          <span>// callback for "play" start</span>
-  onresume: null,        <span>// callback for "resume" (pause toggle)</span>
-  position: null,        <span>// offset (milliseconds) to seek to within downloaded sound.</span>
-  pan: 0,                <span>// "pan" settings, left-to-right, -100 to 100</span>
-  stream: true,          <span>// allows playing before entire file has loaded (recommended)</span>
-  to: null,              <span>// position to end playback within a sound (msec), see <a href="../demo/api/#fitter-happier">demo</a></span>
-  type: null,            <span>// MIME-like hint for canPlay() tests, eg. 'audio/mp3'</span>
-  usePolicyFile: false,  <span>// enable crossdomain.xml request for remote domains (for ID3/waveform access)</span>
-  volume: 100,           <span>// self-explanatory. 0-100, the latter being the max.</span>
-  whileloading: null,    <span>// callback function for updating progress (X of Y bytes received)</span>
-  whileplaying: null,    <span>// callback during play (position update)</span>
-
-  <span>// *** items merged from soundManager.flash9Options, as applicable ***</span>
-  isMovieStar: null,    <span>// "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
-  usePeakData: false,   <span>// enable left/right channel peak (level) data</span>
-  useWaveformData:false,<span>// enable sound spectrum (raw waveform data) - Note: May be CPU-intensive, UI redraw/layout etc.</span>
-  useEQData: false,     <span>// enable sound EQ (frequency spectrum data) - Note: CPU potential also.</span>
-  onbufferchange: null, <span>// callback for "isBuffering" property change</span>
-  ondataerror: null     <span>// callback for waveform/eq data access error (flash playing audio in other tabs/domains)</span>
-
-  <span>// *** items merged from soundManager.movieStarOptions, as applicable ***</span>
-  bufferTime: null,     <span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
-  serverURL: null,      <span>// RTMP: flash media server to connect to, required for RTMP</span>
-  onconnect: null       <span>// RTMP: callback for connection to flash media server</span>
-
+  autoLoad: false,        <span>// enable automatic loading (otherwise .load() will call with .play())</span>
+  autoPlay: false,        <span>// enable playing of file ASAP (much faster if "stream" is true)</span>
+  from: null,             <span>// position to start playback within a sound (msec), see <a href="../demo/api/#fitter-happier">demo</a></span>
+  loops: 1,               <span>// number of times to play the sound. Related: <a href="../demo/api/#looping">looping</a> (API demo)</span>
+  multiShot: true,        <span>// let sounds "restart" or "chorus" when played multiple times..</span>
+  multiShotEvents: false, <span>// allow events (onfinish()) to fire for each shot, if supported.</span>
+  onid3: null,            <span>// callback function for "ID3 data is added/available"</span>
+  onload: null,           <span>// callback function for "load finished"</span>
+  onstop: null,           <span>// callback for "user stop"</span>
+  onfinish: null,         <span>// callback function for "sound finished playing"</span>
+  onpause: null,          <span>// callback for "pause"</span>
+  onplay: null,           <span>// callback for "play" start</span>
+  onresume: null,         <span>// callback for "resume" (pause toggle)</span>
+  position: null,         <span>// offset (milliseconds) to seek to within downloaded sound.</span>
+  pan: 0,                 <span>// "pan" settings, left-to-right, -100 to 100</span>
+  stream: true,           <span>// allows playing before entire file has loaded (recommended)</span>
+  to: null,               <span>// position to end playback within a sound (msec), see <a href="../demo/api/#fitter-happier">demo</a></span>
+  type: null,             <span>// MIME-like hint for canPlay() tests, eg. 'audio/mp3'</span>
+  usePolicyFile: false,   <span>// enable crossdomain.xml request for remote domains (for ID3/waveform access)</span>
+  volume: 100,            <span>// self-explanatory. 0-100, the latter being the max.</span>
+  whileloading: null,     <span>// callback function for updating progress (X of Y bytes received)</span>
+  whileplaying: null,     <span>// callback during play (position update)</span>
+  <span>// see optional <a href="#sound-properties-flash9" title="SoundManager 2: Additional Flash 9-based options">flash 9-specific options</a>, too</span>
 </span>}
 </code></pre>
 
@@ -1726,7 +1674,9 @@ for (prop in this.id3) {
 
 					  <p><code class="in">soundManager.flash9Options</code> and <code class="in">soundManager.movieStarOptions</code> are both defined as separate objects, and if supported according to <code class="in">flashVersion</code> and <code class="in">defaultOptions</code> parameters, are merged at the property level into <code class="in">soundManager.defaultOptions</code>.</p>
 
-<pre class="small block"><code>soundManager.flash9Options = {<span>
+<pre class="small block"><code><span><span>// Note: These are merged into soundManager.defaultOptions when <a href="#soundmanager-flashversion" title="soundManager.flashVersion parameter" onclick="resetFilter()">flashVersion</a> = 9.</span></span>
+
+soundManager.flash9Options = {<span>
   isMovieStar: null,      <span>// "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL</span>
   usePeakData: false,     <span>// enable left/right channel peak (level) data</span>
   useWaveformData: false, <span>// enable sound spectrum (raw waveform data) - WARNING: May set CPUs on fire.</span>
@@ -1734,12 +1684,12 @@ for (prop in this.id3) {
   onbufferchange: null,	  <span>// callback for "isBuffering" property change</span>
   ondataerror: null	  <span>// callback for waveform/eq data access error (flash playing audio in other tabs/domains)</span>
 </span>}
+
 soundManager.movieStarOptions = {<span>
   bufferTime: null  <span>// seconds of data to buffer (null = flash default of 0.1 - if AAC gappy, try up to 3 seconds)</span>
 </span>}
-<span><span>// if applicable, these options are merged into soundManager.defaultOptions at SM2 init.
-// soundManager.flash9Options.isMovieStar -&gt; soundManager.defaultOptions.isMovieStar, etc.</span></span>
-</code></pre>
+
+<span><span>// when merged, soundManager.flash9Options.isMovieStar -&gt; soundManager.defaultOptions.isMovieStar, etc.</span></span></code></pre>
 				
 				</div>
 				
@@ -1748,10 +1698,6 @@ soundManager.movieStarOptions = {<span>
 		</div>
 		
 		<div id="soundmanager2-dynamic-properties" class="columnar">
-			<div class="c1">
-				<h2>SoundManager Runtime Properties</h2>
-				<p>Elements of SoundManager which are set at runtime, intended as read-only.</p>
-			</div>
 
 			<div class="c2">
 				
@@ -1793,10 +1739,7 @@ soundManager.movieStarOptions = {<span>
 		</div>
 		
 		<div id="soundmanager-events" class="columnar">
-			<div class="c1">
-				<h2>SoundManager Core Events</h2>
-				<p>Events fired by SoundManager at start-up</p>
-			</div>
+
 			<div class="c2">
 				
 				<div class="f-block f-onload f-onerror f-oninitmovie">
@@ -1855,10 +1798,7 @@ soundManager.movieStarOptions = {<span>
 		</div>
 		
 		<div class="columnar">
-			<div class="c1">
-				<h2>SoundManager Collections</h2>
-				<p>Object collections which SoundManager maintains during runtime.</p>
-			</div>
+
 			<div class="c2">
 				
 			  <div class="f-block">
@@ -1879,11 +1819,6 @@ soundManager.movieStarOptions = {<span>
 		
 		<div id="sound-options-object" class="columnar">
 
-			<div class="c1">
-				<h2>Sound Options Object Format</h2>
-				<p>Object Literal, JSON-style form passed to <code>createSound()</code> and <code>play()</code></p>
-			</div>
-			
 			<div class="c2">
 				
 				  <div class="f-block s-onload"> <!-- f-createsound s-id s-url s-autoload s-autoplay s-onload -->

@@ -279,6 +279,7 @@ function loadScript(sURL,onLoad) {
 }
 
 function doAltShortcuts() {
+/*
   var o = _id('shortcuts-list');
   if (!o) {
     return false;	
@@ -297,6 +298,7 @@ function doAltShortcuts() {
 	  utils.addClass(oLIs[i],'alt');
 	}
   }
+*/
 }
 
 function fixLinks() {
