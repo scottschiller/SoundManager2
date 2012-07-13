@@ -3801,9 +3801,18 @@ function SoundManager(smURL, smID) {
       return false;
     }
 
-    // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
-    var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null),
-        item, lookup, support = {}, aF, i;
+    /**
+     * double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
+     * and one last whammy for the road: In relation to the 'IE 9 "not implemented" nonsense' issue noted around line 236, IE 9 on a Windows VM throws the same error
+     *   This is quite an edge-case, but this bug can be a show-stopper when browser testing on a VM (such as VirtualBox).
+     */
+    var a = (function(){
+      try {
+        return (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null);
+      } catch(e) {
+        return null;
+      }
+    }()), item, lookup, support = {}, aF, i;
 
     function _cp(m) {
 
