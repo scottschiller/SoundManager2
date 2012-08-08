@@ -606,7 +606,7 @@ function SoundManager(smURL, smID) {
         return _t;
       }
       _iO = _t._iO;
-      _lastURL = _t.url;
+      _lastURL = (_t.url && _t.url.toString ? _t.url.toString() : null);
       _t.loaded = false;
       _t.readyState = 1;
       _t.playState = 0;
@@ -641,6 +641,7 @@ function SoundManager(smURL, smID) {
           _catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
         }
       }
+      _t.url = _iO.url;
       return _t;
     };
     this.unload = function() {
@@ -713,6 +714,9 @@ function SoundManager(smURL, smID) {
       }
       if (exit !== null) {
         return exit;
+      }
+      if (oOptions.url && oOptions.url !== _t.url) {
+        _t.load(_t._iO);
       }
       if (!_t.loaded) {
         if (_t.readyState === 0) {
@@ -1506,7 +1510,8 @@ function SoundManager(smURL, smID) {
       remove: (old?'detachEvent':'removeEventListener')
     };
     function getArgs(oArgs) {
-      var args = _slice.call(oArgs), len = args.length;
+      var args = _slice.call(oArgs),
+          len = args.length;
       if (old) {
         args[1] = 'on' + args[1];
         if (len > 3) {

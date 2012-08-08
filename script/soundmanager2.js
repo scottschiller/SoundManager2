@@ -1458,7 +1458,8 @@ function SoundManager(smURL, smID) {
       // local shortcut
       _iO = _t._iO;
 
-      _lastURL = _t.url;
+      // make a local copy of the old url before we re-assign it
+      _lastURL = (_t.url && _t.url.toString ? _t.url.toString() : null);
 
       // reset a few state properties
 
@@ -1536,6 +1537,9 @@ function SoundManager(smURL, smID) {
         }
 
       }
+
+      // after all of this, ensure sound url is up to date.
+      _t.url = _iO.url;
 
       return _t;
 
@@ -1685,6 +1689,12 @@ function SoundManager(smURL, smID) {
 
       if (exit !== null) {
         return exit;
+      }
+
+      // edge case: play() with explicit URL parameter
+      if (oOptions.url && oOptions.url !== _t.url) {
+        // load using merged options
+        _t.load(_t._iO);
       }
 
       if (!_t.loaded) {
@@ -3354,7 +3364,8 @@ function SoundManager(smURL, smID) {
 
     function getArgs(oArgs) {
 
-      var args = _slice.call(oArgs), len = args.length;
+      var args = _slice.call(oArgs),
+          len = args.length;
 
       if (old) {
         // prefix
