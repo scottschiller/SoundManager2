@@ -179,6 +179,9 @@ function SoundManager(smURL, smID) {
       _complain(_str('setupLate'));
     }
     _assign(options);
+    if (!_didDCLoaded && typeof options.url !== 'undefined' && _doc.readyState === 'complete') {
+      setTimeout(_domContentLoaded, 1);
+    }
     return _s;
   };
   this.ok = function() {
