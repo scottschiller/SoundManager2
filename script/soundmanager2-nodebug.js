@@ -738,7 +738,7 @@ function SoundManager(smURL, smID) {
       if (!_t.isHTML5 && _fV === 9 && _t.position > 0 && _t.position === _t.duration) {
         oOptions.position = 0;
       }
-      if (_t.paused && _t.position && _t.position > 0) {
+      if (_t.paused && _t.position >= 0 && (!_t._iO.serverURL || _t.position > 0)) {
         _t.resume();
       } else {
         _t._iO = _mixin(oOptions, _t._iO);

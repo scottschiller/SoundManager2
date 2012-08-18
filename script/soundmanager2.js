@@ -1746,9 +1746,10 @@ function SoundManager(smURL, smID) {
        * If we just call resume() the onplay() callback will never be called.
        * So only call resume() if the position is > 0.
        * Another reason is because options like volume won't have been applied yet.
+       * For normal sounds, just resume.
        */
 
-      if (_t.paused && _t.position && _t.position > 0) {
+      if (_t.paused && _t.position >= 0 && (!_t._iO.serverURL || _t.position > 0)) {
 
         // https://gist.github.com/37b17df75cc4d7a90bf6
         _s._wD(fN + '"' + _t.id + '" is resuming from paused state',1);
