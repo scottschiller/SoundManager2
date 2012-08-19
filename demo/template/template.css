@@ -8,6 +8,7 @@
 
 body {
  font-size:75%;
+ background: #fff url(../../demo/_image/noise.png);
 }
 
 pre {
@@ -91,4 +92,65 @@ ul.file-structure li {
 
 ul.file-structure li span {
   color:#999;
+}
+
+/* re-used bits from index.css */
+
+pre code {
+  font-size:1em;
+}
+
+pre {
+  white-space:-moz-pre-wrap;
+  white-space:pre-wrap;
+  word-wrap:break-word; /* IE */
+}
+
+ul.code-block em,
+pre span,
+code span,
+dt span {
+  color:#339933;
+}
+
+ul.code-block em {
+  font-style: normal;
+}
+
+ul.code-block span,
+pre span span,
+code span span,
+dt span span {
+  color:#667788;
+}
+
+pre.block,
+pre.block code,
+div.block div.code,
+ul.code-block {
+  position:relative;
+  display:table;
+  *display:block;
+  border:1px solid #ccc;
+  border-radius:3px;
+}
+
+div.block,
+pre.block {
+  background:#e9f3ff;
+  border-color:#eee;
+  padding:3px;
+}
+
+pre.block code,
+.block .code {
+  background:#fff;
+  border:1px solid #ccddee;
+  padding:0.5em;
+  font-size: 100%;
+  line-height:1.75em;
+}
+
+pre.block code {
+  padding: 1em;
 }

@@ -1,12 +1,6 @@
-/* 
-
- -------------------------------------------------------------
-
- In-page demo CSS - see external CSS for actual relevant stuff.
-
- --------------------------------------------------------------
-
- */
+/** 
+ * In-page demo CSS - see external CSS for actual relevant stuff.
+*/
 
 #soundmanager-debug {
  /* SM2 debug container (optional, makes debug more useable) */
@@ -28,7 +22,7 @@ h1 {
 }
 
 h1, h2 {
- letter-spacing:-1px; /* zomg web x.0! ;) */ 
+ letter-spacing: -0.005em; /* zomg web x.0! ;) */ 
 }
 
 h2 {
@@ -62,11 +56,6 @@ ul.notes {
  font-style:italic;
  color:#999;
  margin-bottom:0px;
-}
-
-pre {
- font-size:1.2em;
- _font-size:1em;
 }
 
 #left {
