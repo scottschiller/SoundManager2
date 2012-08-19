@@ -5457,11 +5457,6 @@ function SoundManager(smURL, smID) {
 
   }
 
-  if (_doc.readyState === 'complete') {
-    // DOMReady has already happened.
-    setTimeout(_domContentLoaded,100);
-  }
-
 } // SoundManager()
 
 // SM2_DEFER details: http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading

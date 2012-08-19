@@ -2495,9 +2495,6 @@ function SoundManager(smURL, smID) {
   } else {
     _catchError({type:'NO_DOM2_EVENTS', fatal:true});
   }
-  if (_doc.readyState === 'complete') {
-    setTimeout(_domContentLoaded,100);
-  }
 }
 // SM2_DEFER details: http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading
 if (typeof SM2_DEFER === 'undefined' || !SM2_DEFER) {
