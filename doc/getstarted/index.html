@@ -306,22 +306,22 @@ soundManager.setup({
     <span><span>// SM2 could not start. Flash blocked, missing or security error? Complain, etc.?</span></span>
 });</code></pre>
 
-			  <h4 id="lazy-loading">Lazy-loading SM2 (deferred start-up): SM2_DEFER</h4>
+			  <h4 id="lazy-loading">Lazy-loading / Dynamically-loading SM2 on-the-fly</h4>
 
-			  <p>Let's say you wanted to load and start SM2 after your page has loaded, using Javascript to insert a script node etc., or otherwise only start SM2 conditionally. You can edit soundmanager2.js and take out the SoundManager() constructor call at the bottom, <i>or</i> set the global variable SM2_DEFER = true which will have the same effect.</p>
+			  <p>Let's say you wanted to load and start SM2 after your page has loaded, using JavaScript to insert a script node etc., or otherwise only start SM2 conditionally. You can load the library dynamically (at or after <code>DOMContentReady</code>), and it will not attempt to init until you call <code>setup()</code> with a <code>url</code> parameter.</p>
 			  <p>Example:</p>
 				
-<pre class="block"><code>function lazy_load_sm2() {
-  window.SM2_DEFER = true;
+<pre class="block"><code>function loadSM2() {
   <span><span>// -- load soundmanager2.js via &lt;script&gt;, createElement('script') or XHR etc. --
-  // imaginary load_script() function ..</span></span>
-  load_script('<span>/path/to/soundmanager2.js</span>', function() {
-    <span><span>// once soundmanager2.js has loaded and has parsed, construct + init.</span></span>
-    window.soundManager = new SoundManager(); <span><span>// Flash expects window.soundManager.</span></span>
-    <span><span>// once constructed, call SM2 <a href="../#soundmanager-setup">setup()</a> with your configuration options</span></span>
-    <span><span>// soundManager.setup({ ... });</span></span>
-    <span><span>// ... and begin SM2 init.</span></span>
-    soundManager.beginDelayedInit();
+  // imaginary loadJS() function with callback ...</span></span>
+  loadJS('<span>/path/to/soundmanager2.js</span>', function() {
+    <span><span>// once soundmanager2.js has loaded, call <a href="../#soundmanager-setup">soundManager.setup()</a>.</span></span>
+    soundManager.setup({
+      url: '<span>/path/to/swfs/</span>',
+      onready: function() {
+        <span><span>// soundManager.createSound() etc. here</span></span>
+      }
+    });
   });
 }</code></pre>
 
