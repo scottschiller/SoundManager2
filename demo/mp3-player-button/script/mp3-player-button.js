@@ -24,7 +24,7 @@ function BasicMP3Player() {
   this.excludeClass = 'button-exclude'; // CSS class for ignoring MP3 links
   this.links = [];
   this.sounds = [];
-  this.soundsByURL = [];
+  this.soundsByURL = {};
   this.indexByURL = [];
   this.lastSound = null;
   this.soundCount = 0;
