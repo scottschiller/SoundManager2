@@ -84,7 +84,7 @@ function SoundManager(smURL, smID) {
       'required': true
     },
     'mp4': {
-      'related': ['aac','m4a'],
+      'related': ['aac','m4a','m4b'],
       'type': ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
       'required': false
     },
@@ -145,12 +145,12 @@ function SoundManager(smURL, smID) {
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)),
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)),
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa|m4a)/i,
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
   _emptyURL = 'about:blank',
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _http = (!_overHTTP ? 'http:/'+'/' : ''),
-  _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mpeg4|aac|flv|mov|mp4||m4v|m4a|mp4v|3gp|3g2)\s*(?:$|;)/i,
-  _netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'mp4v', '3gp', '3g2'],
+  _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mpeg4|aac|flv|mov|mp4||m4v|m4a|m4b|mp4v|3gp|3g2)\s*(?:$|;)/i,
+  _netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'm4b', 'mp4v', '3gp', '3g2'],
   _netStreamPattern = new RegExp('\\.(' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
   this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i;
   this.useAltURL = !_overHTTP;
