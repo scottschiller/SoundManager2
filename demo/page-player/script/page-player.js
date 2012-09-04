@@ -542,7 +542,7 @@ function PagePlayer() {
   };
   
   this.withinStatusBar = function(o) {
-    return (self.isChildOfClass(o,'controls'));
+    return (self.isChildOfClass(o,'playlist')) && (self.isChildOfClass(o,'controls'));
   };
 
   this.handleClick = function(e) {
