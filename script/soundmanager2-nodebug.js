@@ -1214,7 +1214,7 @@ function SoundManager(smURL, smID) {
         if (_iO.autoLoad || _iO.autoPlay) {
           _t._a = new Audio(_iO.url);
         } else {
-          _t._a = (_isOpera ? new Audio(null) : new Audio());
+          _t._a = (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
         }
         _a = _t._a;
         _a._called_load = false;
@@ -1722,7 +1722,7 @@ function SoundManager(smURL, smID) {
     if (!_s.useHTML5Audio || typeof Audio === 'undefined') {
       return false;
     }
-    var a = (typeof Audio !== 'undefined' ? (_isOpera ? new Audio(null) : new Audio()) : null),
+    var a = (typeof Audio !== 'undefined' ? (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
     function _cp(m) {
       var canPlay, i, j,
