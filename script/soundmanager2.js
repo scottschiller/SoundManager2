@@ -2965,7 +2965,7 @@ function SoundManager(smURL, smID) {
       if (!_t.isHTML5) {
         _t.buffered = [{
           'start': 0,
-          'end': _t.duration
+          'end': _t.duration / 1000
         }];
       }
 
