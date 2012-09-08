@@ -2976,6 +2976,7 @@ function SoundManager(smURL, smID) {
       }
 
       // for flash, reflect sequential-load-style buffering
+      // note that "buffered" is an HTML5-based property, so seconds are used here instead of msec.
       if (!_t.isHTML5) {
         _t.buffered = [{
           'start': 0,
