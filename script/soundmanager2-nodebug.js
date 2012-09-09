@@ -1719,7 +1719,7 @@ function SoundManager(smURL, smID) {
     return result;
   };
   _testHTML5 = function() {
-    if (!_s.useHTML5Audio || typeof Audio === 'undefined') {
+    if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
     var a = (typeof Audio !== 'undefined' ? (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
@@ -2000,8 +2000,6 @@ function SoundManager(smURL, smID) {
       if (_s.useHTML5Audio) {
         if (!_s.html5 || !_s.html5.canPlayType) {
           _s.hasHTML5 = false;
-        } else {
-          _s.hasHTML5 = true;
         }
       }
     }

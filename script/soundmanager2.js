@@ -3813,7 +3813,7 @@ function SoundManager(smURL, smID) {
 
   _testHTML5 = function() {
 
-    if (!_s.useHTML5Audio || typeof Audio === 'undefined') {
+    if (!_s.useHTML5Audio || !_s.hasHTML5) {
       return false;
     }
 
@@ -4488,8 +4488,6 @@ function SoundManager(smURL, smID) {
         if (!_s.html5 || !_s.html5.canPlayType) {
           _s._wD('SoundManager: No HTML5 Audio() support detected.');
           _s.hasHTML5 = false;
-        } else {
-          _s.hasHTML5 = true;
         }
 
         // <d>
