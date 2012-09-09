@@ -175,10 +175,14 @@ function SoundManager(smURL, smID) {
     }
   }
   this.setup = function(options) {
+    var noURL = (!_s.url);
     if (typeof options !== 'undefined' && _didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
       _complain(_str('setupLate'));
     }
     _assign(options);
+    if (noURL && _didDCLoaded && typeof options.url !== 'undefined') {
+      _s.beginDelayedInit();
+    }
     if (!_didDCLoaded && typeof options.url !== 'undefined' && _doc.readyState === 'complete') {
       setTimeout(_domContentLoaded, 1);
     }
@@ -2132,9 +2136,11 @@ function SoundManager(smURL, smID) {
     var remoteURL = (smURL || _s.url),
     localURL = (_s.altURL || remoteURL),
     swfTitle = 'JS/Flash audio component (SoundManager 2)',
-    oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(),
-    s, x, sClass, isRTL = null,
-    html = _doc.getElementsByTagName('html')[0];
+    oTarget = _getDocument(),
+    extraClass = _getSWFCSS(),
+    isRTL = null,
+    html = _doc.getElementsByTagName('html')[0],
+    oEmbed, oMovie, tmp, movieHTML, oEl, s, x, sClass;
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
     function param(name, value) {
@@ -2268,6 +2274,9 @@ function SoundManager(smURL, smID) {
     if (_flash) {
       return false;
     }
+    if (!_s.url) {
+       return false;
+    }
     _flash = _s.getMovie(_s.id);
     if (!_flash) {
       if (!_oRemoved) {
@@ -2294,6 +2303,9 @@ function SoundManager(smURL, smID) {
   _waitForEI = function() {
     var p,
         loadIncomplete = false;
+    if (!_s.url) {
+      return false;
+    }
     if (_waitingForEI) {
       return false;
     }

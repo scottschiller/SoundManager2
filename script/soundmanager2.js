@@ -336,6 +336,8 @@ function SoundManager(smURL, smID) {
 
   this.setup = function(options) {
 
+    var noURL = (!_s.url);
+
     // warn if flash options have already been applied
 
     if (typeof options !== 'undefined' && _didInit && _needsFlash && _s.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
@@ -346,7 +348,13 @@ function SoundManager(smURL, smID) {
 
     _assign(options);
 
-    // special case: if lazy-loading SM2 (DOMContentLoaded has already happened) and user calls setup() with url: parameter, try to init ASAP.
+    // special case 1: "Late setup". SM2 loaded normally, but user didn't assign flash URL eg., setup({url:...}) before SM2 init. Treat as delayed init.
+
+    if (noURL && _didDCLoaded && typeof options.url !== 'undefined') {
+      _s.beginDelayedInit();
+    }
+
+    // special case 2: If lazy-loading SM2 (DOMContentLoaded has already happened) and user calls setup() with url: parameter, try to init ASAP.
 
     if (!_didDCLoaded && typeof options.url !== 'undefined' && _doc.readyState === 'complete') {
       setTimeout(_domContentLoaded, 1);
@@ -3960,7 +3968,8 @@ function SoundManager(smURL, smID) {
     setupError: _sm + '.setup(): "%s" cannot be assigned with this method.',
     setupUndef: _sm + '.setup(): Could not find option "%s"',
     setupLate: _sm + '.setup(): url + flashVersion changes will not take effect until reboot().',
-    h5a: 'creating HTML5 Audio() object'
+    h5a: 'creating HTML5 Audio() object',
+    noURL: _sm + ': Flash URL required. Call soundManager.setup({url:...}) to get started.'
     // </d>
 
   };
@@ -4820,9 +4829,11 @@ function SoundManager(smURL, smID) {
     var remoteURL = (smURL || _s.url),
     localURL = (_s.altURL || remoteURL),
     swfTitle = 'JS/Flash audio component (SoundManager 2)',
-    oEmbed, oMovie, oTarget = _getDocument(), tmp, movieHTML, oEl, extraClass = _getSWFCSS(),
-    s, x, sClass, isRTL = null,
-    html = _doc.getElementsByTagName('html')[0];
+    oTarget = _getDocument(),
+    extraClass = _getSWFCSS(),
+    isRTL = null,
+    html = _doc.getElementsByTagName('html')[0],
+    oEmbed, oMovie, tmp, movieHTML, oEl, s, x, sClass;
 
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?_s.id:smID);
@@ -5001,10 +5012,22 @@ function SoundManager(smURL, smID) {
       return false;
     }
 
-    // attempt to get, or create, movie
-    // may already exist
+    // attempt to get, or create, movie (may already exist)
     if (_flash) {
       return false;
+    }
+
+    if (!_s.url) {
+
+      /**
+       * Something isn't right - we've reached init, but the soundManager url property has not been set.
+       * User has not called setup({url: ...}), or has not set soundManager.url (legacy use case) directly before init time.
+       * Notify and exit. If user calls setup() with a url: property, init will be restarted as in the deferred loading case.
+       */
+
+       _wDS('noURL');
+       return false;
+
     }
 
     // inline markup case
@@ -5051,6 +5074,11 @@ function SoundManager(smURL, smID) {
 
     var p,
         loadIncomplete = false;
+
+    if (!_s.url) {
+      // No SWF url to load (noURL case) - exit for now. Will be retried when url is set.
+      return false;
+    }
 
     if (_waitingForEI) {
       return false;
@@ -5202,7 +5230,7 @@ function SoundManager(smURL, smID) {
       }
     }
 
-    _s._wD('-- SoundManager 2 ' + (_disabled?'failed to load':'loaded') + ' (' + (_disabled?'security/load error':'OK') + ') --', 1);
+    _s._wD('-- SoundManager 2 ' + (_disabled?'failed to load':'loaded') + ' (' + (_disabled?'Flash security/load error':'OK') + ') --', 1);
 
     if (_disabled || bNoDisable) {
       if (_s.useFlashBlock && _s.oMC) {
