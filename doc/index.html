@@ -263,6 +263,7 @@ soundManager.setup({
 
     <h4>Dynamic Properties</h4>
     <ul>
+     <li title="Recently-added" class="recent"><a href="#smsound-buffered">buffered</a></li>
      <li><a href="#smsound-bytesloaded">bytesLoaded</a></li>
      <li><a href="#smsound-bytestotal">bytesTotal</a></li>
 	 <li title="Flash 9+ only" class="flash9"><a href="#smsound-isbuffering">isBuffering</a></li>
@@ -1400,6 +1401,24 @@ for (prop in this.id3) {
 
                                                    </div>
 
+						   <dl id="smsound-buffered" class="f-block s-buffered">
+						   <dt>buffered</dt>
+						   <dd>Based loosely on the native HTML5 attribute, SM2 defines <code>buffered</code> as an array of objects which include <b>start</b> and <b>end</b> position (time) values. This property is updated during the SM2 <code>whileloading</code> event; internally, SM2 uses HTML5's <code>progress</code> event to track changes.</dd>
+						   <dd>It is important to note that the buffered values may not always be contiguous and can change, particularly if the user seeks within the file during downloading. With ranges, you can draw highlighted segments on a progress bar UI which would reflect the current "slices" of buffered data.</dd>
+						   <dd>Example: a <code>buffered</code> array of <code>[{ start: 0, end: 2 }, { start: 5, end: 7 }];</code> shows a sound that has buffered data for the ranges 0-2 seconds, and 5-7 seconds.</dd>
+						   <dd>In order to determine the total buffered data and thus "total percent loaded" under HTML5, you can loop through the <code>buffered</code> array and sum the total of <code>(buffered[i].end - buffered[i].start)</code>. If you want to draw ranges, you can use the start and end values of each buffered item and draw that relative to the total <code>duration</code> (normalized as <code>durationEstimate</code> for flash compatibility).</dd>
+						   <dd>Example:
+<pre class="block"><code>var i, total = 0;
+for (i=0, j=this.buffered.length; i&lt;j; i++) {
+  <span><span>// draw current range in progress bar UI?</span></span>
+  drawProgressUI(this.buffered[i].start, this.buffered[i].end);
+  <span><span>// sum of all ranges vs. whole file duration</span></span>
+  total += (this.buffered[i].end - this.buffered[i].start);
+}</code></pre>
+                           </dd>
+						   <dd>Note that under Flash, downloading is always sequential and thus the buffered array will always be a single item with <code>start: 0</code> and an <code>end</code> value of <code>duration</code> (eg., the amount of currently-downloaded "time").</dd>
+						   <dd>Additional behaviour note: A browser might download additional bytes of a sound in advance under HTML5, but may only update the buffered state to reflect the newly-downloaded range(s) when the "playback head" reaches near the end of the current buffer. This can also be affected if the user seeks within the file.</dd>
+						   </dl>
 
 						   <dl id="smsound-bytesloaded" class="f-block s-bytesloaded">
 						   <dt>bytesLoaded</dt>
@@ -1617,7 +1636,7 @@ for (prop in this.id3) {
 				
 				<div class="c2">
 					
-					  <div class="f-block f-defaultoptions s-autoload s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-from s-to s-pan s-volume">
+					  <div class="f-block f-defaultoptions s-autoload s-buffertime s-loops s-stream s-onbeforefinish s-onbeforefinishtime s-onjustbeforefinishtime s-multishot s-multishotevents s-from s-to s-pan s-volume">
 
 					  <h3 id="sound-properties">SoundManager: Default Sound Options</h3>
 
