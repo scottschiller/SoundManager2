@@ -1506,6 +1506,9 @@ function SoundManager(smURL, smID) {
     }
     return result;
   };
+  function _preferFlashCheck(kind) {
+    return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
+  }
   _event = (function() {
     var old = (_win.attachEvent),
     evt = {
@@ -1545,9 +1548,6 @@ function SoundManager(smURL, smID) {
       'remove': remove
     };
   }());
-  function _preferFlashCheck(kind) {
-    return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
-  }
   function _html5_event(oFn) {
     return function(e) {
       var t = this._t,
@@ -2349,14 +2349,6 @@ function SoundManager(smURL, smID) {
     return true;
   };
   _showSupport = function() {
-    var item, tests = [];
-    if (_s.useHTML5Audio && _s.hasHTML5) {
-      for (item in _s.audioFormats) {
-        if (_s.audioFormats.hasOwnProperty(item)) {
-          tests.push(item + ': ' + _s.html5[item] + (!_s.html5[item] && _hasFlash && _s.flash[item] ? ' (using flash)' : (_s.preferFlash && _s.flash[item] && _hasFlash ? ' (preferring flash)': (!_s.html5[item] ? ' (' + (_s.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
-        }
-      }
-    }
   };
   _initComplete = function(bNoDisable) {
     if (_didInit) {

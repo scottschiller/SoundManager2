@@ -20,7 +20,7 @@
  * This is the fully-commented source version of the SoundManager 2 API,
  * recommended for use during development and testing.
  *
- * See soundmanager2-nodebug-jsmin.js for an optimized build (~10KB with gzip.)
+ * See soundmanager2-nodebug-jsmin.js for an optimized build (~11KB with gzip.)
  * http://schillmania.com/projects/soundmanager2/doc/getstarted/#basic-inclusion
  * Alternately, serve this file with gzip for 75% compression savings (~30KB over HTTP.)
  *
@@ -3362,6 +3362,18 @@ function SoundManager(smURL, smID) {
 
   };
 
+  function _preferFlashCheck(kind) {
+
+    // whether flash should play a given type
+    return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
+
+  }
+
+  /**
+   * Internal DOM2-level event helpers
+   * ---------------------------------
+   */
+
   _event = (function() {
 
     var old = (_win.attachEvent),
@@ -3421,13 +3433,6 @@ function SoundManager(smURL, smID) {
     };
 
   }());
-
-  function _preferFlashCheck(kind) {
-
-    // whether flash should play a given type
-    return (_s.preferFlash && _hasFlash && !_s.ignoreFlash && (typeof _s.flash[kind] !== 'undefined' && _s.flash[kind]));
-
-  }
 
   /**
    * Internal HTML5 event handling
@@ -3947,6 +3952,8 @@ function SoundManager(smURL, smID) {
     noNSLoop: 'Note: Looping not implemented for MovieStar formats',
     needfl9: 'Note: Switching to flash 9, required for MP4 formats.',
     mfTimeout: 'Setting flashLoadTimeout = 0 (infinite) for off-screen, mobile flash case',
+    needFlash: _sm + ': Fatal error: Flash is needed to play some required formats, but is not available.',
+    gotFocus: _sm + ': Got window focus.',
     mfOn: 'mobileFlash::enabling on-screen flash repositioning',
     policy: 'Enabling usePolicyFile for data access',
     setup: _sm + '.setup(): allowed parameters: %s',
@@ -5068,7 +5075,7 @@ function SoundManager(smURL, smID) {
 
     setTimeout(function() {
 
-      p = _s.getMoviePercent();      
+      p = _s.getMoviePercent();
 
       if (loadIncomplete) {
         // special case: if movie *partially* loaded, retry until it's 100% before assuming failure.
@@ -5137,7 +5144,7 @@ function SoundManager(smURL, smID) {
 
     _okToDisable = true;
     _isFocused = true;
-    _s._wD(_sm+': Got window focus.');
+    _wDS('gotFocus');
 
     // allow init to restart
     _waitingForEI = false;
@@ -5152,6 +5159,8 @@ function SoundManager(smURL, smID) {
 
   _showSupport = function() {
 
+    // <d>
+
     var item, tests = [];
 
     if (_s.useHTML5Audio && _s.hasHTML5) {
@@ -5162,6 +5171,8 @@ function SoundManager(smURL, smID) {
       }
       _s._wD('-- SoundManager 2: HTML5 support tests ('+_s.html5Test+'): '+tests.join(', ')+' --',1);
     }
+
+    // </d>
 
   };
 
@@ -5398,7 +5409,7 @@ function SoundManager(smURL, smID) {
     _showSupport();
 
     if (!_hasFlash && _needsFlash) {
-      _s._wD('SoundManager: Fatal error: Flash is needed to play some required formats, but is not available.');
+      _wDS('needFlash');
       // TODO: Fatal here vs. timeout approach, etc.
       // hack: fail sooner.
       _s.setup({
