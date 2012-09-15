@@ -146,7 +146,6 @@ function SoundManager(smURL, smID) {
      * determines HTML5 support + flash requirements.
      * if no support (via flash and/or HTML5) for a "required" format, SM2 will fail to start.
      * flash fallback is used for MP3 or MP4 if HTML5 can't play it (or if preferFlash = true)
-     * multiple MIME types may be tested while trying to get a positive canPlayType() response.
      */
 
     'mp3': {
@@ -241,7 +240,8 @@ function SoundManager(smURL, smID) {
 
   this.hasHTML5 = (function() {
     try {
-      return (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+      // new Audio(null) for stupid Opera 9.64 case, which throws not_enough_arguments exception otherwise.
+      return (typeof Audio !== 'undefined' && typeof (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== 'undefined');
     } catch(e) {
       return false;
     }

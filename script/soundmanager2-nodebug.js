@@ -128,7 +128,7 @@ function SoundManager(smURL, smID) {
   };
   this.hasHTML5 = (function() {
     try {
-      return (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+      return (typeof Audio !== 'undefined' && typeof (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== 'undefined');
     } catch(e) {
       return false;
     }
