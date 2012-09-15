@@ -1736,7 +1736,7 @@ function SoundManager(smURL, smID) {
         return result;
       }
       if (m instanceof Array) {
-        for (i=0, j=m.length; i<j && !isOK; i++) {
+        for (i=0, j=m.length; i<j; i++) {
           if (_s.html5[m[i]] || a.canPlayType(m[i]).match(_s.html5Test)) {
             isOK = true;
             _s.html5[m[i]] = true;
