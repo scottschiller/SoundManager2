@@ -106,7 +106,30 @@ function checkDomain() {
 
  <p>At the bare minimum, you will need <b>soundmanager2.js</b>, <b>soundmanager2.swf</b> and <b>soundmanager2_debug.swf</b> for the default flash 8-based configuration. (Optionally, SM2 can use a Flash 9-based audio API which has MP4 support, data visualization and a few other features.)</p>
 
- <h2>Template Code</h2>
+ <h2 id="minimal">Template Code: Basic Version</h2>
+
+ <p>This is a compact version of the template you can copy/paste to get started. For new users, see the <a href="#commented-template">commented version</a>.</p>
+
+<pre class="block"><code>&lt;script src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
+&lt;script&gt;
+soundManager.setup({
+  url: '<em><em>/path/to/swf-files/</em></em>',
+  onready: function() {
+    var mySound = soundManager.createSound({
+      id: '<em><em>aSound</em></em>',
+      url: '<em><em>/path/to/an.mp3</em></em>'
+    });
+    mySound.play();
+  },
+  ontimeout: function() {
+    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?</span></span>
+  }
+});
+&lt;/script&gt;</code></pre>
+
+
+
+ <h2 id="commented-template">Template Code: Commented Version</h2>
 
 <pre class="block"><code><span><span>&lt;!-- include SM2 library (see <a href="../../doc/getstarted/#basic-inclusion" title="SoundManager 2: Script build versions" onclick="checkDomain()">builds</a> for optimized versions) --&gt;</span></span>
 &lt;script type="text/javascript" src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
@@ -154,27 +177,6 @@ soundManager.setup({
 
 });
 
-&lt;/script&gt;</code></pre>
-
- <h2>Minimal Template Example</h2>
-
- <p>A condensed version of the above:</p>
-
-<pre class="block"><code>&lt;script src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
-&lt;script&gt;
-soundManager.setup({
-  url: '<em><em>/path/to/swf-files/</em></em>',
-  onready: function() {
-    var mySound = soundManager.createSound({
-      id: '<em><em>aSound</em></em>',
-      url: '<em><em>/path/to/an.mp3</em></em>'
-    });
-    mySound.play();
-  },
-  ontimeout: function() {
-    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?</span></span>
-  }
-});
 &lt;/script&gt;</code></pre>
 
  <h2 id="onready-ontimeout">Options: <code>soundManager.onready()</code> + <code>soundManager.ontimeout()</code></h2>
