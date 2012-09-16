@@ -2611,6 +2611,11 @@ body.home #html5-support-li span {
   text-shadow: none;
 }
 
+body.home .feature-hot {
+ /* hack: font size fix */
+ font-size: 13px;
+}
+
 body.home ul.graphic li a,
 ul.playlist li a {
   /* "..." on titles */
@@ -2849,18 +2854,6 @@ div.icons ul li.package {
  text-align: center;
 }
 
-.bonus-demo a,
-.bonus-demos li a {
- opacity: 0.85;
- -moz-transition: 0.1s opacity ease-in-out;
- -webkit-transition: 0.1s opacity ease-in-out;
-}
-
 .bonus-demos li img {
  border-radius: 4px;
-}
-
-.bonus-demo a:hover,
-.bonus-demos li a:hover {
- opacity: 1;
 }
