@@ -1671,9 +1671,19 @@ function SoundManager(smURL, smID) {
         oOptions = {};
       }
 
-      _t._iO = _mixin(oOptions, _t._iO);
+      // first, use local URL (if specified)
+      if (_t.url) {
+        _t._iO.url = _t.url;
+      }
+
+      // mix in any options defined at createSound()
       _t._iO = _mixin(_t._iO, _t.options);
+
+      // mix in any options specific to this method
+      _t._iO = _mixin(oOptions, _t._iO);
+
       _t._iO.url = _parseURL(_t._iO.url);
+
       _t.instanceOptions = _t._iO;
 
       // RTMP-only

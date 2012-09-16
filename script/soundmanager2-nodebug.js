@@ -698,8 +698,11 @@ function SoundManager(smURL, smID) {
       if (!oOptions) {
         oOptions = {};
       }
-      _t._iO = _mixin(oOptions, _t._iO);
+      if (_t.url) {
+        _t._iO.url = _t.url;
+      }
       _t._iO = _mixin(_t._iO, _t.options);
+      _t._iO = _mixin(oOptions, _t._iO);
       _t._iO.url = _parseURL(_t._iO.url);
       _t.instanceOptions = _t._iO;
       if (_t._iO.serverURL && !_t.connected) {
