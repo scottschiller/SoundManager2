@@ -225,9 +225,13 @@ body.home #about-sm2 h3 {
   font-size: 2.25em;
 }
 
+body.home #about-sm2 b {
+ font-weight: 400;
+}
+
 body.home #about-sm2 strong {
- color: #333;
  font-weight: 500;
+ color: #333;
 }
 
 #col3 a.button, /* "newer version available" */
