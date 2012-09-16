@@ -2994,11 +2994,10 @@ function SoundManager(smURL, smID) {
       }
 
       // for flash, reflect sequential-load-style buffering
-      // note that "buffered" is an HTML5-based property, so seconds are used here instead of msec.
       if (!_t.isHTML5) {
         _t.buffered = [{
           'start': 0,
-          'end': _t.duration / 1000
+          'end': _t.duration
         }];
       }
 
@@ -3623,7 +3622,9 @@ function SoundManager(smURL, smID) {
           ranges = e.target.buffered,
           // firefox 3.6 implements e.loaded/total (bytes)
           loaded = (e.loaded||0),
-          total = (e.total||1);
+          total = (e.total||1),
+          // HTML5 returns msec. SM2 API uses seconds for setPosition() etc., whether Flash or HTML5.
+          scale = 1000;
 
       // reset the "buffered" (loaded byte ranges) array
       t.buffered = [];
@@ -3636,23 +3637,23 @@ function SoundManager(smURL, smID) {
         // re-build "buffered" array
         for (i=0, j=ranges.length; i<j; i++) {
           t.buffered.push({
-            'start': ranges.start(i),
-            'end': ranges.end(i)
+            'start': ranges.start(i) * scale,
+            'end': ranges.end(i) * scale
           });
         }
 
         // use the last value locally
-        buffered = (ranges.end(0) - ranges.start(0));
+        buffered = (ranges.end(0) - ranges.start(0)) * scale;
 
         // linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges
-        loaded = buffered/e.target.duration;
+        loaded = buffered/(e.target.duration*scale);
 
         // <d>
         if (isProgress && ranges.length > 1) {
           str = [];
           j = ranges.length;
           for (i=0; i<j; i++) {
-            str.push(e.target.buffered.start(i) +'-'+ e.target.buffered.end(i));
+            str.push(e.target.buffered.start(i)*scale +'-'+ e.target.buffered.end(i)*scale);
           }
           _s._wD(_h5+'progress: timeRanges: '+str.join(', '));
         }

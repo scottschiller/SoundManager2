@@ -1350,7 +1350,7 @@ function SoundManager(smURL, smID) {
       if (!_t.isHTML5) {
         _t.buffered = [{
           'start': 0,
-          'end': _t.duration / 1000
+          'end': _t.duration
         }];
       }
       if ((_t.readyState !== 3 || _t.isHTML5) && _iO.whileloading) {
@@ -1627,17 +1627,18 @@ function SoundManager(smURL, smID) {
           isProgress = (e.type === 'progress'),
           ranges = e.target.buffered,
           loaded = (e.loaded||0),
-          total = (e.total||1);
+          total = (e.total||1),
+          scale = 1000;
       t.buffered = [];
       if (ranges && ranges.length) {
         for (i=0, j=ranges.length; i<j; i++) {
           t.buffered.push({
-            'start': ranges.start(i),
-            'end': ranges.end(i)
+            'start': ranges.start(i) * scale,
+            'end': ranges.end(i) * scale
           });
         }
-        buffered = (ranges.end(0) - ranges.start(0));
-        loaded = buffered/e.target.duration;
+        buffered = (ranges.end(0) - ranges.start(0)) * scale;
+        loaded = buffered/(e.target.duration*scale);
       }
       if (!isNaN(loaded)) {
         t._onbufferchange(0);
