@@ -132,9 +132,9 @@ soundManager.setup({
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> New <code>soundManager.setup()</code> method, numerous HTML5 improvements for <code>createSound()</code>, <code>load()</code>, progress and reuse cases, and minor flash audio bug fixes. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> - Inline, deferred and lazy-load init improvements, HTML5 format / detection improvements, "re-use" load/play URL fix. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120624.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120624</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20120916.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20120916</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 128 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -170,6 +170,156 @@ soundManager.setup({
 			  	<p>A changelog of sorts.</p>
 
 			  	<ul id="revision-list" class="standard">
+
+			   		<li id="sm2-20120916" class="in">
+
+						<h3><b>V2.97a.20120916</b> - Inline, deferred and lazy-load init improvements, HTML5 format / detection improvements, "re-use" load/play URL fix.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Init improvement: Don't fail if Flash URL is null in normal include + init case. Instead, show note in debug input and wait for <code>soundManager.setup()</code> with <code>url</code> param, then treat as delayed init case. Improved experience if including <code>&lt;script&gt;</code>, then trying to do <code>setup()</code> after DOM Ready (common jQuery case).
+										</p>
+									</li>
+
+									<li>
+										<p>
+											<code>soundManager.setup({url:...})</code> + lazy-loading (dynamically-loaded JS) case: If <code>setup()</code> given url parameter after DOMContentLoaded has fired, assume we should start right away. (Helps reduce need for <code>beginDelayedInit()</code> + "just works" for most users)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Don't init inline after <code>document.readyState === 'complete'</code> (improve lazy-loading case, wait for setup() with url: instead)
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Fix <code>'audio/mpeg'</code> <code>canPlay()</code> checks, was incorrectly returning false due to <code>audio/mpeg; codecs="mp3"</code> working and preventing <code>audio/mpeg</code> from being checked.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											More paranoid <code>Audio()</code> handling for "bad" Opera (&lt; 10) where <code>new Audio()</code> would throw not_enough_arguments (always required URL).
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Safer HTML5 duration checks - null now assigned instead of undefined.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Improve durationEstimate under HTML5 during <code>whileloading()</code>.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Flash 9/RTMP: Actually provide caption data to <code>oncaptiondata()</code>.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fix <code>SMSound.play({url:...})</code> "re-use" case where new URL wasn't being assigned + loaded right away, and <code>SMSound.url</code> property was not being updated.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Correct <code>load()</code> and play() with new URL parameter, so that subsequent <code>play()</code> call uses new URL (and not URL assigned with original <code>createSound()</code> call).
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Use seconds for <code>SMSound.buffered</code> (time ranges) whether HTML5 or Flash, since SM2 API uses seconds for <code>setPosition()</code> etc.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Correct <code>play()</code> -&gt; <code>pause()</code> -&gt; <code>setPosition(0)</code> -&gt; <code>play()</code> -&gt; <code>pause()</code> case where the latter wasn't firing due to invalid state.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											New Cassette Tape UI Prototype/demo (experimental).
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Tweaked documentation layout for legibility. Webfont (deja vu sans mono) from <a href="http://dejavu-fonts.org/" title="Deja Vu Fonts">dejavu-fonts.org</a> for code examples.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Improved lazy-load / deferred example based on new <code>setup()</code> logic
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Added SMSound.buffered documentation
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Added m4b extension as an mp4 format
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Safer initial HTML5 support checks
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+					<!-- previously ... -->
 
 			   		<li id="sm2-20120624" class="in">
 
