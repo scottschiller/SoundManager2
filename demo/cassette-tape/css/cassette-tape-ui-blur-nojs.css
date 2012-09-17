@@ -1,0 +1,30 @@
+/**
+ * Cassette Tape UI Prototype (09/2012)
+ * Non-JS view
+ * ALPHA build / experimental state, unsupported; use at own risk
+ * Requires CSS3 border-radius + <canvas> support
+ * --------------------------------------------------
+ * http://www.schillmania.com/projects/soundmanager2/
+ *
+ * Tape UI elements (spokes, reels, textures) by Brian Scates
+ * http://sxates.com/
+ */
+
+#tape-loader {
+ display: none;
+}
+
+#demo-header-wrapper {
+ opacity: 1 !important;
+}
+
+.tape.draggable {
+ top: 50%;
+ left: 50%;
+ margin: -150px 0px 0px -240px;
+ opacity: 1;
+}
+
+.tape.draggable .controls {
+ display: none;
+}

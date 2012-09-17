@@ -1,0 +1,395 @@
+/**
+ * Cassette Tape UI Prototype (09/2012)
+ * ALPHA build / experimental state, unsupported; use at own risk
+ * Requires CSS3 border-radius + <canvas> support
+ * --------------------------------------------------
+ * http://www.schillmania.com/projects/soundmanager2/
+ *
+ * Tape UI elements (spokes, reels, textures) by Brian Scates
+ * http://sxates.com/
+ */
+
+html {
+ position: relative;
+ width: 100%;
+ height: 100%;
+ /* prevent scrollbars within the draggable case. */
+ overflow: hidden;
+ background: #000 url(../image/demo_backgrounds/sfatnight_1600.jpg) no-repeat 0px 0px;
+}
+
+body {
+ color: #fff;
+}
+
+.tape.draggable {
+ position: absolute;
+ display: inline-block;
+ margin: 0px;
+ box-shadow: 0px 0px 16px rgba(0,0,0,0.1);
+ border-color: rgba(0,0,0,0.25);
+ background: transparent;
+ border: 1px solid rgba(0,0,0,0.1);
+}
+
+.tape.draggable .rail-left,
+.tape.draggable .rail-right {
+ /* hack: would reuse metal texture, but not dark enough due to dynamically-applied gradient. */
+ display: none;
+}
+
+.tape.draggable .reel-mask {
+ background-color: rgba(255,255,255,0.1);
+ background-color: transparent;
+}
+
+.tape.draggable .blur-image-wrapper {
+ position: absolute;
+ left: 0px;
+ top: 0px;
+ width: 100%;
+ border-radius: 12px;
+ overflow: hidden;
+ z-index: -1;
+}
+
+.tape.draggable .blur-image {
+ position: absolute;
+ left: 0px;
+ top: 0px;
+ width: 100%;
+ height: 100%;
+ border-radius: 12px;
+ /* hack for now */
+ margin-left: 100%;
+ margin-right: 100%;
+}
+
+.tape.draggable .transparency-sheet {
+ /* wash out everything slightly */
+ position: absolute;
+ left: 0px;
+ top: 0px;
+ width: 100%;
+ background: rgba(255,255,255,0.25);
+ border-radius: 12px;
+}
+
+.tape.draggable .blur-image-wrapper,
+.tape.draggable .transparency-sheet {
+ /* fade and blur, same height */
+ height: 81%;
+}
+
+.tape.draggable .tape-shell {
+ background: transparent url(../image/ma-r90-metal-pattern-v2.png);
+ background-size: normal;
+}
+
+.tape.draggable .tape-gradient {
+ background: transparent url(../image/gradient.png) no-repeat 0px 0px;
+ /* TODO: use a native CSS gradient. Save 2 KB image request, but maybe slower to draw? */
+ /* display: none; */
+}
+
+.tape.draggable .tape-shell,
+.tape.draggable .tape-gradient {
+ position: absolute;
+ left: 0px;
+ top: 0px;
+ width: 100%;
+ height: 100%;
+ border-radius: 12px;
+ /**
+  * TODO: consider using webkit-mask-box-image where supported, and canvas otherwise?
+  */
+ /*
+ -webkit-mask-box-image: url(../image/ma-r90-mask.png);
+ -moz-mask-image: url(../image/ma-r90-mask.png);
+ -moz-mask-image: -moz-linear-gradient(bottom, rgba(255,0,0,1), rgba(0,255,0,1), rgba(0,0,255,0), rgba(128,0,128,0));
+ -moz-mask-size: 480px 300px;
+ */
+}
+
+.tape.draggable .tape-pad-holder {
+ background: transparent;
+ bottom: 0px;
+ height: 7px;
+}
+
+.tape.draggable .tape-pad {
+ background: rgba(96,48,0,0.9);
+ height: 100%;
+ top: -1px;
+}
+
+.tape.draggable .tape-pad-line {
+ display: block;
+ border-top: 1px solid rgba(64,32,0,0.5);
+ bottom: auto;
+ top: 0px;
+ margin-left: -46%;
+ width: 188%;
+}
+
+.tape.draggable .controls {
+ top: 0px;
+}
+
+/* a few loading transition bits */
+
+.tape.draggable {
+ opacity: 0;
+}
+
+.tape.draggable.ready {
+ opacity: 1;
+}
+
+.tape.draggable.dropin {
+ -o-animation: dropin 0.75s;
+ -moz-animation: dropin 0.75s;
+ -ms-animation: dropin 0.75s;
+ -webkit-animation: dropin 0.75s;
+}
+
+@-o-keyframes dropin {
+ 0% {
+  opacity: 0;
+  -o-transform: scale(2);
+  -o-animation-timing-function: ease-out;
+ }
+ 33% {
+  opacity: 0.5;
+  -o-transform: scale(0.85);
+  -o-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  opacity: 1;
+  -o-transform: scale(1);
+  -o-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  opacity: 1;
+  -o-transform: scale(0.98);
+  -o-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  opacity: 1;
+  -o-transform: scale(1);
+  -o-animation-timing-function: ease-in-out;
+ }
+}
+
+@-moz-keyframes dropin {
+ 0% {
+  opacity: 0;
+  -moz-transform: scale3d(2, 2, 1);
+  -moz-animation-timing-function: ease-out;
+ }
+ 33% {
+  opacity: 0.5;
+  -moz-transform: scale3d(0.85, 0.85, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  opacity: 1;
+  -moz-transform: scale3d(1.05, 1.05, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  opacity: 1;
+  -moz-transform: scale3d(0.98, 0.98, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  opacity: 1;
+  -moz-transform: scale3d(1, 1, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+}
+
+@-ms-keyframes dropin {
+ 0% {
+  opacity: 0;
+  -ms-transform: scale3d(2, 2, 1);
+  -ms-animation-timing-function: ease-out;
+ }
+ 33% {
+  opacity: 0.5;
+  -ms-transform: scale3d(0.85, 0.85, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  opacity: 1;
+  -ms-transform: scale3d(1.05, 1.05, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  opacity: 1;
+  -ms-transform: scale3d(0.98, 0.98, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  opacity: 1;
+  -ms-transform: scale3d(1, 1, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+}
+
+@-webkit-keyframes dropin {
+ 0% {
+  opacity: 0;
+  -webkit-transform: scale3d(2, 2, 1);
+  -webkit-animation-timing-function: ease-out;
+ }
+ 33% {
+  opacity: 0.5;
+  -webkit-transform: scale3d(0.85, 0.85, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  opacity: 1;
+  -webkit-transform: scale3d(1.05, 1.05, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  opacity: 1;
+  -webkit-transform: scale3d(0.98, 0.98, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  opacity: 1;
+  -webkit-transform: scale3d(1, 1, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+}
+
+.tape.draggable .blur-image-wrapper {
+ opacity: 0;
+ -moz-transition: opacity 0.1s ease-out;
+ -webkit-transition: opacity 0.1s ease-out;
+ transition: opacity 0.1s ease-out;
+}
+
+.tape.draggable.ready .blur-image-wrapper {
+ opacity: 1;
+}
+
+.tape.draggable {
+ -moz-transition: -moz-transform 0.1s ease-out;
+ -moz-transform: scale3d(1, 1, 1);
+ -ms-transition: -ms-transform 0.1s ease-out;
+ -ms-transform: scale3d(1, 1, 1);
+ -o-transition: -o-transform 0.1s ease-out;
+ -o-transform: scale(1);
+ -webkit-transition: -webkit-transform 0.1s ease-out;
+ -webkit-transform: scale3d(1, 1, 1);
+}
+
+.tape.draggable.dragging {
+ -ms-transform: scale3d(1.025, 1.025, 1);
+ -moz-transform: scale3d(1.025, 1.025, 1);
+ -o-transform: scale(1.025);
+ -webkit-transform: scale3d(1.025, 1.025, 1);
+}
+
+.tape.draggable.dropping {
+ -o-animation: dragdrop 0.5s;
+ -ms-animation: dragdrop 0.5s;
+ -moz-animation: dragdrop 0.5s;
+ -webkit-animation: dragdrop 0.5s;
+}
+
+@-ms-keyframes dragdrop {
+ 0% {
+  -ms-transform: scale3d(1.025, 1,025, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+ 33% {
+  -ms-transform: scale3d(0.99, 0.99, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  -ms-transform: scale3d(1.005, 1.005, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  -ms-transform: scale3d(0.997, 0.997, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  -ms-transform: scale3d(1, 1, 1);
+  -ms-animation-timing-function: ease-in-out;
+ }
+}
+
+@-moz-keyframes dragdrop {
+ 0% {
+  -moz-transform: scale3d(1.025, 1,025, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+ 33% {
+  -moz-transform: scale3d(0.99, 0.99, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  -moz-transform: scale3d(1.005, 1.005, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  -moz-transform: scale3d(0.997, 0.997, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  -moz-transform: scale3d(1, 1, 1);
+  -moz-animation-timing-function: ease-in-out;
+ }
+}
+
+@-o-keyframes dragdrop {
+ 0% {
+  -o-transform: scale(1.025);
+  -o-animation-timing-function: ease-in-out;
+ }
+ 33% {
+  -o-transform: scale(0.99);
+  -o-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  -o-transform: scale(1.005);
+  -o-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  -o-transform: scale(0.997);
+  -o-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  -o-transform: scale(1);
+  -o-animation-timing-function: ease-in-out;
+ }
+}
+
+
+@-webkit-keyframes dragdrop {
+ 0% {
+  -webkit-transform: scale3d(1.025, 1,025, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+ 33% {
+  -webkit-transform: scale3d(0.99, 0.99, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+ 55% {
+  -webkit-transform: scale3d(1.005, 1.005, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+ 77% {
+  -webkit-transform: scale3d(0.997, 0.997, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+ 100% {
+  -webkit-transform: scale3d(1, 1, 1);
+  -webkit-animation-timing-function: ease-in-out;
+ }
+}

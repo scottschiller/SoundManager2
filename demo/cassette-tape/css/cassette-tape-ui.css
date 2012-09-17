@@ -1,0 +1,832 @@
+/**
+ * Cassette Tape UI Prototype (09/2012)
+ * ALPHA build / experimental state, unsupported; use at own risk
+ * Requires CSS3 border-radius + <canvas> support
+ * --------------------------------------------------
+ * http://www.schillmania.com/projects/soundmanager2/
+ *
+ * Tape UI elements (spokes, reels, textures) by Brian Scates
+ * http://sxates.com/
+ */
+
+@font-face {
+    font-family: 'JustAnotherHandRegular';
+    src: url('../font/justanotherhand-webfont.eot');
+    src: url('../font/justanotherhand-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../font/justanotherhand-webfont.woff') format('woff'),
+         url('../font/justanotherhand-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.tape {
+ position: relative;
+ display: inline-block;
+ width: 480px;
+ height: 300px;
+ border: 1px solid rgba(0,0,0,0.1);
+ cursor: pointer;
+ margin: 0.5em;
+ z-index: 1;
+}
+
+.tape,
+.tape .rail-middle {
+ border-radius: 12px;
+}
+
+.tape .rail-middle {
+ border-top-left-radius: 0px;
+ border-top-right-radius: 0px;
+}
+
+.tape .left,
+.tape .right {
+ position: absolute;
+ top: 45%;
+}
+
+.tape .left {
+ /* the left side */
+ left: 29%;
+}
+
+.tape .right {
+ /* the right side */
+ left: 71%;
+}
+
+.tape .window {
+ position: absolute;
+ top: 11%;
+ left: 0px;
+ width: 100%;
+ height: 69%;
+ background: rgba(0,0,0,0.033);
+}
+
+.tape .reel,
+.tape .spokes {
+ border-radius: 100%;
+}
+
+.tape .spokes {
+ width: 93px;
+ height: 93px;
+}
+
+.tape .reel {
+ width: 91px;
+ height: 91px;
+ background: transparent url(../image/tape-texture.png) no-repeat 50% 50%;
+ border: 76px solid transparent;
+ border-radius: 100%;
+ margin-left: -121px;
+ margin-top: -121px;
+}
+
+.tape .reel-mask {
+ position: absolute;
+ top: 2.4%;
+ width: 256px;
+ height: 256px;
+ background: #fff;
+ border-radius: 100%;
+ margin-left: -128px;
+ display: none\9; /* IE 8 */
+}
+
+.tape .reel.right {
+ border-width: 0px;
+ margin-left: -45px;
+ margin-top: -45px;
+}
+
+.tape .spokes {
+ margin-left: -46px;
+ margin-top: -46px;
+ background: transparent url(../image/tape-spokes-sxates.png) no-repeat 50% 50%;
+ background-size: 100% 100%;
+ z-index: 5;
+}
+
+.tape.dark .spokes {
+ /* hack: override */
+ background-color: #ccc;
+}
+
+.tape .spokes-overlay {
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ width: 160px;
+ height: 160px;
+ background: #fff;
+ border-radius: 100%;
+ margin: -80px 0px 0px -80px;
+ background: transparent url(../image/tape-reel.png) no-repeat 50% 50%;
+ background-size: contain;
+}
+
+.tape.clear .spokes {
+ background: transparent url(../image/spool-metal-black.png) no-repeat 50% 50%;
+}
+
+.tape.clear .spokes.right {
+ background: transparent url(../image/spool-metal.png) no-repeat 50% 50%;
+}
+
+.tape .label {
+ position: absolute;
+ top: 59%;
+ left: 11%;
+ width: 78.5%;
+ height: 16%;
+ background-color: #fff;
+ background-color: rgba(0,0,0,0.1);
+ border-radius: 5px;
+ text-indent: 0.25em;
+ font: normal 36px JustAnotherHandRegular, helvetica, sans-serif;
+ line-height: 140%;
+ color: #111;
+ text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+ box-shadow: 1px 1px 0px rgba(0,0,0,0.05);
+ /* a slightly-human element */
+ /*
+ -moz-transform: rotate(-0.25deg);
+ -webkit-transform: rotate(-0.25deg);
+ -o-transform: rotate(-0.25deg);
+ transform: rotate(-0.25deg);
+ */
+ white-space: nowrap;
+ text-overflow: ellipsis;
+ overflow: hidden;
+ z-index: 6;
+}
+
+.tape.ma-r90 .label {
+ top: 62%;
+ width: 75%;
+ left: 13%;
+}
+
+.tape.playing .tape-guide,
+.tape.playing .spokes {
+ -moz-animation-duration: 5s;
+ -moz-animation-name: spin;
+ -moz-animation-iteration-count: infinite;
+ -moz-animation-timing-function: linear;
+ -webkit-animation-duration: 5s;
+ -webkit-animation-name: spin;
+ -webkit-animation-iteration-count: infinite;
+ -webkit-animation-timing-function: linear;
+ -ms-animation-duration: 5s;
+ -ms-animation-name: spin;
+ -ms-animation-iteration-count: infinite;
+ -ms-animation-timing-function: linear;
+ -o-animation-duration: 5s;
+ -o-animation-name: spin;
+ -o-animation-iteration-count: infinite;
+ -o-animation-timing-function: linear;
+ animation-duration: 5s;
+ animation-name: spin;
+ animation-iteration-count: infinite;
+ animation-timing-function: linear;
+}
+
+.tape.playing .tape-guide {
+ -moz-animation-duration: 4.5s;
+ -webkit-animation-duration: 4.5s;
+ -ms-animation-duration: 4.5s;
+ -o-animation-duration: 4.5s;
+ animation-duration: 4.5s;
+ z-index: 2;
+}
+
+.tape.stopped .tape-guide,
+.tape.stopped .spokes {
+ -moz-animation: none;
+ -webkit-animation: none;
+ -ms-animation: none;
+ -o-animation: none;
+ animation: none;
+}
+
+.tape .reel.right,
+.tape .spokes.right {
+ -moz-animation-duration: 3.5s;
+ -webkit-animation-duration: 3.5s;
+ -ms-animation-duration: 3.5s;
+ -o-animation-duration: 3.5s;
+ animation-duration: 3.5s;
+}
+
+.tape.clear,
+.tape.clear .rail-left,
+.tape.clear .rail-right {
+ background: #f0f0f0;
+}
+
+.tape.clear.blue,
+.tape.clear.blue .rail-left,
+.tape.clear.blue .rail-right {
+ background: #3399cc;
+}
+
+.tape.clear.blue .screw-tl,
+.tape.clear.blue .screw-tr,
+.tape.clear.blue .screw-bl,
+.tape.clear.blue .screw-tm,
+.tape.clear.blue .screw-bm,
+.tape.clear.blue .screw-br {
+ border-color: rgba(0,32,96,0.5);
+}
+
+.tape.clear.green,
+.tape.clear.green .rail-left,
+.tape.clear.green .rail-right {
+ background: #33cc33;
+}
+
+.tape.clear.blue .window {
+ background: rgba(0,0,0,0.075);
+}
+
+.tape.clear .label {
+ background: rgba(255,255,255,0.9);
+}
+
+.tape.texture .rail-middle {
+ /* background: transparent url(../image/body-texture-strips.png); */
+ background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAACCAYAAAC3zQLZAAAAH0lEQVR42u3DAQ0AAAzCMGzgX+h+H6xJA9T25rza3nwCFS8u8CRhoQAAAABJRU5ErkJggg==);
+}
+
+.tape.clear .reel.right {
+ border-width: 0px;
+}
+
+@-moz-keyframes spin {
+ from {
+  -moz-transform: rotate(360deg);
+ }
+ to {
+  -moz-transform: rotate(0deg);
+ }
+}
+
+@-webkit-keyframes spin {
+ from {
+  -webkit-transform: rotate(360deg);
+ }
+ to {
+  -webkit-transform: rotate(0deg);
+ }
+}
+
+@-ms-keyframes spin {
+ from {
+  -ms-transform: rotate(360deg);
+ }
+ to {
+  -ms-transform: rotate(0deg);
+ }
+}
+
+@-o-keyframes spin {
+ from {
+  -o-transform: rotate(360deg);
+ }
+ to {
+  -o-transform: rotate(0deg);
+ }
+}
+
+@keyframes spin {
+ from {
+  transform: rotate(360deg);
+ }
+ to {
+  transform: rotate(0deg);
+ }
+}
+
+.screw-tl,
+.screw-tr,
+.screw-bl,
+.screw-tm,
+.screw-bm,
+.screw-br {
+ position: absolute;
+ width: 3.74%;
+ height: 5.95%;
+ max-width: 32px;
+ max-height: 32px;
+ /*
+ background: rgba(255,255,255,0.5) url(../image/tape-screw.png) no-repeat 50% 50%;
+ */
+ background: rgba(255,255,255,0.5) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABAklEQVR42u2QTUvDQBCGPViRgu2lJw9Bb570kE1Dd5OQL/Ml7aE59Me8UPCXx5lSQYaNSUO9OfDAsPPuwzA3fdV13YJwiBfijXg99w7PZP430f23aACHs0OyOfFEPI+Es/M+2Yx4nMjMJlwSK0nbtoef2DL8V8puiQcbdV3vwzD8ZLjvy7FDCu9skGhrtD4aY47c9+XOwuFyXbcOwgAkA/diPE4gSdMUeZbDNhsrxHrtn7bKsgxVVaFpGhRFgTiOoTcaSilcJPR9H1EUIc/fSfaB3W6LsqyQJAm0vlAoKYvytKV8n3xT3orvaBNMEhqjEQTmekLlKXiedyWhvNl//Xl9AUz2aaW7RdRjAAAAAElFTkSuQmCC) no-repeat 50% 50%;
+ background-size: 100% 100%;
+ border: 2px solid rgba(0,0,0,0.25);
+ border-radius: 100%;
+ -moz-box-sizing: border-box;
+ -webkit-box-sizing: border-box;
+ box-sizing: border-box;
+/*
+ -moz-transform: rotate(22.5deg);
+ -webkit-transform: rotate(22.5deg);
+ transform: rotate(22.5deg);
+*/
+}
+
+.screw-bl,
+.screw-bm,
+.screw-br {
+ border-color: rgba(0,0,0,0.5);
+}
+
+.tape.dark .screw-tl,
+.tape.dark .screw-tr,
+.tape.dark .screw-bl,
+.tape.dark .screw-tm,
+.tape.dark .screw-bm,
+.tape.dark .screw-br {
+/*
+ background: transparent url(../image/tape-screw-dark.png) no-repeat 50% 50%;
+*/
+ background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABfElEQVR42p2UW4uCUBhF5z9FNtnDZBeLytIstZvU2J0uEAT1EtQf38N+qEbOUTRhwYfuvbyfL9m2XC5xOBxwuVxwu93weDxwv9/Bmft4jBmhKBNtt9unKBZmmGUnUrbb7XC9XlPBDruCbLPZ4Hw+fwS7dISEx+MRp9NJwLKsF6ZpyjLsvoUc1us19vu9lHa7jUwmQzhH5uig6ynkZUsxDANqPg9VVTlH5cLCOJrNJirVCnS9yjkuKxWyJNDpdGCZluxYMiGfl6oWoFd18EUMBgOMx2P0+300Gg0Uf4rIZrPphIVCAbVaDd2ujcnERxD8wnU9tIwWNE2DoiiJhQKu4/IqP7tl2QkMo8VPJvlLWSwWCIJACp9ZqaShXC5xjsrR8RauVitMp1Mp9XodSk7Bdy7HOSpHR/hv4Vl83xfgi/mHLMPuSxb6/fhpjEajNLDD7ksoSIfDITzPSwKzgky6jM1mMziOEwczzKZbuefzOXhbtm2j1+tx5r7YlfoPlDTtZXQWxkUAAAAASUVORK5CYII=) no-repeat 50% 50%;
+ background-size: 100% 100%;
+ border-color: rgba(0,0,0,0.9);
+ opacity: 0.9;
+}
+
+.tape.color .screw-tl,
+.tape.color .screw-tr,
+.tape.color .screw-bl,
+.tape.color .screw-tm,
+.tape.color .screw-bm,
+.tape.color .screw-br {
+ border: 2px solid rgba(0,0,0,0.25);
+ box-shadow: none;
+}
+
+.screw-tl {
+ top: 1.6%;
+ left: 1%;
+}
+
+.screw-tr {
+ top: 1.6%;
+ right: 1%;
+}
+
+.screw-bl {
+ bottom: 1.6%;
+ left: 1%;
+}
+
+.screw-bm {
+ top: 15%;
+ left: 50%;
+ width: 3.85%;
+ height: 30%;
+ margin: 0px 0px 0px -1.925%;
+}
+
+.screw-tm {
+ top: 7%;
+ left: 50%;
+ width: 3.85%;
+ height: 6%;
+ margin: 0px 0px 0px -1.925%;
+}
+
+.screw-br {
+ bottom: 1.6%;
+ right: 1%;
+}
+
+.rail-left,
+.rail-right {
+ position: absolute;
+ bottom: 9%;
+ width: 3px;
+ height: 22.5%;
+ background: #ccc;
+ border-radius: 0px 6px 6px 0px;
+ border: 1px solid rgba(255,255,255,0.1);
+}
+
+.rail-left {
+ left: 0px;
+ margin-left: -5px;
+ border-radius: 6px 0px 0px 6px;
+ border-left: none;
+}
+
+.rail-right {
+ right: 0px;
+ margin-right: -5px;
+ border-right: none;
+}
+
+.rail-middle {
+ position: absolute;
+ bottom: 0px;
+ width: 100%;
+ height: 20%;
+}
+
+.rail-middle-outline {
+ position: absolute;
+ top: 0px;
+ left: 0px;
+ width: 66%;
+ height: 100%;
+ margin-left: 17%;
+ border-top: none;
+ border-bottom: none;
+ -moz-box-sizing: border-box;
+ -webkit-box-sizing: border-box;
+ box-sizing: border-box;
+}
+
+.tape .rail-middle-outline {
+ background: transparent url(../image/rail-middle-outline.png) no-repeat 50% 100%;
+ background-size: contain;
+ z-index: 2;
+}
+
+.hole-1,
+.hole-2,
+.hole-3,
+.hole-4 {
+ position: absolute;
+ bottom: 5%;
+ background: rgba(0,0,0,0.1);
+ background: #fff;
+ width: 16px;
+ height: 16px;
+ margin: -8px 0px 0px -8px;
+ -moz-box-sizing: border-box;
+ -webkit-box-sizing: border-box;
+ box-sizing: border-box;
+}
+
+.hole-1,
+.hole-4 {
+ /* circles */
+ border-radius: 100%;
+}
+
+.hole-2,
+.hole-3 {
+ width: 18px;
+ margin-top: -9px;
+ border-radius: 33%;
+ bottom: 15%;
+}
+
+.hole-1 {
+ left: 15%;
+}
+
+.hole-2 {
+ left: 30%;
+}
+
+.hole-3 {
+ left: 70%;
+}
+
+.hole-4 {
+ left: 85%;
+}
+
+.tape-pad-holder {
+ position: absolute;
+ bottom: 1px;
+ left: 50%;
+ width: 15%;
+ height: 25%;
+ margin: 0px 0px 0px -7.5%;
+ background: #fff;
+}
+
+.tape-pad-holder .tape-pad {
+ position: absolute;
+ bottom: 0px;
+ left: 50%;
+ width: 35%;
+ height: 45%;
+ margin: -1px 0px 0px -17.5%;
+ background: rgba(0,0,0,0.2);
+}
+
+.tape.dark .tape-pad-holder .tape-pad {
+ background: rgba(0,0,0,0.5);
+}
+
+.tape-pad-holder .tape-pad-line {
+ position: absolute;
+ left: 0px;
+ top: 50%;
+ width: 100%;
+ height: 0px;
+ margin-top: -2px;
+ border-top: 1px solid rgba(0,0,0,0.25);
+ /* hide by default */
+ display: none;
+}
+
+.progress-notches {
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ width: 25%;
+ height: 2.5%;
+ margin: -18px 0px 0px -12.5%;
+ font-size: 11px;
+ text-align: center;
+ white-space: nowrap;
+}
+
+.progress-notches div {
+ display: inline-block;
+ background: #666;
+ width: 2%;
+ margin-left: 4%;
+ height: 100%;
+ vertical-align: top;
+ /* due to rounding errors, this doesn't always work out. */
+ width: 2px;
+}
+
+.progress-notches div:first-of-type {
+ margin-left: 0px;
+}
+
+.tape .tape-guide {
+ position: absolute;
+ top: auto;
+ bottom: 0px;
+ width: 6.875%;
+ height: 11%;
+ margin: -10.5% 0px 0px -3.4375%;
+ background: rgba(0,0,0,0.1) url(../image/tape-guide.png) no-repeat 50% 50%;
+ border-radius: 100%;
+}
+
+.tape.color .tape-guide {
+ background-color: transparent;
+}
+
+.tape .tape-guide.left {
+ left: 11%;
+}
+
+.tape .tape-guide.right {
+ left: 89%;
+}
+
+.tape canvas {
+ position: absolute;
+ left: 0px;
+ top: 0px;
+ width: 100%;
+ height: 100%;
+}
+
+.tape canvas.connecting-tape {
+ visibility: hidden;
+}
+
+.tape .tape-guide,
+.tape .label {
+ /* stacking corrections (so tape goes through bottom holes) */
+ z-index: 4;
+}
+
+.skin-overlay {
+ position: absolute;
+ top: 0px;
+ left: 0px;
+ width: 100%;
+ height: 100%;
+ /* potentially ugly */
+ background-size: contain;
+}
+
+.tape.black-micro,
+.tape.black-micro .rail-left,
+.tape.black-micro .rail-right {
+ /* background: transparent url(../image/black-micro.png); */
+ background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGAgMAAACdogfbAAAACVBMVEUWFhYbGxsiIiJSQVJ8AAAAGklEQVQIHWMQZWCYsoAhKIDBM4BBlYFBlAEAHbACv0f8IxYAAAAASUVORK5CYII=);
+}
+
+.tape.ma-r90,
+.tape.ma-r90 .rail-left,
+.tape.ma-r90 .rail-right {
+ background: transparent url(../image/ma-r90-body-skin.png) 0px 0px no-repeat;
+}
+
+.tape.ma-r90 .rail-right {
+ /* hack? */
+ width: 4px;
+}
+
+.tape.ma-r90 .rail-left,
+.tape.ma-r90 .rail-right {
+ background-position: 0px 75%;
+}
+
+.tape.ma-r90 .rail-middle {
+ background: transparent;
+}
+
+.tape.ma-r90 .tab-left,
+.tape.ma-r90 .tab-right {
+ position: absolute;
+ top: 0px;
+ width: 3.74%;
+ height: 6.1%;
+ max-width: 32px;
+ max-height: 32px;
+ background-color: rgb(34,142,41);
+}
+
+.tape.ma-r90 .tab-left {
+ left: 5.65%;
+}
+
+.tape.ma-r90 .tab-right {
+ right: 5.65%;
+}
+
+.tape .tab-left .ridge,
+.tape .tab-right .ridge {
+ position: absolute;
+ left: -10%;
+ top: 0px;
+ width: 120%;
+ height: 3px;
+ background-color: rgb(34,142,41);
+}
+
+.tape .tab-left .notch,
+.tape .tab-right .notch {
+ position: absolute;
+ left: 50%;
+ top: 50%;
+ width: 6px;
+ height: 7px;
+ margin: -3px 0px 0px -5px;
+ border: 2px solid rgb(33,169,43);
+ border-top: none;
+}
+
+.tape .controls {
+ position: absolute;
+ left: 0px;
+ top: -1px;
+ width: 100%;
+ height: 20px;
+ margin-top: -20px;
+ vertical-align: bottom;
+ z-index: -1;
+ overflow: hidden;
+}
+
+.tape .controls ul {
+ position: relative;
+ margin-top: 21px;
+ -moz-transition: all 0.2s ease-out;
+ -moz-transition-property: height, margin;
+ -ms-transition: all 0.2s ease-out;
+ -ms-transition-property: height, margin;
+ -o-transition: all 0.2s ease-out;
+ -o-transition-property: height, margin;
+ -webkit-transition: all 0.2s ease-out;
+ -webkit-transition-property: height, margin;
+ transition: all 0.2s ease-out;
+ transition-property: height, margin;
+}
+
+.tape:hover .controls ul {
+ margin-top: 0px;
+}
+
+.tape .controls .bd {
+ margin: 0px auto;
+ text-align: center;
+}
+
+.tape .controls ul {
+ list-style-type: none;
+ padding: 0px;
+ font-size: 0px; /* collapse */
+ background-color: rgba(255,255,255,0.9);
+ border-radius: 2px 2px 0px 0px;
+ overflow: hidden;
+ /* http://www.colorzilla.com/gradient-editor/ */
+ background: rgb(255,255,255); /* Old browsers */
+ background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(241,241,241,1) 50%, rgba(225,225,225,1) 51%, rgba(246,246,246,1) 100%); /* FF3.6+ */
+ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(241,241,241,1)), color-stop(51%,rgba(225,225,225,1)), color-stop(100%,rgba(246,246,246,1))); /* Chrome,Safari4+ */
+ background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Chrome10+,Safari5.1+ */
+ background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Opera 11.10+ */
+ background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* IE10+ */
+ background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* W3C */
+ box-shadow: 0px 0px 2px rgba(0,0,0,0.1);
+}
+
+#tape1 .controls.aqua ul {
+ /* http://www.colorzilla.com/gradient-editor/ */
+ background: rgb(255,255,255); /* Old browsers */
+ background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(241,241,241,1) 50%, rgba(225,225,225,1) 51%, rgba(246,246,246,1) 100%); /* FF3.6+ */
+ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(241,241,241,1)), color-stop(51%,rgba(225,225,225,1)), color-stop(100%,rgba(246,246,246,1))); /* Chrome,Safari4+ */
+ background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Chrome10+,Safari5.1+ */
+ background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Opera 11.10+ */
+ background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* IE10+ */
+ background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* W3C */
+ box-shadow: 0px 1px 2px rgba(0,0,0,0.1);
+}
+
+.tape .controls ul,
+.tape .controls ul li a {
+ border: 1px solid rgba(255,255,255,0.9);
+}
+
+.tape .controls ul li {
+ border: 1px solid rgba(0,0,0,0.1);
+ border-right: none;
+ border-top: none;
+ border-bottom: none;
+}
+
+.tape .controls ul li:first-of-type,
+.tape .controls ul li:first-of-type a {
+ border-left: none;
+}
+
+.tape .controls ul {
+ position: relative;
+ border: none;
+ display: inline-block;
+ height: 20px;
+ overflow: hidden;
+}
+
+.tape .controls ul li {
+ position: relative;
+ display: inline-block;
+ text-align: center;
+}
+
+.tape .controls ul li a {
+ position: relative;
+ display: block;
+ text-decoration: none;
+ color: #999;
+ font-size: 16px;
+ line-height: 20px;
+ padding: 0px 16px;
+ border-left: none;
+ border-top: none;
+ border-bottom: none;
+}
+
+.tape .controls ul:hover li a {
+ color: #999;
+ text-shadow: 0px 1px 1px #fff;
+}
+
+.tape .controls ul li a:hover {
+ background: #ccc;
+ color: #fff;
+ border-color: transparent;
+ text-shadow: none;
+}
+
+.tape .controls.aqua ul li a:hover {
+ background-color: rgba(0,0,0,0.1);
+ background: rgb(184,225,252); /* Old browsers */
+ background: -moz-linear-gradient(top, rgba(184,225,252,1) 0%, rgba(169,210,243,1) 10%, rgba(144,186,228,1) 25%, rgba(144,188,234,1) 37%, rgba(144,191,240,1) 50%, rgba(107,168,229,1) 51%, rgba(162,218,245,1) 83%, rgba(189,243,253,1) 100%); /* FF3.6+ */
+ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(184,225,252,1)), color-stop(10%,rgba(169,210,243,1)), color-stop(25%,rgba(144,186,228,1)), color-stop(37%,rgba(144,188,234,1)), color-stop(50%,rgba(144,191,240,1)), color-stop(51%,rgba(107,168,229,1)), color-stop(83%,rgba(162,218,245,1)), color-stop(100%,rgba(189,243,253,1))); /* Chrome,Safari4+ */
+ background: -webkit-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* Chrome10+,Safari5.1+ */
+ background: -o-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* Opera 11.10+ */
+ background: -ms-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* IE10+ */
+ background: linear-gradient(to bottom, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* W3C */
+ color: #fff;
+}
+
+
+.tape .controls.aqua ul li a:active {
+ background: #999;
+}
+
+.tape .controls ul li:first-child a {
+ border-left: none;
+}
+
+.tape .controls ul li:last-child a {
+ border-right: none;
+}
