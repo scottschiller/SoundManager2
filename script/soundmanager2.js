@@ -1592,9 +1592,6 @@ function SoundManager(smURL, smID) {
             s._a.pause();
             _html5Unload(s._a, _emptyURL);
 
-            // reset local URL for next load / play call, too
-            s.url = _emptyURL;
-
           }
 
         }
