@@ -2047,7 +2047,7 @@ function SoundManager(smURL, smID) {
              * if seek is beyond (loaded?) position, "DOM exception 11"
              * "INDEX_SIZE_ERR": DOM exception 1
              */
-            sm2._wD('setPosition('+s.position1K+'): setting position');
+            sm2._wD('setPosition('+position1K+'): setting position');
             try {
               s._a.currentTime = position1K;
               if (s.playState === 0 || s.paused) {
