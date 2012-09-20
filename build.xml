@@ -102,8 +102,8 @@
 <!-- remove [d] and [/d] blocks -->
 <replaceregexp match="// &lt;d&gt;*.+?// &lt;\/d&gt;" replace="" flags="gs" byline="false" file="script/soundmanager2-nodebug.js" />
 
-<!-- remove _s._wD() calls -->
-<replaceregexp match="\s+_s._wD\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+<!-- remove sm2._wD() calls -->
+<replaceregexp match="\s+sm2._wD\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
 
 <!-- remove _wDS() calls -->
 <replaceregexp match="\s+_wDS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
