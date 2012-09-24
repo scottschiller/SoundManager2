@@ -273,7 +273,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   sm2 = this, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _setProperties, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
-  _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
+  _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _lastGlobalHTML5URL, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
   _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
@@ -1472,9 +1472,6 @@ function SoundManager(smURL, smID) {
       // local shortcut
       _iO = s._iO;
 
-      // make a local copy of the old url before we re-assign it
-      _lastURL = (s.url && s.url.toString ? s.url.toString() : null);
-
       // reset a few state properties
 
       s.loaded = false;
@@ -1498,7 +1495,7 @@ function SoundManager(smURL, smID) {
 
           // if url provided directly to load(), assign it here.
 
-          if (s._a.src !== _iO.url) {
+          if (s.url !== _iO.url) {
 
             sm2._wD(_wDS('manURL') + ': ' + _iO.url);
 
@@ -1547,7 +1544,6 @@ function SoundManager(smURL, smID) {
           _wDS('smError', 2);
           _debugTS('onload', false);
           _catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
-
         }
 
       }
@@ -1591,6 +1587,9 @@ function SoundManager(smURL, smID) {
 
             s._a.pause();
             _html5Unload(s._a, _emptyURL);
+
+            // update empty URL, too
+            _lastURL = _emptyURL;
 
           }
 
@@ -2675,57 +2674,80 @@ function SoundManager(smURL, smID) {
       var _iO = _mixin(s._iO, oOptions), d = decodeURI,
           _a = _useGlobalHTML5Audio ? sm2._global_a : s._a,
           _dURL = d(_iO.url),
-          _oldIO = (_a && _a.s ? _a.s.instanceOptions : null),
+          sameURL,
           result;
+
+      /**
+       * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
+       * Fixes case with devices that can only play one sound at a time
+       * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
+       */
+
+      if (_useGlobalHTML5Audio) {
+
+        if (_dURL === _lastGlobalHTML5URL) {
+          // global HTML5 audio: re-use of URL
+          sameURL = true;
+        }
+
+      } else if (_dURL === _lastURL) {
+
+        // options URL is the same as the "last" URL, and we used (loaded) it
+        sameURL = true;
+
+      }
 
       if (_a) {
 
         if (_a._s) {
 
-          if (!_useGlobalHTML5Audio && _dURL === d(_lastURL)) {
+          if (_useGlobalHTML5Audio) {
 
-            // same url, ignore request
+            _result = _a;
+
+            if (_a._s && _a._s.playState && !sameURL) {
+
+              // global HTML5 audio case, and loading a new URL. stop the currently-playing one.
+              _a._s.stop();
+
+            }
+
+          } else if (!_useGlobalHTML5Audio && _dURL === d(_lastURL)) {
+
+            // non-global HTML5 reuse case: same url, ignore request
             result = _a; 
-
-          } else if (_useGlobalHTML5Audio && _oldIO.url === _iO.url && (!_lastURL || (_lastURL === _oldIO.url))) {
-
-            // iOS-type reuse case
-            result = _a;
 
           }
 
           if (result) {
 
             s._apply_loop(_a, _iO.loops);
+
             return result;
 
           }
 
         }
 
-        sm2._wD('setting URL on existing object: ' + _dURL + (_lastURL ? ', old URL: ' + _lastURL : ''));
+        if (!sameURL) {
 
-        /**
-         * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
-         * Fixes case with devices that can only play one sound at a time
-         * Otherwise, other sounds in mid-play will be terminated without warning and in a stuck state
-         */
+          // don't retain onPosition() stuff with new URL.
 
-        if (_useGlobalHTML5Audio && _a.s && _a.s.playState && _iO.url !== _oldIO.url) {
+          _resetProperties(false);
 
-          _a.s.stop();
+          // assign new HTML5 URL
+
+          _a.src = _iO.url;
+
+          s.url = _iO.url;
+
+          _lastURL = _iO.url;
+
+          _lastGlobalHTML5URL = _iO.url;
+
+          _a._called_load = false;
 
         }
-
-        // reset load/playstate, onPosition etc. if the URL is new.
-        // somewhat-tricky object re-use vs. new SMSound object, old vs. new URL comparisons
-
-        _resetProperties((_oldIO && _oldIO.url ? _iO.url === _oldIO.url : (_lastURL ? _lastURL === _iO.url : false)));
-
-        _a.src = _iO.url;
-        s.url = _iO.url;
-        _lastURL = _iO.url;
-        _a._called_load = false;
 
       } else {
 
