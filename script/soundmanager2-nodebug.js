@@ -735,6 +735,7 @@ function SoundManager(smURL, smID) {
           } else {
             s.load(s._iO);
           }
+          s.instanceOptions = s._iO;
         } else if (s.readyState === 2) {
           exit = s;
         } else {
