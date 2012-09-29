@@ -240,7 +240,7 @@ class SoundManager2 {
     }
 
     var _load = function(sID, sURL, bStream, bAutoPlay, bCheckPolicyFile) {
-      // writeDebug('_load(): '+sID+', '+sURL+', '+bStream+', '+bAutoPlay);
+      // writeDebug('_load(): '+sID+', '+sURL+', '+bStream+', '+bAutoPlay+', '+bCheckPolicyFile);
       if (typeof bAutoPlay == 'undefined') {
         bAutoPlay = false;
       }
