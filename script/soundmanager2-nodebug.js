@@ -196,7 +196,7 @@ function SoundManager(smURL, smID) {
     return _id(smID) || _doc[smID] || _win[smID];
   };
   this.createSound = function(oOptions, _url) {
-    var _cs, _cs_string, thisOptions = null, oSound = null, _tO = null;
+    var _cs, _cs_string, options, oSound = null;
     if (!_didInit || !sm2.ok()) {
       _complain(_cs_string);
       return false;
@@ -207,45 +207,44 @@ function SoundManager(smURL, smID) {
         'url': _url
       };
     }
-    thisOptions = _mixin(oOptions);
-    thisOptions.url = _parseURL(thisOptions.url);
-    _tO = thisOptions;
-    if (_idCheck(_tO.id, true)) {
-      return sm2.sounds[_tO.id];
+    options = _mixin(oOptions);
+    options.url = _parseURL(options.url);
+    if (_idCheck(options.id, true)) {
+      return sm2.sounds[options.id];
     }
     function make() {
-      thisOptions = _loopFix(thisOptions);
-      sm2.sounds[_tO.id] = new SMSound(_tO);
-      sm2.soundIDs.push(_tO.id);
-      return sm2.sounds[_tO.id];
+      options = _loopFix(options);
+      sm2.sounds[options.id] = new SMSound(options);
+      sm2.soundIDs.push(options.id);
+      return sm2.sounds[options.id];
     }
-    if (_html5OK(_tO)) {
+    if (_html5OK(options)) {
       oSound = make();
-      oSound._setup_html5(_tO);
+      oSound._setup_html5(options);
     } else {
       if (_fV > 8) {
-        if (_tO.isMovieStar === null) {
-          _tO.isMovieStar = !!(_tO.serverURL || (_tO.type ? _tO.type.match(_netStreamMimeTypes) : false) || _tO.url.match(_netStreamPattern));
+        if (options.isMovieStar === null) {
+          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(_netStreamMimeTypes) : false) || options.url.match(_netStreamPattern));
         }
       }
-      _tO = _policyFix(_tO, _cs);
+      options = _policyFix(options, _cs);
       oSound = make();
       if (_fV === 8) {
-        _flash._createSound(_tO.id, _tO.loops||1, _tO.usePolicyFile);
+        _flash._createSound(options.id, options.loops||1, options.usePolicyFile);
       } else {
-        _flash._createSound(_tO.id, _tO.url, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.autoLoad, _tO.usePolicyFile);
-        if (!_tO.serverURL) {
+        _flash._createSound(options.id, options.url, options.usePeakData, options.useWaveformData, options.useEQData, options.isMovieStar, (options.isMovieStar?options.bufferTime:false), options.loops||1, options.serverURL, options.duration||null, options.autoPlay, true, options.autoLoad, options.usePolicyFile);
+        if (!options.serverURL) {
           oSound.connected = true;
-          if (_tO.onconnect) {
-            _tO.onconnect.apply(oSound);
+          if (options.onconnect) {
+            options.onconnect.apply(oSound);
           }
         }
       }
-      if (!_tO.serverURL && (_tO.autoLoad || _tO.autoPlay)) {
-        oSound.load(_tO);
+      if (!options.serverURL && (options.autoLoad || options.autoPlay)) {
+        oSound.load(options);
       }
     }
-    if (!_tO.serverURL && _tO.autoPlay) {
+    if (!options.serverURL && options.autoPlay) {
       oSound.play();
     }
     return oSound;
