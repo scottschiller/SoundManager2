@@ -8,7 +8,15 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20120916+DEV
+ * V2.97a.20120916+DEV+webkitAudioWrapper (EXPERIMENTAL BUILD)
+ */
+
+/**
+ * EXPERIMENTAL: Webkit Audio API add-in for waveformData + eqData, where supported (Chrome).
+ * Webkit / Safari 6.0 / iOS 6 should work, but have not fully-implemented createMediaElementSource() (or I'm doing it wrong) as of September 2012.
+ * createMediaElementSource() is needed to "attach" the Webkit Audio API to an Audio() object for analysis / manipulation.
+ * Otherwise, it's undesirable XHR + arraybuffer stuff to get at data, and no Audio() is involved.
+ * https://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/PlayingandSynthesizingSounds/PlayingandSynthesizingSounds.html#//apple_ref/doc/uid/TP40009523-CH6-SW1
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio */
@@ -286,6 +294,10 @@ function SoundManager(smURL, smID) {
   // Flash v9.0r115+ "moviestar" formats
   _netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'm4b', 'mp4v', '3gp', '3g2'],
   _netStreamPattern = new RegExp('\\.(' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
+
+  var WebkitAudioWrapper;
+  var audioContext;
+  var AudioContext = (window.webkitAudioContext || window.AudioContext);
 
   this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // default mp3 set
 
@@ -1350,6 +1362,9 @@ function SoundManager(smURL, smID) {
 
     var s = this, _resetProperties, _add_html5_events, _remove_html5_events, _stop_html5_timer, _start_html5_timer, _attachOnPosition, _onplay_called = false, _onPositionItems = [], _onPositionFired = 0, _detachOnPosition, _applyFromTo, _lastURL = null, _lastHTML5State;
 
+    // EXPERIMENTAL - Webkit Audio API for waveform + spectrum/EQ vis data, a la flash 9
+    this.webkitAudioWrapper = null;
+
     _lastHTML5State = {
       // tracks duration + position (time)
       duration: null,
@@ -1499,6 +1514,10 @@ function SoundManager(smURL, smID) {
 
             sm2._wD(_wDS('manURL') + ': ' + _iO.url);
 
+            if (s.webkitAudioWrapper && s.webkitAudioWrapper.reset) {
+              s.webkitAudioWrapper.reset();
+            }
+
             s._a.src = _iO.url;
 
             // TODO: review / re-apply all relevant options (volume, loop, onposition etc.)
@@ -1590,6 +1609,10 @@ function SoundManager(smURL, smID) {
 
             // update empty URL, too
             _lastURL = _emptyURL;
+
+            if (s.webkitAudioWrapper && s.webkitAudioWrapper.disconnect) {
+              s.webkitAudioWrapper.disconnect();
+            }
 
           }
 
@@ -2738,6 +2761,11 @@ function SoundManager(smURL, smID) {
 
           _resetProperties(false);
 
+          // experimental Webkit audio API visualization stuffs
+          if (s.webkitAudioWrapper && s.webkitAudioWrapper.reset) {
+            s.webkitAudioWrapper.reset();
+          }
+
           // assign new HTML5 URL
 
           _a.src = _iO.url;
@@ -2829,6 +2857,13 @@ function SoundManager(smURL, smID) {
           add(f, _html5_events[f]);
         }
       }
+
+      // EXPERIMENTAL: Webkit Audio API support
+      if (!s.webkitAudioWrapper && WebkitAudioWrapper) {
+        s.webkitAudioWrapper = new WebkitAudioWrapper(s, s._a);
+      } /* else {
+        // re-initialize/assign web audio API stuffs?
+      } */
 
       return true;
 
@@ -3034,6 +3069,7 @@ function SoundManager(smURL, smID) {
     this._whileplaying = function(nPosition, oPeakData, oWaveformDataLeft, oWaveformDataRight, oEQData) {
 
       var _iO = s._iO,
+          analyserData,
           eqLeft;
 
       if (isNaN(nPosition) || nPosition === null) {
@@ -3046,7 +3082,21 @@ function SoundManager(smURL, smID) {
 
       s._processOnPosition();
 
-      if (!s.isHTML5 && _fV > 8) {
+      if (s.isHTML5 && (_iO.usePeakData || _iO.useWaveformData) && s.webkitAudioWrapper && s.webkitAudioWrapper.analyse) {
+
+        // EXPERIMENTAL: Webkit Audio API-based spectrum + "EQ" data.
+
+        analyserData = s.webkitAudioWrapper.analyse();
+
+        s.eqData = analyserData.freqByteData;
+        s.eqData.left = analyserData.freqByteData;
+        s.eqData.right = analyserData.freqByteData;
+
+        s.waveformData = analyserData.timeByteData;
+        s.waveformData.left = analyserData.timeByteData;
+        s.waveformData.right = analyserData.timeByteData;
+
+      } else if (!s.isHTML5 && _fV > 8) {
 
         if (_iO.usePeakData && typeof oPeakData !== 'undefined' && oPeakData) {
           s.peakData = {
@@ -3523,6 +3573,11 @@ function SoundManager(smURL, smID) {
 
       var s = this._s,
           position1K;
+
+      if (s.webkitAudioWrapper && s.webkitAudioWrapper.connect) {
+        // console.log('SM2 canplay-invoked connect event', s.url, s._a.src);
+        s.webkitAudioWrapper.connect(s._a);
+      }
 
       if (s._html5_canplay) {
         // this event has already fired. ignore.
@@ -5534,6 +5589,148 @@ function SoundManager(smURL, smID) {
     _catchError({type:'NO_DOM2_EVENTS', fatal:true});
 
   }
+
+  WebkitAudioWrapper = function(oSMSound, oAudio) {
+
+    // if supported and we haven't made one yet, do so. (there should be only one per instance.)
+    if (!audioContext && AudioContext) {
+      audioContext = new AudioContext();
+    }
+
+    if (!audioContext) {
+      // console.log('no AudioContext or webkitAudioContext support');
+      return false;
+    }
+
+    var analyser,
+        source,
+        addedEvent,
+        connected;
+
+    function analyse() {
+
+      var freqByteData = new Uint8Array(analyser.frequencyBinCount);
+
+      var timeDomainData = new Uint8Array(analyser.frequencyBinCount);
+
+      analyser.getByteFrequencyData(freqByteData);
+
+      analyser.getByteTimeDomainData(timeDomainData);
+
+      var freqOut = [], timeOut = [], i, j, k, scale = 1;
+
+      j = analyser.fftSize;
+      k = analyser.frequencyBinCount;
+
+      for (i=0; i<j; i+=scale) {
+        freqOut[i] = freqByteData[i]/256;
+      }
+
+      for (i=0; i<k; i+=scale) {
+        // TODO: sort out if this is roughly the right munging of said data.
+        timeOut[i] = (timeDomainData[i]/256 - 0.5) * -2;
+      }
+
+      return {
+
+        freqByteData: freqOut,
+        timeByteData: timeOut
+
+      };
+
+    }
+
+    function connect(audio) {
+
+      if (connected) {
+        return false;
+      }
+
+      // fresh audio object
+      // this is weird as the original object should work, but appears not to when re-using an object and loading a new / fresh URL.
+      if (audio && audio instanceof Audio) {
+        oAudio = audio;
+      }
+
+      source = audioContext.createMediaElementSource(oAudio);
+
+      if (analyser) {
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        connected = true;
+      }
+
+      if (addedEvent) {
+        oAudio.removeEventListener('canplay', connect);
+        addedEvent = false;
+      }
+
+    }
+
+    function init() {
+
+      if (analyser) {
+        // edge case
+        return false;
+      }
+
+      analyser = audioContext.createAnalyser();
+
+      // don't be too jumpy, nor not too slow to respond to changes either.
+      analyser.smoothingTimeConstant = 0.5;
+
+      analyser.fftSize = 512; // match Flash 9?
+      analyser.frequencyBinCount = 256; // Note: Should be "half the FFT size?" per https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html#dfn-frequencyBinCount
+
+      if (!oSMSound._html5_canplay) {
+
+        // wait for canplay before connecting + attaching
+        addedEvent = true;
+        oAudio.addEventListener('canplay', connect, false);
+
+      } else {
+
+        // less-likely case (perhaps a re-play): loading/loaded, not in an error state
+        connect();
+
+      }
+
+    }
+
+    function disconnect() {
+
+      if (connected && analyser && source) {
+
+        analyser.disconnect(0);
+        source.disconnect(0);
+        connected = false;
+
+      }
+
+      analyser = null;
+      source = null;
+
+    }
+
+    function reset() {
+
+      disconnect();
+      init();
+
+    }
+
+    init();
+
+    return {
+
+      analyse: analyse,
+      connect: connect,
+      disconnect: disconnect,
+      reset: reset
+
+    };
+
+  } // WebkitAudioWrapper()
 
 } // SoundManager()
 
