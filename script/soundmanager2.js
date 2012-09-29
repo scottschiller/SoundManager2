@@ -388,7 +388,7 @@ function SoundManager(smURL, smID) {
 
   this.createSound = function(oOptions, _url) {
 
-    var _cs, _cs_string, thisOptions = null, oSound = null, _tO = null;
+    var _cs, _cs_string, options, oSound = null;
 
     // <d>
     _cs = _sm+'.createSound(): ';
@@ -409,83 +409,80 @@ function SoundManager(smURL, smID) {
     }
 
     // inherit from defaultOptions
-    thisOptions = _mixin(oOptions);
+    options = _mixin(oOptions);
 
-    thisOptions.url = _parseURL(thisOptions.url);
-
-    // local shortcut
-    _tO = thisOptions;
+    options.url = _parseURL(options.url);
 
     // <d>
-    if (_tO.id.toString().charAt(0).match(/^[0-9]$/)) {
-      sm2._wD(_cs + _str('badID', _tO.id), 2);
+    if (options.id.toString().charAt(0).match(/^[0-9]$/)) {
+      sm2._wD(_cs + _str('badID', options.id), 2);
     }
 
-    sm2._wD(_cs + _tO.id + ' (' + _tO.url + ')', 1);
+    sm2._wD(_cs + options.id + ' (' + options.url + ')', 1);
     // </d>
 
-    if (_idCheck(_tO.id, true)) {
-      sm2._wD(_cs + _tO.id + ' exists', 1);
-      return sm2.sounds[_tO.id];
+    if (_idCheck(options.id, true)) {
+      sm2._wD(_cs + options.id + ' exists', 1);
+      return sm2.sounds[options.id];
     }
 
     function make() {
 
-      thisOptions = _loopFix(thisOptions);
-      sm2.sounds[_tO.id] = new SMSound(_tO);
-      sm2.soundIDs.push(_tO.id);
-      return sm2.sounds[_tO.id];
+      options = _loopFix(options);
+      sm2.sounds[options.id] = new SMSound(options);
+      sm2.soundIDs.push(options.id);
+      return sm2.sounds[options.id];
 
     }
 
-    if (_html5OK(_tO)) {
+    if (_html5OK(options)) {
 
       oSound = make();
-      sm2._wD('Creating sound '+_tO.id+', using HTML5');
-      oSound._setup_html5(_tO);
+      sm2._wD('Creating sound '+options.id+', using HTML5');
+      oSound._setup_html5(options);
 
     } else {
 
       if (_fV > 8) {
-        if (_tO.isMovieStar === null) {
+        if (options.isMovieStar === null) {
           // attempt to detect MPEG-4 formats
-          _tO.isMovieStar = !!(_tO.serverURL || (_tO.type ? _tO.type.match(_netStreamMimeTypes) : false) || _tO.url.match(_netStreamPattern));
+          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(_netStreamMimeTypes) : false) || options.url.match(_netStreamPattern));
         }
         // <d>
-        if (_tO.isMovieStar) {
+        if (options.isMovieStar) {
           sm2._wD(_cs + 'using MovieStar handling');
-          if (_tO.loops > 1) {
+          if (options.loops > 1) {
             _wDS('noNSLoop');
           }
         }
         // </d>
       }
 
-      _tO = _policyFix(_tO, _cs);
+      options = _policyFix(options, _cs);
       oSound = make();
 
       if (_fV === 8) {
-        _flash._createSound(_tO.id, _tO.loops||1, _tO.usePolicyFile);
+        _flash._createSound(options.id, options.loops||1, options.usePolicyFile);
       } else {
-        _flash._createSound(_tO.id, _tO.url, _tO.usePeakData, _tO.useWaveformData, _tO.useEQData, _tO.isMovieStar, (_tO.isMovieStar?_tO.bufferTime:false), _tO.loops||1, _tO.serverURL, _tO.duration||null, _tO.autoPlay, true, _tO.autoLoad, _tO.usePolicyFile);
-        if (!_tO.serverURL) {
+        _flash._createSound(options.id, options.url, options.usePeakData, options.useWaveformData, options.useEQData, options.isMovieStar, (options.isMovieStar?options.bufferTime:false), options.loops||1, options.serverURL, options.duration||null, options.autoPlay, true, options.autoLoad, options.usePolicyFile);
+        if (!options.serverURL) {
           // We are connected immediately
           oSound.connected = true;
-          if (_tO.onconnect) {
-            _tO.onconnect.apply(oSound);
+          if (options.onconnect) {
+            options.onconnect.apply(oSound);
           }
         }
       }
 
-      if (!_tO.serverURL && (_tO.autoLoad || _tO.autoPlay)) {
+      if (!options.serverURL && (options.autoLoad || options.autoPlay)) {
         // call load for non-rtmp streams
-        oSound.load(_tO);
+        oSound.load(options);
       }
 
     }
 
     // rtmp will play in onconnect
-    if (!_tO.serverURL && _tO.autoPlay) {
+    if (!options.serverURL && options.autoPlay) {
       oSound.play();
     }
 
