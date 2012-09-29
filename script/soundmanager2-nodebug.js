@@ -639,7 +639,7 @@ function SoundManager(smURL, smID) {
           s._iO = _policyFix(_loopFix(_iO));
           _iO = s._iO;
           if (_fV === 8) {
-            _flash._load(s.id, _iO.url, _iO.stream, _iO.autoPlay, (_iO.whileloading?1:0), _iO.loops||1, _iO.usePolicyFile);
+            _flash._load(s.id, _iO.url, _iO.stream, _iO.autoPlay, _iO.usePolicyFile);
           } else {
             _flash._load(s.id, _iO.url, !!(_iO.stream), !!(_iO.autoPlay), _iO.loops||1, !!(_iO.autoLoad), _iO.usePolicyFile);
           }
