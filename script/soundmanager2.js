@@ -1733,6 +1733,9 @@ function SoundManager(smURL, smID) {
             s.load(s._iO);
           }
 
+          // HTML5 hack - re-set instanceOptions?
+          s.instanceOptions = s._iO;
+
         } else if (s.readyState === 2) {
 
           sm2._wD(fN + 'Could not load "' + s.id + '" - exiting', 2);
