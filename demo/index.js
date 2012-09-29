@@ -389,6 +389,7 @@ if (window.is_home) {
       preferFlash: true,
       useFlashBlock: true,
       useHighPerformance: true,
+      html5PollingInterval: 30,
       bgColor: '#ffffff',
       debugMode: false,
       url: 'swf/',

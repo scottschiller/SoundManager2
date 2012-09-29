@@ -865,7 +865,7 @@ function ThreeSixtyPlayer() {
       return false;
     }
 
-    if (!oSound.waveformData.left.length && !oSound.eqData.length && !oSound.peakData.left) {
+    if (!oSound.waveformData.left.length && !oSound.eqData.length) { // && !oSound.peakData.left) {
       // no data (or errored out/paused/unavailable?)
       return false;
     }
@@ -936,7 +936,7 @@ function ThreeSixtyPlayer() {
 
     if (self.config.usePeakData) {
       if (!oSound._360data.animating) {
-        nPeak = (oSound.peakData.left||oSound.peakData.right);
+        nPeak = (oSound.peakData.left || oSound.peakData.right);
         // GIANT HACK: use EQ spectrum data for bass frequencies
         eqSamples = 3;
         for (i=0; i<eqSamples; i++) {
@@ -1365,7 +1365,7 @@ if (navigator.userAgent.match(/webkit/i) && navigator.userAgent.match(/mobile/i)
 }
 
 soundManager.setup({
-  html5PollingInterval: 50, // increased framerate for whileplaying() etc.
+  html5PollingInterval: 30, // increased framerate for whileplaying() etc.
   debugMode: (window.location.href.match(/debug=1/i)), // disable or enable debug output
   consoleOnly: true,
   flashVersion: 9,
