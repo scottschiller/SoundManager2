@@ -1990,7 +1990,7 @@ function SoundManager(smURL, smID) {
       if (types && types[type] && types[type].enabledPlugin && types[type].enabledPlugin.description) {
         hasPlugin = true;
       }
-    } else if (typeof AX !== 'undefined') {
+    } else if (typeof AX !== 'undefined' && !_ua.match(/MSAppHost/i)) {
       try {
         obj = new AX('ShockwaveFlash.ShockwaveFlash');
       } catch(e) {
