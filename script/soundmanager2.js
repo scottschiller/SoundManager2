@@ -4496,7 +4496,8 @@ function SoundManager(smURL, smID) {
       if (types && types[type] && types[type].enabledPlugin && types[type].enabledPlugin.description) {
         hasPlugin = true;
       }
-    } else if (typeof AX !== 'undefined') {
+    } else if (typeof AX !== 'undefined' && !_ua.match(/MSAppHost/i)) {
+      // Windows 8 Store Apps (MSAppHost) are weird (compatibility?) and won't complain here, but will barf if Flash/ActiveX object is appended to the DOM.
       try {
         obj = new AX('ShockwaveFlash.ShockwaveFlash');
       } catch(e) {
