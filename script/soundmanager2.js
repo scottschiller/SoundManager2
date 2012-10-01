@@ -1432,15 +1432,13 @@ function SoundManager(smURL, smID) {
 
     this.load = function(oOptions) {
 
-      var oS = null, _iO;
+      var oSound = null, instanceOptions;
 
       if (typeof oOptions !== 'undefined') {
         s._iO = _mixin(oOptions, s.options);
-        s.instanceOptions = s._iO;
       } else {
         oOptions = s.options;
         s._iO = oOptions;
-        s.instanceOptions = s._iO;
         if (_lastURL && _lastURL !== s.url) {
           _wDS('manURL');
           s._iO.url = s.url;
@@ -1454,20 +1452,23 @@ function SoundManager(smURL, smID) {
 
       s._iO.url = _parseURL(s._iO.url);
 
-      sm2._wD('SMSound.load(): ' + s._iO.url, 1);
+      // ensure we're in sync
+      s.instanceOptions = s._iO;
 
-      if (s._iO.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
+      // local shortcut
+      instanceOptions = s._iO;
+
+      sm2._wD('SMSound.load(): ' + instanceOptions.url, 1);
+
+      if (instanceOptions.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
         _wDS('onURL', 1);
         // if loaded and an onload() exists, fire immediately.
-        if (s.readyState === 3 && s._iO.onload) {
+        if (s.readyState === 3 && instanceOptions.onload) {
           // assume success based on truthy duration.
-          s._iO.onload.apply(s, [(!!s.duration)]);
+          instanceOptions.onload.apply(s, [(!!s.duration)]);
         }
         return s;
       }
-
-      // local shortcut
-      _iO = s._iO;
 
       // reset a few state properties
 
@@ -1478,11 +1479,11 @@ function SoundManager(smURL, smID) {
 
       // TODO: If switching from HTML5 -> flash (or vice versa), stop currently-playing audio.
 
-      if (_html5OK(_iO)) {
+      if (_html5OK(instanceOptions)) {
 
-        oS = s._setup_html5(_iO);
+        oSound = s._setup_html5(instanceOptions);
 
-        if (!oS._called_load) {
+        if (!oSound._called_load) {
 
           sm2._wD(_h5+'load: '+s.id);
 
@@ -1492,11 +1493,11 @@ function SoundManager(smURL, smID) {
 
           // if url provided directly to load(), assign it here.
 
-          if (s.url !== _iO.url) {
+          if (s.url !== instanceOptions.url) {
 
-            sm2._wD(_wDS('manURL') + ': ' + _iO.url);
+            sm2._wD(_wDS('manURL') + ': ' + instanceOptions.url);
 
-            s._a.src = _iO.url;
+            s._a.src = instanceOptions.url;
 
             // TODO: review / re-apply all relevant options (volume, loop, onposition etc.)
 
@@ -1513,9 +1514,9 @@ function SoundManager(smURL, smID) {
           // standard
           s._a.preload = 'auto';
 
-          oS._called_load = true;
+          oSound._called_load = true;
 
-          if (_iO.autoPlay) {
+          if (instanceOptions.autoPlay) {
             s.play();
           }
 
@@ -1529,13 +1530,13 @@ function SoundManager(smURL, smID) {
 
         try {
           s.isHTML5 = false;
-          s._iO = _policyFix(_loopFix(_iO));
+          s._iO = _policyFix(_loopFix(instanceOptions));
           // re-assign local shortcut
-          _iO = s._iO;
+          instanceOptions = s._iO;
           if (_fV === 8) {
-            _flash._load(s.id, _iO.url, _iO.stream, _iO.autoPlay, _iO.usePolicyFile);
+            _flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
           } else {
-            _flash._load(s.id, _iO.url, !!(_iO.stream), !!(_iO.autoPlay), _iO.loops||1, !!(_iO.autoLoad), _iO.usePolicyFile);
+            _flash._load(s.id, instanceOptions.url, !!(instanceOptions.stream), !!(instanceOptions.autoPlay), instanceOptions.loops||1, !!(instanceOptions.autoLoad), instanceOptions.usePolicyFile);
           }
         } catch(e) {
           _wDS('smError', 2);
@@ -1546,7 +1547,7 @@ function SoundManager(smURL, smID) {
       }
 
       // after all of this, ensure sound url is up to date.
-      s.url = _iO.url;
+      s.url = instanceOptions.url;
 
       return s;
 
@@ -1898,7 +1899,8 @@ function SoundManager(smURL, smID) {
 
     this.stop = function(bAll) {
 
-      var _iO = s._iO, _oP;
+      var instanceOptions = s._iO,
+          originalPosition;
 
       if (s.playState === 1) {
 
@@ -1914,8 +1916,8 @@ function SoundManager(smURL, smID) {
         _detachOnPosition();
 
         // and "to" position, if set
-        if (_iO.to) {
-          s.clearOnPosition(_iO.to);
+        if (instanceOptions.to) {
+          s.clearOnPosition(instanceOptions.to);
         }
 
         if (!s.isHTML5) {
@@ -1923,7 +1925,7 @@ function SoundManager(smURL, smID) {
           _flash._stop(s.id, bAll);
 
           // hack for netStream: just unload
-          if (_iO.serverURL) {
+          if (instanceOptions.serverURL) {
             s.unload();
           }
 
@@ -1931,13 +1933,13 @@ function SoundManager(smURL, smID) {
 
           if (s._a) {
 
-            _oP = s.position;
+            originalPosition = s.position;
 
             // act like Flash, though
             s.setPosition(0);
 
             // hack: reflect old position for onstop() (also like Flash)
-            s.position = _oP;
+            s.position = originalPosition;
 
             // html5 has no stop()
             // NOTE: pausing means iOS requires interaction to resume.
@@ -1957,8 +1959,8 @@ function SoundManager(smURL, smID) {
         s.instanceCount = 0;
         s._iO = {};
 
-        if (_iO.onstop) {
-          _iO.onstop.apply(s);
+        if (instanceOptions.onstop) {
+          instanceOptions.onstop.apply(s);
         }
 
       }
@@ -2123,7 +2125,7 @@ function SoundManager(smURL, smID) {
 
     this.resume = function() {
 
-      var _iO = s._iO;
+      var instanceOptions = s._iO;
 
       if (!s.paused) {
         return s;
@@ -2134,22 +2136,22 @@ function SoundManager(smURL, smID) {
       s.playState = 1;
 
       if (!s.isHTML5) {
-        if (_iO.isMovieStar && !_iO.serverURL) {
+        if (instanceOptions.isMovieStar && !instanceOptions.serverURL) {
           // Bizarre Webkit bug (Chrome reported via 8tracks.com dudes): AAC content paused for 30+ seconds(?) will not resume without a reposition.
           s.setPosition(s.position);
         }
         // flash method is toggle-based (pause/resume)
-        _flash._pause(s.id, _iO.multiShot);
+        _flash._pause(s.id, instanceOptions.multiShot);
       } else {
         s._setup_html5().play();
         _start_html5_timer();
       }
 
-      if (!_onplay_called && _iO.onplay) {
-        _iO.onplay.apply(s);
+      if (!_onplay_called && instanceOptions.onplay) {
+        instanceOptions.onplay.apply(s);
         _onplay_called = true;
-      } else if (_iO.onresume) {
-        _iO.onresume.apply(s);
+      } else if (instanceOptions.onresume) {
+        instanceOptions.onresume.apply(s);
       }
 
       return s;
@@ -2422,9 +2424,9 @@ function SoundManager(smURL, smID) {
 
     _applyFromTo = function() {
 
-      var _iO = s._iO,
-          f = _iO.from,
-          t = _iO.to,
+      var instanceOptions = s._iO,
+          f = instanceOptions.from,
+          t = instanceOptions.to,
           start, end;
 
       end = function() {
@@ -2454,17 +2456,17 @@ function SoundManager(smURL, smID) {
       if (f !== null && !isNaN(f)) {
 
         // apply to instance options, guaranteeing correct start position.
-        _iO.position = f;
+        instanceOptions.position = f;
 
         // multiShot timing can't be tracked, so prevent that.
-        _iO.multiShot = false;
+        instanceOptions.multiShot = false;
 
         start();
 
       }
 
       // return updated instanceOptions including starting position
-      return _iO;
+      return instanceOptions;
 
     };
 
@@ -2643,9 +2645,9 @@ function SoundManager(smURL, smID) {
 
     this._get_html5_duration = function() {
 
-      var _iO = s._iO,
+      var instanceOptions = s._iO,
           // if audio object exists, use its duration - else, instance option duration (if provided - it's a hack, really, and should be retired) OR null
-          d = (s._a && s._a.duration ? s._a.duration*1000 : (_iO && _iO.duration ? _iO.duration : null)),
+          d = (s._a && s._a.duration ? s._a.duration*1000 : (instanceOptions && instanceOptions.duration ? instanceOptions.duration : null)),
           result = (d && !isNaN(d) && d !== Infinity ? d : null);
 
       return result;
@@ -2671,9 +2673,9 @@ function SoundManager(smURL, smID) {
 
     this._setup_html5 = function(oOptions) {
 
-      var _iO = _mixin(s._iO, oOptions), d = decodeURI,
+      var instanceOptions = _mixin(s._iO, oOptions), d = decodeURI,
           _a = _useGlobalHTML5Audio ? sm2._global_a : s._a,
-          _dURL = d(_iO.url),
+          _dURL = d(instanceOptions.url),
           sameURL,
           result;
 
@@ -2721,7 +2723,7 @@ function SoundManager(smURL, smID) {
 
           if (result) {
 
-            s._apply_loop(_a, _iO.loops);
+            s._apply_loop(_a, instanceOptions.loops);
 
             return result;
 
@@ -2737,13 +2739,13 @@ function SoundManager(smURL, smID) {
 
           // assign new HTML5 URL
 
-          _a.src = _iO.url;
+          _a.src = instanceOptions.url;
 
-          s.url = _iO.url;
+          s.url = instanceOptions.url;
 
-          _lastURL = _iO.url;
+          _lastURL = instanceOptions.url;
 
-          _lastGlobalHTML5URL = _iO.url;
+          _lastGlobalHTML5URL = instanceOptions.url;
 
           _a._called_load = false;
 
@@ -2753,9 +2755,9 @@ function SoundManager(smURL, smID) {
 
         _wDS('h5a');
 
-        if (_iO.autoLoad || _iO.autoPlay) {
+        if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
-          s._a = new Audio(_iO.url);
+          s._a = new Audio(instanceOptions.url);
 
         } else {
 
@@ -2787,9 +2789,9 @@ function SoundManager(smURL, smID) {
 
       _add_html5_events();
 
-      s._apply_loop(_a, _iO.loops);
+      s._apply_loop(_a, instanceOptions.loops);
 
-      if (_iO.autoLoad || _iO.autoPlay) {
+      if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
         s.load();
 
@@ -2991,18 +2993,18 @@ function SoundManager(smURL, smID) {
 
     this._whileloading = function(nBytesLoaded, nBytesTotal, nDuration, nBufferLength) {
 
-      var _iO = s._iO;
+      var instanceOptions = s._iO;
 
       s.bytesLoaded = nBytesLoaded;
       s.bytesTotal = nBytesTotal;
       s.duration = Math.floor(nDuration);
       s.bufferLength = nBufferLength;
 
-      if (!s.isHTML5 && !_iO.isMovieStar) {
+      if (!s.isHTML5 && !instanceOptions.isMovieStar) {
 
-        if (_iO.duration) {
+        if (instanceOptions.duration) {
           // use duration from options, if specified and larger. nobody should be specifying duration in options, actually, and it should be retired.
-          s.durationEstimate = (s.duration > _iO.duration) ? s.duration : _iO.duration;
+          s.durationEstimate = (s.duration > instanceOptions.duration) ? s.duration : instanceOptions.duration;
         } else {
           s.durationEstimate = parseInt((s.bytesTotal / s.bytesLoaded) * s.duration, 10);
         }
@@ -3022,15 +3024,15 @@ function SoundManager(smURL, smID) {
       }
 
       // allow whileloading to fire even if "load" fired under HTML5, due to HTTP range/partials
-      if ((s.readyState !== 3 || s.isHTML5) && _iO.whileloading) {
-        _iO.whileloading.apply(s);
+      if ((s.readyState !== 3 || s.isHTML5) && instanceOptions.whileloading) {
+        instanceOptions.whileloading.apply(s);
       }
 
     };
 
     this._whileplaying = function(nPosition, oPeakData, oWaveformDataLeft, oWaveformDataRight, oEQData) {
 
-      var _iO = s._iO,
+      var instanceOptions = s._iO,
           eqLeft;
 
       if (isNaN(nPosition) || nPosition === null) {
@@ -3045,21 +3047,21 @@ function SoundManager(smURL, smID) {
 
       if (!s.isHTML5 && _fV > 8) {
 
-        if (_iO.usePeakData && typeof oPeakData !== 'undefined' && oPeakData) {
+        if (instanceOptions.usePeakData && typeof oPeakData !== 'undefined' && oPeakData) {
           s.peakData = {
             left: oPeakData.leftPeak,
             right: oPeakData.rightPeak
           };
         }
 
-        if (_iO.useWaveformData && typeof oWaveformDataLeft !== 'undefined' && oWaveformDataLeft) {
+        if (instanceOptions.useWaveformData && typeof oWaveformDataLeft !== 'undefined' && oWaveformDataLeft) {
           s.waveformData = {
             left: oWaveformDataLeft.split(','),
             right: oWaveformDataRight.split(',')
           };
         }
 
-        if (_iO.useEQData) {
+        if (instanceOptions.useEQData) {
           if (typeof oEQData !== 'undefined' && oEQData && oEQData.leftEQ) {
             eqLeft = oEQData.leftEQ.split(',');
             s.eqData = eqLeft;
@@ -3079,9 +3081,9 @@ function SoundManager(smURL, smID) {
           s._onbufferchange(0);
         }
 
-        if (_iO.whileplaying) {
+        if (instanceOptions.whileplaying) {
           // flash may call after actual finish
-          _iO.whileplaying.apply(s);
+          instanceOptions.whileplaying.apply(s);
         }
 
       }
@@ -4504,6 +4506,8 @@ function SoundManager(smURL, smID) {
         // oh well
       }
       hasPlugin = (!!obj);
+      // cleanup, because it is ActiveX after all
+      obj = null;
     }
 
     _hasFlash = hasPlugin;
