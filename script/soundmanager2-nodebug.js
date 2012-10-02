@@ -128,7 +128,7 @@ function SoundManager(smURL, smID) {
   };
   this.hasHTML5 = (function() {
     try {
-      return (typeof Audio !== 'undefined' && typeof (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== 'undefined');
+      return (typeof Audio !== 'undefined' && typeof (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== 'undefined');
     } catch(e) {
       return false;
     }
@@ -140,12 +140,12 @@ function SoundManager(smURL, smID) {
   this.html5Only = false;
   this.ignoreFlash = false;
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _setProperties, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
+  sm2 = this, globalHTML5Audio = null, flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _setProperties, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
   _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _lastGlobalHTML5URL, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
-  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)),
+  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), isOpera = (_ua.match(/opera/i)),
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)),
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
   _emptyURL = 'about:blank',
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _http = (!_overHTTP ? 'http:/'+'/' : ''),
@@ -229,9 +229,9 @@ function SoundManager(smURL, smID) {
       options = _policyFix(options, _cs);
       oSound = make();
       if (_fV === 8) {
-        _flash._createSound(options.id, options.loops||1, options.usePolicyFile);
+        flash._createSound(options.id, options.loops||1, options.usePolicyFile);
       } else {
-        _flash._createSound(options.id, options.url, options.usePeakData, options.useWaveformData, options.useEQData, options.isMovieStar, (options.isMovieStar?options.bufferTime:false), options.loops||1, options.serverURL, options.duration||null, options.autoPlay, true, options.autoLoad, options.usePolicyFile);
+        flash._createSound(options.id, options.url, options.usePeakData, options.useWaveformData, options.useEQData, options.isMovieStar, (options.isMovieStar?options.bufferTime:false), options.loops||1, options.serverURL, options.duration||null, options.autoPlay, true, options.autoLoad, options.usePolicyFile);
         if (!options.serverURL) {
           oSound.connected = true;
           if (options.onconnect) {
@@ -427,8 +427,8 @@ function SoundManager(smURL, smID) {
   };
   this.getMemoryUse = function() {
     var ram = 0;
-    if (_flash && _fV !== 8) {
-      ram = parseInt(_flash._getMemoryUse(), 10);
+    if (flash && _fV !== 8) {
+      ram = parseInt(flash._getMemoryUse(), 10);
     }
     return ram;
   };
@@ -524,12 +524,12 @@ function SoundManager(smURL, smID) {
     for (i = sm2.soundIDs.length-1; i >= 0; i--) {
       sm2.sounds[sm2.soundIDs[i]].destruct();
     }
-    if (_flash) {
+    if (flash) {
       try {
         if (_isIE) {
-          _oRemovedHTML = _flash.innerHTML;
+          _oRemovedHTML = flash.innerHTML;
         }
-        _oRemoved = _flash.parentNode.removeChild(_flash);
+        _oRemoved = flash.parentNode.removeChild(flash);
       } catch(e) {
       }
     }
@@ -537,7 +537,7 @@ function SoundManager(smURL, smID) {
     sm2.enabled = _didDCLoaded = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = sm2.swfLoaded = false;
     sm2.soundIDs = [];
     sm2.sounds = {};
-    _flash = null;
+    flash = null;
     for (i in _on_queue) {
       if (_on_queue.hasOwnProperty(i)) {
         for (j = _on_queue[i].length-1; j >= 0; j--) {
@@ -548,7 +548,7 @@ function SoundManager(smURL, smID) {
     _win.setTimeout(sm2.beginDelayedInit, 20);
   };
   this.getMoviePercent = function() {
-    return (_flash && typeof _flash.PercentLoaded !== 'undefined' ? _flash.PercentLoaded() : null);
+    return (flash && typeof flash.PercentLoaded !== 'undefined' ? flash.PercentLoaded() : null);
   };
   this.beginDelayedInit = function() {
     _windowLoaded = true;
@@ -636,9 +636,9 @@ function SoundManager(smURL, smID) {
           s._iO = _policyFix(_loopFix(instanceOptions));
           instanceOptions = s._iO;
           if (_fV === 8) {
-            _flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
+            flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
           } else {
-            _flash._load(s.id, instanceOptions.url, !!(instanceOptions.stream), !!(instanceOptions.autoPlay), instanceOptions.loops||1, !!(instanceOptions.autoLoad), instanceOptions.usePolicyFile);
+            flash._load(s.id, instanceOptions.url, !!(instanceOptions.stream), !!(instanceOptions.autoPlay), instanceOptions.loops||1, !!(instanceOptions.autoLoad), instanceOptions.usePolicyFile);
           }
         } catch(e) {
           _catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
@@ -651,9 +651,9 @@ function SoundManager(smURL, smID) {
       if (s.readyState !== 0) {
         if (!s.isHTML5) {
           if (_fV === 8) {
-            _flash._unload(s.id, _emptyURL);
+            flash._unload(s.id, _emptyURL);
           } else {
-            _flash._unload(s.id);
+            flash._unload(s.id);
           }
         } else {
           _stop_html5_timer();
@@ -670,7 +670,7 @@ function SoundManager(smURL, smID) {
     this.destruct = function(_bFromSM) {
       if (!s.isHTML5) {
         s._iO.onfailure = null;
-        _flash._destroySound(s.id);
+        flash._destroySound(s.id);
       } else {
         _stop_html5_timer();
         if (s._a) {
@@ -789,7 +789,7 @@ function SoundManager(smURL, smID) {
         s.setVolume(s._iO.volume, true);
         s.setPan(s._iO.pan, true);
         if (!s.isHTML5) {
-          startOK = _flash._start(s.id, s._iO.loops || 1, (_fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
+          startOK = flash._start(s.id, s._iO.loops || 1, (_fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
           if (_fV === 9 && !startOK) {
             if (s._iO.onplayerror) {
               s._iO.onplayerror.apply(s);
@@ -820,7 +820,7 @@ function SoundManager(smURL, smID) {
           s.clearOnPosition(instanceOptions.to);
         }
         if (!s.isHTML5) {
-          _flash._stop(s.id, bAll);
+          flash._stop(s.id, bAll);
           if (instanceOptions.serverURL) {
             s.unload();
           }
@@ -846,7 +846,7 @@ function SoundManager(smURL, smID) {
     this.setAutoPlay = function(autoPlay) {
       s._iO.autoPlay = autoPlay;
       if (!s.isHTML5) {
-        _flash._setAutoPlay(s.id, autoPlay);
+        flash._setAutoPlay(s.id, autoPlay);
         if (autoPlay) {
           if (!s.instanceCount && s.readyState === 1) {
             s.instanceCount++;
@@ -872,7 +872,7 @@ function SoundManager(smURL, smID) {
       if (!s.isHTML5) {
         position = (_fV === 9 ? s.position : position1K);
         if (s.readyState && s.readyState !== 2) {
-          _flash._setPosition(s.id, position, (s.paused || !s.playState), s._iO.multiShot);
+          flash._setPosition(s.id, position, (s.paused || !s.playState), s._iO.multiShot);
         }
       } else if (s._a) {
         if (s._html5_canplay) {
@@ -902,7 +902,7 @@ function SoundManager(smURL, smID) {
       s.paused = true;
       if (!s.isHTML5) {
         if (_bCallFlash || typeof _bCallFlash === 'undefined') {
-          _flash._pause(s.id, s._iO.multiShot);
+          flash._pause(s.id, s._iO.multiShot);
         }
       } else {
         s._setup_html5().pause();
@@ -924,7 +924,7 @@ function SoundManager(smURL, smID) {
         if (instanceOptions.isMovieStar && !instanceOptions.serverURL) {
           s.setPosition(s.position);
         }
-        _flash._pause(s.id, instanceOptions.multiShot);
+        flash._pause(s.id, instanceOptions.multiShot);
       } else {
         s._setup_html5().play();
         _start_html5_timer();
@@ -959,7 +959,7 @@ function SoundManager(smURL, smID) {
         bInstanceOnly = false;
       }
       if (!s.isHTML5) {
-        _flash._setPan(s.id, nPan);
+        flash._setPan(s.id, nPan);
       }
       s._iO.pan = nPan;
       if (!bInstanceOnly) {
@@ -976,7 +976,7 @@ function SoundManager(smURL, smID) {
         _bInstanceOnly = false;
       }
       if (!s.isHTML5) {
-        _flash._setVolume(s.id, (sm2.muted && !s.muted) || s.muted?0:nVol);
+        flash._setVolume(s.id, (sm2.muted && !s.muted) || s.muted?0:nVol);
       } else if (s._a) {
         s._a.volume = Math.max(0, Math.min(1, nVol/100));
       }
@@ -990,7 +990,7 @@ function SoundManager(smURL, smID) {
     this.mute = function() {
       s.muted = true;
       if (!s.isHTML5) {
-        _flash._setVolume(s.id, 0);
+        flash._setVolume(s.id, 0);
       } else if (s._a) {
         s._a.muted = true;
       }
@@ -1000,7 +1000,7 @@ function SoundManager(smURL, smID) {
       s.muted = false;
       var hasIO = (typeof s._iO.volume !== 'undefined');
       if (!s.isHTML5) {
-        _flash._setVolume(s.id, hasIO?s._iO.volume:s.options.volume);
+        flash._setVolume(s.id, hasIO?s._iO.volume:s.options.volume);
       } else if (s._a) {
         s._a.muted = false;
       }
@@ -1229,7 +1229,7 @@ function SoundManager(smURL, smID) {
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
           s._a = new Audio(instanceOptions.url);
         } else {
-          s._a = (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
+          s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
         }
         _a = s._a;
         _a._called_load = false;
@@ -1738,7 +1738,7 @@ function SoundManager(smURL, smID) {
     if (!sm2.useHTML5Audio || !sm2.hasHTML5) {
       return false;
     }
-    var a = (typeof Audio !== 'undefined' ? (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
+    var a = (typeof Audio !== 'undefined' ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
     function _cp(m) {
       var canPlay, i, j,
@@ -1752,7 +1752,7 @@ function SoundManager(smURL, smID) {
           if (sm2.html5[m[i]] || a.canPlayType(m[i]).match(sm2.html5Test)) {
             isOK = true;
             sm2.html5[m[i]] = true;
-            sm2.flash[m[i]] = !!(m[i].match(_flashMIME));
+            sm2.flash[m[i]] = !!(m[i].match(flashMIME));
           }
         }
         result = isOK;
@@ -1768,7 +1768,7 @@ function SoundManager(smURL, smID) {
         lookup = 'audio/' + item;
         support[item] = _cp(aF[item].type);
         support[lookup] = support[item];
-        if (item.match(_flashMIME)) {
+        if (item.match(flashMIME)) {
           sm2.flash[item] = true;
           sm2.flash[lookup] = true;
         } else {
@@ -1868,10 +1868,10 @@ function SoundManager(smURL, smID) {
     sm2.features.peakData = sm2.features.waveformData = sm2.features.eqData = (_fV > 8);
   };
   _setPolling = function(bPolling, bHighPerformance) {
-    if (!_flash) {
+    if (!flash) {
       return false;
     }
-    _flash._setPolling(bPolling, bHighPerformance);
+    flash._setPolling(bPolling, bHighPerformance);
   };
   _initDebug = function() {
     if (sm2.debugURLParam.test(_wl)) {
@@ -1892,7 +1892,7 @@ function SoundManager(smURL, smID) {
     }
     return css.join(' ');
   };
-  _flashBlockHandler = function() {
+  flashBlockHandler = function() {
     var name = _str('fbHandler'),
         p = sm2.getMoviePercent(),
         css = _swfCSS,
@@ -1967,7 +1967,7 @@ function SoundManager(smURL, smID) {
   _initUserOnload = function() {
     _win.setTimeout(function() {
       if (sm2.useFlashBlock) {
-        _flashBlockHandler();
+        flashBlockHandler();
       }
       _processOnEvents();
       if (typeof sm2.onload === 'function') {
@@ -2284,14 +2284,14 @@ function SoundManager(smURL, smID) {
       _createMovie();
       return false;
     }
-    if (_flash) {
+    if (flash) {
       return false;
     }
     if (!sm2.url) {
        return false;
     }
-    _flash = sm2.getMovie(sm2.id);
-    if (!_flash) {
+    flash = sm2.getMovie(sm2.id);
+    if (!flash) {
       if (!_oRemoved) {
         _createMovie(sm2.id, sm2.url);
       } else {
@@ -2303,7 +2303,7 @@ function SoundManager(smURL, smID) {
         _oRemoved = null;
         _didAppend = true;
       }
-      _flash = sm2.getMovie(sm2.id);
+      flash = sm2.getMovie(sm2.id);
     }
     if (typeof sm2.oninitmovie === 'function') {
       setTimeout(sm2.oninitmovie, 1);
@@ -2344,7 +2344,7 @@ function SoundManager(smURL, smID) {
         if (p === null) {
           if (sm2.useFlashBlock || sm2.flashLoadTimeout === 0) {
             if (sm2.useFlashBlock) {
-              _flashBlockHandler();
+              flashBlockHandler();
             }
           } else {
             _failSafely(true);
@@ -2441,10 +2441,10 @@ function SoundManager(smURL, smID) {
     }
     _initMovie();
     try {
-      _flash._externalInterfaceTest(false);
+      flash._externalInterfaceTest(false);
       _setPolling(true, (sm2.flashPollingInterval || (sm2.useHighPerformance ? 10 : 50)));
       if (!sm2.debugMode) {
-        _flash._disableDebug();
+        flash._disableDebug();
       }
       sm2.enabled = true;
       if (!sm2.html5Only) {

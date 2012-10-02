@@ -241,7 +241,7 @@ function SoundManager(smURL, smID) {
   this.hasHTML5 = (function() {
     try {
       // new Audio(null) for stupid Opera 9.64 case, which throws not_enough_arguments exception otherwise.
-      return (typeof Audio !== 'undefined' && typeof (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== 'undefined');
+      return (typeof Audio !== 'undefined' && typeof (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== 'undefined');
     } catch(e) {
       return false;
     }
@@ -272,12 +272,12 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, _flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _setProperties, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, _flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
+  sm2 = this, globalHTML5Audio = null, flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _setProperties, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
   _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _lastGlobalHTML5URL, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
-  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), _isOpera = (_ua.match(/opera/i)), 
+  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), isOpera = (_ua.match(/opera/i)), 
   _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
   _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, _flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
+  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
   _emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
   _http = (!_overHTTP ? 'http:/'+'/' : ''),
@@ -460,9 +460,9 @@ function SoundManager(smURL, smID) {
       oSound = make();
 
       if (_fV === 8) {
-        _flash._createSound(options.id, options.loops||1, options.usePolicyFile);
+        flash._createSound(options.id, options.loops||1, options.usePolicyFile);
       } else {
-        _flash._createSound(options.id, options.url, options.usePeakData, options.useWaveformData, options.useEQData, options.isMovieStar, (options.isMovieStar?options.bufferTime:false), options.loops||1, options.serverURL, options.duration||null, options.autoPlay, true, options.autoLoad, options.usePolicyFile);
+        flash._createSound(options.id, options.url, options.usePeakData, options.useWaveformData, options.useEQData, options.isMovieStar, (options.isMovieStar?options.bufferTime:false), options.loops||1, options.serverURL, options.duration||null, options.autoPlay, true, options.autoLoad, options.usePolicyFile);
         if (!options.serverURL) {
           // We are connected immediately
           oSound.connected = true;
@@ -915,8 +915,8 @@ function SoundManager(smURL, smID) {
     // flash-only
     var ram = 0;
 
-    if (_flash && _fV !== 8) {
-      ram = parseInt(_flash._getMemoryUse(), 10);
+    if (flash && _fV !== 8) {
+      ram = parseInt(flash._getMemoryUse(), 10);
     }
 
     return ram;
@@ -1248,12 +1248,12 @@ function SoundManager(smURL, smID) {
 
     // trash ze flash
 
-    if (_flash) {
+    if (flash) {
       try {
         if (_isIE) {
-          _oRemovedHTML = _flash.innerHTML;
+          _oRemovedHTML = flash.innerHTML;
         }
-        _oRemoved = _flash.parentNode.removeChild(_flash);
+        _oRemoved = flash.parentNode.removeChild(flash);
         sm2._wD('Flash movie removed.');
       } catch(e) {
         // uh-oh.
@@ -1267,7 +1267,7 @@ function SoundManager(smURL, smID) {
     sm2.enabled = _didDCLoaded = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = sm2.swfLoaded = false;
     sm2.soundIDs = [];
     sm2.sounds = {};
-    _flash = null;
+    flash = null;
 
     for (i in _on_queue) {
       if (_on_queue.hasOwnProperty(i)) {
@@ -1291,7 +1291,7 @@ function SoundManager(smURL, smID) {
   this.getMoviePercent = function() {
 
     // interesting note: flash/ExternalInterface bridge methods are not typeof "function" nor instanceof Function, but are still valid.
-    return (_flash && typeof _flash.PercentLoaded !== 'undefined' ? _flash.PercentLoaded() : null);
+    return (flash && typeof flash.PercentLoaded !== 'undefined' ? flash.PercentLoaded() : null);
 
   };
 
@@ -1532,9 +1532,9 @@ function SoundManager(smURL, smID) {
           // re-assign local shortcut
           instanceOptions = s._iO;
           if (_fV === 8) {
-            _flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
+            flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
           } else {
-            _flash._load(s.id, instanceOptions.url, !!(instanceOptions.stream), !!(instanceOptions.autoPlay), instanceOptions.loops||1, !!(instanceOptions.autoLoad), instanceOptions.usePolicyFile);
+            flash._load(s.id, instanceOptions.url, !!(instanceOptions.stream), !!(instanceOptions.autoPlay), instanceOptions.loops||1, !!(instanceOptions.autoLoad), instanceOptions.usePolicyFile);
           }
         } catch(e) {
           _wDS('smError', 2);
@@ -1570,9 +1570,9 @@ function SoundManager(smURL, smID) {
         if (!s.isHTML5) {
 
           if (_fV === 8) {
-            _flash._unload(s.id, _emptyURL);
+            flash._unload(s.id, _emptyURL);
           } else {
-            _flash._unload(s.id);
+            flash._unload(s.id);
           }
 
         } else {
@@ -1613,7 +1613,7 @@ function SoundManager(smURL, smID) {
         // kill sound within Flash
         // Disable the onfailure handler
         s._iO.onfailure = null;
-        _flash._destroySound(s.id);
+        flash._destroySound(s.id);
 
       } else {
 
@@ -1854,7 +1854,7 @@ function SoundManager(smURL, smID) {
 
         if (!s.isHTML5) {
 
-          startOK = _flash._start(s.id, s._iO.loops || 1, (_fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
+          startOK = flash._start(s.id, s._iO.loops || 1, (_fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
 
           if (_fV === 9 && !startOK) {
             // edge case: no sound hardware, or 32-channel flash ceiling hit.
@@ -1920,7 +1920,7 @@ function SoundManager(smURL, smID) {
 
         if (!s.isHTML5) {
 
-          _flash._stop(s.id, bAll);
+          flash._stop(s.id, bAll);
 
           // hack for netStream: just unload
           if (instanceOptions.serverURL) {
@@ -1979,7 +1979,7 @@ function SoundManager(smURL, smID) {
       s._iO.autoPlay = autoPlay;
 
       if (!s.isHTML5) {
-        _flash._setAutoPlay(s.id, autoPlay);
+        flash._setAutoPlay(s.id, autoPlay);
         if (autoPlay) {
           // only increment the instanceCount if the sound isn't loaded (TODO: verify RTMP)
           if (!s.instanceCount && s.readyState === 1) {
@@ -2033,7 +2033,7 @@ function SoundManager(smURL, smID) {
         position = (_fV === 9 ? s.position : position1K);
         if (s.readyState && s.readyState !== 2) {
           // if paused or not playing, will not resume (by playing)
-          _flash._setPosition(s.id, position, (s.paused || !s.playState), s._iO.multiShot);
+          flash._setPosition(s.id, position, (s.paused || !s.playState), s._iO.multiShot);
         }
 
       } else if (s._a) {
@@ -2092,7 +2092,7 @@ function SoundManager(smURL, smID) {
 
       if (!s.isHTML5) {
         if (_bCallFlash || typeof _bCallFlash === 'undefined') {
-          _flash._pause(s.id, s._iO.multiShot);
+          flash._pause(s.id, s._iO.multiShot);
         }
       } else {
         s._setup_html5().pause();
@@ -2139,7 +2139,7 @@ function SoundManager(smURL, smID) {
           s.setPosition(s.position);
         }
         // flash method is toggle-based (pause/resume)
-        _flash._pause(s.id, instanceOptions.multiShot);
+        flash._pause(s.id, instanceOptions.multiShot);
       } else {
         s._setup_html5().play();
         _start_html5_timer();
@@ -2201,7 +2201,7 @@ function SoundManager(smURL, smID) {
       }
 
       if (!s.isHTML5) {
-        _flash._setPan(s.id, nPan);
+        flash._setPan(s.id, nPan);
       } // else { no HTML5 pan? }
 
       s._iO.pan = nPan;
@@ -2240,7 +2240,7 @@ function SoundManager(smURL, smID) {
       }
 
       if (!s.isHTML5) {
-        _flash._setVolume(s.id, (sm2.muted && !s.muted) || s.muted?0:nVol);
+        flash._setVolume(s.id, (sm2.muted && !s.muted) || s.muted?0:nVol);
       } else if (s._a) {
         // valid range: 0-1
         s._a.volume = Math.max(0, Math.min(1, nVol/100));
@@ -2268,7 +2268,7 @@ function SoundManager(smURL, smID) {
       s.muted = true;
 
       if (!s.isHTML5) {
-        _flash._setVolume(s.id, 0);
+        flash._setVolume(s.id, 0);
       } else if (s._a) {
         s._a.muted = true;
       }
@@ -2289,7 +2289,7 @@ function SoundManager(smURL, smID) {
       var hasIO = (typeof s._iO.volume !== 'undefined');
 
       if (!s.isHTML5) {
-        _flash._setVolume(s.id, hasIO?s._iO.volume:s.options.volume);
+        flash._setVolume(s.id, hasIO?s._iO.volume:s.options.volume);
       } else if (s._a) {
         s._a.muted = false;
       }
@@ -2760,7 +2760,7 @@ function SoundManager(smURL, smID) {
         } else {
 
           // null for stupid Opera 9.64 case
-          s._a = (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
+          s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
 
         }
 
@@ -3868,7 +3868,7 @@ function SoundManager(smURL, smID) {
     }
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
-    var a = (typeof Audio !== 'undefined' ? (_isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
+    var a = (typeof Audio !== 'undefined' ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
 
     function _cp(m) {
@@ -3888,7 +3888,7 @@ function SoundManager(smURL, smID) {
             isOK = true;
             sm2.html5[m[i]] = true;
             // note flash support, too
-            sm2.flash[m[i]] = !!(m[i].match(_flashMIME));
+            sm2.flash[m[i]] = !!(m[i].match(flashMIME));
           }
         }
         result = isOK;
@@ -3917,7 +3917,7 @@ function SoundManager(smURL, smID) {
         support[lookup] = support[item];
 
         // assign flash
-        if (item.match(_flashMIME)) {
+        if (item.match(flashMIME)) {
 
           sm2.flash[item] = true;
           sm2.flash[lookup] = true;
@@ -4179,11 +4179,11 @@ function SoundManager(smURL, smID) {
 
   _setPolling = function(bPolling, bHighPerformance) {
 
-    if (!_flash) {
+    if (!flash) {
       return false;
     }
 
-    _flash._setPolling(bPolling, bHighPerformance);
+    flash._setPolling(bPolling, bHighPerformance);
 
   };
 
@@ -4334,7 +4334,7 @@ function SoundManager(smURL, smID) {
 
   };
 
-  _flashBlockHandler = function() {
+  flashBlockHandler = function() {
 
     // *possible* flash block situation.
 
@@ -4458,7 +4458,7 @@ function SoundManager(smURL, smID) {
     _win.setTimeout(function() {
 
       if (sm2.useFlashBlock) {
-        _flashBlockHandler();
+        flashBlockHandler();
       }
 
       _processOnEvents();
@@ -5053,7 +5053,7 @@ function SoundManager(smURL, smID) {
     }
 
     // attempt to get, or create, movie (may already exist)
-    if (_flash) {
+    if (flash) {
       return false;
     }
 
@@ -5071,9 +5071,9 @@ function SoundManager(smURL, smID) {
     }
 
     // inline markup case
-    _flash = sm2.getMovie(sm2.id);
+    flash = sm2.getMovie(sm2.id);
 
-    if (!_flash) {
+    if (!flash) {
       if (!_oRemoved) {
         // try to create
         _createMovie(sm2.id, sm2.url);
@@ -5087,11 +5087,11 @@ function SoundManager(smURL, smID) {
         _oRemoved = null;
         _didAppend = true;
       }
-      _flash = sm2.getMovie(sm2.id);
+      flash = sm2.getMovie(sm2.id);
     }
 
     // <d>
-    if (_flash) {
+    if (flash) {
       _wDS('waitEI');
     }
     // </d>
@@ -5177,7 +5177,7 @@ function SoundManager(smURL, smID) {
           // SWF failed. Maybe blocked.
           if (sm2.useFlashBlock || sm2.flashLoadTimeout === 0) {
             if (sm2.useFlashBlock) {
-              _flashBlockHandler();
+              flashBlockHandler();
             }
             _wDS('waitForever');
           } else {
@@ -5369,7 +5369,7 @@ function SoundManager(smURL, smID) {
       _wDS('flashJS');
 
       // attempt to talk to Flash
-      _flash._externalInterfaceTest(false);
+      flash._externalInterfaceTest(false);
 
       // apply user-specified polling interval, OR, if "high performance" set, faster vs. default polling
       // (determines frequency of whileloading/whileplaying callbacks, effectively driving UI framerates)
@@ -5377,7 +5377,7 @@ function SoundManager(smURL, smID) {
 
       if (!sm2.debugMode) {
         // stop the SWF from making debug output calls to JS
-        _flash._disableDebug();
+        flash._disableDebug();
       }
 
       sm2.enabled = true;
