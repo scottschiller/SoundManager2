@@ -140,21 +140,21 @@ function SoundManager(smURL, smID) {
   this.html5Only = false;
   this.ignoreFlash = false;
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, _sm = 'soundManager', _smc = _sm+'::', _h5 = 'HTML5::', _id, _ua = navigator.userAgent, _win = window, _wl = _win.location.href.toString(), _doc = document, _doNothing, _setProperties, _init, _fV, _on_queue = [], _debugOpen = true, _debugTS, _didAppend = false, _appendSuccess = false, _didInit = false, _disabled = false, _windowLoaded = false, _wDS, _wdCount = 0, _initComplete, _mixin, _assign, _extraOptions, _addOnEvent, _processOnEvents, _initUserOnload, _delayWaitForEI, _waitForEI, _setVersionInfo, _handleFocus, _strings, _initMovie, _domContentLoaded, _winOnLoad, _didDCLoaded, _getDocument, _createMovie, _catchError, _setPolling, _initDebug, _debugLevels = ['log', 'info', 'warn', 'error'], _defaultFlashVersion = 8, _disableObject, _failSafely, _normalizeMovieURL, _oRemoved = null, _oRemovedHTML = null, _str, flashBlockHandler, _getSWFCSS, _swfCSS, _toggleDebug, _loopFix, _policyFix, _complain, _idCheck, _waitingForEI = false, _initPending = false, _startTimer, _stopTimer, _timerExecute, _h5TimerCount = 0, _h5IntervalTimer = null, _parseURL,
-  _needsFlash = null, _featureCheck, _html5OK, _html5CanPlay, _html5Ext, _html5Unload, _domContentLoadedIE, _testHTML5, _event, _slice = Array.prototype.slice, _useGlobalHTML5Audio = false, _lastGlobalHTML5URL, _hasFlash, _detectFlash, _badSafariFix, _html5_events, _showSupport,
-  _is_iDevice = _ua.match(/(ipad|iphone|ipod)/i), _isIE = _ua.match(/msie/i), _isWebkit = _ua.match(/webkit/i), _isSafari = (_ua.match(/safari/i) && !_ua.match(/chrome/i)), isOpera = (_ua.match(/opera/i)),
-  _mobileHTML5 = (_ua.match(/(mobile|pre\/|xoom)/i) || _is_iDevice),
-  _isBadSafari = (!_wl.match(/usehtml5audio/i) && !_wl.match(/sm2\-ignorebadua/i) && _isSafari && !_ua.match(/silk/i) && _ua.match(/OS X 10_6_([3-7])/i)),
-  _hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), _isFocused = (typeof _doc.hasFocus !== 'undefined'?_doc.hasFocus():null), _tryInitOnFocus = (_isSafari && (typeof _doc.hasFocus === 'undefined' || !_doc.hasFocus())), _okToDisable = !_tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
-  _emptyURL = 'about:blank',
-  _overHTTP = (_doc.location?_doc.location.protocol.match(/http/i):null),
-  _http = (!_overHTTP ? 'http:/'+'/' : ''),
-  _netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mpeg4|aac|flv|mov|mp4||m4v|m4a|m4b|mp4v|3gp|3g2)\s*(?:$|;)/i,
-  _netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'm4b', 'mp4v', '3gp', '3g2'],
-  _netStreamPattern = new RegExp('\\.(' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm+'::', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL,
+  needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport,
+  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)),
+  mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice),
+  isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)),
+  hasConsole = (typeof console !== 'undefined' && typeof console.log !== 'undefined'), isFocused = (typeof doc.hasFocus !== 'undefined'?doc.hasFocus():null), tryInitOnFocus = (isSafari && (typeof doc.hasFocus === 'undefined' || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
+  emptyURL = 'about:blank',
+  overHTTP = (doc.location?doc.location.protocol.match(/http/i):null),
+  http = (!overHTTP ? 'http:/'+'/' : ''),
+  netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mpeg4|aac|flv|mov|mp4||m4v|m4a|m4b|mp4v|3gp|3g2)\s*(?:$|;)/i,
+  netStreamTypes = ['mpeg4', 'aac', 'flv', 'mov', 'mp4', 'm4v', 'f4v', 'm4a', 'm4b', 'mp4v', '3gp', '3g2'],
+  netStreamPattern = new RegExp('\\.(' + netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
   this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i;
-  this.useAltURL = !_overHTTP;
-  _swfCSS = {
+  this.useAltURL = !overHTTP;
+  swfCSS = {
     'swfBox': 'sm2-object-box',
     'swfDefault': 'movieContainer',
     'swfError': 'swf_error',
@@ -165,39 +165,39 @@ function SoundManager(smURL, smID) {
     'highPerf': 'high_performance',
     'flashDebug': 'flash_debug'
   };
-  if (_mobileHTML5) {
+  if (mobileHTML5) {
     sm2.useHTML5Audio = true;
     sm2.preferFlash = false;
-    if (_is_iDevice) {
+    if (is_iDevice) {
       sm2.ignoreFlash = true;
-      _useGlobalHTML5Audio = true;
+      useGlobalHTML5Audio = true;
     }
   }
   this.setup = function(options) {
     var noURL = (!sm2.url);
-    if (typeof options !== 'undefined' && _didInit && _needsFlash && sm2.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
-      _complain(_str('setupLate'));
+    if (typeof options !== 'undefined' && didInit && needsFlash && sm2.ok() && (typeof options.flashVersion !== 'undefined' || typeof options.url !== 'undefined')) {
+      complain(str('setupLate'));
     }
-    _assign(options);
-    if (noURL && _didDCLoaded && typeof options.url !== 'undefined') {
+    assign(options);
+    if (noURL && didDCLoaded && typeof options.url !== 'undefined') {
       sm2.beginDelayedInit();
     }
-    if (!_didDCLoaded && typeof options.url !== 'undefined' && _doc.readyState === 'complete') {
-      setTimeout(_domContentLoaded, 1);
+    if (!didDCLoaded && typeof options.url !== 'undefined' && doc.readyState === 'complete') {
+      setTimeout(domContentLoaded, 1);
     }
     return sm2;
   };
   this.ok = function() {
-    return (_needsFlash?(_didInit && !_disabled):(sm2.useHTML5Audio && sm2.hasHTML5));
+    return (needsFlash?(didInit && !disabled):(sm2.useHTML5Audio && sm2.hasHTML5));
   };
   this.supported = this.ok;
   this.getMovie = function(smID) {
-    return _id(smID) || _doc[smID] || _win[smID];
+    return id(smID) || doc[smID] || win[smID];
   };
   this.createSound = function(oOptions, _url) {
-    var _cs, _cs_string, options, oSound = null;
-    if (!_didInit || !sm2.ok()) {
-      _complain(_cs_string);
+    var cs, cs_string, options, oSound = null;
+    if (!didInit || !sm2.ok()) {
+      complain(cs_string);
       return false;
     }
     if (typeof _url !== 'undefined') {
@@ -206,29 +206,29 @@ function SoundManager(smURL, smID) {
         'url': _url
       };
     }
-    options = _mixin(oOptions);
-    options.url = _parseURL(options.url);
-    if (_idCheck(options.id, true)) {
+    options = mixin(oOptions);
+    options.url = parseURL(options.url);
+    if (idCheck(options.id, true)) {
       return sm2.sounds[options.id];
     }
     function make() {
-      options = _loopFix(options);
+      options = loopFix(options);
       sm2.sounds[options.id] = new SMSound(options);
       sm2.soundIDs.push(options.id);
       return sm2.sounds[options.id];
     }
-    if (_html5OK(options)) {
+    if (html5OK(options)) {
       oSound = make();
       oSound._setup_html5(options);
     } else {
-      if (_fV > 8) {
+      if (fV > 8) {
         if (options.isMovieStar === null) {
-          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(_netStreamMimeTypes) : false) || options.url.match(_netStreamPattern));
+          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(netStreamMimeTypes) : false) || options.url.match(netStreamPattern));
         }
       }
-      options = _policyFix(options, _cs);
+      options = policyFix(options, cs);
       oSound = make();
-      if (_fV === 8) {
+      if (fV === 8) {
         flash._createSound(options.id, options.loops||1, options.usePolicyFile);
       } else {
         flash._createSound(options.id, options.url, options.usePeakData, options.useWaveformData, options.useEQData, options.isMovieStar, (options.isMovieStar?options.bufferTime:false), options.loops||1, options.serverURL, options.duration||null, options.autoPlay, true, options.autoLoad, options.usePolicyFile);
@@ -249,7 +249,7 @@ function SoundManager(smURL, smID) {
     return oSound;
   };
   this.destroySound = function(sID, _bFromSound) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     var oS = sm2.sounds[sID], i;
@@ -270,37 +270,37 @@ function SoundManager(smURL, smID) {
     return true;
   };
   this.load = function(sID, oOptions) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].load(oOptions);
   };
   this.unload = function(sID) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].unload();
   };
   this.onPosition = function(sID, nPosition, oMethod, oScope) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].onposition(nPosition, oMethod, oScope);
   };
   this.onposition = this.onPosition;
   this.clearOnPosition = function(sID, nPosition, oMethod) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].clearOnPosition(nPosition, oMethod);
   };
   this.play = function(sID, oOptions) {
     var result = false;
-    if (!_didInit || !sm2.ok()) {
-      _complain(_sm+'.play(): ' + _str(!_didInit?'notReady':'notOK'));
+    if (!didInit || !sm2.ok()) {
+      complain(sm+'.play(): ' + str(!didInit?'notReady':'notOK'));
       return result;
     }
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       if (!(oOptions instanceof Object)) {
         oOptions = {
           url: oOptions
@@ -316,13 +316,13 @@ function SoundManager(smURL, smID) {
   };
   this.start = this.play;
   this.setPosition = function(sID, nMsecOffset) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].setPosition(nMsecOffset);
   };
   this.stop = function(sID) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].stop();
@@ -336,7 +336,7 @@ function SoundManager(smURL, smID) {
     }
   };
   this.pause = function(sID) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].pause();
@@ -348,7 +348,7 @@ function SoundManager(smURL, smID) {
     }
   };
   this.resume = function(sID) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].resume();
@@ -360,19 +360,19 @@ function SoundManager(smURL, smID) {
     }
   };
   this.togglePause = function(sID) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].togglePause();
   };
   this.setPan = function(sID, nPan) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].setPan(nPan);
   };
   this.setVolume = function(sID, nVol) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].setVolume(nVol);
@@ -388,7 +388,7 @@ function SoundManager(smURL, smID) {
       }
       sm2.muted = true;
     } else {
-      if (!_idCheck(sID)) {
+      if (!idCheck(sID)) {
         return false;
       }
       return sm2.sounds[sID].mute();
@@ -409,7 +409,7 @@ function SoundManager(smURL, smID) {
       }
       sm2.muted = false;
     } else {
-      if (!_idCheck(sID)) {
+      if (!idCheck(sID)) {
         return false;
       }
       return sm2.sounds[sID].unmute();
@@ -420,14 +420,14 @@ function SoundManager(smURL, smID) {
     sm2.unmute();
   };
   this.toggleMute = function(sID) {
-    if (!_idCheck(sID)) {
+    if (!idCheck(sID)) {
       return false;
     }
     return sm2.sounds[sID].toggleMute();
   };
   this.getMemoryUse = function() {
     var ram = 0;
-    if (flash && _fV !== 8) {
+    if (flash && fV !== 8) {
       ram = parseInt(flash._getMemoryUse(), 10);
     }
     return ram;
@@ -437,33 +437,33 @@ function SoundManager(smURL, smID) {
     if (typeof bNoDisable === 'undefined') {
       bNoDisable = false;
     }
-    if (_disabled) {
+    if (disabled) {
       return false;
     }
-    _disabled = true;
+    disabled = true;
     for (i = sm2.soundIDs.length-1; i >= 0; i--) {
-      _disableObject(sm2.sounds[sm2.soundIDs[i]]);
+      disableObject(sm2.sounds[sm2.soundIDs[i]]);
     }
-    _initComplete(bNoDisable);
-    _event.remove(_win, 'load', _initUserOnload);
+    initComplete(bNoDisable);
+    event.remove(win, 'load', initUserOnload);
     return true;
   };
   this.canPlayMIME = function(sMIME) {
     var result;
     if (sm2.hasHTML5) {
-      result = _html5CanPlay({type:sMIME});
+      result = html5CanPlay({type:sMIME});
     }
-    if (!result && _needsFlash) {
-      result = (sMIME && sm2.ok() ? !!((_fV > 8 ? sMIME.match(_netStreamMimeTypes) : null) || sMIME.match(sm2.mimePattern)) : null);
+    if (!result && needsFlash) {
+      result = (sMIME && sm2.ok() ? !!((fV > 8 ? sMIME.match(netStreamMimeTypes) : null) || sMIME.match(sm2.mimePattern)) : null);
     }
     return result;
   };
   this.canPlayURL = function(sURL) {
     var result;
     if (sm2.hasHTML5) {
-      result = _html5CanPlay({url: sURL});
+      result = html5CanPlay({url: sURL});
     }
-    if (!result && _needsFlash) {
+    if (!result && needsFlash) {
       result = (sURL && sm2.ok() ? !!(sURL.match(sm2.filePattern)) : null);
     }
     return result;
@@ -478,7 +478,7 @@ function SoundManager(smURL, smID) {
   };
   this.getSoundById = function(sID, _suppressDebug) {
     if (!sID) {
-      throw new Error(_sm+'.getSoundById(): sID is null/undefined');
+      throw new Error(sm+'.getSoundById(): sID is null/undefined');
     }
     var result = sm2.sounds[sID];
     return result;
@@ -488,13 +488,13 @@ function SoundManager(smURL, smID) {
         result = false;
     if (typeof oMethod === 'function') {
       if (!oScope) {
-        oScope = _win;
+        oScope = win;
       }
-      _addOnEvent(sType, oMethod, oScope);
-      _processOnEvents();
+      addOnEvent(sType, oMethod, oScope);
+      processOnEvents();
       result = true;
     } else {
-      throw _str('needFunction', sType);
+      throw str('needFunction', sType);
     }
     return result;
   };
@@ -503,13 +503,13 @@ function SoundManager(smURL, smID) {
         result = false;
     if (typeof oMethod === 'function') {
       if (!oScope) {
-        oScope = _win;
+        oScope = win;
       }
-      _addOnEvent(sType, oMethod, oScope);
-      _processOnEvents({type:sType});
+      addOnEvent(sType, oMethod, oScope);
+      processOnEvents({type:sType});
       result = true;
     } else {
-      throw _str('needFunction', sType);
+      throw str('needFunction', sType);
     }
     return result;
   };
@@ -526,57 +526,57 @@ function SoundManager(smURL, smID) {
     }
     if (flash) {
       try {
-        if (_isIE) {
-          _oRemovedHTML = flash.innerHTML;
+        if (isIE) {
+          oRemovedHTML = flash.innerHTML;
         }
-        _oRemoved = flash.parentNode.removeChild(flash);
+        oRemoved = flash.parentNode.removeChild(flash);
       } catch(e) {
       }
     }
-    _oRemovedHTML = _oRemoved = _needsFlash = null;
-    sm2.enabled = _didDCLoaded = _didInit = _waitingForEI = _initPending = _didAppend = _appendSuccess = _disabled = sm2.swfLoaded = false;
+    oRemovedHTML = oRemoved = needsFlash = null;
+    sm2.enabled = didDCLoaded = didInit = waitingForEI = initPending = didAppend = appendSuccess = disabled = sm2.swfLoaded = false;
     sm2.soundIDs = [];
     sm2.sounds = {};
     flash = null;
-    for (i in _on_queue) {
-      if (_on_queue.hasOwnProperty(i)) {
-        for (j = _on_queue[i].length-1; j >= 0; j--) {
-          _on_queue[i][j].fired = false;
+    for (i in on_queue) {
+      if (on_queue.hasOwnProperty(i)) {
+        for (j = on_queue[i].length-1; j >= 0; j--) {
+          on_queue[i][j].fired = false;
         }
       }
     }
-    _win.setTimeout(sm2.beginDelayedInit, 20);
+    win.setTimeout(sm2.beginDelayedInit, 20);
   };
   this.getMoviePercent = function() {
     return (flash && typeof flash.PercentLoaded !== 'undefined' ? flash.PercentLoaded() : null);
   };
   this.beginDelayedInit = function() {
-    _windowLoaded = true;
-    _domContentLoaded();
+    windowLoaded = true;
+    domContentLoaded();
     setTimeout(function() {
-      if (_initPending) {
+      if (initPending) {
         return false;
       }
-      _createMovie();
-      _initMovie();
-      _initPending = true;
+      createMovie();
+      initMovie();
+      initPending = true;
       return true;
     }, 20);
-    _delayWaitForEI();
+    delayWaitForEI();
   };
   this.destruct = function() {
     sm2.disable(true);
   };
   SMSound = function(oOptions) {
-    var s = this, _resetProperties, _add_html5_events, _remove_html5_events, _stop_html5_timer, _start_html5_timer, _attachOnPosition, _onplay_called = false, _onPositionItems = [], _onPositionFired = 0, _detachOnPosition, _applyFromTo, _lastURL = null, _lastHTML5State;
-    _lastHTML5State = {
+    var s = this, resetProperties, add_html5_events, remove_html5_events, stop_html5_timer, start_html5_timer, attachOnPosition, onplay_called = false, onPositionItems = [], onPositionFired = 0, detachOnPosition, applyFromTo, lastURL = null, lastHTML5State;
+    lastHTML5State = {
       duration: null,
       time: null
     };
     this.id = oOptions.id;
     this.sID = this.id;
     this.url = oOptions.url;
-    this.options = _mixin(oOptions);
+    this.options = mixin(oOptions);
     this.instanceOptions = this.options;
     this._iO = this.instanceOptions;
     this.pan = this.options.pan;
@@ -589,11 +589,11 @@ function SoundManager(smURL, smID) {
     this.load = function(oOptions) {
       var oSound = null, instanceOptions;
       if (typeof oOptions !== 'undefined') {
-        s._iO = _mixin(oOptions, s.options);
+        s._iO = mixin(oOptions, s.options);
       } else {
         oOptions = s.options;
         s._iO = oOptions;
-        if (_lastURL && _lastURL !== s.url) {
+        if (lastURL && lastURL !== s.url) {
           s._iO.url = s.url;
           s.url = null;
         }
@@ -601,7 +601,7 @@ function SoundManager(smURL, smID) {
       if (!s._iO.url) {
         s._iO.url = s.url;
       }
-      s._iO.url = _parseURL(s._iO.url);
+      s._iO.url = parseURL(s._iO.url);
       s.instanceOptions = s._iO;
       instanceOptions = s._iO;
       if (instanceOptions.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
@@ -614,7 +614,7 @@ function SoundManager(smURL, smID) {
       s.readyState = 1;
       s.playState = 0;
       s.id3 = {};
-      if (_html5OK(instanceOptions)) {
+      if (html5OK(instanceOptions)) {
         oSound = s._setup_html5(instanceOptions);
         if (!oSound._called_load) {
           s._html5_canplay = false;
@@ -633,15 +633,16 @@ function SoundManager(smURL, smID) {
       } else {
         try {
           s.isHTML5 = false;
-          s._iO = _policyFix(_loopFix(instanceOptions));
+          s._iO = policyFix(loopFix(instanceOptions));
           instanceOptions = s._iO;
-          if (_fV === 8) {
+          if (fV === 8) {
             flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
           } else {
             flash._load(s.id, instanceOptions.url, !!(instanceOptions.stream), !!(instanceOptions.autoPlay), instanceOptions.loops||1, !!(instanceOptions.autoLoad), instanceOptions.usePolicyFile);
           }
         } catch(e) {
-          _catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
+          debugTS('onload', false);
+          catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
         }
       }
       s.url = instanceOptions.url;
@@ -650,20 +651,20 @@ function SoundManager(smURL, smID) {
     this.unload = function() {
       if (s.readyState !== 0) {
         if (!s.isHTML5) {
-          if (_fV === 8) {
-            flash._unload(s.id, _emptyURL);
+          if (fV === 8) {
+            flash._unload(s.id, emptyURL);
           } else {
             flash._unload(s.id);
           }
         } else {
-          _stop_html5_timer();
+          stop_html5_timer();
           if (s._a) {
             s._a.pause();
-            _html5Unload(s._a, _emptyURL);
-            _lastURL = _emptyURL;
+            html5Unload(s._a, emptyURL);
+            lastURL = emptyURL;
           }
         }
-        _resetProperties();
+        resetProperties();
       }
       return s;
     };
@@ -672,12 +673,12 @@ function SoundManager(smURL, smID) {
         s._iO.onfailure = null;
         flash._destroySound(s.id);
       } else {
-        _stop_html5_timer();
+        stop_html5_timer();
         if (s._a) {
           s._a.pause();
-          _html5Unload(s._a);
-          if (!_useGlobalHTML5Audio) {
-            _remove_html5_events();
+          html5Unload(s._a);
+          if (!useGlobalHTML5Audio) {
+            remove_html5_events();
           }
           s._a._s = null;
           s._a = null;
@@ -697,9 +698,9 @@ function SoundManager(smURL, smID) {
       if (s.url) {
         s._iO.url = s.url;
       }
-      s._iO = _mixin(s._iO, s.options);
-      s._iO = _mixin(oOptions, s._iO);
-      s._iO.url = _parseURL(s._iO.url);
+      s._iO = mixin(s._iO, s.options);
+      s._iO = mixin(oOptions, s._iO);
+      s._iO.url = parseURL(s._iO.url);
       s.instanceOptions = s._iO;
       if (s._iO.serverURL && !s.connected) {
         if (!s.getAutoPlay()) {
@@ -707,9 +708,9 @@ function SoundManager(smURL, smID) {
         }
         return s;
       }
-      if (_html5OK(s._iO)) {
+      if (html5OK(s._iO)) {
         s._setup_html5(s._iO);
-        _start_html5_timer();
+        start_html5_timer();
       }
       if (s.playState === 1 && !s.paused) {
         allowMulti = s._iO.multiShot;
@@ -742,21 +743,21 @@ function SoundManager(smURL, smID) {
       if (exit !== null) {
         return exit;
       }
-      if (!s.isHTML5 && _fV === 9 && s.position > 0 && s.position === s.duration) {
+      if (!s.isHTML5 && fV === 9 && s.position > 0 && s.position === s.duration) {
         oOptions.position = 0;
       }
       if (s.paused && s.position >= 0 && (!s._iO.serverURL || s.position > 0)) {
         s.resume();
       } else {
-        s._iO = _mixin(oOptions, s._iO);
+        s._iO = mixin(oOptions, s._iO);
         if (s._iO.from !== null && s._iO.to !== null && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
           onready = function() {
-            s._iO = _mixin(oOptions, s._iO);
+            s._iO = mixin(oOptions, s._iO);
             s.play(s._iO);
           };
           if (s.isHTML5 && !s._html5_canplay) {
             s.load({
-              _oncanplay: onready
+              oncanplay: onready
             });
             exit = false;
           } else if (!s.isHTML5 && !s.loaded && (!s.readyState || s.readyState !== 2)) {
@@ -768,35 +769,35 @@ function SoundManager(smURL, smID) {
           if (exit !== null) {
             return exit;
           }
-          s._iO = _applyFromTo();
+          s._iO = applyFromTo();
         }
-        if (!s.instanceCount || s._iO.multiShotEvents || (!s.isHTML5 && _fV > 8 && !s.getAutoPlay())) {
+        if (!s.instanceCount || s._iO.multiShotEvents || (!s.isHTML5 && fV > 8 && !s.getAutoPlay())) {
           s.instanceCount++;
         }
         if (s._iO.onposition && s.playState === 0) {
-          _attachOnPosition(s);
+          attachOnPosition(s);
         }
         s.playState = 1;
         s.paused = false;
         s.position = (typeof s._iO.position !== 'undefined' && !isNaN(s._iO.position) ? s._iO.position : 0);
         if (!s.isHTML5) {
-          s._iO = _policyFix(_loopFix(s._iO));
+          s._iO = policyFix(loopFix(s._iO));
         }
         if (s._iO.onplay && _updatePlayState) {
           s._iO.onplay.apply(s);
-          _onplay_called = true;
+          onplay_called = true;
         }
         s.setVolume(s._iO.volume, true);
         s.setPan(s._iO.pan, true);
         if (!s.isHTML5) {
-          startOK = flash._start(s.id, s._iO.loops || 1, (_fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
-          if (_fV === 9 && !startOK) {
+          startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
+          if (fV === 9 && !startOK) {
             if (s._iO.onplayerror) {
               s._iO.onplayerror.apply(s);
             }
           }
         } else {
-          _start_html5_timer();
+          start_html5_timer();
           a = s._setup_html5();
           s.setPosition(s._iO.position);
           a.play();
@@ -815,7 +816,7 @@ function SoundManager(smURL, smID) {
         if (!s.isHTML5) {
           s.playState = 0;
         }
-        _detachOnPosition();
+        detachOnPosition();
         if (instanceOptions.to) {
           s.clearOnPosition(instanceOptions.to);
         }
@@ -832,7 +833,7 @@ function SoundManager(smURL, smID) {
             s._a.pause();
             s.playState = 0;
             s._onTimer();
-            _stop_html5_timer();
+            stop_html5_timer();
           }
         }
         s.instanceCount = 0;
@@ -870,7 +871,7 @@ function SoundManager(smURL, smID) {
       s._resetOnPosition(s.position);
       s._iO.position = offset;
       if (!s.isHTML5) {
-        position = (_fV === 9 ? s.position : position1K);
+        position = (fV === 9 ? s.position : position1K);
         if (s.readyState && s.readyState !== 2) {
           flash._setPosition(s.id, position, (s.paused || !s.playState), s._iO.multiShot);
         }
@@ -906,7 +907,7 @@ function SoundManager(smURL, smID) {
         }
       } else {
         s._setup_html5().pause();
-        _stop_html5_timer();
+        stop_html5_timer();
       }
       if (s._iO.onpause) {
         s._iO.onpause.apply(s);
@@ -927,11 +928,11 @@ function SoundManager(smURL, smID) {
         flash._pause(s.id, instanceOptions.multiShot);
       } else {
         s._setup_html5().play();
-        _start_html5_timer();
+        start_html5_timer();
       }
-      if (!_onplay_called && instanceOptions.onplay) {
+      if (!onplay_called && instanceOptions.onplay) {
         instanceOptions.onplay.apply(s);
-        _onplay_called = true;
+        onplay_called = true;
       } else if (instanceOptions.onresume) {
         instanceOptions.onresume.apply(s);
       }
@@ -940,7 +941,7 @@ function SoundManager(smURL, smID) {
     this.togglePause = function() {
       if (s.playState === 0) {
         s.play({
-          position: (_fV === 9 && !s.isHTML5 ? s.position : s.position / 1000)
+          position: (fV === 9 && !s.isHTML5 ? s.position : s.position / 1000)
         });
         return s;
       }
@@ -1010,7 +1011,7 @@ function SoundManager(smURL, smID) {
       return (s.muted?s.unmute():s.mute());
     };
     this.onPosition = function(nPosition, oMethod, oScope) {
-      _onPositionItems.push({
+      onPositionItems.push({
         position: parseInt(nPosition, 10),
         method: oMethod,
         scope: (typeof oScope !== 'undefined' ? oScope : s),
@@ -1025,47 +1026,47 @@ function SoundManager(smURL, smID) {
       if (isNaN(nPosition)) {
         return false;
       }
-      for (i=0; i < _onPositionItems.length; i++) {
-        if (nPosition === _onPositionItems[i].position) {
-          if (!oMethod || (oMethod === _onPositionItems[i].method)) {
-            if (_onPositionItems[i].fired) {
-              _onPositionFired--;
+      for (i=0; i < onPositionItems.length; i++) {
+        if (nPosition === onPositionItems[i].position) {
+          if (!oMethod || (oMethod === onPositionItems[i].method)) {
+            if (onPositionItems[i].fired) {
+              onPositionFired--;
             }
-            _onPositionItems.splice(i, 1);
+            onPositionItems.splice(i, 1);
           }
         }
       }
     };
     this._processOnPosition = function() {
-      var i, item, j = _onPositionItems.length;
-      if (!j || !s.playState || _onPositionFired >= j) {
+      var i, item, j = onPositionItems.length;
+      if (!j || !s.playState || onPositionFired >= j) {
         return false;
       }
       for (i=j-1; i >= 0; i--) {
-        item = _onPositionItems[i];
+        item = onPositionItems[i];
         if (!item.fired && s.position >= item.position) {
           item.fired = true;
-          _onPositionFired++;
+          onPositionFired++;
           item.method.apply(item.scope, [item.position]);
         }
       }
       return true;
     };
     this._resetOnPosition = function(nPosition) {
-      var i, item, j = _onPositionItems.length;
+      var i, item, j = onPositionItems.length;
       if (!j) {
         return false;
       }
       for (i=j-1; i >= 0; i--) {
-        item = _onPositionItems[i];
+        item = onPositionItems[i];
         if (item.fired && nPosition <= item.position) {
           item.fired = false;
-          _onPositionFired--;
+          onPositionFired--;
         }
       }
       return true;
     };
-    _applyFromTo = function() {
+    applyFromTo = function() {
       var instanceOptions = s._iO,
           f = instanceOptions.from,
           t = instanceOptions.to,
@@ -1086,7 +1087,7 @@ function SoundManager(smURL, smID) {
       }
       return instanceOptions;
     };
-    _attachOnPosition = function() {
+    attachOnPosition = function() {
       var item,
           op = s._iO.onposition;
       if (op) {
@@ -1097,7 +1098,7 @@ function SoundManager(smURL, smID) {
         }
       }
     };
-    _detachOnPosition = function() {
+    detachOnPosition = function() {
       var item,
           op = s._iO.onposition;
       if (op) {
@@ -1108,22 +1109,22 @@ function SoundManager(smURL, smID) {
         }
       }
     };
-    _start_html5_timer = function() {
+    start_html5_timer = function() {
       if (s.isHTML5) {
-        _startTimer(s);
+        startTimer(s);
       }
     };
-    _stop_html5_timer = function() {
+    stop_html5_timer = function() {
       if (s.isHTML5) {
-        _stopTimer(s);
+        stopTimer(s);
       }
     };
-    _resetProperties = function(retainPosition) {
+    resetProperties = function(retainPosition) {
       if (!retainPosition) {
-        _onPositionItems = [];
-        _onPositionFired = 0;
+        onPositionItems = [];
+        onPositionFired = 0;
       }
-      _onplay_called = false;
+      onplay_called = false;
       s._hasTimer = null;
       s._a = null;
       s._html5_canplay = false;
@@ -1156,21 +1157,21 @@ function SoundManager(smURL, smID) {
       s.position = null;
       s.id3 = {};
     };
-    _resetProperties();
+    resetProperties();
     this._onTimer = function(bForce) {
       var duration, isNew = false, time, x = {};
       if (s._hasTimer || bForce) {
         if (s._a && (bForce || ((s.playState > 0 || s.readyState === 1) && !s.paused))) {
           duration = s._get_html5_duration();
-          if (duration !== _lastHTML5State.duration) {
-            _lastHTML5State.duration = duration;
+          if (duration !== lastHTML5State.duration) {
+            lastHTML5State.duration = duration;
             s.duration = duration;
             isNew = true;
           }
           s.durationEstimate = s.duration;
           time = (s._a.currentTime * 1000 || 0);
-          if (time !== _lastHTML5State.time) {
-            _lastHTML5State.time = time;
+          if (time !== lastHTML5State.time) {
+            lastHTML5State.time = time;
             isNew = true;
           }
           if (isNew || bForce) {
@@ -1190,40 +1191,40 @@ function SoundManager(smURL, smID) {
       a.loop = (nLoops > 1 ? 'loop' : '');
     };
     this._setup_html5 = function(oOptions) {
-      var instanceOptions = _mixin(s._iO, oOptions), d = decodeURI,
-          _a = _useGlobalHTML5Audio ? globalHTML5Audio  : s._a,
-          _dURL = d(instanceOptions.url),
+      var instanceOptions = mixin(s._iO, oOptions), d = decodeURI,
+          a = useGlobalHTML5Audio ? globalHTML5Audio  : s._a,
+          dURL = d(instanceOptions.url),
           sameURL,
           result;
-      if (_useGlobalHTML5Audio) {
-        if (_dURL === _lastGlobalHTML5URL) {
+      if (useGlobalHTML5Audio) {
+        if (dURL === lastGlobalHTML5URL) {
           sameURL = true;
         }
-      } else if (_dURL === _lastURL) {
+      } else if (dURL === lastURL) {
         sameURL = true;
       }
-      if (_a) {
-        if (_a._s) {
-          if (_useGlobalHTML5Audio) {
-            _result = _a;
-            if (_a._s && _a._s.playState && !sameURL) {
-              _a._s.stop();
+      if (a) {
+        if (a._s) {
+          if (useGlobalHTML5Audio) {
+            result = a;
+            if (a._s && a._s.playState && !sameURL) {
+              a._s.stop();
             }
-          } else if (!_useGlobalHTML5Audio && _dURL === d(_lastURL)) {
-            result = _a;
+          } else if (!useGlobalHTML5Audio && dURL === d(lastURL)) {
+            result = a;
           }
           if (result) {
-            s._apply_loop(_a, instanceOptions.loops);
+            s._apply_loop(a, instanceOptions.loops);
             return result;
           }
         }
         if (!sameURL) {
-          _resetProperties(false);
-          _a.src = instanceOptions.url;
+          resetProperties(false);
+          a.src = instanceOptions.url;
           s.url = instanceOptions.url;
-          _lastURL = instanceOptions.url;
-          _lastGlobalHTML5URL = instanceOptions.url;
-          _a._called_load = false;
+          lastURL = instanceOptions.url;
+          lastGlobalHTML5URL = instanceOptions.url;
+          a._called_load = false;
         }
       } else {
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
@@ -1231,26 +1232,26 @@ function SoundManager(smURL, smID) {
         } else {
           s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
         }
-        _a = s._a;
-        _a._called_load = false;
-        if (_useGlobalHTML5Audio) {
-          globalHTML5Audio = _a;
+        a = s._a;
+        a._called_load = false;
+        if (useGlobalHTML5Audio) {
+          globalHTML5Audio = a;
         }
       }
       s.isHTML5 = true;
-      s._a = _a;
-      _a._s = s;
-      _add_html5_events();
-      s._apply_loop(_a, instanceOptions.loops);
+      s._a = a;
+      a._s = s;
+      add_html5_events();
+      s._apply_loop(a, instanceOptions.loops);
       if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
         s.load();
       } else {
-        _a.autobuffer = false;
-        _a.preload = 'auto';
+        a.autobuffer = false;
+        a.preload = 'auto';
       }
-      return _a;
+      return a;
     };
-    _add_html5_events = function() {
+    add_html5_events = function() {
       if (s._a._added_events) {
         return false;
       }
@@ -1259,28 +1260,28 @@ function SoundManager(smURL, smID) {
         return s._a ? s._a.addEventListener(oEvt, oFn, bCapture||false) : null;
       }
       s._a._added_events = true;
-      for (f in _html5_events) {
-        if (_html5_events.hasOwnProperty(f)) {
-          add(f, _html5_events[f]);
+      for (f in html5_events) {
+        if (html5_events.hasOwnProperty(f)) {
+          add(f, html5_events[f]);
         }
       }
       return true;
     };
-    _remove_html5_events = function() {
+    remove_html5_events = function() {
       var f;
       function remove(oEvt, oFn, bCapture) {
         return (s._a ? s._a.removeEventListener(oEvt, oFn, bCapture||false) : null);
       }
       s._a._added_events = false;
-      for (f in _html5_events) {
-        if (_html5_events.hasOwnProperty(f)) {
-          remove(f, _html5_events[f]);
+      for (f in html5_events) {
+        if (html5_events.hasOwnProperty(f)) {
+          remove(f, html5_events[f]);
         }
       }
     };
     this._onload = function(nSuccess) {
       var fN,
-          loadOK = (!!(nSuccess) || (!s.isHTML5 && _fV === 8 && s.duration));
+          loadOK = (!!(nSuccess) || (!s.isHTML5 && fV === 8 && s.duration));
       s.loaded = loadOK;
       s.readyState = loadOK?3:2;
       s._onbufferchange(0);
@@ -1316,26 +1317,26 @@ function SoundManager(smURL, smID) {
       }
     };
     this._onfinish = function() {
-      var _io_onfinish = s._iO.onfinish;
+      var io_onfinish = s._iO.onfinish;
       s._onbufferchange(0);
       s._resetOnPosition(0);
       if (s.instanceCount) {
         s.instanceCount--;
         if (!s.instanceCount) {
-          _detachOnPosition();
+          detachOnPosition();
           s.playState = 0;
           s.paused = false;
           s.instanceCount = 0;
           s.instanceOptions = {};
           s._iO = {};
-          _stop_html5_timer();
+          stop_html5_timer();
           if (s.isHTML5) {
             s.position = 0;
           }
         }
         if (!s.instanceCount || s._iO.multiShotEvents) {
-          if (_io_onfinish) {
-            _io_onfinish.apply(s);
+          if (io_onfinish) {
+            io_onfinish.apply(s);
           }
         }
       }
@@ -1373,7 +1374,7 @@ function SoundManager(smURL, smID) {
       }
       s.position = Math.max(0, nPosition);
       s._processOnPosition();
-      if (!s.isHTML5 && _fV > 8) {
+      if (!s.isHTML5 && fV > 8) {
         if (instanceOptions.usePeakData && typeof oPeakData !== 'undefined' && oPeakData) {
           s.peakData = {
             left: oPeakData.leftPeak,
@@ -1398,7 +1399,7 @@ function SoundManager(smURL, smID) {
         }
       }
       if (s.playState === 1) {
-        if (!s.isHTML5 && _fV === 8 && !s.position && s.isBuffering) {
+        if (!s.isHTML5 && fV === 8 && !s.position && s.isBuffering) {
           s._onbufferchange(0);
         }
         if (instanceOptions.whileplaying) {
@@ -1428,7 +1429,7 @@ function SoundManager(smURL, smID) {
       for (i = 0, j = oID3Props.length; i < j; i++) {
         oData[oID3Props[i]] = oID3Data[i];
       }
-      s.id3 = _mixin(s.id3, oData);
+      s.id3 = mixin(s.id3, oData);
       if (s._iO.onid3) {
         s._iO.onid3.apply(s);
       }
@@ -1438,7 +1439,7 @@ function SoundManager(smURL, smID) {
       s.connected = bSuccess;
       if (bSuccess) {
         s.failures = 0;
-        if (_idCheck(s.id)) {
+        if (idCheck(s.id)) {
           if (s.getAutoPlay()) {
             s.play(undefined, s.getAutoPlay());
           } else if (s._iO.autoLoad) {
@@ -1458,13 +1459,13 @@ function SoundManager(smURL, smID) {
       }
     };
   };
-  _getDocument = function() {
-    return (_doc.body || _doc._docElement || _doc.getElementsByTagName('div')[0]);
+  getDocument = function() {
+    return (doc.body || doc._docElement || doc.getElementsByTagName('div')[0]);
   };
-  _id = function(sID) {
-    return _doc.getElementById(sID);
+  id = function(sID) {
+    return doc.getElementById(sID);
   };
-  _mixin = function(oMain, oAdd) {
+  mixin = function(oMain, oAdd) {
     var o1 = (oMain || {}), o2, o;
     o2 = (typeof oAdd === 'undefined' ? sm2.defaultOptions : oAdd);
     for (o in o2) {
@@ -1472,35 +1473,35 @@ function SoundManager(smURL, smID) {
         if (typeof o2[o] !== 'object' || o2[o] === null) {
           o1[o] = o2[o];
         } else {
-          o1[o] = _mixin(o1[o], o2[o]);
+          o1[o] = mixin(o1[o], o2[o]);
         }
       }
     }
     return o1;
   };
-  _extraOptions = {
+  extraOptions = {
     'onready': 1,
     'ontimeout': 1,
     'defaultOptions': 1,
     'flash9Options': 1,
     'movieStarOptions': 1
   };
-  _assign = function(o, oParent) {
+  assign = function(o, oParent) {
     var i,
         result = true,
         hasParent = (typeof oParent !== 'undefined'),
         setupOptions = sm2.setupOptions,
-        extraOptions = _extraOptions;
+        bonusOptions = extraOptions;
     for (i in o) {
       if (o.hasOwnProperty(i)) {
         if (typeof o[i] !== 'object' || o[i] === null || o[i] instanceof Array) {
-          if (hasParent && typeof extraOptions[oParent] !== 'undefined') {
+          if (hasParent && typeof bonusOptions[oParent] !== 'undefined') {
             sm2[oParent][i] = o[i];
           } else if (typeof setupOptions[i] !== 'undefined') {
             sm2.setupOptions[i] = o[i];
             sm2[i] = o[i];
-          } else if (typeof extraOptions[i] === 'undefined') {
-            _complain(_str((typeof sm2[i] === 'undefined' ? 'setupUndef' : 'setupError'), i), 2);
+          } else if (typeof bonusOptions[i] === 'undefined') {
+            complain(str((typeof sm2[i] === 'undefined' ? 'setupUndef' : 'setupError'), i), 2);
             result = false;
           } else {
             if (sm2[i] instanceof Function) {
@@ -1510,28 +1511,28 @@ function SoundManager(smURL, smID) {
             }
           }
         } else {
-          if (typeof extraOptions[i] === 'undefined') {
-            _complain(_str((typeof sm2[i] === 'undefined' ? 'setupUndef' : 'setupError'), i), 2);
+          if (typeof bonusOptions[i] === 'undefined') {
+            complain(str((typeof sm2[i] === 'undefined' ? 'setupUndef' : 'setupError'), i), 2);
             result = false;
           } else {
-            return _assign(o[i], i);
+            return assign(o[i], i);
           }
         }
       }
     }
     return result;
   };
-  function _preferFlashCheck(kind) {
-    return (sm2.preferFlash && _hasFlash && !sm2.ignoreFlash && (typeof sm2.flash[kind] !== 'undefined' && sm2.flash[kind]));
+  function preferFlashCheck(kind) {
+    return (sm2.preferFlash && hasFlash && !sm2.ignoreFlash && (typeof sm2.flash[kind] !== 'undefined' && sm2.flash[kind]));
   }
-  _event = (function() {
-    var old = (_win.attachEvent),
+  event = (function() {
+    var old = (win.attachEvent),
     evt = {
       add: (old?'attachEvent':'addEventListener'),
       remove: (old?'detachEvent':'removeEventListener')
     };
     function getArgs(oArgs) {
-      var args = _slice.call(oArgs),
+      var args = slice.call(oArgs),
           len = args.length;
       if (old) {
         args[1] = 'on' + args[1];
@@ -1563,7 +1564,7 @@ function SoundManager(smURL, smID) {
       'remove': remove
     };
   }());
-  function _html5_event(oFn) {
+  function html5_event(oFn) {
     return function(e) {
       var s = this._s,
           result;
@@ -1575,10 +1576,10 @@ function SoundManager(smURL, smID) {
       return result;
     };
   }
-  _html5_events = {
-    abort: _html5_event(function() {
+  html5_events = {
+    abort: html5_event(function() {
     }),
-    canplay: _html5_event(function() {
+    canplay: html5_event(function() {
       var s = this._s,
           position1K;
       if (s._html5_canplay) {
@@ -1597,7 +1598,7 @@ function SoundManager(smURL, smID) {
         s._iO._oncanplay();
       }
     }),
-    canplaythrough: _html5_event(function() {
+    canplaythrough: html5_event(function() {
       var s = this._s;
       if (!s.loaded) {
         s._onbufferchange(0);
@@ -1605,31 +1606,31 @@ function SoundManager(smURL, smID) {
         s._onload(true);
       }
     }),
-    ended: _html5_event(function() {
+    ended: html5_event(function() {
       var s = this._s;
       s._onfinish();
     }),
-    error: _html5_event(function() {
+    error: html5_event(function() {
       this._s._onload(false);
     }),
-    loadeddata: _html5_event(function() {
+    loadeddata: html5_event(function() {
       var s = this._s;
       if (!s._loaded && !_isSafari) {
         s.duration = s._get_html5_duration();
       }
     }),
-    loadedmetadata: _html5_event(function() {
+    loadedmetadata: html5_event(function() {
     }),
-    loadstart: _html5_event(function() {
+    loadstart: html5_event(function() {
       this._s._onbufferchange(1);
     }),
-    play: _html5_event(function() {
+    play: html5_event(function() {
       this._s._onbufferchange(0);
     }),
-    playing: _html5_event(function() {
+    playing: html5_event(function() {
       this._s._onbufferchange(0);
     }),
-    progress: _html5_event(function(e) {
+    progress: html5_event(function(e) {
       var s = this._s,
           i, j, str, buffered = 0,
           isProgress = (e.type === 'progress'),
@@ -1652,42 +1653,42 @@ function SoundManager(smURL, smID) {
         s._onbufferchange(0);
         s._whileloading(loaded, total, s._get_html5_duration());
         if (loaded && total && loaded === total) {
-          _html5_events.canplaythrough.call(this, e);
+          html5_events.canplaythrough.call(this, e);
         }
       }
     }),
-    ratechange: _html5_event(function() {
+    ratechange: html5_event(function() {
     }),
-    suspend: _html5_event(function(e) {
+    suspend: html5_event(function(e) {
       var s = this._s;
-      _html5_events.progress.call(this, e);
+      html5_events.progress.call(this, e);
       s._onsuspend();
     }),
-    stalled: _html5_event(function() {
+    stalled: html5_event(function() {
     }),
-    timeupdate: _html5_event(function() {
+    timeupdate: html5_event(function() {
       this._s._onTimer();
     }),
-    waiting: _html5_event(function() {
+    waiting: html5_event(function() {
       var s = this._s;
       s._onbufferchange(1);
     })
   };
-  _html5OK = function(iO) {
+  html5OK = function(iO) {
     var result;
-    if (iO.serverURL || (iO.type && _preferFlashCheck(iO.type))) {
+    if (iO.serverURL || (iO.type && preferFlashCheck(iO.type))) {
       result = false;
     } else {
-      result = ((iO.type ? _html5CanPlay({type:iO.type}) : _html5CanPlay({url:iO.url}) || sm2.html5Only));
+      result = ((iO.type ? html5CanPlay({type:iO.type}) : html5CanPlay({url:iO.url}) || sm2.html5Only));
     }
     return result;
   };
-  _html5Unload = function(oAudio, url) {
+  html5Unload = function(oAudio, url) {
     if (oAudio) {
       oAudio.src = url;
     }
   };
-  _html5CanPlay = function(o) {
+  html5CanPlay = function(o) {
     if (!sm2.useHTML5Audio || !sm2.hasHTML5) {
       return false;
     }
@@ -1699,21 +1700,21 @@ function SoundManager(smURL, smID) {
         fileExt,
         item;
     if (mime && typeof sm2.html5[mime] !== 'undefined') {
-      return (sm2.html5[mime] && !_preferFlashCheck(mime));
+      return (sm2.html5[mime] && !preferFlashCheck(mime));
     }
-    if (!_html5Ext) {
-      _html5Ext = [];
+    if (!html5Ext) {
+      html5Ext = [];
       for (item in aF) {
         if (aF.hasOwnProperty(item)) {
-          _html5Ext.push(item);
+          html5Ext.push(item);
           if (aF[item].related) {
-            _html5Ext = _html5Ext.concat(aF[item].related);
+            html5Ext = html5Ext.concat(aF[item].related);
           }
         }
       }
-      _html5Ext = new RegExp('\\.('+_html5Ext.join('|')+')(\\?.*)?$','i');
+      html5Ext = new RegExp('\\.('+html5Ext.join('|')+')(\\?.*)?$','i');
     }
-    fileExt = (url ? url.toLowerCase().match(_html5Ext) : null);
+    fileExt = (url ? url.toLowerCase().match(html5Ext) : null);
     if (!fileExt || !fileExt.length) {
       if (!mime) {
         result = false;
@@ -1725,22 +1726,22 @@ function SoundManager(smURL, smID) {
       fileExt = fileExt[1];
     }
     if (fileExt && typeof sm2.html5[fileExt] !== 'undefined') {
-      result = (sm2.html5[fileExt] && !_preferFlashCheck(fileExt));
+      result = (sm2.html5[fileExt] && !preferFlashCheck(fileExt));
     } else {
       mime = 'audio/'+fileExt;
       result = sm2.html5.canPlayType({type:mime});
       sm2.html5[fileExt] = result;
-      result = (result && sm2.html5[mime] && !_preferFlashCheck(mime));
+      result = (result && sm2.html5[mime] && !preferFlashCheck(mime));
     }
     return result;
   };
-  _testHTML5 = function() {
+  testHTML5 = function() {
     if (!sm2.useHTML5Audio || !sm2.hasHTML5) {
       return false;
     }
     var a = (typeof Audio !== 'undefined' ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
-    function _cp(m) {
+    function cp(m) {
       var canPlay, i, j,
           result = false,
           isOK = false;
@@ -1766,7 +1767,7 @@ function SoundManager(smURL, smID) {
     for (item in aF) {
       if (aF.hasOwnProperty(item)) {
         lookup = 'audio/' + item;
-        support[item] = _cp(aF[item].type);
+        support[item] = cp(aF[item].type);
         support[lookup] = support[item];
         if (item.match(flashMIME)) {
           sm2.flash[item] = true;
@@ -1784,49 +1785,49 @@ function SoundManager(smURL, smID) {
         }
       }
     }
-    support.canPlayType = (a?_cp:null);
-    sm2.html5 = _mixin(sm2.html5, support);
+    support.canPlayType = (a?cp:null);
+    sm2.html5 = mixin(sm2.html5, support);
     return true;
   };
-  _strings = {
+  strings = {
   };
-  _str = function() {
+  str = function() {
   };
-  _loopFix = function(sOpt) {
-    if (_fV === 8 && sOpt.loops > 1 && sOpt.stream) {
+  loopFix = function(sOpt) {
+    if (fV === 8 && sOpt.loops > 1 && sOpt.stream) {
       sOpt.stream = false;
     }
     return sOpt;
   };
-  _policyFix = function(sOpt, sPre) {
+  policyFix = function(sOpt, sPre) {
     if (sOpt && !sOpt.usePolicyFile && (sOpt.onid3 || sOpt.usePeakData || sOpt.useWaveformData || sOpt.useEQData)) {
       sOpt.usePolicyFile = true;
     }
     return sOpt;
   };
-  _complain = function(sMsg) {
+  complain = function(sMsg) {
   };
-  _doNothing = function() {
+  doNothing = function() {
     return false;
   };
-  _disableObject = function(o) {
+  disableObject = function(o) {
     var oProp;
     for (oProp in o) {
       if (o.hasOwnProperty(oProp) && typeof o[oProp] === 'function') {
-        o[oProp] = _doNothing;
+        o[oProp] = doNothing;
       }
     }
     oProp = null;
   };
-  _failSafely = function(bNoDisable) {
+  failSafely = function(bNoDisable) {
     if (typeof bNoDisable === 'undefined') {
       bNoDisable = false;
     }
-    if (_disabled || bNoDisable) {
+    if (disabled || bNoDisable) {
       sm2.disable(bNoDisable);
     }
   };
-  _normalizeMovieURL = function(smURL) {
+  normalizeMovieURL = function(smURL) {
     var urlParams = null, url;
     if (smURL) {
       if (smURL.match(/\.swf(\?.*)?$/i)) {
@@ -1844,104 +1845,104 @@ function SoundManager(smURL, smID) {
     }
     return url;
   };
-  _setVersionInfo = function() {
-    _fV = parseInt(sm2.flashVersion, 10);
-    if (_fV !== 8 && _fV !== 9) {
-      sm2.flashVersion = _fV = _defaultFlashVersion;
+  setVersionInfo = function() {
+    fV = parseInt(sm2.flashVersion, 10);
+    if (fV !== 8 && fV !== 9) {
+      sm2.flashVersion = fV = defaultFlashVersion;
     }
     var isDebug = (sm2.debugMode || sm2.debugFlash?'_debug.swf':'.swf');
-    if (sm2.useHTML5Audio && !sm2.html5Only && sm2.audioFormats.mp4.required && _fV < 9) {
-      sm2.flashVersion = _fV = 9;
+    if (sm2.useHTML5Audio && !sm2.html5Only && sm2.audioFormats.mp4.required && fV < 9) {
+      sm2.flashVersion = fV = 9;
     }
-    sm2.version = sm2.versionNumber + (sm2.html5Only?' (HTML5-only mode)':(_fV === 9?' (AS3/Flash 9)':' (AS2/Flash 8)'));
-    if (_fV > 8) {
-      sm2.defaultOptions = _mixin(sm2.defaultOptions, sm2.flash9Options);
+    sm2.version = sm2.versionNumber + (sm2.html5Only?' (HTML5-only mode)':(fV === 9?' (AS3/Flash 9)':' (AS2/Flash 8)'));
+    if (fV > 8) {
+      sm2.defaultOptions = mixin(sm2.defaultOptions, sm2.flash9Options);
       sm2.features.buffering = true;
-      sm2.defaultOptions = _mixin(sm2.defaultOptions, sm2.movieStarOptions);
-      sm2.filePatterns.flash9 = new RegExp('\\.(mp3|' + _netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
+      sm2.defaultOptions = mixin(sm2.defaultOptions, sm2.movieStarOptions);
+      sm2.filePatterns.flash9 = new RegExp('\\.(mp3|' + netStreamTypes.join('|') + ')(\\?.*)?$', 'i');
       sm2.features.movieStar = true;
     } else {
       sm2.features.movieStar = false;
     }
-    sm2.filePattern = sm2.filePatterns[(_fV !== 8?'flash9':'flash8')];
-    sm2.movieURL = (_fV === 8?'soundmanager2.swf':'soundmanager2_flash9.swf').replace('.swf', isDebug);
-    sm2.features.peakData = sm2.features.waveformData = sm2.features.eqData = (_fV > 8);
+    sm2.filePattern = sm2.filePatterns[(fV !== 8?'flash9':'flash8')];
+    sm2.movieURL = (fV === 8?'soundmanager2.swf':'soundmanager2_flash9.swf').replace('.swf', isDebug);
+    sm2.features.peakData = sm2.features.waveformData = sm2.features.eqData = (fV > 8);
   };
-  _setPolling = function(bPolling, bHighPerformance) {
+  setPolling = function(bPolling, bHighPerformance) {
     if (!flash) {
       return false;
     }
     flash._setPolling(bPolling, bHighPerformance);
   };
-  _initDebug = function() {
-    if (sm2.debugURLParam.test(_wl)) {
+  initDebug = function() {
+    if (sm2.debugURLParam.test(wl)) {
       sm2.debugMode = true;
     }
   };
-  _idCheck = this.getSoundById;
-  _getSWFCSS = function() {
+  idCheck = this.getSoundById;
+  getSWFCSS = function() {
     var css = [];
     if (sm2.debugMode) {
-      css.push(_swfCSS.sm2Debug);
+      css.push(swfCSS.sm2Debug);
     }
     if (sm2.debugFlash) {
-      css.push(_swfCSS.flashDebug);
+      css.push(swfCSS.flashDebug);
     }
     if (sm2.useHighPerformance) {
-      css.push(_swfCSS.highPerf);
+      css.push(swfCSS.highPerf);
     }
     return css.join(' ');
   };
   flashBlockHandler = function() {
-    var name = _str('fbHandler'),
+    var name = str('fbHandler'),
         p = sm2.getMoviePercent(),
-        css = _swfCSS,
+        css = swfCSS,
         error = {type:'FLASHBLOCK'};
     if (sm2.html5Only) {
       return false;
     }
     if (!sm2.ok()) {
-      if (_needsFlash) {
-        sm2.oMC.className = _getSWFCSS() + ' ' + css.swfDefault + ' ' + (p === null?css.swfTimedout:css.swfError);
+      if (needsFlash) {
+        sm2.oMC.className = getSWFCSS() + ' ' + css.swfDefault + ' ' + (p === null?css.swfTimedout:css.swfError);
       }
       sm2.didFlashBlock = true;
-      _processOnEvents({type:'ontimeout', ignoreInit:true, error:error});
-      _catchError(error);
+      processOnEvents({type:'ontimeout', ignoreInit:true, error:error});
+      catchError(error);
     } else {
       if (sm2.oMC) {
-        sm2.oMC.className = [_getSWFCSS(), css.swfDefault, css.swfLoaded + (sm2.didFlashBlock?' '+css.swfUnblocked:'')].join(' ');
+        sm2.oMC.className = [getSWFCSS(), css.swfDefault, css.swfLoaded + (sm2.didFlashBlock?' '+css.swfUnblocked:'')].join(' ');
       }
     }
   };
-  _addOnEvent = function(sType, oMethod, oScope) {
-    if (typeof _on_queue[sType] === 'undefined') {
-      _on_queue[sType] = [];
+  addOnEvent = function(sType, oMethod, oScope) {
+    if (typeof on_queue[sType] === 'undefined') {
+      on_queue[sType] = [];
     }
-    _on_queue[sType].push({
+    on_queue[sType].push({
       'method': oMethod,
       'scope': (oScope || null),
       'fired': false
     });
   };
-  _processOnEvents = function(oOptions) {
+  processOnEvents = function(oOptions) {
     if (!oOptions) {
       oOptions = {
         type: (sm2.ok() ? 'onready' : 'ontimeout')
       };
     }
-    if (!_didInit && oOptions && !oOptions.ignoreInit) {
+    if (!didInit && oOptions && !oOptions.ignoreInit) {
       return false;
     }
-    if (oOptions.type === 'ontimeout' && (sm2.ok() || (_disabled && !oOptions.ignoreInit))) {
+    if (oOptions.type === 'ontimeout' && (sm2.ok() || (disabled && !oOptions.ignoreInit))) {
       return false;
     }
     var status = {
-          success: (oOptions && oOptions.ignoreInit?sm2.ok():!_disabled)
+          success: (oOptions && oOptions.ignoreInit?sm2.ok():!disabled)
         },
-        srcQueue = (oOptions && oOptions.type?_on_queue[oOptions.type]||[]:[]),
+        srcQueue = (oOptions && oOptions.type?on_queue[oOptions.type]||[]:[]),
         queue = [], i, j,
         args = [status],
-        canRetry = (_needsFlash && sm2.useFlashBlock && !sm2.ok());
+        canRetry = (needsFlash && sm2.useFlashBlock && !sm2.ok());
     if (oOptions.error) {
       args[0].error = oOptions.error;
     }
@@ -1964,32 +1965,32 @@ function SoundManager(smURL, smID) {
     }
     return true;
   };
-  _initUserOnload = function() {
-    _win.setTimeout(function() {
+  initUserOnload = function() {
+    win.setTimeout(function() {
       if (sm2.useFlashBlock) {
         flashBlockHandler();
       }
-      _processOnEvents();
+      processOnEvents();
       if (typeof sm2.onload === 'function') {
-        sm2.onload.apply(_win);
+        sm2.onload.apply(win);
       }
       if (sm2.waitForWindowLoad) {
-        _event.add(_win, 'load', _initUserOnload);
+        event.add(win, 'load', initUserOnload);
       }
     },1);
   };
-  _detectFlash = function() {
-    if (typeof _hasFlash !== 'undefined') {
-      return _hasFlash;
+  detectFlash = function() {
+    if (typeof hasFlash !== 'undefined') {
+      return hasFlash;
     }
-    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = _win.ActiveXObject;
+    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = win.ActiveXObject;
     if (nP && nP.length) {
       type = 'application/x-shockwave-flash';
       types = n.mimeTypes;
       if (types && types[type] && types[type].enabledPlugin && types[type].enabledPlugin.description) {
         hasPlugin = true;
       }
-    } else if (typeof AX !== 'undefined' && !_ua.match(/MSAppHost/i)) {
+    } else if (typeof AX !== 'undefined' && !ua.match(/MSAppHost/i)) {
       try {
         obj = new AX('ShockwaveFlash.ShockwaveFlash');
       } catch(e) {
@@ -1997,15 +1998,15 @@ function SoundManager(smURL, smID) {
       hasPlugin = (!!obj);
       obj = null;
     }
-    _hasFlash = hasPlugin;
+    hasFlash = hasPlugin;
     return hasPlugin;
   };
-  _featureCheck = function() {
+  featureCheck = function() {
     var needsFlash,
         item,
         result = true,
         formats = sm2.audioFormats,
-        isSpecial = (_is_iDevice && !!(_ua.match(/os (1|2|3_0|3_1)/i)));
+        isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)/i)));
     if (isSpecial) {
       sm2.hasHTML5 = false;
       sm2.html5Only = true;
@@ -2035,7 +2036,7 @@ function SoundManager(smURL, smID) {
     sm2.html5Only = (sm2.hasHTML5 && sm2.useHTML5Audio && !needsFlash);
     return (!sm2.html5Only);
   };
-  _parseURL = function(url) {
+  parseURL = function(url) {
     var i, j, urlResult = 0, result;
     if (url instanceof Array) {
       for (i=0, j=url.length; i<j; i++) {
@@ -2058,30 +2059,30 @@ function SoundManager(smURL, smID) {
     }
     return result;
   };
-  _startTimer = function(oSound) {
+  startTimer = function(oSound) {
     if (!oSound._hasTimer) {
       oSound._hasTimer = true;
-      if (!_mobileHTML5 && sm2.html5PollingInterval) {
-        if (_h5IntervalTimer === null && _h5TimerCount === 0) {
-          _h5IntervalTimer = _win.setInterval(_timerExecute, sm2.html5PollingInterval);
+      if (!mobileHTML5 && sm2.html5PollingInterval) {
+        if (h5IntervalTimer === null && h5TimerCount === 0) {
+          h5IntervalTimer = win.setInterval(timerExecute, sm2.html5PollingInterval);
         }
-        _h5TimerCount++;
+        h5TimerCount++;
       }
     }
   };
-  _stopTimer = function(oSound) {
+  stopTimer = function(oSound) {
     if (oSound._hasTimer) {
       oSound._hasTimer = false;
-      if (!_mobileHTML5 && sm2.html5PollingInterval) {
-        _h5TimerCount--;
+      if (!mobileHTML5 && sm2.html5PollingInterval) {
+        h5TimerCount--;
       }
     }
   };
-  _timerExecute = function() {
+  timerExecute = function() {
     var i;
-    if (_h5IntervalTimer !== null && !_h5TimerCount) {
-      _win.clearInterval(_h5IntervalTimer);
-      _h5IntervalTimer = null;
+    if (h5IntervalTimer !== null && !h5TimerCount) {
+      win.clearInterval(h5IntervalTimer);
+      h5IntervalTimer = null;
       return false;
     }
     for (i = sm2.soundIDs.length-1; i >= 0; i--) {
@@ -2090,17 +2091,17 @@ function SoundManager(smURL, smID) {
       }
     }
   };
-  _catchError = function(options) {
+  catchError = function(options) {
     options = (typeof options !== 'undefined' ? options : {});
     if (typeof sm2.onerror === 'function') {
-      sm2.onerror.apply(_win, [{type:(typeof options.type !== 'undefined' ? options.type : null)}]);
+      sm2.onerror.apply(win, [{type:(typeof options.type !== 'undefined' ? options.type : null)}]);
     }
     if (typeof options.fatal !== 'undefined' && options.fatal) {
       sm2.disable();
     }
   };
-  _badSafariFix = function() {
-    if (!_isBadSafari || !_detectFlash()) {
+  badSafariFix = function() {
+    if (!isBadSafari || !detectFlash()) {
       return false;
     }
     var aF = sm2.audioFormats, i, item;
@@ -2124,46 +2125,48 @@ function SoundManager(smURL, smID) {
       return false;
     }
     var e, eiTime = new Date().getTime();
+    debugTS('swf', true);
+    debugTS('flashtojs', true);
     sm2.swfLoaded = true;
-    _tryInitOnFocus = false;
-    if (_isBadSafari) {
-      _badSafariFix();
+    tryInitOnFocus = false;
+    if (isBadSafari) {
+      badSafariFix();
     }
-    setTimeout(_init, _isIE ? 100 : 1);
+    setTimeout(init, isIE ? 100 : 1);
   };
-  _createMovie = function(smID, smURL) {
-    if (_didAppend && _appendSuccess) {
+  createMovie = function(smID, smURL) {
+    if (didAppend && appendSuccess) {
       return false;
     }
-    function _initMsg() {
+    function initMsg() {
     }
     if (sm2.html5Only) {
-      _setVersionInfo();
-      _initMsg();
-      sm2.oMC = _id(sm2.movieID);
-      _init();
-      _didAppend = true;
-      _appendSuccess = true;
+      setVersionInfo();
+      initMsg();
+      sm2.oMC = id(sm2.movieID);
+      init();
+      didAppend = true;
+      appendSuccess = true;
       return false;
     }
     var remoteURL = (smURL || sm2.url),
     localURL = (sm2.altURL || remoteURL),
     swfTitle = 'JS/Flash audio component (SoundManager 2)',
-    oTarget = _getDocument(),
-    extraClass = _getSWFCSS(),
+    oTarget = getDocument(),
+    extraClass = getSWFCSS(),
     isRTL = null,
-    html = _doc.getElementsByTagName('html')[0],
+    html = doc.getElementsByTagName('html')[0],
     oEmbed, oMovie, tmp, movieHTML, oEl, s, x, sClass;
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
     smID = (typeof smID === 'undefined'?sm2.id:smID);
     function param(name, value) {
       return '<param name="'+name+'" value="'+value+'" />';
     }
-    _setVersionInfo();
-    sm2.url = _normalizeMovieURL(_overHTTP?remoteURL:localURL);
+    setVersionInfo();
+    sm2.url = normalizeMovieURL(overHTTP?remoteURL:localURL);
     smURL = sm2.url;
     sm2.wmode = (!sm2.wmode && sm2.useHighPerformance ? 'transparent' : sm2.wmode);
-    if (sm2.wmode !== null && (_ua.match(/msie 8/i) || (!_isIE && !sm2.useHighPerformance)) && navigator.platform.match(/win32|win64/i)) {
+    if (sm2.wmode !== null && (ua.match(/msie 8/i) || (!isIE && !sm2.useHighPerformance)) && navigator.platform.match(/win32|win64/i)) {
       sm2.wmode = null;
     }
     oEmbed = {
@@ -2173,7 +2176,7 @@ function SoundManager(smURL, smID) {
       'quality': 'high',
       'allowScriptAccess': sm2.allowScriptAccess,
       'bgcolor': sm2.bgColor,
-      'pluginspage': _http+'www.macromedia.com/go/getflashplayer',
+      'pluginspage': http+'www.macromedia.com/go/getflashplayer',
       'title': swfTitle,
       'type': 'application/x-shockwave-flash',
       'wmode': sm2.wmode,
@@ -2185,10 +2188,10 @@ function SoundManager(smURL, smID) {
     if (!sm2.wmode) {
       delete oEmbed.wmode;
     }
-    if (_isIE) {
-      oMovie = _doc.createElement('div');
+    if (isIE) {
+      oMovie = doc.createElement('div');
       movieHTML = [
-        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" title="' + oEmbed.title +'" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + _http+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0">',
+        '<object id="' + smID + '" data="' + smURL + '" type="' + oEmbed.type + '" title="' + oEmbed.title +'" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="' + http+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0">',
         param('movie', smURL),
         param('AllowScriptAccess', sm2.allowScriptAccess),
         param('quality', oEmbed.quality),
@@ -2199,21 +2202,21 @@ function SoundManager(smURL, smID) {
         '</object>'
       ].join('');
     } else {
-      oMovie = _doc.createElement('embed');
+      oMovie = doc.createElement('embed');
       for (tmp in oEmbed) {
         if (oEmbed.hasOwnProperty(tmp)) {
           oMovie.setAttribute(tmp, oEmbed[tmp]);
         }
       }
     }
-    _initDebug();
-    extraClass = _getSWFCSS();
-    oTarget = _getDocument();
+    initDebug();
+    extraClass = getSWFCSS();
+    oTarget = getDocument();
     if (oTarget) {
-      sm2.oMC = (_id(sm2.movieID) || _doc.createElement('div'));
+      sm2.oMC = (id(sm2.movieID) || doc.createElement('div'));
       if (!sm2.oMC.id) {
         sm2.oMC.id = sm2.movieID;
-        sm2.oMC.className = _swfCSS.swfDefault + ' ' + extraClass;
+        sm2.oMC.className = swfCSS.swfDefault + ' ' + extraClass;
         s = null;
         oEl = null;
         if (!sm2.useFlashBlock) {
@@ -2239,7 +2242,7 @@ function SoundManager(smURL, smID) {
             }
           }
         }
-        if (_isWebkit) {
+        if (isWebkit) {
           sm2.oMC.style.zIndex = 10000;
         }
         if (!sm2.debugFlash) {
@@ -2250,38 +2253,38 @@ function SoundManager(smURL, smID) {
           }
         }
         try {
-          if (!_isIE) {
+          if (!isIE) {
             sm2.oMC.appendChild(oMovie);
           }
           oTarget.appendChild(sm2.oMC);
-          if (_isIE) {
-            oEl = sm2.oMC.appendChild(_doc.createElement('div'));
-            oEl.className = _swfCSS.swfBox;
+          if (isIE) {
+            oEl = sm2.oMC.appendChild(doc.createElement('div'));
+            oEl.className = swfCSS.swfBox;
             oEl.innerHTML = movieHTML;
           }
-          _appendSuccess = true;
+          appendSuccess = true;
         } catch(e) {
-          throw new Error(_str('domError')+' \n'+e.toString());
+          throw new Error(str('domError')+' \n'+e.toString());
         }
       } else {
         sClass = sm2.oMC.className;
-        sm2.oMC.className = (sClass?sClass+' ':_swfCSS.swfDefault) + (extraClass?' '+extraClass:'');
+        sm2.oMC.className = (sClass?sClass+' ':swfCSS.swfDefault) + (extraClass?' '+extraClass:'');
         sm2.oMC.appendChild(oMovie);
-        if (_isIE) {
-          oEl = sm2.oMC.appendChild(_doc.createElement('div'));
-          oEl.className = _swfCSS.swfBox;
+        if (isIE) {
+          oEl = sm2.oMC.appendChild(doc.createElement('div'));
+          oEl.className = swfCSS.swfBox;
           oEl.innerHTML = movieHTML;
         }
-        _appendSuccess = true;
+        appendSuccess = true;
       }
     }
-    _didAppend = true;
-    _initMsg();
+    didAppend = true;
+    initMsg();
     return true;
   };
-  _initMovie = function() {
+  initMovie = function() {
     if (sm2.html5Only) {
-      _createMovie();
+      createMovie();
       return false;
     }
     if (flash) {
@@ -2292,16 +2295,16 @@ function SoundManager(smURL, smID) {
     }
     flash = sm2.getMovie(sm2.id);
     if (!flash) {
-      if (!_oRemoved) {
-        _createMovie(sm2.id, sm2.url);
+      if (!oRemoved) {
+        createMovie(sm2.id, sm2.url);
       } else {
-        if (!_isIE) {
-          sm2.oMC.appendChild(_oRemoved);
+        if (!isIE) {
+          sm2.oMC.appendChild(oRemoved);
         } else {
-          sm2.oMC.innerHTML = _oRemovedHTML;
+          sm2.oMC.innerHTML = oRemovedHTML;
         }
-        _oRemoved = null;
-        _didAppend = true;
+        oRemoved = null;
+        didAppend = true;
       }
       flash = sm2.getMovie(sm2.id);
     }
@@ -2310,24 +2313,24 @@ function SoundManager(smURL, smID) {
     }
     return true;
   };
-  _delayWaitForEI = function() {
-    setTimeout(_waitForEI, 1000);
+  delayWaitForEI = function() {
+    setTimeout(waitForEI, 1000);
   };
-  _waitForEI = function() {
+  waitForEI = function() {
     var p,
         loadIncomplete = false;
     if (!sm2.url) {
       return false;
     }
-    if (_waitingForEI) {
+    if (waitingForEI) {
       return false;
     }
-    _waitingForEI = true;
-    _event.remove(_win, 'load', _delayWaitForEI);
-    if (_tryInitOnFocus && !_isFocused) {
+    waitingForEI = true;
+    event.remove(win, 'load', delayWaitForEI);
+    if (tryInitOnFocus && !isFocused) {
       return false;
     }
-    if (!_didInit) {
+    if (!didInit) {
       p = sm2.getMoviePercent();
       if (p > 0 && p < 100) {
         loadIncomplete = true;
@@ -2336,82 +2339,85 @@ function SoundManager(smURL, smID) {
     setTimeout(function() {
       p = sm2.getMoviePercent();
       if (loadIncomplete) {
-        _waitingForEI = false;
-        _win.setTimeout(_delayWaitForEI, 1);
+        waitingForEI = false;
+        win.setTimeout(delayWaitForEI, 1);
         return false;
       }
-      if (!_didInit && _okToDisable) {
+      if (!didInit && okToDisable) {
         if (p === null) {
           if (sm2.useFlashBlock || sm2.flashLoadTimeout === 0) {
             if (sm2.useFlashBlock) {
               flashBlockHandler();
             }
           } else {
-            _failSafely(true);
+            failSafely(true);
           }
         } else {
           if (sm2.flashLoadTimeout === 0) {
           } else {
-            _failSafely(true);
+            failSafely(true);
           }
         }
       }
     }, sm2.flashLoadTimeout);
   };
-  _handleFocus = function() {
+  handleFocus = function() {
     function cleanup() {
-      _event.remove(_win, 'focus', _handleFocus);
+      event.remove(win, 'focus', handleFocus);
     }
-    if (_isFocused || !_tryInitOnFocus) {
+    if (isFocused || !tryInitOnFocus) {
       cleanup();
       return true;
     }
-    _okToDisable = true;
-    _isFocused = true;
-    _waitingForEI = false;
-    _delayWaitForEI();
+    okToDisable = true;
+    isFocused = true;
+    waitingForEI = false;
+    delayWaitForEI();
     cleanup();
     return true;
   };
-  _showSupport = function() {
+  showSupport = function() {
   };
-  _initComplete = function(bNoDisable) {
-    if (_didInit) {
+  initComplete = function(bNoDisable) {
+    if (didInit) {
       return false;
     }
     if (sm2.html5Only) {
-      _didInit = true;
-      _initUserOnload();
+      didInit = true;
+      initUserOnload();
+      debugTS('onload', true);
       return true;
     }
     var wasTimeout = (sm2.useFlashBlock && sm2.flashLoadTimeout && !sm2.getMoviePercent()),
         result = true,
         error;
     if (!wasTimeout) {
-      _didInit = true;
-      if (_disabled) {
-        error = {type: (!_hasFlash && _needsFlash ? 'NO_FLASH' : 'INIT_TIMEOUT')};
+      didInit = true;
+      if (disabled) {
+        error = {type: (!hasFlash && needsFlash ? 'NO_FLASH' : 'INIT_TIMEOUT')};
       }
     }
-    if (_disabled || bNoDisable) {
+    if (disabled || bNoDisable) {
       if (sm2.useFlashBlock && sm2.oMC) {
-        sm2.oMC.className = _getSWFCSS() + ' ' + (sm2.getMoviePercent() === null?_swfCSS.swfTimedout:_swfCSS.swfError);
+        sm2.oMC.className = getSWFCSS() + ' ' + (sm2.getMoviePercent() === null?swfCSS.swfTimedout:swfCSS.swfError);
       }
-      _processOnEvents({type:'ontimeout', error:error, ignoreInit: true});
-      _catchError(error);
+      processOnEvents({type:'ontimeout', error:error, ignoreInit: true});
+      debugTS('onload', false);
+      catchError(error);
       result = false;
     } else {
+      debugTS('onload', true);
     }
-    if (!_disabled) {
-      if (sm2.waitForWindowLoad && !_windowLoaded) {
-        _event.add(_win, 'load', _initUserOnload);
+    if (!disabled) {
+      if (sm2.waitForWindowLoad && !windowLoaded) {
+        event.add(win, 'load', initUserOnload);
       } else {
-        _initUserOnload();
+        initUserOnload();
       }
     }
     return result;
   };
-  _setProperties = function() {
+  setProperties = function() {
     var i,
         o = sm2.setupOptions;
     for (i in o) {
@@ -2424,91 +2430,94 @@ function SoundManager(smURL, smID) {
       }
     }
   };
-  _init = function() {
-    if (_didInit) {
+  init = function() {
+    if (didInit) {
       return false;
     }
-    function _cleanup() {
-      _event.remove(_win, 'load', sm2.beginDelayedInit);
+    function cleanup() {
+      event.remove(win, 'load', sm2.beginDelayedInit);
     }
     if (sm2.html5Only) {
-      if (!_didInit) {
-        _cleanup();
+      if (!didInit) {
+        cleanup();
         sm2.enabled = true;
-        _initComplete();
+        initComplete();
       }
       return true;
     }
-    _initMovie();
+    initMovie();
     try {
       flash._externalInterfaceTest(false);
-      _setPolling(true, (sm2.flashPollingInterval || (sm2.useHighPerformance ? 10 : 50)));
+      setPolling(true, (sm2.flashPollingInterval || (sm2.useHighPerformance ? 10 : 50)));
       if (!sm2.debugMode) {
         flash._disableDebug();
       }
       sm2.enabled = true;
+      debugTS('jstoflash', true);
       if (!sm2.html5Only) {
-        _event.add(_win, 'unload', _doNothing);
+        event.add(win, 'unload', doNothing);
       }
     } catch(e) {
-      _catchError({type:'JS_TO_FLASH_EXCEPTION', fatal:true});
-      _failSafely(true);
-      _initComplete();
+      debugTS('jstoflash', false);
+      catchError({type:'JS_TO_FLASH_EXCEPTION', fatal:true});
+      failSafely(true);
+      initComplete();
       return false;
     }
-    _initComplete();
-    _cleanup();
+    initComplete();
+    cleanup();
     return true;
   };
-  _domContentLoaded = function() {
-    if (_didDCLoaded) {
+  domContentLoaded = function() {
+    if (didDCLoaded) {
       return false;
     }
-    _didDCLoaded = true;
-    _setProperties();
-    _initDebug();
-    if (!_hasFlash && sm2.hasHTML5) {
+    didDCLoaded = true;
+    setProperties();
+    initDebug();
+    if (!hasFlash && sm2.hasHTML5) {
       sm2.setup({
         'useHTML5Audio': true,
         'preferFlash': false
       });
     }
-    _testHTML5();
-    sm2.html5.usingFlash = _featureCheck();
-    _needsFlash = sm2.html5.usingFlash;
-    _showSupport();
-    if (!_hasFlash && _needsFlash) {
+    testHTML5();
+    sm2.html5.usingFlash = featureCheck();
+    needsFlash = sm2.html5.usingFlash;
+    showSupport();
+    if (!hasFlash && needsFlash) {
       sm2.setup({
         'flashLoadTimeout': 1
       });
     }
-    if (_doc.removeEventListener) {
-      _doc.removeEventListener('DOMContentLoaded', _domContentLoaded, false);
+    if (doc.removeEventListener) {
+      doc.removeEventListener('DOMContentLoaded', domContentLoaded, false);
     }
-    _initMovie();
+    initMovie();
     return true;
   };
-  _domContentLoadedIE = function() {
-    if (_doc.readyState === 'complete') {
-      _domContentLoaded();
-      _doc.detachEvent('onreadystatechange', _domContentLoadedIE);
+  domContentLoadedIE = function() {
+    if (doc.readyState === 'complete') {
+      domContentLoaded();
+      doc.detachEvent('onreadystatechange', domContentLoadedIE);
     }
     return true;
   };
-  _winOnLoad = function() {
-    _windowLoaded = true;
-    _event.remove(_win, 'load', _winOnLoad);
+  winOnLoad = function() {
+    windowLoaded = true;
+    event.remove(win, 'load', winOnLoad);
   };
-  _detectFlash();
-  _event.add(_win, 'focus', _handleFocus);
-  _event.add(_win, 'load', _delayWaitForEI);
-  _event.add(_win, 'load', _winOnLoad);
-  if (_doc.addEventListener) {
-    _doc.addEventListener('DOMContentLoaded', _domContentLoaded, false);
-  } else if (_doc.attachEvent) {
-    _doc.attachEvent('onreadystatechange', _domContentLoadedIE);
+  detectFlash();
+  event.add(win, 'focus', handleFocus);
+  event.add(win, 'load', delayWaitForEI);
+  event.add(win, 'load', winOnLoad);
+  if (doc.addEventListener) {
+    doc.addEventListener('DOMContentLoaded', domContentLoaded, false);
+  } else if (doc.attachEvent) {
+    doc.attachEvent('onreadystatechange', domContentLoadedIE);
   } else {
-    _catchError({type:'NO_DOM2_EVENTS', fatal:true});
+    debugTS('onload', false);
+    catchError({type:'NO_DOM2_EVENTS', fatal:true});
   }
 }
 // SM2_DEFER details: http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading
