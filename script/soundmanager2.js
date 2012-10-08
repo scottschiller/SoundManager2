@@ -815,17 +815,21 @@ function SoundManager(smURL, smID) {
     }
 
     if (!sID) {
+
       sm2._wD(sm+'.mute(): Muting all sounds');
       for (i = sm2.soundIDs.length-1; i >= 0; i--) {
         sm2.sounds[sm2.soundIDs[i]].mute();
       }
       sm2.muted = true;
+
     } else {
+
       if (!idCheck(sID)) {
         return false;
       }
       sm2._wD(sm+'.mute(): Muting "' + sID + '"');
       return sm2.sounds[sID].mute();
+
     }
 
     return true;
@@ -1512,7 +1516,7 @@ function SoundManager(smURL, smID) {
           // standard
           s._a.preload = 'auto';
 
-          oSound._called_load = true;
+          s._a._called_load = true;
 
           if (instanceOptions.autoPlay) {
             s.play();
@@ -2675,8 +2679,7 @@ function SoundManager(smURL, smID) {
       var instanceOptions = mixin(s._iO, oOptions), d = decodeURI,
           a = useGlobalHTML5Audio ? globalHTML5Audio  : s._a,
           dURL = d(instanceOptions.url),
-          sameURL,
-          result;
+          sameURL;
 
       /**
        * "First things first, I, Poppa.." (reset the previous state of the old sound, if playing)
@@ -2704,8 +2707,6 @@ function SoundManager(smURL, smID) {
 
           if (useGlobalHTML5Audio) {
 
-            result = a;
-
             if (a._s && a._s.playState && !sameURL) {
 
               // global HTML5 audio case, and loading a new URL. stop the currently-playing one.
@@ -2716,15 +2717,9 @@ function SoundManager(smURL, smID) {
           } else if (!useGlobalHTML5Audio && dURL === d(lastURL)) {
 
             // non-global HTML5 reuse case: same url, ignore request
-            result = a; 
-
-          }
-
-          if (result) {
-
             s._apply_loop(a, instanceOptions.loops);
 
-            return result;
+            return a;
 
           }
 
@@ -2859,7 +2854,6 @@ function SoundManager(smURL, smID) {
      */
 
     this._onload = function(nSuccess) {
-
 
       var fN,
           // check for duration to prevent false positives from flash 8 when loading from cache.

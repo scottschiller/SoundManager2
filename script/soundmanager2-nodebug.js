@@ -624,7 +624,7 @@ function SoundManager(smURL, smID) {
           }
           s._a.autobuffer = 'auto';
           s._a.preload = 'auto';
-          oSound._called_load = true;
+          s._a._called_load = true;
           if (instanceOptions.autoPlay) {
             s.play();
           }
@@ -1194,8 +1194,7 @@ function SoundManager(smURL, smID) {
       var instanceOptions = mixin(s._iO, oOptions), d = decodeURI,
           a = useGlobalHTML5Audio ? globalHTML5Audio  : s._a,
           dURL = d(instanceOptions.url),
-          sameURL,
-          result;
+          sameURL;
       if (useGlobalHTML5Audio) {
         if (dURL === lastGlobalHTML5URL) {
           sameURL = true;
@@ -1206,16 +1205,12 @@ function SoundManager(smURL, smID) {
       if (a) {
         if (a._s) {
           if (useGlobalHTML5Audio) {
-            result = a;
             if (a._s && a._s.playState && !sameURL) {
               a._s.stop();
             }
           } else if (!useGlobalHTML5Audio && dURL === d(lastURL)) {
-            result = a;
-          }
-          if (result) {
             s._apply_loop(a, instanceOptions.loops);
-            return result;
+            return a;
           }
         }
         if (!sameURL) {
