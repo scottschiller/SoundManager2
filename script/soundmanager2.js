@@ -3408,12 +3408,14 @@ function SoundManager(smURL, smID) {
 
   event = (function() {
 
+    // normalize event methods
     var old = (win.attachEvent),
     evt = {
       add: (old?'attachEvent':'addEventListener'),
       remove: (old?'detachEvent':'removeEventListener')
     };
 
+    // normalize "on" event prefix, optional capture argument
     function getArgs(oArgs) {
 
       var args = slice.call(oArgs),
@@ -3436,10 +3438,12 @@ function SoundManager(smURL, smID) {
 
     function apply(args, sType) {
 
+      // normalize and call the event method, with the proper arguments
       var element = args.shift(),
           method = [evt[sType]];
 
       if (old) {
+        // old IE can't do apply().
         element[method](args[0], args[1]);
       } else {
         element[method].apply(element, args);
@@ -5501,9 +5505,11 @@ function SoundManager(smURL, smID) {
   };
 
   winOnLoad = function() {
+
     // catch edge case of initComplete() firing after window.load()
     windowLoaded = true;
     event.remove(win, 'load', winOnLoad);
+
   };
 
   // sniff up-front
