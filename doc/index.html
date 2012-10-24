@@ -197,6 +197,7 @@ soundManager.setup({
 	 <li><a href="#soundmanager-canplaylink">canPlayLink()</a></li>
 	 <li><a href="#soundmanager-canplaymime">canPlayMIME()</a></li>
      <li><a href="#soundmanager-canplayurl">canPlayURL()</a></li>
+     <li><a href="#soundmanager-clearonposition">clearOnPosition()</a></li>
      <li><a href="#soundmanager-createsound">createSound()</a></li>
      <li><a href="#soundmanager-destroysound">destroySound()</a></li>
 	 <li class="flash9" title="Flash 9.0+ only"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
@@ -303,6 +304,7 @@ soundManager.setup({
     <ul>
      <li><a href="#smsound-destruct">destruct()</a></li>
      <li><a href="#smsound-load">load()</a></li>
+     <li><a href="#smsound-clearonposition">clearOnPosition()</a></li>
      <li><a href="#smsound-onposition">onPosition()</a></li>
      <li><a href="#smsound-mute">mute()</a></li>
      <li><a href="#smsound-pause">pause()</a></li>
@@ -828,6 +830,13 @@ if (soundManager.canPlayURL(sURL)) {
 				    <dd>If no <code>href</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
 				   </dl>
 
+				  <dl id="soundmanager-clearonposition" class="f-block f-clearonposition">
+				   <dt><span>object:SMSound</span> clearOnPosition(<span>id:string, msecOffset:integer, [callback:function]</span>)</dt>
+				   <dd>Clears the event listener set via <code>onPosition()</code>, in the same way it was registered. If the callback is omitted, any and all callbacks registered for the given offset will be cleared.</dd>
+				   <dd>Example: <code>soundManager.clearOnPosition('mySound', 3000, positionHandler);</code></dd>
+				   <dd>Example 2: <code>soundManager.clearOnPosition('mySound', 3000);</code></dd>
+			      </dl>
+
 				  <dl id="soundmanager-createsound" class="f-block f-createsound s-autoplay">
 
 				   <dt><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
@@ -876,11 +885,11 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 	   </dl>
 
 	   <dl id="soundmanager-onposition" class="f-block f-onposition">
-	   <dt><span>object:SMSound</span> onPosition(<span>id:string, msecOffset:integer, callback:function, [scope]</span>)</dt>
-	   <dd>Registers an event listener, fired when a sound reaches or passes a certain position while playing. Position being "listened" for is passed back to event handler. Will also fire if a sound is "rewound" (eg. via <code>setPosition()</code> to an earlier point) and the given position is reached again. Listeners will be removed if a sound is unloaded. An optional scope can be passed as well.</dd>
-	   <dd>Note that for <code>multiShot</code> cases, only the first play instance's <code>position</code> is tracked in Flash; therefore, subsequent "shots" will not have onPosition() events being fired.</dd>
-	   <dd>Example: <code>soundManager.onPosition('mySound', 3000, function(eventPosition){<span>console.log(this.id+' reached '+eventPosition</span>});</code></dd>
-   </dl>
+	    <dt><span>object:SMSound</span> onPosition(<span>id:string, msecOffset:integer, callback:function, [scope]</span>)</dt>
+	    <dd>Registers an event listener, fired when a sound reaches or passes a certain position while playing. Position being "listened" for is passed back to event handler. Will also fire if a sound is "rewound" (eg. via <code>setPosition()</code> to an earlier point) and the given position is reached again. Listeners will be removed if a sound is unloaded. An optional scope can be passed as well.</dd>
+	    <dd>Note that for <code>multiShot</code> cases, only the first play instance's <code>position</code> is tracked in Flash; therefore, subsequent "shots" will not have onPosition() events being fired.</dd>
+	    <dd>Example: <code>soundManager.onPosition('mySound', 3000, function(eventPosition){<span>console.log(this.id+' reached '+eventPosition</span>});</code></dd>
+       </dl>
 
 	   <dl id="soundmanager-onready" class="f-block f-onready">
 	   <dt>onready(<span>callback:function, [scope]</span>)</dt>
@@ -1055,6 +1064,13 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 				   <h3>Sound Object Methods</h3>
 				
 				   <p class="in">Each sound under SoundManager 2 is given a <code>SMSound</code> object instance which includes the following events, methods and properties. Note that most methods will return the sound object instance, allowing for method chaining if desired.</p>
+
+				   <dl id="smsound-clearonposition" class="f-block f-clearonposition">
+				   <dt><span>object:SMSound</span> clearOnPosition(<span>msecOffset:integer, [callback:function]</span>)</dt>
+				   <dd>Clears the event listener set via <code>onPosition()</code>, in the same way it was registered. If the callback is omitted, any and all callbacks registered for the given offset will be cleared.</dd>
+				   <dd>Example: <code>mySound.clearOnPosition(3000, positionHandler);</code></dd>
+				   <dd>Example 2: <code>mySound.clearOnPosition('mySound', 3000);</code></dd>
+			       </dl>
 
 				   <dl id="smsound-destruct" class="f-block s-destruct">
 				   <dt>destruct()</dt>
