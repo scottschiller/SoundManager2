@@ -342,3 +342,27 @@ body#page-more {
 #col2 .tape {
  margin-top: 1em;
 }
+
+.thanks {
+ position: fixed;
+ bottom: 0px;
+ left: 0px;
+ margin: 0px;
+ width: 100%;
+}
+
+.thanks p {
+ display: block;
+ margin: 0px;
+ padding: 0.75em;
+ background: rgba(0,0,0,0.25);
+ text-shadow: 0px 1px #000;
+ font-weight: normal;
+ font-size: 12px;
+ color: #ddd;
+}
+
+.thanks a {
+ color: #99ccff;
+ text-decoration: none;
+}
