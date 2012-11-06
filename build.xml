@@ -108,8 +108,8 @@
 <!-- remove _wDS() calls -->
 <replaceregexp match="\s+_wDS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
 
-<!-- remove _debugTS() calls -->
-<replaceregexp match="\s+_debugTS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+<!-- remove debugTS() calls -->
+<replaceregexp match="\s+debugTS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
 
 <!-- remove single-line comments -->
 <replaceregexp match="\s+?//.*" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
