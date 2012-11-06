@@ -641,7 +641,6 @@ function SoundManager(smURL, smID) {
             flash._load(s.id, instanceOptions.url, !!(instanceOptions.stream), !!(instanceOptions.autoPlay), instanceOptions.loops||1, !!(instanceOptions.autoLoad), instanceOptions.usePolicyFile);
           }
         } catch(e) {
-          debugTS('onload', false);
           catchError({type:'SMSOUND_LOAD_JS_EXCEPTION', fatal:true});
         }
       }
@@ -2120,8 +2119,6 @@ function SoundManager(smURL, smID) {
       return false;
     }
     var e, eiTime = new Date().getTime();
-    debugTS('swf', true);
-    debugTS('flashtojs', true);
     sm2.swfLoaded = true;
     tryInitOnFocus = false;
     if (isBadSafari) {
@@ -2380,7 +2377,6 @@ function SoundManager(smURL, smID) {
     if (sm2.html5Only) {
       didInit = true;
       initUserOnload();
-      debugTS('onload', true);
       return true;
     }
     var wasTimeout = (sm2.useFlashBlock && sm2.flashLoadTimeout && !sm2.getMoviePercent()),
@@ -2397,11 +2393,9 @@ function SoundManager(smURL, smID) {
         sm2.oMC.className = getSWFCSS() + ' ' + (sm2.getMoviePercent() === null?swfCSS.swfTimedout:swfCSS.swfError);
       }
       processOnEvents({type:'ontimeout', error:error, ignoreInit: true});
-      debugTS('onload', false);
       catchError(error);
       result = false;
     } else {
-      debugTS('onload', true);
     }
     if (!disabled) {
       if (sm2.waitForWindowLoad && !windowLoaded) {
@@ -2448,12 +2442,10 @@ function SoundManager(smURL, smID) {
         flash._disableDebug();
       }
       sm2.enabled = true;
-      debugTS('jstoflash', true);
       if (!sm2.html5Only) {
         event.add(win, 'unload', doNothing);
       }
     } catch(e) {
-      debugTS('jstoflash', false);
       catchError({type:'JS_TO_FLASH_EXCEPTION', fatal:true});
       failSafely(true);
       initComplete();
@@ -2511,7 +2503,6 @@ function SoundManager(smURL, smID) {
   } else if (doc.attachEvent) {
     doc.attachEvent('onreadystatechange', domContentLoadedIE);
   } else {
-    debugTS('onload', false);
     catchError({type:'NO_DOM2_EVENTS', fatal:true});
   }
 }
