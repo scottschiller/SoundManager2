@@ -8,13 +8,14 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20121104
+ * V2.97a.20121104+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
 /*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
 
 (function(window) {
+"use strict";
 var soundManager = null;
 function SoundManager(smURL, smID) {
   this.setupOptions = {
@@ -101,7 +102,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20121104';
+  this.versionNumber = 'V2.97a.20121104+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
