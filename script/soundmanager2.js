@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20121104
+ * V2.97a.20121104+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -16,7 +16,7 @@
 
 /**
  * About this file
- * ---------------
+ * -------------------------------------------------------------------------------------
  * This is the fully-commented source version of the SoundManager 2 API,
  * recommended for use during development and testing.
  *
@@ -31,6 +31,8 @@
  */
 
 (function(window) {
+
+"use strict";
 
 var soundManager = null;
 
@@ -181,7 +183,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20121104';
+  this.versionNumber = 'V2.97a.20121104+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
