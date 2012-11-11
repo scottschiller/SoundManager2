@@ -30,7 +30,7 @@
  * Also, as you may note: Whoa, reliable cross-platform/device audio support is hard! ;)
  */
 
-(function(window) {
+(function(window, undefined) {
 
 "use strict";
 
