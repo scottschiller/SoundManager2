@@ -523,6 +523,14 @@ pre.block code,
   padding:0.5em;
   font-size: 100%;
   line-height:1.75em;
+  background-image: linear-gradient(#fafcff 50%, #fff 50%);
+  background-size: 100% 3.5em;
+  background-origin: content-box;
+}
+
+#sm2-properties .code {
+ /* special case: no zebra striping for this one. */
+ background-image: none;
 }
 
 pre.block code {
