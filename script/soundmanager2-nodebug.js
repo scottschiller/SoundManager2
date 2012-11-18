@@ -1937,7 +1937,7 @@ function SoundManager(smURL, smID) {
         srcQueue = (oOptions && oOptions.type?on_queue[oOptions.type]||[]:[]),
         queue = [], i, j,
         args = [status],
-        canRetry = (needsFlash && sm2.useFlashBlock && !sm2.ok());
+        canRetry = (needsFlash && !sm2.ok());
     if (oOptions.error) {
       args[0].error = oOptions.error;
     }
@@ -2343,7 +2343,7 @@ function SoundManager(smURL, smID) {
               flashBlockHandler();
             }
           } else {
-            failSafely(true);
+            processOnEvents({type:'ontimeout', ignoreInit: true});
           }
         } else {
           if (sm2.flashLoadTimeout === 0) {
