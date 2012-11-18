@@ -4423,7 +4423,7 @@ function SoundManager(smURL, smID) {
 
         queue = [], i, j,
         args = [status],
-        canRetry = (needsFlash && sm2.useFlashBlock && !sm2.ok());
+        canRetry = (needsFlash && !sm2.ok());
 
     if (oOptions.error) {
       args[0].error = oOptions.error;
@@ -4444,7 +4444,7 @@ function SoundManager(smURL, smID) {
           queue[i].method.apply(this, args);
         }
         if (!canRetry) {
-          // flashblock case doesn't count here
+          // useFlashBlock and SWF timeout case doesn't count here.
           queue[i].fired = true;
         }
       }
@@ -5182,8 +5182,10 @@ function SoundManager(smURL, smID) {
             }
             _wDS('waitForever');
           } else {
-            // old SM2 behaviour, simply fail
-            failSafely(true);
+            // no custom flash block handling, but SWF has timed out. Will recover if user unblocks / allows SWF load.
+            _wDS('waitForever');
+            // fire any regular registered ontimeout() listeners.
+            processOnEvents({type:'ontimeout', ignoreInit: true});
           }
         } else {
           // flash loaded? Shouldn't be a blocking issue, then.
