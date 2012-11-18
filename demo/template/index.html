@@ -49,7 +49,7 @@ soundManager.setup({
 
   },
 
-  // optional: ontimeout() callback for handling start-up failure
+  // optional: ontimeout() callback for handling start-up failure, flash required but blocked, etc.
 
   ontimeout: function() {
 
@@ -143,13 +143,13 @@ soundManager.setup({
 
   url: '<em><em>/path/to/swf-files/</em></em>',
 
-  <span><span>// optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)</span></span>
-  <span><span>// flashVersion: <em><em>9</em></em>,</span></span>
+  <span><span>// optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)
+  // flashVersion: <em><em>9</em></em>,
 
-  <span><span>// use soundmanager2-nodebug-jsmin.js, <i>or</i> disable debug mode (enabled by default) after development/testing</span></span>
-  <span><span>// debugMode: <em><em>false</em></em>,</span></span>
+  // use soundmanager2-nodebug-jsmin.js, <i>or</i> disable debug mode (enabled by default) after development/testing
+  // debugMode: <em><em>false</em></em>,
 
-  <span><span>// good to go: the onready() callback</span></span>
+  // good to go: the onready() callback</span></span>
 
   onready: function() {
 
@@ -158,8 +158,8 @@ soundManager.setup({
     var mySound = soundManager.createSound({
       id: '<em><em>aSound</em></em>',
       url: '<em><em>/path/to/an.mp3</em></em>'
-      <span><span>// onload: function() { console.log('sound loaded!', this); }</span></span>
-      <span><span>// <a href="../../doc/#smdefaults" onclick="checkDomain()">other options</a> here..</span></span>
+      <span><span>// onload: function() { console.log('sound loaded!', this); }
+      // <a href="../../doc/#smdefaults" onclick="checkDomain()">other options</a> here..</span></span>
     });
 
     mySound.play();
@@ -170,8 +170,8 @@ soundManager.setup({
 
   ontimeout: function() {
 
-    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?</span></span>
-    <span><span>// See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="checkDomain()">flashblock demo</a> when you want to start getting fancy.</span></span>
+    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?
+    // See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="checkDomain()">flashblock demo</a> when you want to start getting fancy.</span></span>
 
   }
 
