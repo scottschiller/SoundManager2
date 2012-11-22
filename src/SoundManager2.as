@@ -147,7 +147,6 @@ class SoundManager2 {
         } else {
           writeDebug('SM2 SWF ' + version + ' ' + version_as);
           flashDebug('JS -&gt; Flash OK');
-          writeDebug('JS to/from Flash OK');
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
         }
       } catch(e) {
@@ -367,10 +366,10 @@ class SoundManager2 {
       }
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
-        writeDebug('Enabling polling, ' + timerInterval + ' ms interval');
+        flashDebug('Enabling polling, ' + timerInterval + ' ms interval');
         timer = setInterval(checkProgress, timerInterval);
       } else if (timer && !pollingEnabled) {
-        writeDebug('Disabling polling');
+        flashDebug('Disabling polling');
         clearInterval(timer);
         timer = null;
       }
