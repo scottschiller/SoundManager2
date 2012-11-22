@@ -213,7 +213,6 @@ package {
           writeDebug('SM2 SWF ' + version + ' ' + version_as);
           flashDebug('JS -&gt; Flash OK');
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
-          writeDebug('JS to/from Flash OK');
         }
       } catch(e: Error) {
         flashDebug('Fatal: Flash &lt;-&gt; JS error: ' + e.toString());
@@ -901,14 +900,14 @@ package {
     public function _setPolling(bPolling: Boolean = false, nTimerInterval: uint = 50) : void {
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
-        writeDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
+        flashDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
         timer = new Timer(nTimerInterval, 0);
         timer.addEventListener(TimerEvent.TIMER, function() : void {
           checkProgress();
         }); // direct reference eg. checkProgress doesn't work? .. odd.
         timer.start();
       } else if (timer && !pollingEnabled) {
-        writeDebug('Disabling polling');
+        flashDebug('Disabling polling');
         // flash.utils.clearInterval(timer);
         timer.reset();
       }
