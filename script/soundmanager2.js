@@ -3961,27 +3961,23 @@ function SoundManager(smURL, smID) {
     // <d>
     notReady: 'Not loaded yet - wait for soundManager.onready()',
     notOK: 'Audio support is not available.',
-    domError: smc + 'createMovie(): appendChild/innerHTML call failed. DOM not ready or other error.',
-    spcWmode: smc + 'createMovie(): Removing wmode, preventing known SWF loading issue(s)',
+    domError: sm + 'exception caught while appending SWF to DOM.',
+    spcWmode: sm + 'Removing wmode, preventing known SWF loading issue(s)',
     swf404: sm + ': Verify that %s is a valid path.',
     tryDebug: 'Try ' + sm + '.debugFlash = true for more security details (output goes to SWF.)',
     checkSWF: 'See SWF output for more debug info.',
     localFail: sm + ': Non-HTTP page (' + doc.location.protocol + ' URL?) Review Flash player security settings for this special case:\nhttp://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html\nMay need to add/allow path, eg. c:/sm2/ or /users/me/sm2/',
     waitFocus: sm + ': Special case: Waiting for SWF to load with window focus...',
-    waitImpatient: sm + ': Getting impatient, still waiting for Flash%s...',
     waitForever: sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
     waitSWF: sm + ': Retrying, waiting for 100% SWF load...',
     needFunction: sm + ': Function object expected for %s',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
-    currentObj: '--- ' + sm + '._debug(): Current sound objects ---',
-    waitEI: smc + 'initMovie(): Waiting for ExternalInterface call from Flash...',
+    currentObj: sm + '._debug(): Current sound objects',
     waitOnload: sm + ': Waiting for window.onload()',
     docLoaded: sm + ': Document already loaded',
     onload: smc + 'initComplete(): calling soundManager.onload()',
     onloadOK: sm + '.onload() complete',
-    init: smc + 'init()',
     didInit: smc + 'init(): Already called?',
-    flashJS: sm + ': Attempting JS to Flash call...',
     secNote: 'Flash security note: Network/internet URLs will not load due to security restrictions. Access can be configured via Flash Player Global Security Settings Page: http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html',
     badRemove: 'Warning: Failed to remove flash movie.',
     shutdown: sm + '.disable(): Shutting down',
@@ -4765,8 +4761,6 @@ function SoundManager(smURL, smID) {
     sb.type = sandboxType;
     sb.description = sb.types[(sb.types[sandboxType] !== undefined?sandboxType:'unknown')];
 
-    sm2._wD('Flash security sandbox type: ' + sb.type);
-
     if (sb.type === 'localWithFile') {
 
       sb.noRemote = true;
@@ -4800,7 +4794,6 @@ function SoundManager(smURL, smID) {
 
     var e, eiTime = new Date().getTime();
 
-    sm2._wD(smc+'externalInterfaceOK()' + (flashDate?' (~' + (eiTime - flashDate) + ' ms)':''));
     debugTS('swf', true);
     debugTS('flashtojs', true);
     sm2.swfLoaded = true;
@@ -4845,7 +4838,7 @@ function SoundManager(smURL, smID) {
     }
 
     function initMsg() {
-      sm2._wD('-- SoundManager 2 ' + sm2.version + (!sm2.html5Only && sm2.useHTML5Audio?(sm2.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') + (!sm2.html5Only ? (sm2.useHighPerformance?', high performance mode, ':', ') + (( sm2.flashPollingInterval ? 'custom (' + sm2.flashPollingInterval + 'ms)' : 'normal') + ' polling') + (sm2.wmode?', wmode: ' + sm2.wmode:'') + (sm2.debugFlash?', flash debug mode':'') + (sm2.useFlashBlock?', flashBlock mode':'') : '') + ' --', 1);
+      sm2._wD('SoundManager 2 ' + sm2.version + (!sm2.html5Only && sm2.useHTML5Audio?(sm2.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') + (!sm2.html5Only ? (sm2.useHighPerformance?', high performance mode, ':', ') + (( sm2.flashPollingInterval ? 'custom (' + sm2.flashPollingInterval + 'ms)' : 'normal') + ' polling') + (sm2.wmode?', wmode: ' + sm2.wmode:'') + (sm2.debugFlash?', flash debug mode':'') + (sm2.useFlashBlock?', flashBlock mode':'') : ''), 1);
     }
 
     if (sm2.html5Only) {
@@ -5040,7 +5033,7 @@ function SoundManager(smURL, smID) {
 
     didAppend = true;
     initMsg();
-    sm2._wD(smc+'createMovie(): Trying to load ' + smURL + (!overHTTP && sm2.altURL?' (alternate URL)':''), 1);
+    sm2._wD(sm+': Trying to load ' + smURL + (!overHTTP && sm2.altURL?' (alternate URL)':''), 1);
 
     return true;
 
@@ -5091,12 +5084,6 @@ function SoundManager(smURL, smID) {
       flash = sm2.getMovie(sm2.id);
     }
 
-    // <d>
-    if (flash) {
-      _wDS('waitEI');
-    }
-    // </d>
-
     if (typeof sm2.oninitmovie === 'function') {
       setTimeout(sm2.oninitmovie, 1);
     }
@@ -5136,7 +5123,6 @@ function SoundManager(smURL, smID) {
 
     if (!didInit) {
       p = sm2.getMoviePercent();
-      sm2._wD(str('waitImpatient', (p > 0 ? ' (SWF ' + p + '% loaded)' : '')));
       if (p > 0 && p < 100) {
         loadIncomplete = true;
       }
@@ -5237,10 +5223,10 @@ function SoundManager(smURL, smID) {
     if (sm2.useHTML5Audio && sm2.hasHTML5) {
       for (item in sm2.audioFormats) {
         if (sm2.audioFormats.hasOwnProperty(item)) {
-          tests.push(item + ': ' + sm2.html5[item] + (!sm2.html5[item] && hasFlash && sm2.flash[item] ? ' (using flash)' : (sm2.preferFlash && sm2.flash[item] && hasFlash ? ' (preferring flash)': (!sm2.html5[item] ? ' (' + (sm2.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
+          tests.push(item + ' = ' + sm2.html5[item] + (!sm2.html5[item] && hasFlash && sm2.flash[item] ? ' (using flash)' : (sm2.preferFlash && sm2.flash[item] && hasFlash ? ' (preferring flash)': (!sm2.html5[item] ? ' (' + (sm2.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
         }
       }
-      sm2._wD('-- SoundManager 2: HTML5 support tests ('+sm2.html5Test+'): '+tests.join(', ')+' --',1);
+      sm2._wD('SoundManager 2 HTML5 support: '+tests.join(', '),1);
     }
 
     // </d>
@@ -5255,7 +5241,7 @@ function SoundManager(smURL, smID) {
 
     if (sm2.html5Only) {
       // all good.
-      sm2._wD('-- SoundManager 2: loaded --');
+      sm2._wD('SoundManager 2: loaded');
       didInit = true;
       initUserOnload();
       debugTS('onload', true);
@@ -5273,7 +5259,7 @@ function SoundManager(smURL, smID) {
       }
     }
 
-    sm2._wD('-- SoundManager 2 ' + (disabled?'failed to load':'loaded') + ' (' + (disabled?'Flash security/load error':'OK') + ') --', 1);
+    sm2._wD('SoundManager 2 ' + (disabled?'failed to load':'loaded') + ' (' + (disabled?'Flash security/load error':'OK') + ')', 1);
 
     if (disabled || bNoDisable) {
       if (sm2.useFlashBlock && sm2.oMC) {
@@ -5341,8 +5327,6 @@ function SoundManager(smURL, smID) {
 
   init = function() {
 
-    _wDS('init');
-
     // called after onload()
 
     if (didInit) {
@@ -5368,8 +5352,6 @@ function SoundManager(smURL, smID) {
     initMovie();
 
     try {
-
-      _wDS('flashJS');
 
       // attempt to talk to Flash
       flash._externalInterfaceTest(false);
