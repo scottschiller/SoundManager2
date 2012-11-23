@@ -92,10 +92,10 @@ class SoundManager2 {
     sm2Menu.customItems.push(sm2MenuItem);
     _root.menu = sm2Menu;
 
-    var writeDebug = function(s) {
+    var writeDebug = function(s, logLevel) {
       // <d>
       if (!debugEnabled) return false;
-      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s);
+      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, (logLevel || 0));
       // </d>
     }
 
@@ -145,7 +145,7 @@ class SoundManager2 {
             flashDebug('Waiting for JS -&gt; Flash...');
           }
         } else {
-          writeDebug('SM2 SWF ' + version + ' ' + version_as);
+          writeDebug('SM2 SWF ' + version + ' ' + version_as, 1);
           flashDebug('JS -&gt; Flash OK');
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
         }
@@ -229,7 +229,7 @@ class SoundManager2 {
       // writeDebug('_setPosition()');
       s.lastValues.position = s.position;
       if (s.lastValues.loops > 1 && nSecOffset != 0) {
-        writeDebug('Warning: Looping functionality being disabled due to Flash limitation.');
+        writeDebug('Warning: Looping functionality being disabled due to Flash limitation.', 240);
         s.lastValues.loops = 1;
       }
       s.start(nSecOffset, s.lastValues.nLoops || 1); // start playing at new position
