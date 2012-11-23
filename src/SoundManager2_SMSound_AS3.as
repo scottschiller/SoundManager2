@@ -226,8 +226,8 @@ package {
 
     }
 
-    public function writeDebug (s: String, bTimestamp: Boolean = false) : Boolean {
-      return this.sm.writeDebug (s, bTimestamp); // defined in main SM object
+    public function writeDebug (s: String, logLevel: Number = 0) : Boolean {
+      return this.sm.writeDebug (s,logLevel); // defined in main SM object
     }
 
     public function metaDataHandler(infoObject: Object) : void {
