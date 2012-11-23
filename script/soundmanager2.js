@@ -438,7 +438,7 @@ function SoundManager(smURL, smID) {
     if (html5OK(options)) {
 
       oSound = make();
-      sm2._wD('Creating sound ' + options.id + ', using HTML5');
+      sm2._wD(options.id + ': Using HTML5');
       oSound._setup_html5(options);
 
     } else {
@@ -1389,7 +1389,7 @@ function SoundManager(smURL, smID) {
     this._debug = function() {
 
       // <d>
-      sm2._wD('SMSound merged options:', s.options);
+      sm2._wD(s.id + ': Merged options:', s.options);
       // </d>
 
     };
@@ -2716,8 +2716,6 @@ function SoundManager(smURL, smID) {
 
       } else {
 
-        _wDS('h5a');
-
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
           s._a = new Audio(instanceOptions.url);
@@ -3499,7 +3497,7 @@ function SoundManager(smURL, smID) {
       }
 
       s._html5_canplay = true;
-      sm2._wD(s.id + ': canplay (' + s.url + ')');
+      sm2._wD(s.id + ': canplay');
       s._onbufferchange(0);
 
       // position according to instance options
@@ -3590,7 +3588,7 @@ function SoundManager(smURL, smID) {
 
     play: html5_event(function() {
 
-      sm2._wD(this._s.id + ': play (' + this._s.url + ')');
+      sm2._wD(this._s.id + ': play()');
       // once play starts, no buffering
       this._s._onbufferchange(0);
 
@@ -3972,7 +3970,6 @@ function SoundManager(smURL, smID) {
     setupError: sm + '.setup(): "%s" cannot be assigned with this method.',
     setupUndef: sm + '.setup(): Could not find option "%s"',
     setupLate: sm + '.setup(): url + flashVersion changes will not take effect until reboot().',
-    h5a: 'creating HTML5 Audio() object',
     noURL: sm + ': Flash URL required. Call soundManager.setup({url:...}) to get started.',
     sm2Loaded: 'SoundManager 2: loaded'
     // </d>
