@@ -1389,7 +1389,7 @@ function SoundManager(smURL, smID) {
     this._debug = function() {
 
       // <d>
-      sm2._wD('SMSound (' + s.id + ') merged options: ', s.options);
+      sm2._wD('SMSound merged options:', s.options);
       // </d>
 
     };
@@ -1688,7 +1688,7 @@ function SoundManager(smURL, smID) {
 
         if (s.readyState === 0) {
 
-          sm2._wD(fN + 'Attempting to load', 1);
+          sm2._wD(fN + 'Attempting to load');
 
           // try to get this sound playing ASAP
           if (!s.isHTML5) {
@@ -1710,7 +1710,7 @@ function SoundManager(smURL, smID) {
 
         } else {
 
-          sm2._wD(fN + 'Loading - attempting to play...', 1);
+          sm2._wD(fN + 'Loading - attempting to play...');
 
         }
 
