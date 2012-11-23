@@ -134,7 +134,7 @@ function SoundManager(smURL, smID) {
   this.html5Only = false;
   this.ignoreFlash = false;
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm+'::', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL,
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + '::', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL,
   needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice),
@@ -298,7 +298,7 @@ function SoundManager(smURL, smID) {
   this.play = function(sID, oOptions) {
     var result = false;
     if (!didInit || !sm2.ok()) {
-      complain(sm+'.play(): ' + str(!didInit?'notReady':'notOK'));
+      complain(sm + '.play(): ' + str(!didInit?'notReady':'notOK'));
       return result;
     }
     if (!idCheck(sID)) {
@@ -479,7 +479,7 @@ function SoundManager(smURL, smID) {
   };
   this.getSoundById = function(sID, _suppressDebug) {
     if (!sID) {
-      throw new Error(sm+'.getSoundById(): sID is null/undefined');
+      throw new Error(sm + '.getSoundById(): sID is null/undefined');
     }
     var result = sm2.sounds[sID];
     return result;
@@ -514,7 +514,7 @@ function SoundManager(smURL, smID) {
     }
     return result;
   };
-  this._writeDebug = function(sText, sType, _bTimestamp) {
+  this._writeDebug = function(sText, sType) {
     return true;
   };
   this._wD = this._writeDebug;
@@ -532,6 +532,7 @@ function SoundManager(smURL, smID) {
         }
         oRemoved = flash.parentNode.removeChild(flash);
       } catch(e) {
+        return false;
       }
     }
     oRemovedHTML = oRemoved = needsFlash = null;
@@ -547,6 +548,7 @@ function SoundManager(smURL, smID) {
       }
     }
     win.setTimeout(sm2.beginDelayedInit, 20);
+    return true;
   };
   this.getMoviePercent = function() {
     return (flash && 'PercentLoaded' in flash ? flash.PercentLoaded() : null);
