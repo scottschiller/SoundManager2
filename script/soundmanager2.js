@@ -259,7 +259,7 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + '::', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL,
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL,
   needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice),
@@ -1491,7 +1491,7 @@ function SoundManager(smURL, smID) {
 
         } else {
 
-          sm2._wD(h5 + 'ignoring request to load again: ' + s.id);
+          sm2._wD(s.id + ': Ignoring request to load again');
 
         }
 
@@ -3448,7 +3448,7 @@ function SoundManager(smURL, smID) {
 
   function html5_event(oFn) {
 
-    // wrap html5 event handlers so we don't call them on destroyed sounds
+    // wrap html5 event handlers so we don't call them on destroyed and/or unloaded sounds
 
     return function(e) {
 
@@ -3927,34 +3927,34 @@ function SoundManager(smURL, smID) {
   strings = {
 
     // <d>
-    notReady: 'Not loaded yet - wait for soundManager.onready()',
+    notReady: 'Unavailable - wait until onready() has fired.',
     notOK: 'Audio support is not available.',
     domError: sm + 'exception caught while appending SWF to DOM.',
-    spcWmode: sm + 'Removing wmode, preventing known SWF loading issue(s)',
+    spcWmode: smc + 'Removing wmode, preventing known SWF loading issue(s)',
     swf404: sm + ': Verify that %s is a valid path.',
     tryDebug: 'Try ' + sm + '.debugFlash = true for more security details (output goes to SWF.)',
     checkSWF: 'See SWF output for more debug info.',
-    localFail: sm + ': Non-HTTP page (' + doc.location.protocol + ' URL?) Review Flash player security settings for this special case:\nhttp://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html\nMay need to add/allow path, eg. c:/sm2/ or /users/me/sm2/',
-    waitFocus: sm + ': Special case: Waiting for SWF to load with window focus...',
-    waitForever: sm + ': Waiting indefinitely for Flash (will recover if unblocked)...',
-    waitSWF: sm + ': Retrying, waiting for 100% SWF load...',
-    needFunction: sm + ': Function object expected for %s',
+    localFail: smc + 'Non-HTTP page (' + doc.location.protocol + ' URL?) Review Flash player security settings for this special case:\nhttp://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html\nMay need to add/allow path, eg. c:/sm2/ or /users/me/sm2/',
+    waitFocus: smc + 'Special case: Waiting for SWF to load with window focus...',
+    waitForever: smc + 'Waiting indefinitely for Flash (will recover if unblocked)...',
+    waitSWF: smc + 'Retrying, waiting for 100% SWF load...',
+    needFunction: smc + 'Function object expected for %s',
     badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
-    currentObj: sm + '._debug(): Current sound objects',
-    waitOnload: sm + ': Waiting for window.onload()',
-    docLoaded: sm + ': Document already loaded',
+    currentObj: smc + '_debug(): Current sound objects',
+    waitOnload: smc + 'Waiting for window.onload()',
+    docLoaded: smc + 'Document already loaded',
     onload: smc + 'initComplete(): calling soundManager.onload()',
     onloadOK: sm + '.onload() complete',
     didInit: smc + 'init(): Already called?',
     secNote: 'Flash security note: Network/internet URLs will not load due to security restrictions. Access can be configured via Flash Player Global Security Settings Page: http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html',
     badRemove: 'Warning: Failed to remove flash movie.',
     shutdown: sm + '.disable(): Shutting down',
-    queue: sm + ': Queueing %s handler',
+    queue: smc + 'Queueing %s handler',
     smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
     fbTimeout: 'No flash response, applying .'+swfCSS.swfTimedout+' CSS...',
     fbLoaded: 'Flash loaded',
-    flRemoved: sm + ': Flash movie removed.',
-    fbHandler: smc+'flashBlockHandler()',
+    flRemoved: smc + 'Flash movie removed.',
+    fbHandler: smc + 'flashBlockHandler()',
     manURL: 'SMSound.load(): Using manually-assigned URL',
     onURL: sm + '.load(): current URL already assigned.',
     badFV: sm + '.flashVersion must be 8 or 9. "%s" is invalid. Reverting to %s.',
@@ -3962,15 +3962,14 @@ function SoundManager(smURL, smID) {
     noNSLoop: 'Note: Looping not implemented for MovieStar formats',
     needfl9: 'Note: Switching to flash 9, required for MP4 formats.',
     mfTimeout: 'Setting flashLoadTimeout = 0 (infinite) for off-screen, mobile flash case',
-    needFlash: sm + ': Fatal error: Flash is needed to play some required formats, but is not available.',
-    gotFocus: sm + ': Got window focus.',
-    mfOn: 'mobileFlash::enabling on-screen flash repositioning',
+    needFlash: smc + 'Fatal error: Flash is needed to play some required formats, but is not available.',
+    gotFocus: smc + 'Got window focus.',
     policy: 'Enabling usePolicyFile for data access',
     setup: sm + '.setup(): allowed parameters: %s',
     setupError: sm + '.setup(): "%s" cannot be assigned with this method.',
     setupUndef: sm + '.setup(): Could not find option "%s"',
     setupLate: sm + '.setup(): url + flashVersion changes will not take effect until reboot().',
-    noURL: sm + ': Flash URL required. Call soundManager.setup({url:...}) to get started.',
+    noURL: smc + 'Flash URL required. Call soundManager.setup({url:...}) to get started.',
     sm2Loaded: 'SoundManager 2: loaded'
     // </d>
 
