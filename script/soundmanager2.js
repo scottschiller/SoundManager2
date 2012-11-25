@@ -1429,7 +1429,7 @@ function SoundManager(smURL, smID) {
       // local shortcut
       instanceOptions = s._iO;
 
-      sm2._wD(s.id + ': load (' + instanceOptions.url + ')', 1);
+      sm2._wD(s.id + ': load (' + instanceOptions.url + ')');
 
       if (instanceOptions.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
         _wDS('onURL', 1);
