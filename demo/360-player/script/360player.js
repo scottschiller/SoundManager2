@@ -453,6 +453,7 @@ function ThreeSixtyPlayer() {
        onresume:self.events.resume,
        onfinish:self.events.finish,
        onbufferchange:self.events.bufferchange,
+       type:(o.type||null),
        whileloading:self.events.whileloading,
        whileplaying:self.events.whileplaying,
        useWaveformData:(has_vis && self.config.useWaveformData),
