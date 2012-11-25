@@ -210,9 +210,9 @@ package {
           flashDebug('Flash -&gt; JS OK');
           flashDebug('Waiting for JS -&gt; Flash...');
         } else {
-          writeDebug('SM2 SWF ' + version + ' ' + version_as, 1);
-          flashDebug('JS -&gt; Flash OK');
+          // writeDebug('SM2 SWF ' + version + ' ' + version_as, 1);
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
+          flashDebug('JS -&gt; Flash OK');
         }
       } catch(e: Error) {
         flashDebug('Fatal: Flash &lt;-&gt; JS error: ' + e.toString());
