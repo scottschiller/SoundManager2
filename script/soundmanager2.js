@@ -3553,7 +3553,7 @@ function SoundManager(smURL, smID) {
 
     error: html5_event(function() {
 
-      sm2._wD(s.id + ': HTML5 error, code ' + this.error.code);
+      sm2._wD(this._s.id + ': HTML5 error, code ' + this.error.code);
       // call load with error state?
       this._s._onload(false);
 
