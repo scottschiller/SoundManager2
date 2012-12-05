@@ -1230,10 +1230,12 @@ function SoundManager(smURL, smID) {
   };
 
   /**
-   * Restarts and re-initializes the SoundManager instance.
+   * Reset state of SoundManager instance.
+   *
+   * @param {boolean} bClear Optional: Whether to clear event callbacks
    */
 
-  this.reboot = function() {
+  this.reset = function(bClear) {
 
     // attempt to reset and init SM2
     sm2._wD(sm+'.reboot()');
@@ -1273,13 +1275,34 @@ function SoundManager(smURL, smID) {
     sm2.sounds = {};
     flash = null;
 
-    for (i in on_queue) {
-      if (on_queue.hasOwnProperty(i)) {
-        for (j = on_queue[i].length-1; j >= 0; j--) {
-          on_queue[i][j].fired = false;
+    if (bClear) {
+
+      // clear event callbacks
+      on_queue = [];
+
+    } else {
+
+      // reset fired state on event callbacks
+      for (i in on_queue) {
+        if (on_queue.hasOwnProperty(i)) {
+          for (j = on_queue[i].length-1; j >= 0; j--) {
+            on_queue[i][j].fired = false;
+          }
         }
       }
     }
+  };
+
+  /**
+   * Restarts and re-initializes the SoundManager instance.
+   */
+
+  this.reboot = function() {
+
+    // attempt to reset and init SM2
+    sm2._wD(sm+'.reboot()');
+
+    sm2.reset();
 
     sm2._wD(sm + ': Rebooting...');
     win.setTimeout(sm2.beginDelayedInit, 20);
