@@ -1224,9 +1224,12 @@ function SoundManager(smURL, smID) {
 
   /**
    * Restarts and re-initializes the SoundManager instance.
+   *
+   * @param {boolean} resetEvents Optional: When true, removes all registered onready and ontimeout event callbacks.
+   * @return {object} soundManager The soundManager instance.
    */
 
-  this.reboot = function() {
+  this.reboot = function(resetEvents) {
 
     // attempt to reset and init SM2
     sm2._wD(sm + '.reboot()');
@@ -1237,7 +1240,7 @@ function SoundManager(smURL, smID) {
     }
     // </d>
 
-    var i, j;
+    var i, j, k;
 
     for (i = sm2.soundIDs.length-1; i >= 0; i--) {
       sm2.sounds[sm2.soundIDs[i]].destruct();
@@ -1267,20 +1270,38 @@ function SoundManager(smURL, smID) {
     sm2.sounds = {};
     flash = null;
 
-    for (i in on_queue) {
-      if (on_queue.hasOwnProperty(i)) {
-        for (j = on_queue[i].length-1; j >= 0; j--) {
-          on_queue[i][j].fired = false;
+    if (!resetEvents) {
+      // reset callbacks for onready, ontimeout etc. so that they will fire again on re-init
+      for (i in on_queue) {
+        if (on_queue.hasOwnProperty(i)) {
+          for (j = 0, k = on_queue[i].length; j < k; j++) {
+            on_queue[i][j].fired = false;
+          }
         }
       }
+    } else {
+      // remove all callbacks entirely
+      on_queue = [];
     }
 
     sm2._wD(sm + ': Rebooting...');
     win.setTimeout(sm2.beginDelayedInit, 20);
 
-    return true;
+    return sm2;
 
   };
+
+  this.reset = function() {
+
+    /**
+     * Restarts and re-initializes the SoundManager instance, removing all soundManager onready + ontimeout listeners.
+     * @return {object} soundManager The soundManager instance.
+     */
+
+    _wDS('reset');
+    return sm2.reboot(true);
+
+  }
 
   /**
    * Undocumented: Determines the SM2 flash movie's load progress.
@@ -3970,7 +3991,8 @@ function SoundManager(smURL, smID) {
     setupUndef: sm + '.setup(): Could not find option "%s"',
     setupLate: sm + '.setup(): url + flashVersion changes will not take effect until reboot().',
     noURL: smc + 'Flash URL required. Call soundManager.setup({url:...}) to get started.',
-    sm2Loaded: 'SoundManager 2: loaded'
+    sm2Loaded: 'SoundManager 2: loaded',
+    reset: sm + '.reset(): Removing event callbacks'
     // </d>
 
   };
