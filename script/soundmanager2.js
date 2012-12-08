@@ -259,9 +259,9 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL,
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport,
-  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
+  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
   hasConsole = (window.console !== undefined && console.log !== undefined), isFocused = (doc.hasFocus !== undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
@@ -292,20 +292,6 @@ function SoundManager(smURL, smID) {
     'flashDebug': 'flash_debug'
 
   };
-
-  if (mobileHTML5) {
-
-    // prefer HTML5 for mobile + tablet-like devices, probably more reliable vs. flash at this point.
-    sm2.useHTML5Audio = true;
-    sm2.preferFlash = false;
-
-    if (is_iDevice) {
-      // by default, use global feature. iOS onfinish() -> next may fail otherwise.
-      sm2.ignoreFlash = true;
-      useGlobalHTML5Audio = true;
-    }
-
-  }
 
   /**
    * basic HTML5 Audio() support test
@@ -3992,7 +3978,9 @@ function SoundManager(smURL, smID) {
     setupLate: sm + '.setup(): url + flashVersion changes will not take effect until reboot().',
     noURL: smc + 'Flash URL required. Call soundManager.setup({url:...}) to get started.',
     sm2Loaded: 'SoundManager 2: loaded',
-    reset: sm + '.reset(): Removing event callbacks'
+    reset: sm + '.reset(): Removing event callbacks',
+    mobileUA: 'Mobile UA detected, preferring HTML5 by default.',
+    globalHTML5: 'Using singleton HTML5 Audio() pattern for this device.'
     // </d>
 
   };
@@ -4422,7 +4410,7 @@ function SoundManager(smURL, smID) {
     }
 
     if (queue.length) {
-      sm2._wD(sm + ': Firing ' + queue.length + ' ' + oOptions.type + '() item' + (queue.length === 1 ? '' : 's'));
+      // sm2._wD(sm + ': Firing ' + queue.length + ' ' + oOptions.type + '() item' + (queue.length === 1 ? '' : 's'));
       for (i = 0, j = queue.length; i < j; i++) {
         if (queue[i].scope) {
           queue[i].method.apply(queue[i].scope, args);
@@ -5208,6 +5196,12 @@ function SoundManager(smURL, smID) {
 
     // <d>
 
+    // SM2 pre-init debug messages
+    if (messages.length) {
+      sm2._wD('SoundManager 2: ' + messages.join(' '), 1);
+      messages = [];
+    }
+
     var item, tests = [];
 
     if (sm2.useHTML5Audio && sm2.hasHTML5) {
@@ -5449,6 +5443,7 @@ function SoundManager(smURL, smID) {
     testHTML5();
     sm2.html5.usingFlash = featureCheck();
     needsFlash = sm2.html5.usingFlash;
+
     showSupport();
 
     if (!hasFlash && needsFlash) {
@@ -5487,6 +5482,38 @@ function SoundManager(smURL, smID) {
     event.remove(win, 'load', winOnLoad);
 
   };
+
+  /**
+   * miscellaneous run-time, pre-init stuff
+   */
+
+  if (mobileHTML5) {
+
+    // prefer HTML5 for mobile + tablet-like devices, probably more reliable vs. flash at this point.
+
+    // <d>
+    if (!sm2.setupOptions.useHTML5Audio || sm2.setupOptions.preferFlash) {
+      // notify that defaults are being changed.
+      messages.push(strings['mobileUA']);
+    }
+    // </d>
+
+    sm2.setupOptions.useHTML5Audio = true;
+    sm2.setupOptions.preferFlash = false;
+
+    if (is_iDevice || isAndroid) {
+      // iOS and Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
+      // common use case: exiting sound onfinish() -> createSound() -> play()
+      // <d>
+      messages.push(strings['globalHTML5']);
+      // </d>
+      if (is_iDevice) {
+        sm2.ignoreFlash = true;
+      }
+      useGlobalHTML5Audio = true;
+    }
+
+  }
 
   // sniff up-front
   detectFlash();
