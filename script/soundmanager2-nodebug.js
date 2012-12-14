@@ -8,13 +8,14 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20121104
+ * V2.97a.20121104+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
 /*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
 
-(function(window) {
+(function(window, undefined) {
+"use strict";
 var soundManager = null;
 function SoundManager(smURL, smID) {
   this.setupOptions = {
@@ -101,7 +102,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20121104';
+  this.versionNumber = 'V2.97a.20121104+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -133,9 +134,9 @@ function SoundManager(smURL, smID) {
   this.html5Only = false;
   this.ignoreFlash = false;
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm+'::', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL,
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport,
-  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)),
+  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)),
   hasConsole = (window.console !== undefined && console.log !== undefined), isFocused = (doc.hasFocus !== undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
@@ -158,14 +159,6 @@ function SoundManager(smURL, smID) {
     'highPerf': 'high_performance',
     'flashDebug': 'flash_debug'
   };
-  if (mobileHTML5) {
-    sm2.useHTML5Audio = true;
-    sm2.preferFlash = false;
-    if (is_iDevice) {
-      sm2.ignoreFlash = true;
-      useGlobalHTML5Audio = true;
-    }
-  }
   this.hasHTML5 = (function() {
     try {
       return (Audio !== undefined && (isOpera && opera !== undefined && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== undefined);
@@ -297,7 +290,7 @@ function SoundManager(smURL, smID) {
   this.play = function(sID, oOptions) {
     var result = false;
     if (!didInit || !sm2.ok()) {
-      complain(sm+'.play(): ' + str(!didInit?'notReady':'notOK'));
+      complain(sm + '.play(): ' + str(!didInit?'notReady':'notOK'));
       return result;
     }
     if (!idCheck(sID)) {
@@ -478,7 +471,7 @@ function SoundManager(smURL, smID) {
   };
   this.getSoundById = function(sID, _suppressDebug) {
     if (!sID) {
-      throw new Error(sm+'.getSoundById(): sID is null/undefined');
+      throw new Error(sm + '.getSoundById(): sID is null/undefined');
     }
     var result = sm2.sounds[sID];
     return result;
@@ -513,14 +506,14 @@ function SoundManager(smURL, smID) {
     }
     return result;
   };
-  this._writeDebug = function(sText, sType, _bTimestamp) {
+  this._writeDebug = function(sText, sType) {
     return true;
   };
   this._wD = this._writeDebug;
   this._debug = function() {
   };
-  this.reboot = function() {
-    var i, j;
+  this.reboot = function(resetEvents) {
+    var i, j, k;
     for (i = sm2.soundIDs.length-1; i >= 0; i--) {
       sm2.sounds[sm2.soundIDs[i]].destruct();
     }
@@ -531,6 +524,7 @@ function SoundManager(smURL, smID) {
         }
         oRemoved = flash.parentNode.removeChild(flash);
       } catch(e) {
+        return false;
       }
     }
     oRemovedHTML = oRemoved = needsFlash = null;
@@ -538,15 +532,23 @@ function SoundManager(smURL, smID) {
     sm2.soundIDs = [];
     sm2.sounds = {};
     flash = null;
-    for (i in on_queue) {
-      if (on_queue.hasOwnProperty(i)) {
-        for (j = on_queue[i].length-1; j >= 0; j--) {
-          on_queue[i][j].fired = false;
+    if (!resetEvents) {
+      for (i in on_queue) {
+        if (on_queue.hasOwnProperty(i)) {
+          for (j = 0, k = on_queue[i].length; j < k; j++) {
+            on_queue[i][j].fired = false;
+          }
         }
       }
+    } else {
+      on_queue = [];
     }
     win.setTimeout(sm2.beginDelayedInit, 20);
+    return sm2;
   };
+  this.reset = function() {
+    return sm2.reboot(true);
+  }
   this.getMoviePercent = function() {
     return (flash && 'PercentLoaded' in flash ? flash.PercentLoaded() : null);
   };
@@ -1936,7 +1938,7 @@ function SoundManager(smURL, smID) {
         srcQueue = (oOptions && oOptions.type?on_queue[oOptions.type]||[]:[]),
         queue = [], i, j,
         args = [status],
-        canRetry = (needsFlash && sm2.useFlashBlock && !sm2.ok());
+        canRetry = (needsFlash && !sm2.ok());
     if (oOptions.error) {
       args[0].error = oOptions.error;
     }
@@ -2342,7 +2344,7 @@ function SoundManager(smURL, smID) {
               flashBlockHandler();
             }
           } else {
-            failSafely(true);
+            processOnEvents({type:'ontimeout', ignoreInit: true});
           }
         } else {
           if (sm2.flashLoadTimeout === 0) {
@@ -2494,6 +2496,16 @@ function SoundManager(smURL, smID) {
     windowLoaded = true;
     event.remove(win, 'load', winOnLoad);
   };
+  if (mobileHTML5) {
+    sm2.setupOptions.useHTML5Audio = true;
+    sm2.setupOptions.preferFlash = false;
+    if (is_iDevice || isAndroid) {
+      if (is_iDevice) {
+        sm2.ignoreFlash = true;
+      }
+      useGlobalHTML5Audio = true;
+    }
+  }
   detectFlash();
   event.add(win, 'focus', handleFocus);
   event.add(win, 'load', delayWaitForEI);

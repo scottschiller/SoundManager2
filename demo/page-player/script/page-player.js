@@ -635,6 +635,7 @@ function PagePlayer() {
           onpause:self.events.pause,
           onresume:self.events.resume,
           onfinish:self.events.finish,
+          type:(o.type||null),
           whileloading:self.events.whileloading,
           whileplaying:self.events.whileplaying,
           onmetadata:self.events.metadata,

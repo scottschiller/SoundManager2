@@ -179,7 +179,8 @@ function InlinePlayer() {
        onstop:self.events.stop,
        onpause:self.events.pause,
        onresume:self.events.resume,
-       onfinish:self.events.finish
+       onfinish:self.events.finish,
+       type:(o.type||null)
       });
       // tack on some custom data
       thisSound._data = {

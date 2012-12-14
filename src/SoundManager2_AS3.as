@@ -186,12 +186,12 @@ package {
     // methods
     // -----------------------------------
 
-    public function writeDebug (s:String, bTimestamp: Boolean = false) : Boolean {
+    public function writeDebug (s:String, logLevel:Number = 0) : Boolean {
       if (!debugEnabled) {
         return false;
       }
       // <d>
-      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
+      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, logLevel);
       // </d>
       return true;
     }
@@ -210,14 +210,13 @@ package {
           flashDebug('Flash -&gt; JS OK');
           flashDebug('Waiting for JS -&gt; Flash...');
         } else {
-          writeDebug('SM2 SWF ' + version + ' ' + version_as);
-          flashDebug('JS -&gt; Flash OK');
+          // writeDebug('SM2 SWF ' + version + ' ' + version_as, 1);
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
-          writeDebug('JS to/from Flash OK');
+          flashDebug('JS -&gt; Flash OK');
         }
       } catch(e: Error) {
         flashDebug('Fatal: Flash &lt;-&gt; JS error: ' + e.toString());
-        writeDebug('_externalInterfaceTest: Error: ' + e.toString());
+        writeDebug('_externalInterfaceTest: Error: ' + e.toString(), 2);
         if (!caughtFatal) {
           caughtFatal = true;
         }
@@ -327,7 +326,7 @@ package {
             ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
             ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", oSound.duration > 0 ? 1 : 0);
           } catch(e: Error) {
-            writeDebug('_whileLoading/_onload error: ' + e.toString());
+            writeDebug('_whileLoading/_onload error: ' + e.toString(), 2);
           }
         } else if (oSound.loaded != true && hasNew) {
           ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
@@ -364,7 +363,7 @@ package {
         if (forceEndCheck) {
           // sound finish case: Ensure position is at end (sound duration), as flash 9 does not always correctly match the two.
           if (nP < nD) {
-            writeDebug('correcting sound ' + oSound.sID + ' end position ('+nP+') to length: '+ nD);
+            writeDebug('correcting sound ' + oSound.sID + ' end position ('+nP+') to length: '+ nD, 2);
             nP = nD;
           }
         }
@@ -901,14 +900,14 @@ package {
     public function _setPolling(bPolling: Boolean = false, nTimerInterval: uint = 50) : void {
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
-        writeDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
+        flashDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
         timer = new Timer(nTimerInterval, 0);
         timer.addEventListener(TimerEvent.TIMER, function() : void {
           checkProgress();
         }); // direct reference eg. checkProgress doesn't work? .. odd.
         timer.start();
       } else if (timer && !pollingEnabled) {
-        writeDebug('Disabling polling');
+        flashDebug('Disabling polling');
         // flash.utils.clearInterval(timer);
         timer.reset();
       }
