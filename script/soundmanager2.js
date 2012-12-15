@@ -1126,7 +1126,7 @@ function SoundManager(smURL, smID) {
     // pseudo-private console.log()-style output
     // <d>
 
-    var sDID = 'soundmanager-debug', o, oItem, oObject;
+    var sDID = 'soundmanager-debug', o, oItem;
 
     if (!sm2.debugMode) {
       return false;
@@ -1321,7 +1321,14 @@ function SoundManager(smURL, smID) {
 
   this.getMoviePercent = function() {
 
-    // interesting note: flash/ExternalInterface bridge methods are not typeof "function" nor instanceof Function, but are still valid.
+    /**
+     * Interesting syntax notes...
+     * Flash/ExternalInterface (ActiveX/NPAPI) bridge methods are not typeof "function" nor instanceof Function, but are still valid.
+     * Additionally, jslint dislikes ('PercentLoaded' in flash)-style syntax and recommends hasOwnProperty(), which does not work in this case.
+     * Furthermore, using (flash && flash.PercentLoaded) causes IE to throw "object doesn't support this property or method".
+     * Thus, 'in' syntax must be used.
+     */
+
     return (flash && 'PercentLoaded' in flash ? flash.PercentLoaded() : null);
 
   };
@@ -2855,7 +2862,7 @@ function SoundManager(smURL, smID) {
 
       var fN,
           // check for duration to prevent false positives from flash 8 when loading from cache.
-          loadOK = (!!(nSuccess) || (!s.isHTML5 && fV === 8 && s.duration));
+          loadOK = !!nSuccess || (!s.isHTML5 && fV === 8 && s.duration);
 
       // <d>
       fN = s.id + ': ';
@@ -3099,7 +3106,7 @@ function SoundManager(smURL, smID) {
         s._iO.oncaptiondata.apply(s, [oData]);
       }
 
-	};
+    };
 
     this._onmetadata = function(oMDProps, oMDData) {
 
@@ -3124,7 +3131,7 @@ function SoundManager(smURL, smID) {
         s._iO.onmetadata.apply(s);
       }
 
-	};
+    };
 
     this._onid3 = function(oID3Props, oID3Data) {
 
@@ -4794,7 +4801,7 @@ function SoundManager(smURL, smID) {
       return false;
     }
 
-    var e, eiTime = new Date().getTime();
+    var e;
 
     debugTS('swf', true);
     debugTS('flashtojs', true);
@@ -5520,18 +5527,18 @@ function SoundManager(smURL, smID) {
       // <d>
       if (!sm2.setupOptions.useHTML5Audio || sm2.setupOptions.preferFlash) {
         // notify that defaults are being changed.
-        messages.push(strings['mobileUA']);
+        messages.push(strings.mobileUA);
       }
       // </d>
 
       sm2.setupOptions.useHTML5Audio = true;
       sm2.setupOptions.preferFlash = false;
 
-      if (is_iDevice || (isAndroid && !ua.match('Android 2\.3'))) {
+      if (is_iDevice || (isAndroid && !ua.match(/android\s2\.3/i))) {
         // iOS and Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
         // common use case: exiting sound onfinish() -> createSound() -> play()
         // <d>
-        messages.push(strings['globalHTML5']);
+        messages.push(strings.globalHTML5);
         // </d>
         if (is_iDevice) {
           sm2.ignoreFlash = true;
@@ -5541,7 +5548,7 @@ function SoundManager(smURL, smID) {
 
     }
 
-  }
+  };
 
   preInit();
 

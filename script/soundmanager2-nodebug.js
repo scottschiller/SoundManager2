@@ -1287,7 +1287,7 @@ function SoundManager(smURL, smID) {
     };
     this._onload = function(nSuccess) {
       var fN,
-          loadOK = (!!(nSuccess) || (!s.isHTML5 && fV === 8 && s.duration));
+          loadOK = !!nSuccess || (!s.isHTML5 && fV === 8 && s.duration);
       s.loaded = loadOK;
       s.readyState = loadOK?3:2;
       s._onbufferchange(0);
@@ -1419,7 +1419,7 @@ function SoundManager(smURL, smID) {
       if (s._iO.oncaptiondata) {
         s._iO.oncaptiondata.apply(s, [oData]);
       }
-	};
+    };
     this._onmetadata = function(oMDProps, oMDData) {
       var oData = {}, i, j;
       for (i = 0, j = oMDProps.length; i < j; i++) {
@@ -1429,7 +1429,7 @@ function SoundManager(smURL, smID) {
       if (s._iO.onmetadata) {
         s._iO.onmetadata.apply(s);
       }
-	};
+    };
     this._onid3 = function(oID3Props, oID3Data) {
       var oData = [], i, j;
       for (i = 0, j = oID3Props.length; i < j; i++) {
@@ -2130,7 +2130,7 @@ function SoundManager(smURL, smID) {
     if (sm2.swfLoaded) {
       return false;
     }
-    var e, eiTime = new Date().getTime();
+    var e;
     sm2.swfLoaded = true;
     tryInitOnFocus = false;
     if (isBadSafari) {
@@ -2510,14 +2510,14 @@ function SoundManager(smURL, smID) {
     if (mobileHTML5) {
       sm2.setupOptions.useHTML5Audio = true;
       sm2.setupOptions.preferFlash = false;
-      if (is_iDevice || (isAndroid && !ua.match('Android 2\.3'))) {
+      if (is_iDevice || (isAndroid && !ua.match(/android\s2\.3/i))) {
         if (is_iDevice) {
           sm2.ignoreFlash = true;
         }
         useGlobalHTML5Audio = true;
       }
     }
-  }
+  };
   preInit();
   detectFlash();
   event.add(win, 'focus', handleFocus);
