@@ -30,7 +30,7 @@
  * Also, as you may note: Whoa, reliable cross-platform/device audio support is hard! ;)
  */
 
-(function(window, undefined) {
+(function(window, _undefined) {
 
 "use strict";
 
@@ -264,7 +264,7 @@ function SoundManager(smURL, smID) {
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  hasConsole = (window.console !== undefined && console.log !== undefined), isFocused = (doc.hasFocus !== undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
+  hasConsole = (window.console !== _undefined && console.log !== _undefined), isFocused = (doc.hasFocus !== _undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === _undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
   emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   overHTTP = (doc.location?doc.location.protocol.match(/http/i):null),
   http = (!overHTTP ? 'http:/'+'/' : ''),
@@ -302,7 +302,7 @@ function SoundManager(smURL, smID) {
   this.hasHTML5 = (function() {
     try {
       // new Audio(null) for stupid Opera 9.64 case, which throws not_enough_arguments exception otherwise.
-      return (Audio !== undefined && (isOpera && opera !== undefined && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== undefined);
+      return (Audio !== _undefined && (isOpera && opera !== _undefined && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== _undefined);
     } catch(e) {
       return false;
     }
@@ -326,7 +326,7 @@ function SoundManager(smURL, smID) {
 
     // warn if flash options have already been applied
 
-    if (options !== undefined && didInit && needsFlash && sm2.ok() && (options.flashVersion !== undefined || options.url !== undefined || options.html5Test !== undefined)) {
+    if (options !== _undefined && didInit && needsFlash && sm2.ok() && (options.flashVersion !== _undefined || options.url !== _undefined || options.html5Test !== _undefined)) {
       complain(str('setupLate'));
     }
 
@@ -336,13 +336,13 @@ function SoundManager(smURL, smID) {
 
     // special case 1: "Late setup". SM2 loaded normally, but user didn't assign flash URL eg., setup({url:...}) before SM2 init. Treat as delayed init.
 
-    if (noURL && didDCLoaded && options.url !== undefined) {
+    if (noURL && didDCLoaded && options.url !== _undefined) {
       sm2.beginDelayedInit();
     }
 
     // special case 2: If lazy-loading SM2 (DOMContentLoaded has already happened) and user calls setup() with url: parameter, try to init ASAP.
 
-    if (!didDCLoaded && options.url !== undefined && doc.readyState === 'complete') {
+    if (!didDCLoaded && options.url !== _undefined && doc.readyState === 'complete') {
       setTimeout(domContentLoaded, 1);
     }
 
@@ -386,7 +386,7 @@ function SoundManager(smURL, smID) {
       return false;
     }
 
-    if (_url !== undefined) {
+    if (_url !== _undefined) {
       // function overloading in JS! :) ..assume simple createSound(id,url) use case
       oOptions = {
         'id': oOptions,
@@ -924,7 +924,7 @@ function SoundManager(smURL, smID) {
     // destroy all functions
     var i;
 
-    if (bNoDisable === undefined) {
+    if (bNoDisable === _undefined) {
       bNoDisable = false;
     }
 
@@ -1000,7 +1000,7 @@ function SoundManager(smURL, smID) {
 
   this.canPlayLink = function(oLink) {
 
-    if (oLink.type !== undefined && oLink.type) {
+    if (oLink.type !== _undefined && oLink.type) {
       if (sm2.canPlayMIME(oLink.type)) {
         return true;
       }
@@ -1020,7 +1020,7 @@ function SoundManager(smURL, smID) {
   this.getSoundById = function(sID, _suppressDebug) {
 
     if (!sID) {
-      throw new Error(sm + '.getSoundById(): sID is null/undefined');
+      throw new Error(sm + '.getSoundById(): sID is null/_undefined');
     }
 
     var result = sm2.sounds[sID];
@@ -1136,7 +1136,7 @@ function SoundManager(smURL, smID) {
       if (sType && typeof sType === 'object') {
         // object passed; dump to console.
         console.log(sText, sType);
-      } else if (debugLevels[sType] !== undefined) {
+      } else if (debugLevels[sType] !== _undefined) {
         console[debugLevels[sType]](sText);
       } else {
         console.log(sText);
@@ -1158,7 +1158,7 @@ function SoundManager(smURL, smID) {
       oItem.className = 'sm2-alt';
     }
 
-    if (sType === undefined) {
+    if (sType === _undefined) {
       sType = 0;
     } else {
       sType = parseInt(sType, 10);
@@ -1311,7 +1311,7 @@ function SoundManager(smURL, smID) {
     _wDS('reset');
     return sm2.reboot(true);
 
-  }
+  };
 
   /**
    * Undocumented: Determines the SM2 flash movie's load progress.
@@ -1436,7 +1436,7 @@ function SoundManager(smURL, smID) {
 
       var oSound = null, instanceOptions;
 
-      if (oOptions !== undefined) {
+      if (oOptions !== _undefined) {
         s._iO = mixin(oOptions, s.options);
       } else {
         oOptions = s.options;
@@ -1659,7 +1659,7 @@ function SoundManager(smURL, smID) {
       // </d>
 
       // default to true
-      _updatePlayState = (_updatePlayState === undefined ? true : _updatePlayState);
+      _updatePlayState = (_updatePlayState === _undefined ? true : _updatePlayState);
 
       if (!oOptions) {
         oOptions = {};
@@ -1841,7 +1841,7 @@ function SoundManager(smURL, smID) {
         s.playState = 1;
         s.paused = false;
 
-        s.position = (s._iO.position !== undefined && !isNaN(s._iO.position) ? s._iO.position : 0);
+        s.position = (s._iO.position !== _undefined && !isNaN(s._iO.position) ? s._iO.position : 0);
 
         if (!s.isHTML5) {
           s._iO = policyFix(loopFix(s._iO));
@@ -2017,7 +2017,7 @@ function SoundManager(smURL, smID) {
 
     this.setPosition = function(nMsecOffset) {
 
-      if (nMsecOffset === undefined) {
+      if (nMsecOffset === _undefined) {
         nMsecOffset = 0;
       }
 
@@ -2096,7 +2096,7 @@ function SoundManager(smURL, smID) {
       s.paused = true;
 
       if (!s.isHTML5) {
-        if (_bCallFlash || _bCallFlash === undefined) {
+        if (_bCallFlash || _bCallFlash === _undefined) {
           flash._pause(s.id, s._iO.multiShot);
         }
       } else {
@@ -2197,11 +2197,11 @@ function SoundManager(smURL, smID) {
 
     this.setPan = function(nPan, bInstanceOnly) {
 
-      if (nPan === undefined) {
+      if (nPan === _undefined) {
         nPan = 0;
       }
 
-      if (bInstanceOnly === undefined) {
+      if (bInstanceOnly === _undefined) {
         bInstanceOnly = false;
       }
 
@@ -2236,11 +2236,11 @@ function SoundManager(smURL, smID) {
        * http://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/HTML-canvas-guide/AddingSoundtoCanvasAnimations/AddingSoundtoCanvasAnimations.html
        */
 
-      if (nVol === undefined) {
+      if (nVol === _undefined) {
         nVol = 100;
       }
 
-      if (_bInstanceOnly === undefined) {
+      if (_bInstanceOnly === _undefined) {
         _bInstanceOnly = false;
       }
 
@@ -2291,7 +2291,7 @@ function SoundManager(smURL, smID) {
     this.unmute = function() {
 
       s.muted = false;
-      var hasIO = (s._iO.volume !== undefined);
+      var hasIO = (s._iO.volume !== _undefined);
 
       if (!s.isHTML5) {
         flash._setVolume(s.id, hasIO?s._iO.volume:s.options.volume);
@@ -2331,7 +2331,7 @@ function SoundManager(smURL, smID) {
       onPositionItems.push({
         position: parseInt(nPosition, 10),
         method: oMethod,
-        scope: (oScope !== undefined ? oScope : s),
+        scope: (oScope !== _undefined ? oScope : s),
         fired: false
       });
 
@@ -3038,14 +3038,14 @@ function SoundManager(smURL, smID) {
 
       if (!s.isHTML5 && fV > 8) {
 
-        if (instanceOptions.usePeakData && oPeakData !== undefined && oPeakData) {
+        if (instanceOptions.usePeakData && oPeakData !== _undefined && oPeakData) {
           s.peakData = {
             left: oPeakData.leftPeak,
             right: oPeakData.rightPeak
           };
         }
 
-        if (instanceOptions.useWaveformData && oWaveformDataLeft !== undefined && oWaveformDataLeft) {
+        if (instanceOptions.useWaveformData && oWaveformDataLeft !== _undefined && oWaveformDataLeft) {
           s.waveformData = {
             left: oWaveformDataLeft.split(','),
             right: oWaveformDataRight.split(',')
@@ -3053,11 +3053,11 @@ function SoundManager(smURL, smID) {
         }
 
         if (instanceOptions.useEQData) {
-          if (oEQData !== undefined && oEQData && oEQData.leftEQ) {
+          if (oEQData !== _undefined && oEQData && oEQData.leftEQ) {
             eqLeft = oEQData.leftEQ.split(',');
             s.eqData = eqLeft;
             s.eqData.left = eqLeft;
-            if (oEQData.rightEQ !== undefined && oEQData.rightEQ) {
+            if (oEQData.rightEQ !== _undefined && oEQData.rightEQ) {
               s.eqData.right = oEQData.rightEQ.split(',');
             }
           }
@@ -3166,7 +3166,7 @@ function SoundManager(smURL, smID) {
         if (idCheck(s.id)) {
           if (s.getAutoPlay()) {
             // only update the play state if auto playing
-            s.play(undefined, s.getAutoPlay());
+            s.play(_undefined, s.getAutoPlay());
           } else if (s._iO.autoLoad) {
             s.load();
           }
@@ -3222,11 +3222,11 @@ function SoundManager(smURL, smID) {
     var o1 = (oMain || {}), o2, o;
 
     // if unspecified, o2 is the default options object
-    o2 = (oAdd === undefined ? sm2.defaultOptions : oAdd);
+    o2 = (oAdd === _undefined ? sm2.defaultOptions : oAdd);
 
     for (o in o2) {
 
-      if (o2.hasOwnProperty(o) && o1[o] === undefined) {
+      if (o2.hasOwnProperty(o) && o1[o] === _undefined) {
 
         if (typeof o2[o] !== 'object' || o2[o] === null) {
 
@@ -3267,7 +3267,7 @@ function SoundManager(smURL, smID) {
 
     var i,
         result = true,
-        hasParent = (oParent !== undefined),
+        hasParent = (oParent !== _undefined),
         setupOptions = sm2.setupOptions,
         bonusOptions = extraOptions;
 
@@ -3275,7 +3275,7 @@ function SoundManager(smURL, smID) {
 
     // if soundManager.setup() called, show accepted parameters.
 
-    if (o === undefined) {
+    if (o === _undefined) {
 
       result = [];
 
@@ -3327,12 +3327,12 @@ function SoundManager(smURL, smID) {
 
           // check "allowed" options
 
-          if (hasParent && bonusOptions[oParent] !== undefined) {
+          if (hasParent && bonusOptions[oParent] !== _undefined) {
 
             // valid recursive / nested object option, eg., { defaultOptions: { volume: 50 } }
             sm2[oParent][i] = o[i];
 
-          } else if (setupOptions[i] !== undefined) {
+          } else if (setupOptions[i] !== _undefined) {
 
             // special case: assign to setupOptions object, which soundManager property references
             sm2.setupOptions[i] = o[i];
@@ -3340,10 +3340,10 @@ function SoundManager(smURL, smID) {
             // assign directly to soundManager, too
             sm2[i] = o[i];
 
-          } else if (bonusOptions[i] === undefined) {
+          } else if (bonusOptions[i] === _undefined) {
 
             // invalid or disallowed parameter. complain.
-            complain(str((sm2[i] === undefined ? 'setupUndef' : 'setupError'), i), 2);
+            complain(str((sm2[i] === _undefined ? 'setupUndef' : 'setupError'), i), 2);
 
             result = false;
 
@@ -3372,10 +3372,10 @@ function SoundManager(smURL, smID) {
 
           // recursion case, eg., { defaultOptions: { ... } }
 
-          if (bonusOptions[i] === undefined) {
+          if (bonusOptions[i] === _undefined) {
 
             // invalid or disallowed parameter. complain.
-            complain(str((sm2[i] === undefined ? 'setupUndef' : 'setupError'), i), 2);
+            complain(str((sm2[i] === _undefined ? 'setupUndef' : 'setupError'), i), 2);
 
             result = false;
 
@@ -3399,7 +3399,7 @@ function SoundManager(smURL, smID) {
   function preferFlashCheck(kind) {
 
     // whether flash should play a given type
-    return (sm2.preferFlash && hasFlash && !sm2.ignoreFlash && (sm2.flash[kind] !== undefined && sm2.flash[kind]));
+    return (sm2.preferFlash && hasFlash && !sm2.ignoreFlash && (sm2.flash[kind] !== _undefined && sm2.flash[kind]));
 
   }
 
@@ -3532,7 +3532,7 @@ function SoundManager(smURL, smID) {
       s._onbufferchange(0);
 
       // position according to instance options
-      position1K = (s._iO.position !== undefined && !isNaN(s._iO.position)?s._iO.position/1000:null);
+      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position)?s._iO.position/1000:null);
 
       // set the position if position was set before the sound loaded
       if (s.position && this.currentTime !== position1K) {
@@ -3807,7 +3807,7 @@ function SoundManager(smURL, smID) {
 
     // account for known cases like audio/mp3
 
-    if (mime && sm2.html5[mime] !== undefined) {
+    if (mime && sm2.html5[mime] !== _undefined) {
       return (sm2.html5[mime] && !preferFlashCheck(mime));
     }
 
@@ -3841,7 +3841,7 @@ function SoundManager(smURL, smID) {
       fileExt = fileExt[1];
     }
 
-    if (fileExt && sm2.html5[fileExt] !== undefined) {
+    if (fileExt && sm2.html5[fileExt] !== _undefined) {
       // result known
       result = (sm2.html5[fileExt] && !preferFlashCheck(fileExt));
     } else {
@@ -3868,7 +3868,7 @@ function SoundManager(smURL, smID) {
     }
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
-    var a = (Audio !== undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
+    var a = (Audio !== _undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
 
     function cp(m) {
@@ -4059,7 +4059,7 @@ function SoundManager(smURL, smID) {
   complain = function(sMsg) {
 
     // <d>
-    if (console !== undefined && console.warn !== undefined) {
+    if (console !== _undefined && console.warn !== _undefined) {
       console.warn(sMsg);
     } else {
       sm2._wD(sMsg);
@@ -4092,7 +4092,7 @@ function SoundManager(smURL, smID) {
 
     // general failure exception handler
 
-    if (bNoDisable === undefined) {
+    if (bNoDisable === _undefined) {
       bNoDisable = false;
     }
 
@@ -4300,7 +4300,7 @@ function SoundManager(smURL, smID) {
 
     // troubleshooter debug hooks
 
-    if (win.sm2Debugger !== undefined) {
+    if (win.sm2Debugger !== _undefined) {
       try {
         sm2Debugger.handleEvent(sEventType, bSuccess, sMessage);
       } catch(e) {
@@ -4380,7 +4380,7 @@ function SoundManager(smURL, smID) {
 
   addOnEvent = function(sType, oMethod, oScope) {
 
-    if (on_queue[sType] === undefined) {
+    if (on_queue[sType] === _undefined) {
       on_queue[sType] = [];
     }
 
@@ -4482,7 +4482,7 @@ function SoundManager(smURL, smID) {
 
     // hat tip: Flash Detect library (BSD, (C) 2007) by Carl "DocYes" S. Yestrau - http://featureblend.com/javascript-flash-detection-library.html / http://featureblend.com/license.txt
 
-    if (hasFlash !== undefined) {
+    if (hasFlash !== _undefined) {
       // this work has already been done.
       return hasFlash;
     }
@@ -4495,7 +4495,7 @@ function SoundManager(smURL, smID) {
       if (types && types[type] && types[type].enabledPlugin && types[type].enabledPlugin.description) {
         hasPlugin = true;
       }
-    } else if (AX !== undefined && !ua.match(/MSAppHost/i)) {
+    } else if (AX !== _undefined && !ua.match(/MSAppHost/i)) {
       // Windows 8 Store Apps (MSAppHost) are weird (compatibility?) and won't complain here, but will barf if Flash/ActiveX object is appended to the DOM.
       try {
         obj = new AX('ShockwaveFlash.ShockwaveFlash');
@@ -4711,13 +4711,13 @@ function SoundManager(smURL, smID) {
 
   catchError = function(options) {
 
-    options = (options !== undefined ? options : {});
+    options = (options !== _undefined ? options : {});
 
     if (typeof sm2.onerror === 'function') {
-      sm2.onerror.apply(win, [{type:(options.type !== undefined ? options.type : null)}]);
+      sm2.onerror.apply(win, [{type:(options.type !== _undefined ? options.type : null)}]);
     }
 
-    if (options.fatal !== undefined && options.fatal) {
+    if (options.fatal !== _undefined && options.fatal) {
       sm2.disable();
     }
 
@@ -4761,7 +4761,7 @@ function SoundManager(smURL, smID) {
     var sb = sm2.sandbox;
 
     sb.type = sandboxType;
-    sb.description = sb.types[(sb.types[sandboxType] !== undefined?sandboxType:'unknown')];
+    sb.description = sb.types[(sb.types[sandboxType] !== _undefined?sandboxType:'unknown')];
 
     if (sb.type === 'localWithFile') {
 
@@ -4872,7 +4872,7 @@ function SoundManager(smURL, smID) {
     oEmbed, oMovie, tmp, movieHTML, oEl, s, x, sClass;
 
     isRTL = (html && html.dir && html.dir.match(/rtl/i));
-    smID = (smID === undefined?sm2.id:smID);
+    smID = (smID === _undefined?sm2.id:smID);
 
     function param(name, value) {
       return '<param name="'+name+'" value="'+value+'" />';
@@ -5315,7 +5315,7 @@ function SoundManager(smURL, smID) {
 
         // assign local property if not already defined
 
-        if (sm2[i] === undefined) {
+        if (sm2[i] === _undefined) {
 
           sm2[i] = o[i];
 
@@ -5428,7 +5428,7 @@ function SoundManager(smURL, smID) {
           a2 = 'sm2-preferflash=',
           b = null, 
           b2 = null,
-          hasCon = (window.console !== undefined && typeof console.log === 'function'),
+          hasCon = (window.console !== _undefined && typeof console.log === 'function'),
           l = wl.toLowerCase();
 
       if (l.indexOf(a) !== -1) {
