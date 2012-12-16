@@ -527,11 +527,10 @@ function SoundManager(smURL, smID) {
         return false;
       }
     }
-    oRemovedHTML = oRemoved = needsFlash = null;
-    sm2.enabled = didDCLoaded = didInit = waitingForEI = initPending = didAppend = appendSuccess = disabled = sm2.swfLoaded = false;
+    oRemovedHTML = oRemoved = needsFlash = flash = null;
+    sm2.enabled = didDCLoaded = didInit = waitingForEI = initPending = didAppend = appendSuccess = disabled = useGlobalHTML5Audio = sm2.swfLoaded = false;
     sm2.soundIDs = [];
     sm2.sounds = {};
-    flash = null;
     if (!resetEvents) {
       for (i in on_queue) {
         if (on_queue.hasOwnProperty(i)) {
@@ -549,8 +548,6 @@ function SoundManager(smURL, smID) {
     sm2.flash = {};
     sm2.html5Only = false;
     sm2.ignoreFlash = false;
-    useGlobalHTML5Audio = false;
-    didInit = false;
     win.setTimeout(function() {
       preInit();
       if (!excludeInit) {
