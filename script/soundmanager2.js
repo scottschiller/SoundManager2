@@ -1249,12 +1249,13 @@ function SoundManager(smURL, smID) {
     }
 
     // actually, force recreate of movie.
-    oRemovedHTML = oRemoved = needsFlash = null;
 
-    sm2.enabled = didDCLoaded = didInit = waitingForEI = initPending = didAppend = appendSuccess = disabled = sm2.swfLoaded = false;
+    oRemovedHTML = oRemoved = needsFlash = flash = null;
+
+    sm2.enabled = didDCLoaded = didInit = waitingForEI = initPending = didAppend = appendSuccess = disabled = useGlobalHTML5Audio = sm2.swfLoaded = false;
+
     sm2.soundIDs = [];
     sm2.sounds = {};
-    flash = null;
 
     if (!resetEvents) {
       // reset callbacks for onready, ontimeout etc. so that they will fire again on re-init
@@ -1288,10 +1289,6 @@ function SoundManager(smURL, smID) {
 
     sm2.html5Only = false;
     sm2.ignoreFlash = false;
-
-    useGlobalHTML5Audio = false;
-
-    didInit = false;
 
     win.setTimeout(function() {
 
