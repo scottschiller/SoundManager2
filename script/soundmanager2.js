@@ -1212,13 +1212,13 @@ function SoundManager(smURL, smID) {
    * Restarts and re-initializes the SoundManager instance.
    *
    * @param {boolean} resetEvents Optional: When true, removes all registered onready and ontimeout event callbacks.
+   * @param {boolean} excludeInit Options: When true, does not call beginDelayedInit() (which would restart SM2).
    * @return {object} soundManager The soundManager instance.
    */
 
-  this.reboot = function(resetEvents) {
+  this.reboot = function(resetEvents, excludeInit) {
 
-    // attempt to reset and init SM2
-    sm2._wD(sm + '.reboot()');
+    // reset some (or all) state, and re-init unless otherwise specified.
 
     // <d>
     if (sm2.soundIDs.length) {
@@ -1270,32 +1270,40 @@ function SoundManager(smURL, smID) {
       on_queue = [];
     }
 
-    sm2._wD(sm + ': Rebooting...');
+    // <d>
+    if (!excludeInit) {
+      sm2._wD(sm + ': Rebooting...');
+    }
+    // </d>
+
+    // reset HTML5 and flash canPlay test results
+
+    sm2.html5 = {
+      'usingFlash': null
+    };
+
+    sm2.flash = {};
+
+    // reset device-specific HTML/flash mode switches
+
+    sm2.html5Only = false;
+    sm2.ignoreFlash = false;
+
+    useGlobalHTML5Audio = false;
+
+    didInit = false;
 
     win.setTimeout(function() {
 
-      // reset HTML5 and flash canPlay test results
-
-      sm2.html5 = {
-        'usingFlash': null
-      };
-
-      sm2.flash = {};
-
-      // reset device-specific HTML/flash mode switches
-
-      sm2.html5Only = false;
-      sm2.ignoreFlash = false;
-
-      useGlobalHTML5Audio = false;
-
       preInit();
 
-      sm2.beginDelayedInit();
+      // by default, re-init
+
+      if (!excludeInit) {
+        sm2.beginDelayedInit();
+      }
 
     }, 20);
-
-    // win.setTimeout(sm2.beginDelayedInit, 20);
 
     return sm2;
 
@@ -1304,12 +1312,13 @@ function SoundManager(smURL, smID) {
   this.reset = function() {
 
     /**
-     * Restarts and re-initializes the SoundManager instance, removing all soundManager onready + ontimeout listeners.
+     * Shuts down and restores the SoundManager instance to its original loaded state, without an explicit reboot. All onready/ontimeout handlers are removed.
+     * After this call, SM2 may be re-initialized via soundManager.beginDelayedInit().
      * @return {object} soundManager The soundManager instance.
      */
 
     _wDS('reset');
-    return sm2.reboot(true);
+    return sm2.reboot(true, true);
 
   };
 
