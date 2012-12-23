@@ -1692,6 +1692,10 @@ function SoundManager(smURL, smID) {
   html5Unload = function(oAudio, url) {
     if (oAudio) {
       oAudio.src = url;
+      oAudio._called_load = false;
+    }
+    if (useGlobalHTML5Audio) {
+      lastGlobalHTML5URL = null;
     }
   };
   html5CanPlay = function(o) {

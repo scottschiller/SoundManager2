@@ -3790,8 +3790,20 @@ function SoundManager(smURL, smID) {
      */
 
     if (oAudio) {
+
       // Firefox likes '' for unload (used to work?) - however, may request hosting page URL (bad.) Most other UAs dislike '' and fail to unload.
       oAudio.src = url;
+
+      // reset some state, too
+      oAudio._called_load = false;
+
+    }
+
+    if (useGlobalHTML5Audio) {
+
+      // ensure URL state is trashed, also
+      lastGlobalHTML5URL = null;
+
     }
 
   };
