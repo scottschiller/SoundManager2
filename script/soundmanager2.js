@@ -260,7 +260,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
-  needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport,
+  needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
@@ -3986,7 +3986,7 @@ function SoundManager(smURL, smID) {
     notReady: 'Unavailable - wait until onready() has fired.',
     notOK: 'Audio support is not available.',
     domError: sm + 'exception caught while appending SWF to DOM.',
-    spcWmode: smc + 'Removing wmode, preventing known SWF loading issue(s)',
+    spcWmode: 'Removing wmode, preventing known SWF loading issue(s)',
     swf404: sm + ': Verify that %s is a valid path.',
     tryDebug: 'Try ' + sm + '.debugFlash = true for more security details (output goes to SWF.)',
     checkSWF: 'See SWF output for more debug info.',
@@ -4026,7 +4026,7 @@ function SoundManager(smURL, smID) {
     setupUndef: sm + '.setup(): Could not find option "%s"',
     setupLate: sm + '.setup(): url, flashVersion and html5Test property changes will not take effect until reboot().',
     noURL: smc + 'Flash URL required. Call soundManager.setup({url:...}) to get started.',
-    sm2Loaded: 'SoundManager 2: loaded',
+    sm2Loaded: 'SoundManager 2: Ready.',
     reset: sm + '.reset(): Removing event callbacks',
     mobileUA: 'Mobile UA detected, preferring HTML5 by default.',
     globalHTML5: 'Using singleton HTML5 Audio() pattern for this device.'
@@ -4865,7 +4865,59 @@ function SoundManager(smURL, smID) {
     }
 
     function initMsg() {
-      sm2._wD('SoundManager 2 ' + sm2.version + (!sm2.html5Only && sm2.useHTML5Audio?(sm2.hasHTML5?' + HTML5 audio':', no HTML5 audio support'):'') + (!sm2.html5Only ? (sm2.useHighPerformance?', high performance mode, ':', ') + (( sm2.flashPollingInterval ? 'custom (' + sm2.flashPollingInterval + 'ms)' : 'normal') + ' polling') + (sm2.wmode?', wmode: ' + sm2.wmode:'') + (sm2.debugFlash?', flash debug mode':'') + (sm2.useFlashBlock?', flashBlock mode':'') : ''), 1);
+
+      // <d>
+
+      var options = [], title, str = [], delimiter = ' + ';
+
+      title = 'SoundManager ' + sm2.version + (!sm2.html5Only && sm2.useHTML5Audio ? (sm2.hasHTML5 ? ' + HTML5 audio' : ', no HTML5 audio support') : '');
+
+      if (!sm2.html5Only) {
+
+        if (sm2.preferFlash) {
+          options.push('preferFlash');
+        }
+
+        if (sm2.useHighPerformance) {
+          options.push('highPerformance');
+        }
+
+        if (sm2.flashPollingInterval) {
+          options.push('flashPollingInterval (' + sm2.flashPollingInterval + 'ms)');
+        }
+
+        if (sm2.html5PollingInterval) {
+          options.push('html5PollingInterval (' + sm2.html5PollingInterval + 'ms)');
+        }
+
+        if (sm2.wmode) {
+          options.push('wmode (' + sm2.wmode + ')');
+        }
+
+        if (sm2.debugFlash) {
+          options.push('flash debug');
+        }
+
+        if (sm2.useFlashBlock) {
+          options.push('flashBlock');
+        }
+
+      } else {
+
+        if (sm2.html5PollingInterval) {
+          options.push('html5PollingInterval (' + sm2.html5PollingInterval + 'ms)');
+        }
+
+      }
+
+      if (options.length) {
+        str = str.concat([options.join(delimiter)]);
+      }
+
+      sm2._wD(title + (str.length ? delimiter + str.join(', ') : ''), 1);
+
+      // </d>
+
     }
 
     if (sm2.html5Only) {
@@ -4916,7 +4968,7 @@ function SoundManager(smURL, smID) {
        * does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
        * wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)
        */
-      _wDS('spcWmode');
+       messages.push(strings.spcWmode);
       sm2.wmode = null;
     }
 
@@ -5115,6 +5167,10 @@ function SoundManager(smURL, smID) {
       setTimeout(sm2.oninitmovie, 1);
     }
 
+    // <d>
+    flushMessages();
+    // </d>
+
     return true;
 
   };
@@ -5241,7 +5297,7 @@ function SoundManager(smURL, smID) {
 
   };
 
-  showSupport = function() {
+  flushMessages = function() {
 
     // <d>
 
@@ -5250,6 +5306,16 @@ function SoundManager(smURL, smID) {
       sm2._wD('SoundManager 2: ' + messages.join(' '), 1);
       messages = [];
     }
+
+    // </d>
+
+  };
+
+  showSupport = function() {
+
+    // <d>
+
+    flushMessages();
 
     var item, tests = [];
 
@@ -5493,10 +5559,8 @@ function SoundManager(smURL, smID) {
     sm2.html5.usingFlash = featureCheck();
     needsFlash = sm2.html5.usingFlash;
 
-    showSupport();
-
     if (!hasFlash && needsFlash) {
-      _wDS('needFlash');
+      messages.push(strings.needFlash);
       // TODO: Fatal here vs. timeout approach, etc.
       // hack: fail sooner.
       sm2.setup({
@@ -5508,7 +5572,10 @@ function SoundManager(smURL, smID) {
       doc.removeEventListener('DOMContentLoaded', domContentLoaded, false);
     }
 
+    showSupport();
+
     initMovie();
+
     return true;
 
   };
