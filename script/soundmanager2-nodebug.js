@@ -524,7 +524,6 @@ function SoundManager(smURL, smID) {
         }
         oRemoved = flash.parentNode.removeChild(flash);
       } catch(e) {
-        return false;
       }
     }
     oRemovedHTML = oRemoved = needsFlash = flash = null;
