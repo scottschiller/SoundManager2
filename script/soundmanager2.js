@@ -1235,17 +1235,25 @@ function SoundManager(smURL, smID) {
     // trash ze flash
 
     if (flash) {
+
       try {
+
         if (isIE) {
           oRemovedHTML = flash.innerHTML;
         }
+
         oRemoved = flash.parentNode.removeChild(flash);
+
         _wDS('flRemoved');
+
       } catch(e) {
-        // uh-oh.
+
+        // Remove failed? May be due to flash blockers silently removing the SWF object/embed node from the DOM. Warn and continue.
+
         _wDS('badRemove', 2);
-        return false;
+
       }
+
     }
 
     // actually, force recreate of movie.
@@ -3987,7 +3995,7 @@ function SoundManager(smURL, smID) {
     notOK: 'Audio support is not available.',
     domError: sm + 'exception caught while appending SWF to DOM.',
     spcWmode: 'Removing wmode, preventing known SWF loading issue(s)',
-    swf404: sm + ': Verify that %s is a valid path.',
+    swf404: smc + 'Verify that %s is a valid path.',
     tryDebug: 'Try ' + sm + '.debugFlash = true for more security details (output goes to SWF.)',
     checkSWF: 'See SWF output for more debug info.',
     localFail: smc + 'Non-HTTP page (' + doc.location.protocol + ' URL?) Review Flash player security settings for this special case:\nhttp://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html\nMay need to add/allow path, eg. c:/sm2/ or /users/me/sm2/',
@@ -4003,7 +4011,7 @@ function SoundManager(smURL, smID) {
     onloadOK: sm + '.onload() complete',
     didInit: smc + 'init(): Already called?',
     secNote: 'Flash security note: Network/internet URLs will not load due to security restrictions. Access can be configured via Flash Player Global Security Settings Page: http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html',
-    badRemove: 'Warning: Failed to remove flash movie.',
+    badRemove: smc + 'Failed to remove Flash node.',
     shutdown: sm + '.disable(): Shutting down',
     queue: smc + 'Queueing %s handler',
     smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
@@ -4879,7 +4887,7 @@ function SoundManager(smURL, smID) {
         }
 
         if (sm2.useHighPerformance) {
-          options.push('highPerformance');
+          options.push('useHighPerformance');
         }
 
         if (sm2.flashPollingInterval) {
@@ -4895,7 +4903,7 @@ function SoundManager(smURL, smID) {
         }
 
         if (sm2.debugFlash) {
-          options.push('flash debug');
+          options.push('debugFlash');
         }
 
         if (sm2.useFlashBlock) {
@@ -5225,7 +5233,7 @@ function SoundManager(smURL, smID) {
 
       // <d>
       if (!didInit) {
-        sm2._wD(sm + ': No Flash response within expected time.\nLikely causes: ' + (p === 0 ? 'SWF load failed, ':'') + 'Flash blocked or JS-Flash security error.' + (sm2.debugFlash?' ' + str('checkSWF'):''), 2);
+        sm2._wD(sm + ': No Flash response within expected time. Likely causes: ' + (p === 0 ? 'SWF load failed, ':'') + 'Flash blocked or JS-Flash security error.' + (sm2.debugFlash?' ' + str('checkSWF'):''), 2);
         if (!overHTTP && p) {
           _wDS('localFail', 2);
           if (!sm2.debugFlash) {
