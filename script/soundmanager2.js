@@ -1338,12 +1338,12 @@ function SoundManager(smURL, smID) {
     /**
      * Interesting syntax notes...
      * Flash/ExternalInterface (ActiveX/NPAPI) bridge methods are not typeof "function" nor instanceof Function, but are still valid.
-     * Additionally, jslint dislikes ('PercentLoaded' in flash)-style syntax and recommends hasOwnProperty(), which does not work in this case.
+     * Additionally, JSLint dislikes ('PercentLoaded' in flash)-style syntax and recommends hasOwnProperty(), which does not work in this case.
      * Furthermore, using (flash && flash.PercentLoaded) causes IE to throw "object doesn't support this property or method".
      * Thus, 'in' syntax must be used.
      */
 
-    return (flash && 'PercentLoaded' in flash ? flash.PercentLoaded() : null);
+    return (flash && 'PercentLoaded' in flash ? flash.PercentLoaded() : null); // Yes, JSLint. See nearby comment in source for explanation.
 
   };
 
