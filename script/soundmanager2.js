@@ -4924,6 +4924,8 @@ function SoundManager(smURL, smID) {
 
       sm2._wD(title + (str.length ? delimiter + str.join(', ') : ''), 1);
 
+      showSupport();
+
       // </d>
 
     }
@@ -5579,8 +5581,6 @@ function SoundManager(smURL, smID) {
     if (doc.removeEventListener) {
       doc.removeEventListener('DOMContentLoaded', domContentLoaded, false);
     }
-
-    showSupport();
 
     initMovie();
 

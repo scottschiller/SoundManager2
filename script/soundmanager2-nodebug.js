@@ -2498,7 +2498,6 @@ function SoundManager(smURL, smID) {
     if (doc.removeEventListener) {
       doc.removeEventListener('DOMContentLoaded', domContentLoaded, false);
     }
-    showSupport();
     initMovie();
     return true;
   };
