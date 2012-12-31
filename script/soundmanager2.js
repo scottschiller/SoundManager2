@@ -259,7 +259,7 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, win = window, wl = win.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
@@ -361,7 +361,7 @@ function SoundManager(smURL, smID) {
   this.getMovie = function(smID) {
 
     // safety net: some old browsers differ on SWF references, possibly related to ExternalInterface / flash version
-    return id(smID) || doc[smID] || win[smID];
+    return id(smID) || doc[smID] || window[smID];
 
   };
 
@@ -941,7 +941,7 @@ function SoundManager(smURL, smID) {
 
     // fire "complete", despite fail
     initComplete(bNoDisable);
-    event.remove(win, 'load', initUserOnload);
+    event.remove(window, 'load', initUserOnload);
 
     return true;
 
@@ -1056,7 +1056,7 @@ function SoundManager(smURL, smID) {
       // </d>
 
       if (!oScope) {
-        oScope = win;
+        oScope = window;
       }
 
       addOnEvent(sType, oMethod, oScope);
@@ -1095,7 +1095,7 @@ function SoundManager(smURL, smID) {
       // </d>
 
       if (!oScope) {
-        oScope = win;
+        oScope = window;
       }
 
       addOnEvent(sType, oMethod, oScope);
@@ -1298,7 +1298,7 @@ function SoundManager(smURL, smID) {
     sm2.html5Only = false;
     sm2.ignoreFlash = false;
 
-    win.setTimeout(function() {
+    window.setTimeout(function() {
 
       preInit();
 
@@ -3432,7 +3432,7 @@ function SoundManager(smURL, smID) {
   event = (function() {
 
     // normalize event methods
-    var old = (win.attachEvent),
+    var old = (window.attachEvent),
     evt = {
       add: (old?'attachEvent':'addEventListener'),
       remove: (old?'detachEvent':'removeEventListener')
@@ -4333,7 +4333,7 @@ function SoundManager(smURL, smID) {
 
     // troubleshooter debug hooks
 
-    if (win.sm2Debugger !== _undefined) {
+    if (window.sm2Debugger !== _undefined) {
       try {
         sm2Debugger.handleEvent(sEventType, bSuccess, sMessage);
       } catch(e) {
@@ -4487,7 +4487,7 @@ function SoundManager(smURL, smID) {
 
   initUserOnload = function() {
 
-    win.setTimeout(function() {
+    window.setTimeout(function() {
 
       if (sm2.useFlashBlock) {
         flashBlockHandler();
@@ -4499,12 +4499,12 @@ function SoundManager(smURL, smID) {
 
       if (typeof sm2.onload === 'function') {
         _wDS('onload', 1);
-        sm2.onload.apply(win);
+        sm2.onload.apply(window);
         _wDS('onloadOK', 1);
       }
 
       if (sm2.waitForWindowLoad) {
-        event.add(win, 'load', initUserOnload);
+        event.add(window, 'load', initUserOnload);
       }
 
     },1);
@@ -4520,7 +4520,7 @@ function SoundManager(smURL, smID) {
       return hasFlash;
     }
 
-    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = win.ActiveXObject;
+    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = window.ActiveXObject;
 
     if (nP && nP.length) {
       type = 'application/x-shockwave-flash';
@@ -4674,7 +4674,7 @@ function SoundManager(smURL, smID) {
 
         if (h5IntervalTimer === null && h5TimerCount === 0) {
 
-          h5IntervalTimer = win.setInterval(timerExecute, sm2.html5PollingInterval);
+          h5IntervalTimer = window.setInterval(timerExecute, sm2.html5PollingInterval);
    
         }
 
@@ -4720,7 +4720,7 @@ function SoundManager(smURL, smID) {
 
       // no active timers, stop polling interval.
 
-      win.clearInterval(h5IntervalTimer);
+      window.clearInterval(h5IntervalTimer);
 
       h5IntervalTimer = null;
 
@@ -4747,7 +4747,7 @@ function SoundManager(smURL, smID) {
     options = (options !== _undefined ? options : {});
 
     if (typeof sm2.onerror === 'function') {
-      sm2.onerror.apply(win, [{type:(options.type !== _undefined ? options.type : null)}]);
+      sm2.onerror.apply(window, [{type:(options.type !== _undefined ? options.type : null)}]);
     }
 
     if (options.fatal !== _undefined && options.fatal) {
@@ -5206,7 +5206,7 @@ function SoundManager(smURL, smID) {
     }
 
     waitingForEI = true;
-    event.remove(win, 'load', delayWaitForEI);
+    event.remove(window, 'load', delayWaitForEI);
 
     if (tryInitOnFocus && !isFocused) {
       // Safari won't load flash in background tabs, only when focused.
@@ -5229,7 +5229,7 @@ function SoundManager(smURL, smID) {
         // special case: if movie *partially* loaded, retry until it's 100% before assuming failure.
         waitingForEI = false;
         sm2._wD(str('waitSWF'));
-        win.setTimeout(delayWaitForEI, 1);
+        window.setTimeout(delayWaitForEI, 1);
         return false;
       }
 
@@ -5283,7 +5283,7 @@ function SoundManager(smURL, smID) {
   handleFocus = function() {
 
     function cleanup() {
-      event.remove(win, 'focus', handleFocus);
+      event.remove(window, 'focus', handleFocus);
     }
 
     if (isFocused || !tryInitOnFocus) {
@@ -5385,7 +5385,7 @@ function SoundManager(smURL, smID) {
     if (!disabled) {
       if (sm2.waitForWindowLoad && !windowLoaded) {
         _wDS('waitOnload');
-        event.add(win, 'load', initUserOnload);
+        event.add(window, 'load', initUserOnload);
       } else {
         // <d>
         if (sm2.waitForWindowLoad && windowLoaded) {
@@ -5444,7 +5444,7 @@ function SoundManager(smURL, smID) {
     }
 
     function cleanup() {
-      event.remove(win, 'load', sm2.beginDelayedInit);
+      event.remove(window, 'load', sm2.beginDelayedInit);
     }
 
     if (sm2.html5Only) {
@@ -5480,7 +5480,7 @@ function SoundManager(smURL, smID) {
       if (!sm2.html5Only) {
         // prevent browser from showing cached page state (or rather, restoring "suspended" page state) via back button, because flash may be dead
         // http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-        event.add(win, 'unload', doNothing);
+        event.add(window, 'unload', doNothing);
       }
 
     } catch(e) {
@@ -5603,7 +5603,7 @@ function SoundManager(smURL, smID) {
 
     // catch edge case of initComplete() firing after window.load()
     windowLoaded = true;
-    event.remove(win, 'load', winOnLoad);
+    event.remove(window, 'load', winOnLoad);
 
   };
 
@@ -5649,9 +5649,9 @@ function SoundManager(smURL, smID) {
   detectFlash();
 
   // focus and window load, init (primarily flash-driven)
-  event.add(win, 'focus', handleFocus);
-  event.add(win, 'load', delayWaitForEI);
-  event.add(win, 'load', winOnLoad);
+  event.add(window, 'focus', handleFocus);
+  event.add(window, 'load', delayWaitForEI);
+  event.add(window, 'load', winOnLoad);
 
   if (doc.addEventListener) {
 
