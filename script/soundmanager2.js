@@ -1188,6 +1188,15 @@ function SoundManager(smURL, smID) {
 
   };
 
+  // <d>
+  // last-resort debugging option
+  if (wl.indexOf('sm2-debug=alert') !== -1) {
+    this._writeDebug = function(sText) {
+      window.alert(sText);
+    };
+  }
+  // </d>
+
   // alias
   this._wD = this._writeDebug;
 
@@ -4298,14 +4307,6 @@ function SoundManager(smURL, smID) {
     return (!o ? '' : sm2._wD(str(o), errorLevel));
 
   };
-
-  // last-resort debugging option
-
-  if (wl.indexOf('sm2-debug=alert') + 1 && sm2.debugMode) {
-    sm2._wD = function(sText) {
-      window.alert(sText);
-    };
-  }
 
   toggleDebug = function() {
 
