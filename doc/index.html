@@ -200,7 +200,7 @@ soundManager.setup({
      <li><a href="#soundmanager-clearonposition">clearOnPosition()</a></li>
      <li><a href="#soundmanager-createsound">createSound()</a></li>
      <li><a href="#soundmanager-destroysound">destroySound()</a></li>
-	 <li class="flash9" title="Flash 9.0+ only"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
+     <li class="flash9" title="Flash 9.0+ only"><a href="#soundmanager-getmemoryuse">getMemoryUse()</a></li>
      <li><a href="#soundmanager-getsoundbyid">getSoundById()</a></li>
      <li><a href="#soundmanager-load">load()</a></li>
      <li><a href="#soundmanager-mute">mute()</a></li>
@@ -210,9 +210,10 @@ soundManager.setup({
      <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
      <li><a href="#soundmanager-play">play()</a></li>
      <li><a href="#soundmanager-reboot">reboot()</a></li>
+     <li class="new"><a href="#soundmanager-reset" title="New feature">reset()</a></li>
      <li><a href="#soundmanager-resume">resume()</a></li>
-  	 <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
-     <li class="new"><a href="#soundmanager-setup" title="Newly-added feature">setup()</a></li>
+     <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
+     <li class="recent"><a href="#soundmanager-setup" title="Recently-added feature">setup()</a></li>
      <li><a href="#soundmanager-setpan" title="Flash-only feature">setPan()</a></li>
      <li><a href="#soundmanager-setposition">setPosition()</a></li>
      <li><a href="#soundmanager-setvolume">setVolume()</a></li>
@@ -243,7 +244,7 @@ soundManager.setup({
      <li>autoPlay</li>
      <li title="Flash 9.0r115+ only" class="flash9">bufferTime</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-eqdata">eqData</a></li>
-     <li class="recent"><a href="#smsound-from" title="Recently-added feature">from</a></li>
+     <li><a href="#smsound-from">from</a></li>
      <li><a href="#smsound-id">id</a></li>
      <li title="Flash 9.0r115+ only" class="flash9">isMovieStar</li>
      <li>loops</li>
@@ -254,7 +255,7 @@ soundManager.setup({
      <li><a href="#smsound-position">position</a></li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-serverurl">serverURL</a></li>
      <li>stream</li>
-     <li class="recent"><a href="#smsound-to" title="Recently-added feature">to</a></li>
+     <li><a href="#smsound-to">to</a></li>
      <li><a href="#smsound-type">type</a></li>
      <li><a href="#smsound-url">url</a></li>
      <li><a href="#smsound-usepolicyfile">usePolicyFile</a></li>
@@ -264,7 +265,7 @@ soundManager.setup({
 
     <h4>Dynamic Properties</h4>
     <ul>
-     <li title="Recently-added" class="recent"><a href="#smsound-buffered">buffered</a></li>
+     <li><a href="#smsound-buffered">buffered</a></li>
      <li><a href="#smsound-bytesloaded">bytesLoaded</a></li>
      <li><a href="#smsound-bytestotal">bytesTotal</a></li>
 	 <li title="Flash 9+ only" class="flash9"><a href="#smsound-isbuffering">isBuffering</a></li>
@@ -293,7 +294,7 @@ soundManager.setup({
      <li><a href="#smsound-onposition-event">onposition</a></li>
      -->
      <li><a href="#smsound-onresume">onresume</a></li>
-     <li title="HTML5 only, Recently-added feature" class="recent"><a href="#smsound-onsuspend">onsuspend</a></li>
+     <li title="HTML5 only"><a href="#smsound-onsuspend">onsuspend</a></li>
      <li><a href="#smsound-onstop">onstop</a></li>
      <li><a href="#smsound-onid3">onid3</a></li>
      <li><a href="#smsound-whileloading">whileloading</a></li>
@@ -945,7 +946,7 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 
 	   <dl id="soundmanager-reboot" class="f-block f-reboot">
 	   <dt>reboot()</dt>
-	   <dd title="soundID:string">Destroys any created SMSound objects, unloads the flash movie (removing it from the DOM) and restarts the SM2 init process, retaining all currently-set properties.</dd>
+	   <dd>Destroys any created SMSound objects, unloads the flash movie (removing it from the DOM) and restarts the SM2 init process, retaining all currently-set properties.</dd>
 	   <dd>Example: 
 <pre class="block"><code>soundManager.ontimeout(function() {<span>
   <span>// Something went wrong during init - in this example, we *assume* flashblock etc.</span>
@@ -956,6 +957,13 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 	   </dd>
 	   <dd>This method may be helpful when trying to gracefully recover from FlashBlock-type situations where the user has prevented the SWF from loading, but is able to whitelist it. For more ideas, see <a href="../demo/flashblock/">Flashblock demo</a>.</dd>
 	   <dd>When using this method also consider <a href="#soundmanager-flashloadtimeout" onclick="resetFilter()">flashLoadTimeout</a>, which can have SM2 wait indefinitely for the flash to load if desired.</dd>
+	   </dl>
+
+	   <dl id="soundmanager-reset" class="f-block f-reset">
+	   <dt>reset()</dt>
+           <dd>Effectively restores SoundManager's original state without rebooting (re-initializing).</dd>
+	   <dd>Similar to <a href="#soundmanager-reboot" onclick="resetFilter()">reboot()</a> which destroys sound objects and the flash movie (as applicable), but also nukes any registered <code>onready()</code> and related callbacks.</dd>
+           <dd>Once <code>soundManager.reset()</code> has been called, <code>soundManager.beginDelayedInit()</code> (or <code>soundManager.setup()</code> with a <code>url</code> property) may be called to re-init SM2.</dd>
 	   </dl>
 
 	   <dl id="soundmanager-resume" class="f-block f-resume">

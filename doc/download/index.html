@@ -132,9 +132,9 @@ soundManager.setup({
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> - HTML5 + iOS load fixes, Windows 8 App Store compatibility tweak, code pattern improvements. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> Strict Mode. Android 2.3 HTML5 fixes, cleaner debug output, improved default flashblock handling, compatibility with Firefox WMF-based HTML5 MP3 support, and more. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20121104.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20121104</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20130101.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20130101</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 128 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -170,6 +170,125 @@ soundManager.setup({
 			  	<p>A changelog of sorts.</p>
 
 				<ul id="revision-list" class="standard">
+
+					<li id="sm2-20130101" class="in">
+
+						<h3><b>V2.97a.20130101</b> - Strict Mode. Android 2.3 HTML5 fixes, cleaner debug output, improved default flashblock handling. Confirmed compatibility with Firefox WMF-based HTML5 MP3 support. New <code>reset()</code> method, <code>reboot()</code> tweaks.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											HTML5: Reset last URL and load state for "singleton" (global HTML5 audio) case, on iOS + Android &lt;= 2.3 for specific use case - <code>createSound()</code> -&gt; <code>play()</code> -&gt; <code>destruct()</code> -&gt; <code>createSound()</code> -&gt; <code>play()</code> with same URL/parameters.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											HTML5: Fix for Android 2.3 / Nexus 7 - they work better with the singleton HTML5 <code>audio()</code> instance as well, same as iOS, for chained (i.e., playlist-style) playback cases.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											<code>soundManager.setup()</code> now allows <code>html5Test</code> (regular expression, eg. <code>/probably|maybe/i</code>) to be passed. Was previously unrecognized/rejected.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											The SoundManager 2 core API (soundmanager2.js) now runs in Strict Mode, via <code>"use strict";</code>. This is scoped to a closure within soundmanager2.js, and should not cause issues when combined (rolled-up and/or minified) with other JavaScript code.
+										</p>
+									</li>
+
+
+									<li>
+										<p>
+											New <code>soundManager.reset()</code> method. Similar to <code>reboot()</code>, but also nukes any registered <code>onready()</code> and related callbacks. Based on pull request from Github user <a href="https://github.com/jabr/soundmanager-rails/commit/d25761145826b73cc0d1209e895699fce9ae8598">jabr</a>. Chaining is now possible too, e.g., <code>soundManager.reset().setup({onready:function(){console.log('reset() complete, reboot OK')}});</code>. Call <code>soundManager.beginDelayedInit()</code> to re-init after a <code>reset()</code>.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											<code>soundManager.setup({url:...})</code> + lazy-loading (dynamically-loaded JS) case: If <code>setup()</code> given a <code>url</code> parameter after <code>DOMContentLoaded</code> has fired, assume we should start right away. (Helps reduce need for <code>beginDelayedInit()</code> + "just works" for most users).
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Don't init inline after <code>document.readyState === 'complete'</code> (improve lazy-loading case, wait for <code>setup()</code> with <code>url</code> instead).
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+
+										<p>
+											Prerelease Firefox builds can play MP3 audio via HTML5 in some cases, as part of a move to support H.264 video (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=799318">Bugzilla #799318</a> for details). Firefox 20 (nightlies, and Aurora channel builds in January 2013) can get native MP3 support via Windows Media Foundation (OS-level codec support) components on Windows 8, Windows 7, and <a href="http://news.ycombinator.com/item?id=4944080">soon</a>, Windows Vista. As of 12/2012, OS X support <a href="http://news.ycombinator.com/item?id=4945149">is planned</a>, and Windows XP support <a href="http://news.ycombinator.com/item?id=4944080">is not</a>. <span class="sidenote">(Disclaimer: Vista, OS X and XP notes sourced from comments on Hacker News; see links).</span>
+										</p>
+
+										<p>
+											When enabled with <code>media.windows-media-foundation.enabled = true</code> under <code>about:config</code>, Firefox may be able to play MP3s via HTML5 and thus get "100% HTML5 mode" when <code>soundManager.setup({preferFlash: false})</code> is used.
+										</p>
+
+										<p>
+											At time of writing (12/30/2012), Firefox 20 (nightly) returns <code>""</code> for <code>canPlayType('audio/mpeg; codecs="mp3"')</code>, a test commonly used to query for MP3 support under HTML5 and one which works in other modern browsers. Firefox's behaviour differs because it is trying to follow the MPEG spec, which does not include an explicit MP3 MIME type. Instead, <code>canPlayType('audio/mpeg')</code>, which is in-spec, presently returns a "maybe" when MP3 is supported under Firefox.
+										</p>
+
+									</li>
+
+									<li>
+										<p>
+											Improved SM2 <code>console.log()</code> debug output, aiming to be less "noisy". Core setup options are shown better at start-up, eg. "SoundManager V2.97a.20130101 (AS3/Flash 9) + HTML5 audio + preferFlash + html5PollingInterval (50ms) + flashBlock".
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Christmas light demo: Tweaks for iOS + Android touch devices.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											MP3 Player Button demo: Include HTML <code>type</code> (MIME hint) attribute, if specified.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+					<!-- previously ... -->
 
 					<li id="sm2-20121104" class="in">
 
@@ -242,8 +361,6 @@ soundManager.setup({
 						</ul>
 
 					</li>
-
-					<!-- previously ... -->
 
 			   		<li id="sm2-20120916" class="in">
 
