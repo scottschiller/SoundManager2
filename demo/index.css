@@ -42,8 +42,15 @@ body.home {
 }
 
 body,
+#main-wrapper,
 #nav ul li strong a {
   background: #fff url(../demo/_image/noise.png);
+}
+
+body,
+#main-wrapper,
+#nav ul li strong a {
+  background: #fff url(../demo/_image/tiny_grid.png);
 }
 
 /* below block commented out as it crashes YUI Compressor (as of 12/2011) - moved out to make-rollups script. */
@@ -629,7 +636,6 @@ h2 {
 
 #main-wrapper {
   position: relative;
-  background: #fff url(../demo/_image/noise.png);
   /* fade out the body texture */
   /*
   border: 1px solid #fff;
