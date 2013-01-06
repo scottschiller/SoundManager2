@@ -42,8 +42,18 @@ body.home {
 }
 
 body,
+#main-wrapper,
 #nav ul li strong a {
   background: #fff url(../demo/_image/noise.png);
+}
+
+body,
+#main-wrapper,
+#nav ul li strong a {
+  background: #fff url(../demo/_image/tiny_grid.png);
+  background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaAgMAAADUJKRdAAAADFBMVEX8/Pz19fX09PT29vY9qbYoAAAAaElEQVR4Xk2MoREDMRADrzSDBQcEQj71GBw4kBbSQKp4YBBw9PsJyLxtsR2tZNfx/LyPhzX7R1Ue2SfjKlicDKBNdpBXsz790Nj8kUlo+WR47PvEPfY+gb7+kMhm5801EBsLvq/z3v8Apg8pkRmgbrsAAAAASUVORK5CYII=);
+  /* old IE */
+  *background: #fff url(../demo/_image/tiny_grid.png);
 }
 
 /* below block commented out as it crashes YUI Compressor (as of 12/2011) - moved out to make-rollups script. */
@@ -226,7 +236,7 @@ body.home #about-sm2 h3 {
 }
 
 body.home #about-sm2 b {
- font-weight: 400;
+ font-weight: 500;
 }
 
 body.home #about-sm2 strong {
@@ -523,6 +533,16 @@ pre.block code,
   padding:0.5em;
   font-size: 100%;
   line-height:1.75em;
+  background-image: -webkit-linear-gradient(#fcfcfc 50%, #fff 50%);
+  background-image: -o-linear-gradient(#fcfcfc 50%, #fff 50%);
+  background-image: linear-gradient(#fcfcfc 50%, #fff 50%);
+  background-size: 100% 3.5em;
+  background-origin: content-box;
+}
+
+#sm2-properties .code {
+ /* special case: no zebra striping for this one. */
+ background-image: none;
 }
 
 pre.block code {
@@ -619,7 +639,6 @@ h2 {
 
 #main-wrapper {
   position: relative;
-  background: #fff url(../demo/_image/noise.png);
   /* fade out the body texture */
   /*
   border: 1px solid #fff;

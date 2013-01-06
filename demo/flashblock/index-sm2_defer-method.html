@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: Flash Block handling examples</title>
+<meta name="description" content="Demo of SoundManager 2 handling flashblock / &quot;click to flash&quot; blockers gracefully" />
+<meta name="keywords" content="javascript sound, javascript audio, DHTML sound, flashblock, flash blocker, handling flashblock, click to flash, click2flash" />
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<!-- design template, you don't need this -->
+<link rel="stylesheet" type="text/css" href="../index.css" />
+<link rel="stylesheet" type="text/css" href="../debug.css" />
+
+<!-- actual flashblock demo stuff, this is for you -->
+<link rel="stylesheet" type="text/css" href="flashblock.css" />
+
+<!-- in this case, set SM2_DEFER up front (old-skool method), load script synchronously and then start later -->
+<script type="text/javascript">window.SM2_DEFER = true;</script>
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script>
+window.onload = function() {
+
+  function msg(s) {
+    console.info(s);
+  }
+
+  msg('Window loaded, waiting 1 second...');
+
+  setTimeout(function() {
+
+      window.setTimeout(function() {
+        msg('soundmanager2.js loaded, delaying before setup()...');
+      }, 500);
+
+      window.setTimeout(function() {
+
+        // create SM2
+        soundManager = new SoundManager();
+
+		soundManager.setup({
+		  // enable flash block handling
+		  useFlashBlock: true,
+		  // making sure this demo uses flash, of course...
+		  preferFlash: true,
+		  // custom demo options, not for your needs
+		  debugMode: true,
+		  url: '../../swf/'
+		});
+
+		var winLoc = window.location.toString();
+		if (winLoc.match(/flash9/i)) {
+		  soundManager.setup({
+		    flashVersion: 9
+		  });
+		  if (winLoc.match(/highperformance/i)) {
+		    soundManager.setup({
+		      useHighPerformance: true
+		    });
+		  }
+		} else if (winLoc.match(/flash8/i)) {
+		  soundManager.setup({
+		    flashVersion: 8
+		  });
+		}
+
+		soundManager.ontimeout(function(){
+		  var loaded = soundManager.getMoviePercent();
+		  document.getElementById('sm2-status').innerHTML = 'No response (yet), flash movie '+(loaded?'loaded OK (likely security/error case)':'has not loaded (likely flash-blocked.)')+' Waiting indefinitely ...';
+		});
+
+		soundManager.onready(function(){
+		  var loaded = soundManager.getMoviePercent();
+		  document.getElementById('sm2-status').innerHTML = 'SoundManager load OK';
+		});
+
+        // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+        soundManager.beginDelayedInit();
+
+      }, 1000);
+
+  },1000);
+
+}
+</script>
+</head>
+<body>
+
+<div style="margin:1em;max-width:60em">
+	
+	<h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Flashblock / "click to flash" handling demos</h1>
+
+	<h3>Show SWF inline, wait indefinitely for load (click-to-run or whitelist)</h3>
+
+        <p class="note">You can run this demo with <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal mode) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance mode</a> (higher JS callback frequency).</p>
+
+        <h4>Where (and when) to show the SWF</h4>
+
+	<p>To handle potential flash block cases, put <code>&lt;div id="sm2-container"&gt;&lt;/div&gt;</code> in your markup where you'd like the SWF to appear in those cases. If not specified, SM2 will create and append the <code>#sm2-container</code> node to the document when it starts.</p>
+
+        <p>When <code>soundManager.useFlashBlock</code> is true, SM2 will not apply styles (eg. <code>style.position.left</code>) directly to the flash; rather, it will assign CSS classes and you can handle it as you choose. Take a look at <a href="#flashblock-css">the related CSS</a> file you will also need if you turn this feature on.</p>
+
+        <h4>Handling failed start-up cases</h4>
+
+        <p>In the blocked/failed start-up case, <code>#sm2-container</code> will have a class name of <code>swf_timedout</code> applied to it.</p>
+
+        <p>SM2 will start its init process, and will fire <code>onready()</code>, <code>onload()</code> and <code>onerror()</code> handlers accordingly. Keep in mind that while <code>onerror()</code> may fire at first, it may be preceded by a successful <code>onload()</code> if the user first loads the page and then later unblocks the flash movie.</p>
+
+	<p>Note that flash blockers may not run when viewing offline (via <code>file://</code>) content, so try viewing this demo online. For FlashBlock (under Firefox), you can also go to <code>about:config</code> using your address bar and change the value of <code>flashblock.blockLocal</code> to test while offline.</p>
+
+        <h3>Flash Block Example</h3>
+
+        <p>Here, Flash is appended by SM2 to the <code>#sm2-container</code> DIV and after a failed start attempt (if you have a blocker active), will have a <code>swf_timedout</code> class appended.</p>
+
+        <p>The SWF uses <code>position:absolute</code> and negative left/top values so as not to affect the normal page layout, but shifts to <code>left:auto;top:auto</code> (effectively left/top:0) in the blocked case, and becomes visible to the user. On a successful unblock, the movie goes back to left/top:-9999em and is hidden from view.</p>
+
+	<p>SoundManager 2 load status: <b id="sm2-status">Loading...</b></p>
+
+	<!-- here is where the SWF is shown in the blocked / failed start-up case. -->
+
+	<div id="sm2-container">
+ 	  <!-- flash is appended here -->
+        </div>
+	
+	<h3 id="flashblock-css">Flash Block-related CSS</h3>
+	
+	<p>When <code>soundManager.useFlashBlock</code> is enabled, CSS is applied to <code>#sm2-container</code> depending on the progress of SM2's start-up.</p>
+	<p>This page + demos use the rules below, fully-defined and commented in <a href="flashblock.css">flashblock.css</a>. Use it as a base for your own SM2 + flash block implementations.</p>
+
+<pre class="block"><code>#sm2-container {
+ <span><span>/* Initial state: position:absolute/off-screen, or left/top:0 */</span></span>
+}
+#sm2-container.swf_timedout {
+  <span><span>/* Didn't load before time-out, show to user.
+  Maybe highlight on-screen, red border, etc..? */</span></span>
+}
+#sm2-container.swf_unblocked {
+  <span><span>/* Applied if movie loads successfully after
+  an unblock (flash started, so move off-screen etc.) */</span></span>
+}
+#sm2-container.swf_loaded {
+  <span><span>/* Applied if movie loads, regardless of whether
+  it was initially blocked */</span></span>
+}
+#sm2-container.swf_error {
+  <span><span>/* "Fatal" error case: SWF loaded,
+  but SM2 was unable to start for some reason.
+  (Flash security or other error case.) */</span></span>
+}
+#sm2-container.high_performance {
+  <span><span>/* Additional modifier for "high performance" mode
+  should apply position:fixed and left/bottom 0 to stay on-screen
+  at all times (better flash performance) */</span></span>
+}
+#sm2-container.flash_debug {
+  <span><span>/* Additional modifier for flash debug output mode
+  should use width/height 100% so you can read debug messages */</span></span>
+}</code></pre>
+
+	<h3>Basic Demo</h3>
+	
+	<p>For a more minimal example, see the <a href="basic.html" title="SoundManager 2: Basic Flashblock handling demo">basic flashblock demo</a>.</p>
+	
+</div>

@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2 Template</title>
+<style type="text/css">
+#soundmanager-debug {
+ /* SM2 debug container (optional, use or customize this as you like - makes in-browser debug output more useable) */
+ position:fixed;_position:absolute;right:1em;bottom:1em;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:monaco,"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);
+}
+</style>
+<!-- some CSS for this demo page, not required for SM2 -->
+<link rel="stylesheet" href="template.css" />
+
+<!-- SM2 BAREBONES TEMPLATE: START -->
+
+<!-- include SM2 library -->
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+
+<!-- And now, customize it! -->
+<script type="text/javascript">
+
+soundManager.setup({
+  // soundManager.debugMode = false; // disable debug output
+  // path to directory containing SoundManager2 .SWF file
+  url: '../../swf/',
+  flashVersion: 8,
+  // skip for now. See the flashblock demo when you want to start getting fancy.
+  useFlashBlock: false
+});
+
+soundManager.onready(function() {
+  // soundManager.createSound() etc. may now be called
+  soundManager._writeDebug('soundManager.onready() callback - your code executes here');
+});
+
+soundManager.ontimeout(function() {
+  // SM2 could not start. Flash missing, blocked, no support?
+  soundManager._writeDebug('soundManager.ontimeout() callback - your code executes here');
+});
+
+
+</script>
+
+<!-- SM2 BAREBONES TEMPLATE: END -->
+
+</head>
+
+<body style="height:100%">
+
+<div style="margin-right:43em">
+ <h1>SoundManager 2 Template Example</h1>
+ <p>This is a basic template for adding SoundManager to your page.</p> 
+ <h2>How it works</h2>
+ <p>This page includes the SM2 script, which starts up on its own as appropriate. By default it will try to start as soon as possible.</p>
+ <p>The minimal code needed to get SoundManager 2 going is below, with <em><em>configurable parts</em></em>. You can copy/paste it to get started.</p>
+</div>
+
+<p>This is where the iFrame goes.</p>
+<iframe id="sm2-iframe" src="index.html" width="800" height="600"></iframe>
+
+<div>
+	<button onclick="soundManager.play('foo','http://www.schillmania.com/projects/soundmanager2/demo/_mp3/coins.mp3')">Play coins.mp3 here</button>
+	<button onclick="window.frames[0].soundManager.play('foo2','http://www.schillmania.com/projects/soundmanager2/demo/christmas-lights/sound/glass0.mp3')">Play glass.mp3 (iFrame)</button>
+
+</body>
+</html>

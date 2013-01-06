@@ -147,7 +147,8 @@ soundManager.setup({
 			  <ul>
 			   <li>Firefox (all versions), Windows/Mac</li>
 			   <li>Safari 1.3+ (Mac) / All Windows versions</li>
-			   <li>Mobile Webkit: iOS 4.0 devices, or iPad 3.2+</li>
+			   <li>Mobile Webkit: iOS 4.0 devices, iPad 3.2 (original iPad iOS release) and newer</li>
+			   <li>Android (2.3+, confirmed on 2.3.3.)</li>
 			   <li>Google Chrome (all versions/OSes)</li>
 			   <li>Internet Explorer 5.0+, Windows</li>
 			   <li>Opera 9.10 (slightly buggy, 9.5+ ideal), Windows/Mac</li>
@@ -183,7 +184,7 @@ soundManager.setup({
 
 			  <h4>Flash 8 limitations with multiShot (overlaying/"chorus") effects</h4>
 			  <p class="in">Regarding "layering" sounds (calling <code>play()</code> on a sound multiple times): Even though a multi-shot option can be specified, it does not work with Flash 8; a single instance of a sound can only have one timeline. The current behaviour is that when <code>multiShot</code> is specified and <code>play()</code> is called on a currently-playing sound, it will restart from the beginning without an overlay.</p>
-			  <p>However, the API does provide some creative ways (<code class="in">onbeforefinish</code> for looping, multiple sound objects for multi-shot layering) of working around these Flash limitations.</p>
+			  <p>However, the API does provide some creative ways (<code>onfinish</code> for looping, multiple sound objects for multi-shot layering) of working around these Flash limitations.</p>
 			  <p>It should be noted that sounds can loop seamlessly and be layered when linked and exported to SWF from within the Flash IDE, but SoundManager does not support SWF-based audio.</p>
 
 			  <h4>Flash 9 multiShot capabilities</h4>

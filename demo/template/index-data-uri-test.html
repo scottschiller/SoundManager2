@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2 Template</title>
+<style type="text/css">
+#soundmanager-debug {
+ /* SM2 debug container (optional, use or customize this as you like - makes in-browser debug output more useable) */
+ position:fixed;_position:absolute;right:1em;bottom:1em;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:monaco,"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);
+}
+</style>
+<!-- some CSS for this demo page, not required for SM2 -->
+<link rel="stylesheet" href="template.css" />
+
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" 
+
+codebase="http://download.macromedia.com/pub/shockwave/
+cabs/flash/swflash.cab#version=6,0,40,0" 
+ 
+width="480" height="480" id="mymoviename"> 
+
+<param name="movie"  
+
+value="data:application/x-shockwave-flash;base64,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" /> 
+ 
+<param name="quality" value="high" /> 
+
+<param name="bgcolor" value="#ffffff" /> 
+
+<embed src="data:application/x-shockwave-flash;base64,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" quality="high" bgcolor="#ffffff"
+
+width="480" height="480" 
+
+name="mymoviename" align="" type="application/x-shockwave-flash" 
+
+pluginspage="http://www.macromedia.com/go/getflashplayer"> 
+
+
+</embed> 
+
+</object> 
+
+<!-- SM2 BAREBONES TEMPLATE: START -->
+
+<!-- include SM2 library (see builds for optimized versions) -->
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+
+<!-- configure SM2 for your use -->
+<script type="text/javascript">
+
+soundManager.setup({
+  flashVersion: 8,
+  url: 'data:application/x-shockwave-flash;base64,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'
+});
+
+// flash 8, debug version
+soundManager.setup({
+  flashVersion: 8,
+  url: 'data:application/x-shockwave-flash;base64,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'
+});
+
+soundManager.setup({
+  // flash 9
+  flashVersion: 9,
+  url: 'data:application/x-shockwave-flash;base64,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'
+});
+
+// soundManager.url = '../../swf/';
+
+/*
+soundManager.setup({
+
+  // location: path to SWF files, as needed (SWF file name is appended later.)
+
+  url: '../../swf/',
+
+  // optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)
+  // flashVersion: 9,
+
+  // use soundmanager2-nodebug-jsmin.js, or disable debug mode (enabled by default) after development/testing
+  // debugMode: false,
+
+  // good to go: the onready() callback
+
+  onready: function() {
+
+    // SM2 has started - now you can create and play sounds!
+
+    var mySound = soundManager.createSound({
+      id: 'aSound',
+      url: '../_mp3/click-high.mp3'
+      // onload: function() { console.log('sound loaded!', this); }
+      // other options here..
+    });
+
+    mySound.play();
+
+  },
+
+  // optional: ontimeout() callback for handling start-up failure
+
+  ontimeout: function() {
+
+    // Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?
+    // See the flashblock demo when you want to start getting fancy.
+
+  }
+
+});
+*/
+
+</script>
+
+<!-- SM2 BAREBONES TEMPLATE: END -->
+
+<script type="text/javascript">
+// helper function for this page only, demo purposes
+function checkDomain() {
+  if (!document.domain && !this.href.match(/index/i)) {
+    this.href=this.href+'index.html';
+  }
+}
+</script>
+
+</head>
+
+<body style="height:100%">
+
+<div style="max-width:75em">
+
+ <h1>SoundManager 2 Template Example</h1>
+ <p>This page covers the basics of adding SoundManager 2 to your project.</p>
+
+ <h2>How it works</h2>
+ <p>The minimal code needed to get SoundManager 2 going is below, with <em><em>configurable parts highlighted</em></em>. You can copy/paste it to get started. This page is also running the template code; If available, look at your JavaScript console for debug output from SM2.</p>
+
+ <h2>Dependencies</h2>
+
+ <p>You'll need to copy the files inside the <b>script/</b> and <b>swf/</b> subdirectories included with the SoundManager 2 package into your project.</p>
+
+ <ul class="file-structure">
+  <li>
+   soundmanager2/
+   <ul>
+    <li class="core">
+     script/ <span>- API core, soundmanager2.js</span>
+    </li>
+    <li class="core">
+     swf/ <span>- API core, SoundManager 2 .SWF files</span>
+    </li>
+   </ul>
+  </li>
+ </ul>
+
+
+ <p>At the bare minimum, you will need <b>soundmanager2.js</b>, <b>soundmanager2.swf</b> and <b>soundmanager2_debug.swf</b> for the default flash 8-based configuration. (Optionally, SM2 can use a Flash 9-based audio API which has MP4 support, data visualization and a few other features.)</p>
+
+ <h2>Template Code</h2>
+
+<pre class="block"><code><span><span>&lt;!-- include SM2 library (see <a href="../../doc/getstarted/#basic-inclusion" title="SoundManager 2: Script build versions" onclick="checkDomain()">builds</a> for optimized versions) --&gt;</span></span>
+&lt;script type="text/javascript" src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
+
+<span><span>&lt;!-- configure SM2 for your use --&gt;</span></span>
+&lt;script type="text/javascript"&gt;
+
+soundManager.setup({
+
+  <span><span>// location: path to SWF files, as needed (SWF file name is appended later.)</span></span>
+
+  url: '<em><em>/path/to/swf-files/</em></em>',
+
+  <span><span>// optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)</span></span>
+  <span><span>// flashVersion: <em><em>9</em></em>,</span></span>
+
+  <span><span>// use soundmanager2-nodebug-jsmin.js, <i>or</i> disable debug mode (enabled by default) after development/testing</span></span>
+  <span><span>// debugMode: <em><em>false</em></em>,</span></span>
+
+  <span><span>// good to go: the onready() callback</span></span>
+
+  onready: function() {
+
+    <span><span>// SM2 has started - now you can create and play sounds!</span></span>
+
+    var mySound = soundManager.createSound({
+      id: '<em><em>aSound</em></em>',
+      url: '<em><em>/path/to/an.mp3</em></em>'
+      <span><span>// onload: function() { console.log('sound loaded!', this); }</span></span>
+      <span><span>// <a href="../../doc/#smdefaults" onclick="checkDomain()">other options</a> here..</span></span>
+    });
+
+    mySound.play();
+
+  },
+
+  <span><span>// optional: ontimeout() callback for handling start-up failure</span></span>
+
+  ontimeout: function() {
+
+    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?</span></span>
+    <span><span>// See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="checkDomain()">flashblock demo</a> when you want to start getting fancy.</span></span>
+
+  }
+
+});
+
+&lt;/script&gt;</code></pre>
+
+ <h2>Minimal Template Example</h2>
+
+ <p>A condensed version of the above:</p>
+
+<pre class="block"><code>&lt;script src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
+&lt;script&gt;
+soundManager.setup({
+  url: '<em><em>/path/to/swf-files/</em></em>',
+  onready: function() {
+    var mySound = soundManager.createSound({
+      id: '<em><em>aSound</em></em>',
+      url: '<em><em>/path/to/an.mp3</em></em>'
+    });
+    mySound.play();
+  },
+  ontimeout: function() {
+    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?</span></span>
+  }
+});
+&lt;/script&gt;</code></pre>
+
+ <h2 id="onready-ontimeout">Options: <code>soundManager.onready()</code> + <code>soundManager.ontimeout()</code></h2>
+
+ <p>If you would like to keep things separate, you can register callback handlers by calling <code><a href="../../doc/#soundmanager-onready" onclick="checkDomain()">soundManager.onready()</a></code> and <code><a href="../../doc/#soundmanager-ontimeout" onclick="checkDomain()">soundManager.ontimeout()</a></code> independently.</p>
+
+ <h2 id="html5-notes">HTML5 Support Notes</h2>
+ <p>Read up on <a href="../../doc/#soundmanager-usehtml5audio" onclick="checkDomain()">HTML5 audio support</a>, if you're feeling adventurous. iPad/iPhone and devices without flash installed will always attempt to use it.</p>
+
+
+ <h2 id="flashblock-handling">Handling flash blockers</h2>
+ <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="checkDomain()">Flashblock</a> example.</p>
+
+ <h2 style="margin-top:1em">Disabling debug output</h2>
+ <p>SoundManager 2 will write debug output via <code>console.log()</code> if available, by default. To disable it, simply specify <code>debugMode: false</code>.</p>
+ <p>You can also write HTML-based debug output to the DOM via <code>consoleOnly: false</code> and/or <code>useConsole: false</code>.</p>
+ <p>To see related configuration code, refer to the source of this page which basically does all of the above "for real."</p>
+
+ <h2>Troubleshooting ("failed to start": Viewing offline, missing SWF, flash blockers etc.)</h2>
+ <p>If SM2 is failing to start and throwing errors due to flash security, timeouts or other issues, check out the <a href="../../doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool" onclick="checkDomain()">troubleshooting tool</a> for tips.</p>
+
+ <h2>No-debug, compressed version of soundmanager2.js</h2>
+ <p>Once development is finished, you can also use the "minified" (down to ~8% of original size with gzip!) version of SM2, which has debug output and comments removed for you: <a href="../../script/soundmanager2-nodebug-jsmin.js">soundmanager2-nodebug-jsmin.js</a>. Serve with gzip compression wherever possible for best bandwidth savings.</p>
+ 
+</div>
+
+</body>
+</html>
