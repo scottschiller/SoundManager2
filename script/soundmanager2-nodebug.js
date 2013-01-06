@@ -37,7 +37,8 @@ function SoundManager(smURL, smID) {
     'useHTML5Audio': true,
     'html5Test': /^(probably|maybe)$/i,
     'preferFlash': true,
-    'noSWFCache': false
+    'noSWFCache': false,
+    'useWebkitAudioContext': true
   };
   this.defaultOptions = {
     'autoLoad': false,
@@ -1283,7 +1284,7 @@ function SoundManager(smURL, smID) {
           add(f, html5_events[f]);
         }
       }
-      if (!s.webkitAudioWrapper && WebkitAudioWrapper) {
+      if (sm2.setupOptions.useWebkitAudioContext && !s.webkitAudioWrapper && WebkitAudioWrapper) {
         s.webkitAudioWrapper = new WebkitAudioWrapper(s, s._a);
       }
       return true;
@@ -1612,11 +1613,11 @@ function SoundManager(smURL, smID) {
     canplay: html5_event(function() {
       var s = this._s,
           position1K;
-      if (s.webkitAudioWrapper && s.webkitAudioWrapper.connect) {
-        s.webkitAudioWrapper.connect(s._a);
-      }
       if (s._html5_canplay) {
         return true;
+      }
+      if (s.webkitAudioWrapper && s.webkitAudioWrapper.connect) {
+        s.webkitAudioWrapper.connect(s._a);
       }
       s._html5_canplay = true;
       s._onbufferchange(0);
@@ -2541,14 +2542,17 @@ function SoundManager(smURL, smID) {
     event.remove(window, 'load', winOnLoad);
   };
   preInit = function() {
+    if (sm2.setupOptions.useWebkitAudioContext && sm2.setupOptions.useHTML5Audio && AudioContext) {
+      messages.push('webkitAudioContext supported - enabling experimental Webkit Audio API for waveform + spectrum visualizations');
+    }
     if (mobileHTML5) {
       sm2.setupOptions.useHTML5Audio = true;
       sm2.setupOptions.preferFlash = false;
       if (is_iDevice || (isAndroid && !ua.match(/android\s2\.3/i))) {
+        useGlobalHTML5Audio = true;
         if (is_iDevice) {
           sm2.ignoreFlash = true;
         }
-        useGlobalHTML5Audio = true;
       }
     }
   };
@@ -2596,12 +2600,18 @@ function SoundManager(smURL, smID) {
         timeByteData: timeOut
       };
     }
-    function connect(audio) {
+    function connect(audio, onconnect) {
       if (connected) {
+        if (onconnect) {
+          onconnect();
+        }
         return false;
       }
       if (audio && audio instanceof Audio) {
         oAudio = audio;
+      }
+      if (oAudio && oAudio._s && !oAudio._s._iO.useWaveformData && !oAudio._s._iO.useEQData) {
+        return false;
       }
       source = audioContext.createMediaElementSource(oAudio);
       if (analyser) {
@@ -2610,9 +2620,27 @@ function SoundManager(smURL, smID) {
         connected = true;
       }
       if (addedEvent) {
-        oAudio.removeEventListener('canplay', connect);
+        oAudio.removeEventListener('canplay', canplay);
         addedEvent = false;
       }
+      if (onconnect) {
+        onconnect();
+      }
+    }
+    function play() {
+      function playReady() {
+        oAudio.play();
+      }
+      if (!connected) {
+        if (oAudio) {
+          connect(oAudio, playReady);
+        }
+      } else {
+        playReady();
+      }
+    }
+    function canplay() {
+      oSMSound.webkitAudioWrapper.connect(oAudio);
     }
     function init() {
       if (analyser) {
@@ -2620,11 +2648,15 @@ function SoundManager(smURL, smID) {
       }
       analyser = audioContext.createAnalyser();
       analyser.smoothingTimeConstant = 0.5;
-      analyser.fftSize = 512;
-      analyser.frequencyBinCount = 256;
+      try {
+        analyser.fftSize = 512;
+        analyser.frequencyBinCount = 256;
+      } catch(e) {
+        console.warn('Exception trying to set analyser properties', e);
+      }
       if (!oSMSound._html5_canplay) {
         addedEvent = true;
-        oAudio.addEventListener('canplay', connect, false);
+        oAudio.addEventListener('canplay', canplay);
       } else {
         connect();
       }
@@ -2644,10 +2676,11 @@ function SoundManager(smURL, smID) {
     }
     init();
     return {
-      analyse: analyse,
-      connect: connect,
-      disconnect: disconnect,
-      reset: reset
+      'analyse': analyse,
+      'connect': connect,
+      'disconnect': disconnect,
+      'play': play,
+      'reset': reset
     };
   };
 }

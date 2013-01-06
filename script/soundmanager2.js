@@ -17,6 +17,9 @@
  * createMediaElementSource() is needed to "attach" the Webkit Audio API to an Audio() object for analysis / manipulation.
  * Otherwise, it's undesirable XHR + arraybuffer stuff to get at data, and no Audio() is involved.
  * https://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/PlayingandSynthesizingSounds/PlayingandSynthesizingSounds.html#//apple_ref/doc/uid/TP40009523-CH6-SW1
+ * Frequency / spectrum analysis does not also seem to work correctly under iOS 6.0.2 when using createMediaElementSource().
+ * Additionally, it would be useful to have multiple Audio() objects and be able to call noteOn() to trigger playback on individual sounds, thus achieving multiple sound playback under mobile Safari. However, the API appears not to be designed this way.
+ * http://stackoverflow.com/questions/12944109/web-audio-html5-createmediaelementsource-doesnt-work-the-way-intended-invalid
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -82,7 +85,8 @@ function SoundManager(smURL, smID) {
     'useHTML5Audio': true,              // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
     'html5Test': /^(probably|maybe)$/i, // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
     'preferFlash': true,                // overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
-    'noSWFCache': false                 // if true, appends ?ts={date} to break aggressive SWF caching.
+    'noSWFCache': false,                // if true, appends ?ts={date} to break aggressive SWF caching.
+    'useWebkitAudioContext': true       // EXPERIMENTAL/TESTING: Enable visualization/analysis features
 
   };
 
@@ -2879,8 +2883,7 @@ function SoundManager(smURL, smID) {
         }
       }
 
-      // EXPERIMENTAL: Webkit Audio API support
-      if (!s.webkitAudioWrapper && WebkitAudioWrapper) {
+      if (sm2.setupOptions.useWebkitAudioContext && !s.webkitAudioWrapper && WebkitAudioWrapper) {
         s.webkitAudioWrapper = new WebkitAudioWrapper(s, s._a);
       } /* else {
         // re-initialize/assign web audio API stuffs?
@@ -3602,14 +3605,14 @@ function SoundManager(smURL, smID) {
       var s = this._s,
           position1K;
 
-      if (s.webkitAudioWrapper && s.webkitAudioWrapper.connect) {
-        // console.log('SM2 canplay-invoked connect event', s.url, s._a.src);
-        s.webkitAudioWrapper.connect(s._a);
-      }
-
       if (s._html5_canplay) {
         // this event has already fired. ignore.
         return true;
+      }
+
+      if (s.webkitAudioWrapper && s.webkitAudioWrapper.connect) {
+        // console.log('SM2 canplay-invoked connect event', s.url, s._a.src);
+        s.webkitAudioWrapper.connect(s._a);
       }
 
       s._html5_canplay = true;
@@ -5669,14 +5672,22 @@ function SoundManager(smURL, smID) {
 
   preInit = function() {
 
+    if (sm2.setupOptions.useWebkitAudioContext && sm2.setupOptions.useHTML5Audio && AudioContext) {
+
+      messages.push('webkitAudioContext supported - enabling experimental Webkit Audio API for waveform + spectrum visualizations');
+
+    }
+
     if (mobileHTML5) {
 
       // prefer HTML5 for mobile + tablet-like devices, probably more reliable vs. flash at this point.
 
       // <d>
       if (!sm2.setupOptions.useHTML5Audio || sm2.setupOptions.preferFlash) {
+
         // notify that defaults are being changed.
         messages.push(strings.mobileUA);
+
       }
       // </d>
 
@@ -5684,15 +5695,20 @@ function SoundManager(smURL, smID) {
       sm2.setupOptions.preferFlash = false;
 
       if (is_iDevice || (isAndroid && !ua.match(/android\s2\.3/i))) {
+
         // iOS and Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
         // common use case: exiting sound onfinish() -> createSound() -> play()
+
         // <d>
         messages.push(strings.globalHTML5);
         // </d>
+
+        useGlobalHTML5Audio = true;
+
         if (is_iDevice) {
           sm2.ignoreFlash = true;
         }
-        useGlobalHTML5Audio = true;
+
       }
 
     }
@@ -5748,6 +5764,8 @@ function SoundManager(smURL, smID) {
           timeDomainData,
           freqOut = [], timeOut = [], i, j, k, scale = 1;
 
+      // NOTE: This returns mostly zeroes under iOS 6.0.2 (mobile Webkit), or I'm doing it wrong.
+
       freqByteData = new window.Uint8Array(analyser.frequencyBinCount);
 
       timeDomainData = new window.Uint8Array(analyser.frequencyBinCount);
@@ -5777,9 +5795,13 @@ function SoundManager(smURL, smID) {
 
     }
 
-    function connect(audio) {
+    function connect(audio, onconnect) {
 
       if (connected) {
+        // console.log('connect(): already connected.');
+        if (onconnect) {
+          onconnect();
+        }
         return false;
       }
 
@@ -5789,19 +5811,60 @@ function SoundManager(smURL, smID) {
         oAudio = audio;
       }
 
+      if (oAudio && oAudio._s && !oAudio._s._iO.useWaveformData && !oAudio._s._iO.useEQData) {
+        // console.log('connect(): no waveform or EQ features. skipping connect.');
+        return false;
+      }
+
       source = audioContext.createMediaElementSource(oAudio);
 
       if (analyser) {
+
+        // console.log('connecting source + analyser');
         source.connect(analyser);
         analyser.connect(audioContext.destination);
         connected = true;
+
       }
 
       if (addedEvent) {
-        oAudio.removeEventListener('canplay', connect);
+        oAudio.removeEventListener('canplay', canplay);
         addedEvent = false;
       }
 
+      if (onconnect) {
+        onconnect();
+      }
+
+    }
+
+    function play() {
+
+      function playReady() {
+
+        oAudio.play();
+
+      }
+
+      if (!connected) {
+
+        // console.log('play: not connected?');
+
+        if (oAudio) {
+          // console.log('connecting oAudio');
+          connect(oAudio, playReady);
+        }
+
+      } else {
+
+        playReady();
+
+      }
+
+    }
+
+    function canplay() {
+      oSMSound.webkitAudioWrapper.connect(oAudio);
     }
 
     function init() {
@@ -5816,14 +5879,26 @@ function SoundManager(smURL, smID) {
       // don't be too jumpy, nor not too slow to respond to changes either.
       analyser.smoothingTimeConstant = 0.5;
 
-      analyser.fftSize = 512; // match Flash 9?
-      analyser.frequencyBinCount = 256; // Note: Should be "half the FFT size?" per https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html#dfn-frequencyBinCount
+      try {
+
+        // match Flash 9?
+        analyser.fftSize = 512;
+
+        // Note: Should be "half the FFT size?" per https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html#dfn-frequencyBinCount
+        // Appaears to throw error on Safari under iOS 6, read-only property complaint.
+        analyser.frequencyBinCount = 256;
+
+      } catch(e) {
+
+        console.warn('Exception trying to set analyser properties', e);
+
+      }
 
       if (!oSMSound._html5_canplay) {
 
         // wait for canplay before connecting + attaching
         addedEvent = true;
-        oAudio.addEventListener('canplay', connect, false);
+        oAudio.addEventListener('canplay', canplay); // webkitAudioWrapper.connect()
 
       } else {
 
@@ -5860,14 +5935,22 @@ function SoundManager(smURL, smID) {
 
     return {
 
-      analyse: analyse,
-      connect: connect,
-      disconnect: disconnect,
-      reset: reset
+      'analyse': analyse,
+      'connect': connect,
+      'disconnect': disconnect,
+      'play': play,
+      'reset': reset
 
     };
 
   }; // WebkitAudioWrapper()
+
+  /*
+  // EXPERIMENTAL: Webkit Audio API support (excluding iOS, because it doesn't quite seem to work in this case under iOS 6.0.2 when connecting to <audio>.)
+  if (is_iDevice) {
+    WebkitAudioWrapper = null;
+  }
+  */
 
 } // SoundManager()
 
