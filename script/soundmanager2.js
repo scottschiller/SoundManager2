@@ -166,6 +166,11 @@ function SoundManager(smURL, smID) {
       'required': false
     },
 
+    'opus': {
+      'type': ['audio/ogg; codecs=opus', 'audio/opus'],
+      'required': false
+    },
+
     'wav': {
       'type': ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
       'required': false
