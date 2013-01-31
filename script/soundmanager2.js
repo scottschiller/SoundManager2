@@ -1141,8 +1141,8 @@ function SoundManager(smURL, smID) {
       if (sType && typeof sType === 'object') {
         // object passed; dump to console.
         console.log(sText, sType);
-      } else if (debugLevels[sType] !== _undefined) {
-        console[debugLevels[sType]](sText);
+      } else if (debugLevels.indexOf(sType) !== -1) {
+        console[sType](sText);
       } else {
         console.log(sText);
       }
