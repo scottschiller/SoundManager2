@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130101
+ * V2.97a.20130101+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -188,7 +188,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20130101';
+  this.versionNumber = 'V2.97a.20130101+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -1123,10 +1123,10 @@ function SoundManager(smURL, smID) {
    * Applies when debugMode = true
    *
    * @param {string} sText The console message
-   * @param {object} sType Optional string: Log type of 'info', 'warn' or 'error', or object (to be dumped)
+   * @param {object} nType Optional log level (number), or object. Number case: Log type/style where 0 = 'info', 1 = 'warn', 2 = 'error'. Object case: Object to be dumped.
    */
 
-  this._writeDebug = function(sText, sType) {
+  this._writeDebug = function(sText, sTypeOrObject) {
 
     // pseudo-private console.log()-style output
     // <d>
@@ -1138,11 +1138,11 @@ function SoundManager(smURL, smID) {
     }
 
     if (hasConsole && sm2.useConsole) {
-      if (sType && typeof sType === 'object') {
+      if (sTypeOrObject && typeof sTypeOrObject === 'object') {
         // object passed; dump to console.
-        console.log(sText, sType);
-      } else if (debugLevels[sType] !== _undefined) {
-        console[debugLevels[sType]](sText);
+        console.log(sText, sTypeOrObject);
+      } else if (debugLevels[sTypeOrObject] !== _undefined) {
+        console[debugLevels[sTypeOrObject]](sText);
       } else {
         console.log(sText);
       }
@@ -1163,19 +1163,19 @@ function SoundManager(smURL, smID) {
       oItem.className = 'sm2-alt';
     }
 
-    if (sType === _undefined) {
-      sType = 0;
+    if (sTypeOrObject === _undefined) {
+      sTypeOrObject = 0;
     } else {
-      sType = parseInt(sType, 10);
+      sTypeOrObject = parseInt(sTypeOrObject, 10);
     }
 
     oItem.appendChild(doc.createTextNode(sText));
 
-    if (sType) {
-      if (sType >= 2) {
+    if (sTypeOrObject) {
+      if (sTypeOrObject >= 2) {
         oItem.style.fontWeight = 'bold';
       }
-      if (sType === 3) {
+      if (sTypeOrObject === 3) {
         oItem.style.color = '#ff3333';
       }
     }
