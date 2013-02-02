@@ -48,7 +48,7 @@
 Code provided under the BSD License:
 http://schillmania.com/projects/soundmanager2/license.txt</p>
 
-<p>V2.97a.20130101</p>
+<p>V2.97a.20130101+DEV</p>
       </td>
       <td class=code>
         <div class='highlight'><pre><span class="cm">/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */</span>
@@ -241,6 +241,11 @@ flash fallback is used for MP3 or MP4 if HTML5 can&rsquo;t play it (or if prefer
       <span class="s1">&#39;required&#39;</span><span class="o">:</span> <span class="kc">false</span>
     <span class="p">},</span>
 
+    <span class="s1">&#39;opus&#39;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;type&#39;</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;audio/ogg; codecs=opus&#39;</span><span class="p">,</span> <span class="s1">&#39;audio/opus&#39;</span><span class="p">],</span>
+      <span class="s1">&#39;required&#39;</span><span class="o">:</span> <span class="kc">false</span>
+    <span class="p">},</span>
+
     <span class="s1">&#39;wav&#39;</span><span class="o">:</span> <span class="p">{</span>
       <span class="s1">&#39;type&#39;</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;audio/wav; codecs=&quot;1&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;audio/wav&#39;</span><span class="p">,</span> <span class="s1">&#39;audio/wave&#39;</span><span class="p">,</span> <span class="s1">&#39;audio/x-wav&#39;</span><span class="p">],</span>
       <span class="s1">&#39;required&#39;</span><span class="o">:</span> <span class="kc">false</span>
@@ -272,7 +277,7 @@ flash fallback is used for MP3 or MP4 if HTML5 can&rsquo;t play it (or if prefer
         <p>dynamic attributes</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">versionNumber</span> <span class="o">=</span> <span class="s1">&#39;V2.97a.20130101&#39;</span><span class="p">;</span>
+        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">versionNumber</span> <span class="o">=</span> <span class="s1">&#39;V2.97a.20130101+DEV&#39;</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">movieURL</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">altURL</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
@@ -1755,10 +1760,10 @@ onready and ontimeout are also accepted parameters. call soundManager.setup() to
 Applies when debugMode = true</p>
 
 <p>@param {string} sText The console message
-@param {object} sType Optional string: Log type of &lsquo;info&rsquo;, &lsquo;warn&rsquo; or &lsquo;error&rsquo;, or object (to be dumped)</p>
+@param {object} nType Optional log level (number), or object. Number case: Log type/style where 0 = &lsquo;info&rsquo;, 1 = &lsquo;warn&rsquo;, 2 = &lsquo;error&rsquo;. Object case: Object to be dumped.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">_writeDebug</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sText</span><span class="p">,</span> <span class="nx">sType</span><span class="p">)</span> <span class="p">{</span></pre></div>
+        <div class='highlight'><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">_writeDebug</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sText</span><span class="p">,</span> <span class="nx">sTypeOrObject</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-92'>
@@ -1777,7 +1782,7 @@ Applies when debugMode = true</p>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="nx">hasConsole</span> <span class="o">&amp;&amp;</span> <span class="nx">sm2</span><span class="p">.</span><span class="nx">useConsole</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">sType</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">sType</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">sTypeOrObject</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">sTypeOrObject</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-93'>
@@ -1788,9 +1793,9 @@ Applies when debugMode = true</p>
         <p>object passed; dump to console.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">sText</span><span class="p">,</span> <span class="nx">sType</span><span class="p">);</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">debugLevels</span><span class="p">[</span><span class="nx">sType</span><span class="p">]</span> <span class="o">!==</span> <span class="nx">_undefined</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">[</span><span class="nx">debugLevels</span><span class="p">[</span><span class="nx">sType</span><span class="p">]](</span><span class="nx">sText</span><span class="p">);</span>
+        <div class='highlight'><pre>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">sText</span><span class="p">,</span> <span class="nx">sTypeOrObject</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">debugLevels</span><span class="p">[</span><span class="nx">sTypeOrObject</span><span class="p">]</span> <span class="o">!==</span> <span class="nx">_undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">[</span><span class="nx">debugLevels</span><span class="p">[</span><span class="nx">sTypeOrObject</span><span class="p">]](</span><span class="nx">sText</span><span class="p">);</span>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">sText</span><span class="p">);</span>
       <span class="p">}</span>
@@ -1811,19 +1816,19 @@ Applies when debugMode = true</p>
       <span class="nx">oItem</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;sm2-alt&#39;</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="nx">sType</span> <span class="o">===</span> <span class="nx">_undefined</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">sType</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">sTypeOrObject</span> <span class="o">===</span> <span class="nx">_undefined</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">sTypeOrObject</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="nx">sType</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">sType</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+      <span class="nx">sTypeOrObject</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">sTypeOrObject</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="nx">oItem</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="nx">sText</span><span class="p">));</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="nx">sType</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">sType</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">sTypeOrObject</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">sTypeOrObject</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">oItem</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">fontWeight</span> <span class="o">=</span> <span class="s1">&#39;bold&#39;</span><span class="p">;</span>
       <span class="p">}</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">sType</span> <span class="o">===</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">sTypeOrObject</span> <span class="o">===</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">oItem</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="s1">&#39;#ff3333&#39;</span><span class="p">;</span>
       <span class="p">}</span>
     <span class="p">}</span></pre></div>
@@ -4491,9 +4496,9 @@ note that loop is either off or infinite under HTML5, unlike Flash which allows 
 
     <span class="k">this</span><span class="p">.</span><span class="nx">_setup_html5</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oOptions</span><span class="p">)</span> <span class="p">{</span>
 
-      <span class="kd">var</span> <span class="nx">instanceOptions</span> <span class="o">=</span> <span class="nx">mixin</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">_iO</span><span class="p">,</span> <span class="nx">oOptions</span><span class="p">),</span> <span class="nx">d</span> <span class="o">=</span> <span class="nb">decodeURI</span><span class="p">,</span>
-          <span class="nx">a</span> <span class="o">=</span> <span class="nx">useGlobalHTML5Audio</span> <span class="o">?</span> <span class="nx">globalHTML5Audio</span>  <span class="o">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">_a</span><span class="p">,</span>
-          <span class="nx">dURL</span> <span class="o">=</span> <span class="nx">d</span><span class="p">(</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">url</span><span class="p">),</span>
+      <span class="kd">var</span> <span class="nx">instanceOptions</span> <span class="o">=</span> <span class="nx">mixin</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">_iO</span><span class="p">,</span> <span class="nx">oOptions</span><span class="p">),</span>
+          <span class="nx">a</span> <span class="o">=</span> <span class="nx">useGlobalHTML5Audio</span> <span class="o">?</span> <span class="nx">globalHTML5Audio</span> <span class="o">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">_a</span><span class="p">,</span>
+          <span class="nx">dURL</span> <span class="o">=</span> <span class="nb">decodeURI</span><span class="p">(</span><span class="nx">instanceOptions</span><span class="p">.</span><span class="nx">url</span><span class="p">),</span>
           <span class="nx">sameURL</span><span class="p">;</span></pre></div>
       </td>
     </tr>
@@ -4509,7 +4514,7 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
       <td class=code>
         <div class='highlight'><pre>      <span class="k">if</span> <span class="p">(</span><span class="nx">useGlobalHTML5Audio</span><span class="p">)</span> <span class="p">{</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="nx">dURL</span> <span class="o">===</span> <span class="nx">lastGlobalHTML5URL</span><span class="p">)</span> <span class="p">{</span></pre></div>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">dURL</span> <span class="o">===</span> <span class="nb">decodeURI</span><span class="p">(</span><span class="nx">lastGlobalHTML5URL</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-247'>
@@ -4523,7 +4528,7 @@ Otherwise, other sounds in mid-play will be terminated without warning and in a 
         <div class='highlight'><pre>          <span class="nx">sameURL</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
 
-      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">dURL</span> <span class="o">===</span> <span class="nx">lastURL</span><span class="p">)</span> <span class="p">{</span></pre></div>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">dURL</span> <span class="o">===</span> <span class="nb">decodeURI</span><span class="p">(</span><span class="nx">lastURL</span><span class="p">))</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
     <tr id='section-248'>
