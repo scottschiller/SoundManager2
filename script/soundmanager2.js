@@ -2711,9 +2711,9 @@ function SoundManager(smURL, smID) {
 
     this._setup_html5 = function(oOptions) {
 
-      var instanceOptions = mixin(s._iO, oOptions), d = decodeURI,
-          a = useGlobalHTML5Audio ? globalHTML5Audio  : s._a,
-          dURL = d(instanceOptions.url),
+      var instanceOptions = mixin(s._iO, oOptions),
+          a = useGlobalHTML5Audio ? globalHTML5Audio : s._a,
+          dURL = decodeURI(instanceOptions.url),
           sameURL;
 
       /**
@@ -2724,12 +2724,12 @@ function SoundManager(smURL, smID) {
 
       if (useGlobalHTML5Audio) {
 
-        if (dURL === lastGlobalHTML5URL) {
+        if (dURL === decodeURI(lastGlobalHTML5URL)) {
           // global HTML5 audio: re-use of URL
           sameURL = true;
         }
 
-      } else if (dURL === lastURL) {
+      } else if (dURL === decodeURI(lastURL)) {
 
         // options URL is the same as the "last" URL, and we used (loaded) it
         sameURL = true;
