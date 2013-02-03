@@ -1222,7 +1222,7 @@ function SoundManager(smURL, smID) {
             if (a._s && a._s.playState && !sameURL) {
               a._s.stop();
             }
-          } else if (!useGlobalHTML5Audio && dURL === d(lastURL)) {
+          } else if (!useGlobalHTML5Audio && dURL === decodeURI(lastURL)) {
             s._apply_loop(a, instanceOptions.loops);
             return a;
           }

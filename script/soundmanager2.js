@@ -2749,7 +2749,7 @@ function SoundManager(smURL, smID) {
 
             }
 
-          } else if (!useGlobalHTML5Audio && dURL === d(lastURL)) {
+          } else if (!useGlobalHTML5Audio && dURL === decodeURI(lastURL)) {
 
             // non-global HTML5 reuse case: same url, ignore request
             s._apply_loop(a, instanceOptions.loops);
