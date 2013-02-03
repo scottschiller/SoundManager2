@@ -12,7 +12,7 @@
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
-/*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
+/*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true, todo: true */
 
 (function(window, _undefined) {
 "use strict";
@@ -2077,7 +2077,7 @@ function SoundManager(smURL, smID) {
       oSound._hasTimer = true;
       if (!mobileHTML5 && sm2.html5PollingInterval) {
         if (h5IntervalTimer === null && h5TimerCount === 0) {
-          h5IntervalTimer = window.setInterval(timerExecute, sm2.html5PollingInterval);
+          h5IntervalTimer = setInterval(timerExecute, sm2.html5PollingInterval);
         }
         h5TimerCount++;
       }
@@ -2094,7 +2094,7 @@ function SoundManager(smURL, smID) {
   timerExecute = function() {
     var i;
     if (h5IntervalTimer !== null && !h5TimerCount) {
-      window.clearInterval(h5IntervalTimer);
+      clearInterval(h5IntervalTimer);
       h5IntervalTimer = null;
       return false;
     }
