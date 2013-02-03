@@ -4680,7 +4680,7 @@ function SoundManager(smURL, smID) {
 
         if (h5IntervalTimer === null && h5TimerCount === 0) {
 
-          h5IntervalTimer = window.setInterval(timerExecute, sm2.html5PollingInterval);
+          h5IntervalTimer = setInterval(timerExecute, sm2.html5PollingInterval);
    
         }
 
@@ -4726,7 +4726,7 @@ function SoundManager(smURL, smID) {
 
       // no active timers, stop polling interval.
 
-      window.clearInterval(h5IntervalTimer);
+      clearInterval(h5IntervalTimer);
 
       h5IntervalTimer = null;
 
