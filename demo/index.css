@@ -90,41 +90,38 @@ body,
   font-style: normal;
 }
 
-h1,
-h2.special {
-  letter-spacing:-0.005em;
-}
-
 h2.special {
   font-family:"ChunkFive","ChunkFiveRegular","helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
-  letter-spacing:0px;
-  font-weight:normal;
-  display:inline;
+  font-weight: normal;
+  display: inline;
 }
 
 h1, h2, h3, h4 {
-  font-size:1em;
-  margin:0px;
-  padding:0px;
-  vertical-align:middle;
+  font-size: 1em;
+  margin: 0px;
+  padding: 0px;
+  vertical-align: middle;
+  font-weight: 300;
 }
 
 h4.new,
 h4.recent,
 h4.flash9 {
-  min-height:24px;
+  min-height: 24px;
 }
 
 h1 {
-  font-size:2em;
+  font-size: 2em;
+  font-weight: 500;
 }
 
 h2 {
-  font-size:1.5em;
+  font-size: 1.5em;
 }
 
 h3 {
   font-size: 1.17em;
+  font-weight: bold;
   border-top: 0.25em solid #333;
   border-bottom: 1px dotted #999;
   padding-top: 0.25em;
@@ -155,6 +152,7 @@ h3,
 h4 {
   margin:1.5em 0px 0.5em 0px;
   font-size:1.15em;
+  font-weight: 500;
 }
 
 h5 {
@@ -226,11 +224,6 @@ body.home #about-sm2 h2.special {
   margin-top:0.1em;
 }
 
-body.home #about-sm2 h2.special,
-body.home #about-sm2 h3 {
-  letter-spacing:0px;
-}
-
 body.home #about-sm2 h3 {
   font-size: 2.25em;
 }
@@ -297,7 +290,6 @@ body.home #about-sm2 h3 {
   padding-bottom: 0px;
   margin-bottom: 0px;
   font-weight: 300;
-  letter-spacing: -0.005em;
 }
 
 body.home h4 {
@@ -628,7 +620,6 @@ h2 {
   font-size:1.25em;
   font-weight:300;
   padding-top:2px;
-  letter-spacing:-1px;
 }
 
 #top h1,
@@ -850,30 +841,31 @@ ul {
 }
 
 #nav ul li ul li {
-  float:none;
-  display:block;
-  width:100%;
+  float: none;
+  display: block;
+  width: 100%;
 }
 
 #nav ul li ul li a {
-  display:block;
-  width:auto;
-  border:none;
-  padding:0.5em;
-  padding-left:1em;
-  color:#fff;
-  font-weight: bold;
+  display: block;
+  width: auto;
+  border: none;
+  padding: 0.5em 0px 0.5em 0.75em;
+  font-size: 1.1em;
+  line-height: 1.1em;
+  color: #fff;
+  font-weight: 300;
   color:rgba(255,255,255,0.9);
 }
 
 #nav ul li a {
-  display:inline-block;
-  padding:0.35em 0.5em;
-  padding-left:0.75em;
-  padding-right:0.75em;
-  text-decoration:none;
-  font-weight:bold;
-  color:#fff;
+  display: inline-block;
+  padding: 0.35em 0.5em;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  text-decoration: none;
+  font-weight: bold;
+  color: #fff;
 }
 
 #nav ul li ul li a:hover {
@@ -885,7 +877,8 @@ ul {
 #nav>ul>li>strong>a {
   /* top-level links */
   color:#ddd;
-  font-size: 1.1em;
+  font-size: 1.25em;
+  font-weight: 300;
 }
 
 #nav ul li strong a {
@@ -1055,7 +1048,8 @@ ul.standard ul {
 
 .c3 h2 .l,
 .c3 h2 .r {
-  border-top:2em solid #333;
+  border-top: 2em solid #333;
+  border-top: 2.1em solid #333\9; /* IE 8 */
 }
 
 .wedge .l,
@@ -1077,7 +1071,6 @@ ul.standard ul {
   width:16px;
   height:100%;
   margin-left:-16px;
-  border-top:2em solid #333;
 }
 
 .wedge .r,
@@ -1099,6 +1092,7 @@ ul.standard ul {
 
 .wedge .l {
   background-position:-64px -64px;
+  border-top: 2em solid #3399cc
 }
 
 .wedge .r {
@@ -1181,6 +1175,7 @@ ul.standard ul {
 }
 
 .c3 h3 {
+  position: relative;
   margin: 0px;
   padding: 0px;
   height: auto;
@@ -1321,7 +1316,6 @@ dd.deprecation-note {
   font-family:"Helvetica Neue","Helvetica",helvetica,arial,verdana,sans-serif;
   font-weight:300;
   font-size:2.5em;
-  letter-spacing:-1px;
 }
 
 .c2 .option {
@@ -2591,7 +2585,6 @@ body.home ul.playlist li {
 
 body.home ul.playlist .sidenote {
   font-size: 85%;
-  letter-spacing: 0px;
 }
 
 body.home .demo-more,
