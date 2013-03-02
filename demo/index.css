@@ -885,9 +885,9 @@ ul {
   color:#333;
 }
 
-#nav>ul>li>strong>a {
+#nav > ul > li > strong > a {
   /* tweak for good browsers that respect larger font size */
-  padding-bottom: 5px;
+  padding-bottom: 6px;
 }
 
 #nav ul li a:hover,
