@@ -804,7 +804,7 @@ function SoundManager(smURL, smID) {
         s.setVolume(s._iO.volume, true);
         s.setPan(s._iO.pan, true);
         if (!s.isHTML5) {
-          startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
+          startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s.position : s.position / 1000), s._iO.multiShot || false);
           if (fV === 9 && !startOK) {
             if (s._iO.onplayerror) {
               s._iO.onplayerror.apply(s);
@@ -1345,7 +1345,13 @@ function SoundManager(smURL, smID) {
         }
         if (!s.instanceCount || s._iO.multiShotEvents) {
           if (io_onfinish) {
-            io_onfinish.apply(s);
+            if (!s.isHTML5 && fV === 8) {
+              window.setTimeout(function() {
+                io_onfinish.apply(s);
+              }, 0);
+            } else {
+              io_onfinish.apply(s);
+            }
           }
         }
       }

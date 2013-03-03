@@ -1782,7 +1782,8 @@ function SoundManager(smURL, smID) {
 
       } else {
 
-        sm2._wD(fN);
+        // "play()"
+        sm2._wD(fN.substr(0, fN.lastIndexOf(':')));
 
       }
 
@@ -1892,7 +1893,7 @@ function SoundManager(smURL, smID) {
 
         if (!s.isHTML5) {
 
-          startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s._iO.position : s._iO.position / 1000), s._iO.multiShot);
+          startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s.position : s.position / 1000), s._iO.multiShot || false);
 
           if (fV === 9 && !startOK) {
             // edge case: no sound hardware, or 32-channel flash ceiling hit.
@@ -3009,7 +3010,19 @@ function SoundManager(smURL, smID) {
           // fire onfinish for last, or every instance
           if (io_onfinish) {
             sm2._wD(s.id + ': onfinish()');
-            io_onfinish.apply(s);
+            /**
+             * 03/03/2013: setTimeout() fix for onfinish()-related issue where subsequent play() calls fail when Flash Player 11.6.602.171 is installed, and using soundManager with flashVersion = 8 (which is the default)
+             * Not sure of exact cause. Suspect race condition resulting in an invalid (NaN-style) position argument trickling down to the next JS -> Flash _start() call.
+             * Fix: setTimeout() to yield, plus safer null / NaN checking on position argument provided to Flash.
+             * https://getsatisfaction.com/schillmania/topics/recent_chrome_update_seems_to_have_broken_my_sm2_audio_player
+             */
+            if (!s.isHTML5 && fV === 8) {
+              window.setTimeout(function() {
+                io_onfinish.apply(s);
+              }, 0);
+            } else {
+              io_onfinish.apply(s);
+            }
           }
         }
 
