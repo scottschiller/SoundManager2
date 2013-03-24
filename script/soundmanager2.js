@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130101+DEV
+ * V2.97a.20130324 ("Mahalo" Edition)
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -188,7 +188,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20130101+DEV';
+  this.versionNumber = 'V2.97a.20130324';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -3293,7 +3293,7 @@ function SoundManager(smURL, smID) {
   wrapCallback = function(oSound, callback) {
 
     /**
-     * 03/03/2013: Flash Player 11.6.602.171 + Flash 8 (flashVersion = 8) SWF issue
+     * 03/03/2013: Fix for Flash Player 11.6.602.171 + Flash 8 (flashVersion = 8) SWF issue
      * setTimeout() fix for certain SMSound callbacks like onload() and onfinish(), where subsequent calls like play() and load() fail when Flash Player 11.6.602.171 is installed, and using soundManager with flashVersion = 8 (which is the default).
      * Not sure of exact cause. Suspect race condition and/or invalid (NaN-style) position argument trickling down to the next JS -> Flash _start() call, in the play() case.
      * Fix: setTimeout() to yield, plus safer null / NaN checking on position argument provided to Flash.
