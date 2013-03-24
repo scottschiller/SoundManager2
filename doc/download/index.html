@@ -84,6 +84,8 @@ soundManager.setup({
 	   <a href="../technotes/">Technical Notes</a>
 	   <ul>
 		<li><a href="../technotes/#requirements">System Requirements</a></li>
+		<li><a href="../technotes/#serving-audio">Serving To Clients</a></li>
+		<li><a href="../technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 		<li><a href="../technotes/#debug-output">Debug + Console Output</a></li>
 	   </ul>
 	  </li>
@@ -132,9 +134,9 @@ soundManager.setup({
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> Strict Mode. Android 2.3 HTML5 fixes, cleaner debug output, improved default flashblock handling, compatibility with Firefox WMF-based HTML5 MP3 support, and more. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> Fix for playlist/event chaining when using <code>flashVersion = 8</code> with Flash Player 11.6.602.171. HTML5 iOS <code>load()</code> fix. Added Opus to audio formats. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20130101.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20130101</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20130324.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20130324</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 128 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -171,9 +173,112 @@ soundManager.setup({
 
 				<ul id="revision-list" class="standard">
 
+					<li id="sm2-20130324" class="in">
+
+						<h3><b>V2.97a.20130324</b> - Fix for playlist/event chaining when using <code>flashVersion = 8</code> with Flash Player 11.6.602.171. HTML5 iOS <code>load()</code> fix. Added Opus to audio formats.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Flash Player 11.6.602.171, released by Adobe on 02/26/2013, introduced an issue with SM2's default Flash 8 (<code>flashVersion: 8</code>) API-based JS/Flash interaction, where SM2 methods called from callbacks such as <code>onfinish()</code> would not work. This primarily broke methods used for playing sounds in sequence, serially loading a series of sounds and so on. (See <a href="https://getsatisfaction.com/schillmania/topics/recent_chrome_update_seems_to_have_broken_my_sm2_audio_player">discussion</a> for more.)
+										</p>
+
+										<p>
+											Note that this does not affect cases where <code>soundManager.setup({ flashVersion: 9})</code> is being used; however, SM2 does use <code>flashVersion: 8</code> by default.
+										</p>
+
+										<p>
+											Specifically, Flash-initiated events (such as a sound finishing) make Flash -&gt; JS calls to the SM2 API, which subsequently call user-specified event handlers. If the user-specified SM2 <code>onfinish()</code> handler immediately calls a SM2 method like <code>play()</code> that makes a JS -&gt; Flash call, this call either silently fails or is blocked. Other JS + Flash libraries that use similar callback patterns may also be affected, if their SWF is built targeting the Flash 8 API.
+										</p>
+
+										<p>
+											Suspecting a timing or recursion/stack issue, it was found that introducing a <code>setTimeout(callback, 0)</code> to user-specified SM2 callbacks like <code>onfinish()</code> restored sequential/playlist functionality.
+										</p>
+
+										<p>
+											Flash Player 11.6.602.180, relased by Adobe on 3/12/2013, exhibits the same behaviour. To avoid additional hacks, SM2 applies this to all Flash 8-based API callbacks regardless of what version of Flash Player is installed. No regressions are anticipated as a result of this change.
+										</p>
+
+										<p>
+											Alternately, this issue can be avoided by using <code>soundManager.setup({ flashVersion: 9 })</code> as the Flash 9-based API does not appear to have this problem.</code>
+										</p>
+									</li>
+
+									<li>
+										<p>
+											HTML5: Fix for iOS <code>load()</code> case when using an auto-load and looping pattern (related <a href="https://getsatisfaction.com/schillmania/topics/autoload_on_ipad_loop_error">discussion</a>).
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											HTML5: Added check for Opus (OGG-based audio codec, <code>audio/opus</code>).
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+
+										<p>
+											Added documentation for <a href="../technotes/#serving-audio">Serving To Clients</a>, and <a href="../technotes/#mobile-device-limitations">Mobile Device Limitations</a>.
+										</p>
+									</li>
+
+									<li>
+
+										<p>
+											Minor SM2 homepage + documentation CSS tweaks (design)
+										</p>
+									</li>
+
+									<li>
+
+										<p>
+											This SM2 release is tagged "Mahalo Edition" to say thank-you, and because some SM2 work was done while on vacation in Hawai'i. Also, some new demo sound recordings from the beach on Kaua'i were added.
+										</p>
+
+
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+					<!-- previously ... -->
+
 					<li id="sm2-20130101" class="in">
 
-						<h3><b>V2.97a.20130101</b> - Strict Mode. Android 2.3 HTML5 fixes, cleaner debug output, improved default flashblock handling. Confirmed compatibility with Firefox WMF-based HTML5 MP3 support. New <code>reset()</code> method, <code>reboot()</code> tweaks.</h3>
+						<h3><b>V2.97a.20130101</b> - Strict Mode. Android 2.3 HTML5 fixes, cleaner debug output, improved default flashblock handling. Confirmed compatibility with Firefox WMF-based HTML5 MP3 support. New <code>reset()</code> method, <code>reboot()</code> tweaks (<a href="../../download/soundmanagerv297a-20130101.zip" class="norewrite">Download archived version</a>)</h3>
 
 						<ul>
 
@@ -287,8 +392,6 @@ soundManager.setup({
 						</ul>
 
 					</li>
-
-					<!-- previously ... -->
 
 					<li id="sm2-20121104" class="in">
 

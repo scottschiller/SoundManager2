@@ -86,6 +86,8 @@ soundManager.setup({
 	   <a href="technotes/">Technical Notes</a>
 	   <ul>
 		<li><a href="technotes/#requirements">System Requirements</a></li>
+		<li><a href="technotes/#serving-audio">Serving To Clients</a></li>
+		<li><a href="technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 		<li><a href="technotes/#debug-output">Debug + Console Output</a></li>
 	   </ul>
 	  </li>
@@ -567,12 +569,13 @@ soundManager.setup({
 		  <div class="f-block f-preferflash">
 			<h4 id="soundmanager-preferflash">preferFlash</h4>
 			<p>This property handles "mixed-mode" HTML5 + flash cases, and may prevent 100% HTML5 mode when enabled depending on the configuration of <a href="#soundmanager-audioformats">soundManager.audioFormats</a>. In the event HTML5 supports the default "required" formats (presently MP3), and <code>preferFlash</code> is true (and flash is installed), flash will be used for MP3/MP4 content while allowing HTML5 to play OGG, WAV and other supported formats.</p>
-			<p><em>Important note:</em> Because HTML5 audio has some critical bugs across various browsers and operating systems, <code>preferFlash</code> is <code>true</code> by default to help ensure MP3/MP4 play consistently. If set to <code>false</code> or flash is not available, "HTML5-only" mode will kick in and will apply to all formats. If you prefer 100% HTML5 mode even when Flash is present, set this property to <code>false</code>.</p>
+			<p><em>Important note:</em> Because HTML5 audio has some bugs across various browsers and operating systems, <code>preferFlash</code> is <code>true</code> by default to help ensure MP3/MP4 play consistently. If set to <code>false</code> or flash is not available, "HTML5-only" mode will kick in and will apply to all formats.</p>
+			<p>To encourage 100% HTML5 mode, call <code>soundMangager.setup({ preferFlash: false })</code> and then Flash will not be used for MP3/MP4 playback, provided that HTML5 supports them.</p>
 		  </div>
 
 		   <div class="f-block f-url">
 		    <h4 id="soundmanager-url">url</h4>
-		    <p class="in"><code>soundManager.setupOptions.url</code> specifies the "online", generally HTTP-based path which SM2 will load .SWF movies from. The "local" (current) directory will be used by default. The appropriate .SWF required (depending on the desired Flash version) will be appended to the URL.</p>
+		    <p class="in"><code>soundManager.url</code>, applied via <code>soundManager.setup()</code>, specifies the "online", generally HTTP-based path which SM2 will load .SWF movies from. The "local" (current) path of <code>./</code> will be used by default. The appropriate .SWF required (depending on the desired Flash version) will be appended to the URL.</p>
 		    <p class="in">Example: <code>soundManager.setup({ url: '<span>/path/to/swf-directory/</span>' });</code> (Note trailing slash)</p>
 			<p>For a simple demo of this in action, see the <a href="../demo/template/">basic template</a>.</p>
 		    <p class="in">For cases where SM2 is being used "offline" in non-HTTP cases (eg., development environments), see <code>altURL</code>.</p>
@@ -648,14 +651,14 @@ soundManager.setup({
 
 			<h4 id="soundmanager-usehtml5audio">useHTML5Audio</h4>
 			
-			<p style="background:#f0f9ff"><b style="color:#993333">Beta notice</b>: HTML5 support is in active development. Experimental API bits will be labeled as such, but should remain largely forward-compatible. See <a href="download/#revision-history">Revision History</a> for the latest updates on HTML5 playback support.</p>
+			<p style="background:#f0f9ff">HTML5 support is in active development. See <a href="download/#revision-history">Revision History</a> for the latest updates on HTML5 playback support.</p>
 			
 			<p><code>useHTML5Audio</code> determines whether HTML5 <code>Audio()</code> support is used (as available) to play sound, with flash as the fallback for playing MP3 and MP4 (AAC) formats. Browser support for HTML5 Audio varies, and format support (eg. MP3, MP4/AAC, OGG, WAV) can vary by browser/platform.</p>
 
 			<p>The SM2 API is effectively transparent, consistent whether using flash or HTML5 <code>Audio()</code> for sound playback behind the scenes. The HTML5 Audio API is roughly equivalent to the flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available in HTML5 mode.)</p>
 
-			<p>By default, "100% HTML5 mode" applies to Apple iPad 3.2+, iPhone / iOS 4.0+ devices and others without flash. In other cases, HTML5 support is tested and if MP3/MP4 aren't natively supported, flash will be used as a backup method of playing these "required" formats. (It is assumed MP3 playback is required by default, but this is user-configurable via <code><a href="#soundmanager-audioformats">soundManager.audioFormats</a></code>.) HTML5 may also enable support for additional formats such as OGG and WAV.</p>
-			<p>In the case when HTML5 + Flash are present, Flash will presently get preference for MP3/MP4 because of <code>soundManager.preferFlash = true</code> as HTML5 audio is still buggy between browsers and platforms; where desired, you can set <code>preferFlash = false</code> and in some cases enjoy 100% HTML5 mode (eg., under Safari, IE 9 and Chrome.) For some browsers, Flash will be needed if support for formats like MP3 (not supported via HTML5 in Firefox) are "required."</p>
+			<p>By default, "100% HTML5 mode" applies to Apple iPad 3.2+ (iPad version 1.0), iPhone / iOS 4.0+ devices and others without flash. In other cases, HTML5 support is tested and if MP3/MP4 aren't natively supported, flash will be used as a backup method of playing these "required" formats. (It is assumed MP3 playback is required by default, but this is user-configurable via <code><a href="#soundmanager-audioformats">soundManager.audioFormats</a></code>.) HTML5 may also enable support for additional formats such as OGG and WAV.</p>
+			<p>In the case when HTML5 + Flash are present, Flash will presently get preference for MP3/MP4 because of SM2's default <code>preferFlash: true</code> setup option, as HTML5 audio is still buggy between browsers and platforms; where desired, you can use <code>soundManager.setup({ preferFlash: false })</code> and in some cases enjoy 100% HTML5 mode (eg., under Safari, IE 9 and Chrome.) For some browsers, Flash will be needed if support for formats like MP3 (not supported via HTML5 in Firefox) are "required."</p>
 
 			<h5>SoundManager 2 + useHTML5Audio: Init Process</h5>
 
