@@ -86,6 +86,8 @@ soundManager.setup({
 	   <strong><a href="../technotes/">Technical Notes</a></strong>
 	   <ul>
 		<li><a href="../technotes/#requirements">System Requirements</a></li>
+		<li><a href="../technotes/#serving-audio">Serving To Clients</a></li>
+		<li><a href="../technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 		<li><a href="../technotes/#debug-output">Debug + Console Output</a></li>
 	   </ul>
 	  </li>
@@ -203,14 +205,82 @@ soundManager.setup({
 			  <p>Flash-to-OS/hardware latency (where flash reports progress, but no sound is heard for a number of milliseconds) may also be an unfortunate reality of Flash-based audio, varying between platform and OS version etc.</p>
 			  <p>Additionally, MP3 files may contain audible gaps at the beginning or end by default when encoded, even if the source (eg. WAVE) file did not. Using optional "nogap" encoding options with programs such as LAME may help to remedy this.</p>
 			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X. As well, <code class="in">flashPollingInterval</code> will use a lower timer value, making polling calls run as quickly as reasonably possible and increasing the frequency of calls to <code class="in">whileplaying()</code>, <code class="in">whileloading()</code> and other time-related events.</p>
+			  <p>Use these options with caution, as overly-aggressive intervals may hinder performance if event callbacks become too frequent.</p>
 
 			  </div>
 
 			</div>
 			
 		</div>
+
+		<div id="serving-audio" class="columnar">
+
+			<div class="c1">
+
+				<h2>Serving to HTML5 + Flash Clients</h2>
+				<p>A few notes on HTTP response headers, configuration and so forth.</p>
+
+			</div>
+
+			<div class="c2">
+
+				<h3>Tips for serving audio to HTML5 + Flash Clients</h3>
+				<p>HTTP response headers from your server are important. Below is a brief list of recommended practices for serving audio content to clients using HTML5, and/or Flash.</p>
+
+				<h4>HTML5</h4>
+
+				<ul>
+					<li>Likes <code>Content-Length</code> HTTP response headers (can affect duration and playback events if missing.)</li>
+					<li>Arbitrary seeking, dynamic loading/buffering works when server supports HTTP partials / range requests. Without this support, behaviour falls back to a Flash-like single-connection, sequential/progressive-style download.</li>
+					<li>Likes a proper MIME type response from the server, e.g., <code>audio/mpeg</code> for MP3 content.</li>
+				</ul>
+
+				<h4>Flash</h4>
+
+				<ul>
+					<li>Likes <code>Content-Length</code> HTTP response headers. When missing, duration may be unknown and certain events like <code>whileloading()</code> / <code>whileplaying()</code> may not fire.</li>
+					<li>Does not care about MIME type or partials in server responses.</li>
+				</ul>
+
+				<p><b>In summary...</b></p>
+
+				<p>Always serve a proper <code>Content-Length</code> HTTP response header. For HTML5, review that HTTP partials / range requests are enabled and that you are serving the correct MIME type in your response as well.</p>
+				<p>Never apply <code>gzip</code> or <code>mod_deflate</code> compression to binary assets. It causes playback problems, costs CPU and in some cases, may even increase the transfer size.</p>
+		
+
+			</div>
+
+
+		</div>
+
+
+		<div id="mobile-device-limitations" class="columnar">
+
+			<div class="c1">
+				<h2>Mobile Device Limitations</h2>
+				<p>Known restrictions, quirks and annoyances relating to HTML5 + mobile Webkit (iOS / Android) software.</p>
+			</div>
+			
+			<div class="c2">
+				<h3>Mobile Device Restrictions, Quirks and Issues</h3>
+				<p>Mobile devices tend to be somewhat limited in terms of battery life, network connection and other resources. Furthermore, they are unlike larger (laptop/desktop) devices in that audio is often not a "shareable" resource, and only one application may be using the sound hardware at any given time. Thus, mobile devices must be treated slightly differently in terms of playing audio via JavaScript.</p>
+				<h3>iOS (mobile Safari/Webkit)</h3>
+				<ul>
+					<li>Sound <code>play()</code> calls are blocked by the OS unless in direct response to a user event like touch or click. ("Auto-play" attempts will be blocked, and the sound may fire a <code>suspend</code> event in this case.) For the curious, <code>setTimeout()</code> calls will also result in playback being blocked.</li>
+					<li>Sound <code>load()</code> and load-related methods may also have some limitations, similar to <code>play()</code>.</li>
+					<li>Only one sound may be actively playing at a time. If an other sound (or application) is playing audio, it will be stopped by the OS in order to play the new sound.</li>
+					<li>Chained playback (sequential / playlist-style behaviour) works when using the <code>onfinish</code> event handler. Otherwise, blocking occurs.</li>
+				</ul>
+				<h3>Possible Alternatives</h3>
+				<p>The Webkit Audio API (possibly a future standard as the Web Audio API) allows for low-level access, manipulation and control of audio from JavaScript. This API is mostly separate from the HTML5 audio API, but will ultimately allow for better fine-grained control and mixing of sound.</p>
+				<p>Once playback is allowed, the Webkit Audio API should be able to get around many of the current HTML5 audio limitations present on iOS including multiple sound playback, volume and pan control, and dynamic filtering / processing effects. However, the API is not a standard and is not consistently supported in Webkit, let alone other browsers.</p>				
+				<p>At time of writing (March 2013), SM2 does not use the Webkit Audio API. It may be experimentally or more formally added at some point in the future, when the API is more universally-supported.</p>
+			</div>
+
+		</div>
 		
 		<div id="debug-output" class="columnar">
+
 			<div class="c1">
 				<h2>Debug + Console Output</h2>
 				<p>Console-style messaging, useful for troubleshooting start-up and runtime issues.</p>
@@ -218,9 +288,9 @@ soundManager.setup({
 			
 			<div class="c2">
 				<h3>Live Debug Output</h3>
-				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to JavaScript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
-				<p class="in"><code>soundManager.consoleOnly</code> can be set to true to disable HTML output (using <code>console.log()</code>-only methods) as well.</p>
-				<p>Additionally, debugging within the Flash portion of SM2 is also available and set using <code>soundManager.debugFlash = true</code>. Debug messages are written to the flash movie itself.</p>
+				<p class="in">With debug mode enabled via <code>soundManager.setup({debugMode: true})</code>, SM2 can write helpful troubleshooting information to JavaScript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of <code>soundmanager-debug</code>.</p>
+				<p class="in"><code>soundManager.setup({consoleOnly: true})</code> can be applied to disable HTML output (using <code>console.log()</code>-only methods) as well.</p>
+				<p>Additionally, debugging within the Flash portion of SM2 is also available and set using <code>soundManager.setup({debugFlash: true})</code>. Debug messages are written to the flash movie itself.</p>
 				<p>For info on SoundManager 2 loading/initialization failures and how to fix them, see <a href="../getstarted/#troubleshooting">troubleshooting</a>.</p>
 				
 				<p>Below is a live example of debug output from SM2:</p>
@@ -236,10 +306,10 @@ soundManager.setup({
 				<div id="sm2-container">
 				 <!-- flash movie goes here -->
 				</div>
-
 			</div>
 
 		</div>
+
 
 	<div id="col3" class="c3">
 
