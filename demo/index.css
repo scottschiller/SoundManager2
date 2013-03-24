@@ -1500,6 +1500,19 @@ body.home a.cta:hover {
  text-shadow: none;
 }
 
+pre code a {
+	color: #3399cc;
+	font-weight: 400;
+	text-decoration: none;
+	text-shadow: none;
+}
+
+pre code a:hover {
+	background-color: #3399cc;
+	color: #fff;
+	font-weight: 400;
+}
+
 /* redefine for simple mp3 button demo */
 .c2 a.sm2_button {
   border-radius:6px;
