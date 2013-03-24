@@ -205,11 +205,8 @@ soundManager.setup({
 soundManager.setup({
   url: '<span>/path/to/swf-files/</span>',
   flashVersion: 9, <span><span>// optional: shiny features (default = 8)</span></span>
-  useFlashBlock: false, <span><span>// optionally, enable when you're ready to <a href="../../demo/flashblock/" title="SoundManager 2 flash block handling demo">dive in</a></span></span>
-  <span><span>/**
-   * read up on <a href="../#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.
-   * iPad/iPhone and devices without flash installed will always attempt to use it.
-   */</span></span>
+  <span><span>// optional: ignore Flash where possible, use 100% HTML5 mode
+  // <a href="../#soundmanager-preferflash" title="soundManager.preferFlash documentation">preferFlash</a>: false,</span></span>
   onready: function() {
     <span><span>// Ready to use; <a href="../#soundmanager-createsound">soundManager.createSound()</a> etc. can now be called.</span></span>
   }
