@@ -1500,14 +1500,16 @@ body.home a.cta:hover {
  text-shadow: none;
 }
 
-pre code a {
+pre code a,
+.c2 pre code a {
 	color: #3399cc;
 	font-weight: 400;
 	text-decoration: none;
 	text-shadow: none;
 }
 
-pre code a:hover {
+pre code a:hover,
+.c2 pre code a:hover {
 	background-color: #3399cc;
 	color: #fff;
 	font-weight: 400;
