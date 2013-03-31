@@ -5328,7 +5328,7 @@ function SoundManager(smURL, smID) {
                   preferFlash: false
                 }).reboot();
 
-                // if for some readon you want to detect this case, use ontimeout() and look for html5Only and didFlashBlock == true.
+                // if for some reason you want to detect this case, use an ontimeout() callback and look for html5Only and didFlashBlock == true.
                 sm2.didFlashBlock = true;
   
                 sm2.beginDelayedInit();
