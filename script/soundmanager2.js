@@ -188,7 +188,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20130324';
+  this.versionNumber = 'V2.97a.20130324+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -265,7 +265,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
-  needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback,
+  canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
@@ -4406,6 +4406,7 @@ function SoundManager(smURL, smID) {
         error = {type:'FLASHBLOCK'};
 
     if (sm2.html5Only) {
+      // no flash, or unused
       return false;
     }
 
@@ -4578,7 +4579,7 @@ function SoundManager(smURL, smID) {
 
   featureCheck = function() {
 
-    var needsFlash,
+    var flashNeeded,
         item,
         result = true,
         formats = sm2.audioFormats,
@@ -4593,6 +4594,7 @@ function SoundManager(smURL, smID) {
       // ignore flash case, however
       sm2.html5Only = true;
 
+      // hide the SWF, if present
       if (sm2.oMC) {
         sm2.oMC.style.display = 'none';
       }
@@ -4620,11 +4622,22 @@ function SoundManager(smURL, smID) {
 
     if (sm2.useHTML5Audio && sm2.hasHTML5) {
 
+      // sort out whether flash is optional, required or can be ignored.
+
+      // innocent until proven guilty.
+      canIgnoreFlash = true;
+
       for (item in formats) {
         if (formats.hasOwnProperty(item)) {
-          if ((formats[item].required && !sm2.html5.canPlayType(formats[item].type)) || (sm2.preferFlash && (sm2.flash[item] || sm2.flash[formats[item].type]))) {
-            // flash may be required, or preferred for this format
-            needsFlash = true;
+          if (formats[item].required) {
+            if (!sm2.html5.canPlayType(formats[item].type)) {
+              // 100% HTML5 mode is not possible.
+              canIgnoreFlash = false;
+              flashNeeded = true;
+            } else if (sm2.preferFlash && (sm2.flash[item] || sm2.flash[formats[item].type])) {
+              // flash may be required, or preferred for this format.
+              flashNeeded = true;
+            }
           }
         }
       }
@@ -4633,10 +4646,11 @@ function SoundManager(smURL, smID) {
 
     // sanity check...
     if (sm2.ignoreFlash) {
-      needsFlash = false;
+      flashNeeded = false;
+      canIgnoreFlash = true;
     }
 
-    sm2.html5Only = (sm2.hasHTML5 && sm2.useHTML5Audio && !needsFlash);
+    sm2.html5Only = (sm2.hasHTML5 && sm2.useHTML5Audio && !flashNeeded);
 
     return (!sm2.html5Only);
 
@@ -4885,7 +4899,7 @@ function SoundManager(smURL, smID) {
     }
     // </d>
 
-    // slight delay before init
+    // IE needs a larger timeout
     setTimeout(init, isIE ? 100 : 1);
 
   };
@@ -5283,26 +5297,69 @@ function SoundManager(smURL, smID) {
       // give up / time-out, depending
 
       if (!didInit && okToDisable) {
+
         if (p === null) {
+
           // SWF failed. Maybe blocked.
+
           if (sm2.useFlashBlock || sm2.flashLoadTimeout === 0) {
+
             if (sm2.useFlashBlock) {
+
               flashBlockHandler();
+
             }
+
             _wDS('waitForever');
+
           } else {
+
             // no custom flash block handling, but SWF has timed out. Will recover if user unblocks / allows SWF load.
-            _wDS('waitForever');
-            // fire any regular registered ontimeout() listeners.
-            processOnEvents({type:'ontimeout', ignoreInit: true});
+
+            if (!sm2.useFlashBlock && canIgnoreFlash) {
+
+              // special case: try for a reboot with preferFlash: false, if 100% HTML5 mode is possible and useFlashBlock is not enabled.
+
+              window.setTimeout(function() {
+
+                complain(smc + 'useFlashBlock is false, 100% HTML5 mode is possible. Rebooting with preferFlash: false...');
+
+                sm2.setup({
+                  preferFlash: false
+                }).reboot();
+
+                // if for some readon you want to detect this case, use ontimeout() and look for html5Only and didFlashBlock == true.
+                sm2.didFlashBlock = true;
+  
+                sm2.beginDelayedInit();
+
+              }, 1);
+
+            } else {
+
+              _wDS('waitForever');
+
+              // fire any regular registered ontimeout() listeners.
+              processOnEvents({type:'ontimeout', ignoreInit: true});
+
+            }
+
           }
+
         } else {
+
           // flash loaded? Shouldn't be a blocking issue, then.
+
           if (sm2.flashLoadTimeout === 0) {
-             _wDS('waitForever');
+
+            _wDS('waitForever');
+
           } else {
+
             failSafely(true);
+
           }
+
         }
       }
 
