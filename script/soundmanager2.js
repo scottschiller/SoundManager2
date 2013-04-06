@@ -1246,7 +1246,7 @@ function SoundManager(smURL, smID) {
       sm2.sounds[sm2.soundIDs[i]].destruct();
     }
 
-    // trash ze flash
+    // trash ze flash (remove from the DOM)
 
     if (flash) {
 
@@ -1257,8 +1257,6 @@ function SoundManager(smURL, smID) {
         }
 
         oRemoved = flash.parentNode.removeChild(flash);
-
-        _wDS('flRemoved');
 
       } catch(e) {
 
@@ -4055,7 +4053,6 @@ function SoundManager(smURL, smID) {
     smError: 'SMSound.load(): Exception: JS-Flash communication failed, or JS error.',
     fbTimeout: 'No flash response, applying .'+swfCSS.swfTimedout+' CSS...',
     fbLoaded: 'Flash loaded',
-    flRemoved: smc + 'Flash movie removed.',
     fbHandler: smc + 'flashBlockHandler()',
     manURL: 'SMSound.load(): Using manually-assigned URL',
     onURL: sm + '.load(): current URL already assigned.',
