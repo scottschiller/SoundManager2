@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130324 ("Mahalo" Edition)
+ * V2.97a.20130324+DEV ("Mahalo" Edition)
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -266,10 +266,10 @@ function SoundManager(smURL, smID) {
   var SMSound,
   sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback,
-  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), 
+  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), isFirefox = (ua.match(/firefox/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  hasConsole = (window.console !== _undefined && console.log !== _undefined), isFocused = (doc.hasFocus !== _undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === _undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
+  hasConsole = (window.console !== _undefined && console.log !== _undefined), isFocused = (doc.hasFocus !== _undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === _undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i, msecScale = 1000,
   emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   overHTTP = (doc.location?doc.location.protocol.match(/http/i):null),
   http = (!overHTTP ? 'http:/'+'/' : ''),
@@ -1619,10 +1619,9 @@ function SoundManager(smURL, smID) {
           if (s._a) {
 
             s._a.pause();
-            html5Unload(s._a, emptyURL);
 
             // update empty URL, too
-            lastURL = emptyURL;
+            lastURL = html5Unload(s._a);
 
           }
 
@@ -1686,7 +1685,9 @@ function SoundManager(smURL, smID) {
 
     this.play = function(oOptions, _updatePlayState) {
 
-      var fN, allowMulti, a, onready, startOK = true,
+      var fN, allowMulti, a, onready,
+          audioClone, onended, oncanplay,
+          startOK = true,
           exit = null;
 
       // <d>
@@ -1734,6 +1735,10 @@ function SoundManager(smURL, smID) {
         allowMulti = s._iO.multiShot;
         if (!allowMulti) {
           sm2._wD(fN + 'Already playing (one-shot)', 1);
+          if (s.isHTML5) {
+            // go back to original position.
+            s.setPosition(s._iO.position);
+          }
           exit = s;
         } else {
           sm2._wD(fN + 'Already playing (multi-shot)', 1);
@@ -1865,7 +1870,7 @@ function SoundManager(smURL, smID) {
 
         sm2._wD(fN + 'Starting to play');
 
-        if (!s.instanceCount || s._iO.multiShotEvents || (!s.isHTML5 && fV > 8 && !s.getAutoPlay())) {
+        if (!s.instanceCount || s._iO.multiShotEvents || (s.isHTML5 && s._iO.multiShot) || (!s.isHTML5 && fV > 8 && !s.getAutoPlay())) {
           s.instanceCount++;
         }
 
@@ -1893,7 +1898,7 @@ function SoundManager(smURL, smID) {
 
         if (!s.isHTML5) {
 
-          startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s.position : s.position / 1000), s._iO.multiShot || false);
+          startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s.position : s.position / msecScale), s._iO.multiShot || false);
 
           if (fV === 9 && !startOK) {
             // edge case: no sound hardware, or 32-channel flash ceiling hit.
@@ -1908,13 +1913,56 @@ function SoundManager(smURL, smID) {
 
         } else {
 
-          start_html5_timer();
+          if (s.instanceCount < 2) {
 
-          a = s._setup_html5();
+            // HTML5 single-instance case
 
-          s.setPosition(s._iO.position);
+            start_html5_timer();
 
-          a.play();
+            a = s._setup_html5();
+
+            s.setPosition(s._iO.position);
+
+            a.play();
+
+          } else {
+
+            // HTML5 multi-shot case
+
+            sm2._wD(s.id + ': Cloning Audio() for instance #' + s.instanceCount + '...');
+
+            audioClone = new Audio(s._iO.url);
+
+            onended = function() {
+              event.remove(audioClone, 'onended', onended);
+              s._onfinish(s);
+              // cleanup
+              html5Unload(audioClone);
+              audioClone = null;
+            };
+
+            oncanplay = function() {
+              event.remove(audioClone, 'canplay', oncanplay);
+              try {
+                audioClone.currentTime = s._iO.position/msecScale;
+              } catch(err) {
+                complain(s.id + ': multiShot play() failed to apply position of ' + (s._iO.position/msecScale));
+              }
+              audioClone.play();
+            };
+
+            event.add(audioClone, 'ended', onended);
+
+            if (s._iO.position) {
+              // HTML5 audio can't seek before onplay() event has fired.
+              // wait for canplay, then seek to position and start playback.
+              event.add(audioClone, 'canplay', oncanplay);
+            } else {
+              // begin playback at currentTime: 0
+              audioClone.play();
+            }
+
+          }
 
         }
 
@@ -2065,7 +2113,7 @@ function SoundManager(smURL, smID) {
 
       original_pos = s.position;
       s.position = offset;
-      position1K = s.position/1000;
+      position1K = s.position/msecScale;
       s._resetOnPosition(s.position);
       s._iO.position = offset;
 
@@ -2209,7 +2257,7 @@ function SoundManager(smURL, smID) {
 
       if (s.playState === 0) {
         s.play({
-          position: (fV === 9 && !s.isHTML5 ? s.position : s.position / 1000)
+          position: (fV === 9 && !s.isHTML5 ? s.position : s.position / msecScale)
         });
         return s;
       }
@@ -2653,7 +2701,7 @@ function SoundManager(smURL, smID) {
           // TODO: investigate why this goes wack if not set/re-set each time.
           s.durationEstimate = s.duration;
 
-          time = (s._a.currentTime * 1000 || 0);
+          time = (s._a.currentTime * msecScale || 0);
 
           if (time !== lastHTML5State.time) {
 
@@ -2686,7 +2734,7 @@ function SoundManager(smURL, smID) {
 
       var instanceOptions = s._iO,
           // if audio object exists, use its duration - else, instance option duration (if provided - it's a hack, really, and should be retired) OR null
-          d = (s._a && s._a.duration ? s._a.duration*1000 : (instanceOptions && instanceOptions.duration ? instanceOptions.duration : null)),
+          d = (s._a && s._a.duration ? s._a.duration*msecScale : (instanceOptions && instanceOptions.duration ? instanceOptions.duration : null)),
           result = (d && !isNaN(d) && d !== Infinity ? d : null);
 
       return result;
@@ -3589,7 +3637,7 @@ function SoundManager(smURL, smID) {
       s._onbufferchange(0);
 
       // position according to instance options
-      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position)?s._iO.position/1000:null);
+      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position)?s._iO.position/msecScale:null);
 
       // set the position if position was set before the sound loaded
       if (s.position && this.currentTime !== position1K) {
@@ -3700,9 +3748,7 @@ function SoundManager(smURL, smID) {
           ranges = e.target.buffered,
           // firefox 3.6 implements e.loaded/total (bytes)
           loaded = (e.loaded||0),
-          total = (e.total||1),
-          // HTML5 returns msec. SM2 API uses seconds for setPosition() etc., whether Flash or HTML5.
-          scale = 1000;
+          total = (e.total||1);
 
       // reset the "buffered" (loaded byte ranges) array
       s.buffered = [];
@@ -3713,25 +3759,26 @@ function SoundManager(smURL, smID) {
         // https://developer.mozilla.org/en/DOM/TimeRanges
 
         // re-build "buffered" array
+        // HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash or HTML5.
         for (i=0, j=ranges.length; i<j; i++) {
           s.buffered.push({
-            'start': ranges.start(i) * scale,
-            'end': ranges.end(i) * scale
+            'start': ranges.start(i) * msecScale,
+            'end': ranges.end(i) * msecScale
           });
         }
 
         // use the last value locally
-        buffered = (ranges.end(0) - ranges.start(0)) * scale;
+        buffered = (ranges.end(0) - ranges.start(0)) * msecScale;
 
         // linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges
-        loaded = buffered/(e.target.duration*scale);
+        loaded = buffered/(e.target.duration*msecScale);
 
         // <d>
         if (isProgress && ranges.length > 1) {
           str = [];
           j = ranges.length;
           for (i=0; i<j; i++) {
-            str.push(e.target.buffered.start(i)*scale +'-'+ e.target.buffered.end(i)*scale);
+            str.push(e.target.buffered.start(i)*msecScale +'-'+ e.target.buffered.end(i)*msecScale);
           }
           sm2._wD(this._s.id + ': progress, timeRanges: ' + str.join(', '));
         }
@@ -3823,7 +3870,7 @@ function SoundManager(smURL, smID) {
 
   };
 
-  html5Unload = function(oAudio, url) {
+  html5Unload = function(oAudio) {
 
     /**
      * Internal method: Unload media, and cancel any current/pending network requests.
@@ -3833,13 +3880,19 @@ function SoundManager(smURL, smID) {
      * Other UA behaviour is unclear, so everyone else gets an about:blank-style URL.
      */
 
+    var url;
+
     if (oAudio) {
 
-      // Firefox likes '' for unload (used to work?) - however, may request hosting page URL (bad.) Most other UAs dislike '' and fail to unload.
+      // Firefox likes '' for unload (used to work, but no longer?) - however, may request hosting page URL (bad.) Most other UAs dislike '' and fail to unload.
+      url = (isSafari && !is_iDevice ? null : (isFirefox ? emptyURL : null));
+
       oAudio.src = url;
 
       // reset some state, too
-      oAudio._called_load = false;
+      if (oAudio._called_unload !== undefined) {
+        oAudio._called_load = false;
+      }
 
     }
 
@@ -3849,6 +3902,8 @@ function SoundManager(smURL, smID) {
       lastGlobalHTML5URL = null;
 
     }
+
+    return url;
 
   };
 
