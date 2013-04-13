@@ -206,6 +206,9 @@ function SoundManager(smURL, smID) {
     }
     options = mixin(oOptions);
     options.url = parseURL(options.url);
+    if (!options.url) {
+      return false;
+    }
     if (options.id === undefined) {
       options.id = sm2.setupOptions.idPrefix + (idCounter++);
     }
@@ -224,7 +227,7 @@ function SoundManager(smURL, smID) {
     } else {
       if (fV > 8) {
         if (options.isMovieStar === null) {
-          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(netStreamMimeTypes) : false) || options.url.match(netStreamPattern));
+          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(netStreamMimeTypes) : false) || (options.url && options.url.match(netStreamPattern)));
         }
       }
       options = policyFix(options, cs);

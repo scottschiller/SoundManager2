@@ -393,7 +393,7 @@ function SoundManager(smURL, smID) {
     }
 
     if (_url !== _undefined) {
-      // function overloading in JS! :) ..assume simple createSound(id,url) use case
+      // function overloading in JS! :) ..assume simple createSound(id, url) use case
       oOptions = {
         'id': oOptions,
         'url': _url
@@ -404,6 +404,12 @@ function SoundManager(smURL, smID) {
     options = mixin(oOptions);
 
     options.url = parseURL(options.url);
+
+    if (!options.url) {
+      // fatal (console.error case)
+      sm2._wD(cs + 'Missing required \'url\' parameter.', 3);
+      return false;
+    }
 
     // generate an id, if needed.
     if (options.id === undefined) {
@@ -443,7 +449,7 @@ function SoundManager(smURL, smID) {
       if (fV > 8) {
         if (options.isMovieStar === null) {
           // attempt to detect MPEG-4 formats
-          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(netStreamMimeTypes) : false) || options.url.match(netStreamPattern));
+          options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(netStreamMimeTypes) : false) || (options.url && options.url.match(netStreamPattern)));
         }
         // <d>
         if (options.isMovieStar) {
