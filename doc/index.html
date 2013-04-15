@@ -70,7 +70,7 @@ soundManager.setup({
 		<li><a href="#smdefaults">Global Sound Defaults</a></li>
 		<li><a href="#api">SoundManager Core API</a></li>
 		<li><a href="#smsoundmethods">Sound Object (SMSound) API</a></li>
-		<li><a href="generated/script/soundmanager2.html">Generated Documentation</a></li>
+		<li><a href="generated/soundmanager2.html">Generated Documentation</a></li>
 	   </ul>
 	  </li>
 	
@@ -355,7 +355,7 @@ soundManager.setup({
 		  <h3 id="soundmanager-setup">SoundManager Properties: soundManager.setup()</h3>
 
 	      <p>
-			Just getting started? See <a href="getstarted/#basic-inclusion">the basics</a>. For nicely-formatted, annotated source code, see the <a href="generated/script/soundmanager2.html">pretty-printed version</a>.
+			Just getting started? See <a href="getstarted/#basic-inclusion">the basics</a>. For nicely-formatted, annotated source code, see the <a href="generated/soundmanager2.html">pretty-printed version</a>.
 		  </p>
 
 		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowscriptaccess f-bgcolor f-setup">
@@ -430,6 +430,12 @@ soundManager.setup({
 		</li>
 
 		<li>
+			<div>idPrefix: <em>'sound'</em>,</div>
+			<span>// if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.</span>
+		</li>
+
+
+		<li>
 			<div>noSWFCache: <em>false</em>,</div>
 			<span>// if true, appends ?ts={date} to break aggressive SWF caching.</span>
 		</li>
@@ -469,6 +475,7 @@ soundManager.setup({
 			<span>// flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index)</span>
 		</li>
 
+
 	</ul>
 
 </div>
@@ -492,6 +499,7 @@ soundManager.setup({
 <pre class="block"><code>soundManager.setup({
   url: <span>'/path/to/swfs/'</span>,
   flashVersion: <span>9</span>,
+  preferFlash: <span>false</span>, <span><span>// prefer 100% HTML5 mode, where both supported</span></span>
   onready: function() {
     <span><span>// console.log('SM2 ready!');</span></span>
   },
@@ -844,21 +852,29 @@ if (soundManager.canPlayURL(sURL)) {
 				  <dl id="soundmanager-createsound" class="f-block f-createsound s-autoplay">
 
 				   <dt><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
-				   <dd title="object:options">Creates a sound with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. Requires <code>id</code> and <code>url</code> at a minimum.</dd>
+				   <dd title="object:options">Creates a sound object, supporting an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. A <code>url</code> parameter is recommended, but not required.</dd>
 				   <dd>
-				    Example:
-<pre class="block"><code>soundManager.createSound({<span>
- id: 'mySound', <span>// required</span>
- url: '/audio/mysoundfile.mp3', <span>// required</span>
+				    Minimal example:
+<pre class="block"><code>var someSound = soundManager.createSound({ <span>
+  url: '/path/to/an.mp3'
+</span>});</pre></code>
+				   </dd>
+				   <dd>
+				    With optional parameters:
+<pre class="block"><code>var mySoundObject = soundManager.createSound({<span>
+ <span>// optional, for getSoundById() look-ups and convenience methods. If omitted, an id will be generated.</span>
+ id: 'mySound',
+ <span>// a url is recommended, but not required.</span>
+ url: '/audio/mysoundfile.mp3',
  <span>// optional sound parameters here, see <a href="#sound-properties" title="SoundManager 2 API Info: Sound Properties Object" onclick="resetFilter()">Sound Properties</a> for full list</span>
  volume: 50,
  autoPlay: true,
- whileloading: soundIsLoadingFunction
+ whileloading: function() { console.log(this.id + ' is loading'); }
 </span>});</code></pre>
-   <p>Each <code>createSound()</code> call results in the creation of a <code>SMSound</code> object which stores all properties, methods and events relevant to that particular sound instance.</p>
+   <p>Each <code>createSound()</code> call results in the creation of a <code>SMSound</code> object which stores all properties, methods and events relevant to that particular sound instance. If you keep the <code>SMSound</code> object in scope, you probably don't need to specify an ID. However, if you <i>do</i> provide an <code>id</code>, you can easily get a reference to the given sound via <code>soundManager.getSoundById()</code> (for the above example, you would use <code>mySound</code>.)</p>
+   <p>When specifying an <code>id</code> you can also use controller-level convenience methods, i.e., <code>soundManager.play('<span>mySound</span>')</code>, <code>soundManager.stop('<span>mySound</span>')</code> and so on.</p>
    <p>Individual sound objects can also easily be referenced as returned from <code>createSound()</code>:</p>
 <pre class="block"><code>var mySoundObject = soundManager.createSound({<span>
- id: 'mySound',
  url: '/audio/mysoundfile.mp3'
 </span>});
 mySoundObject.play(); <span><span>// SMSound object instance</span></span></code></pre>
@@ -920,7 +936,7 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 }</span>);</code></pre>
 	   </dd>
 	   <dd>Queueing multiple handlers: <code>soundManager.ontimeout(<span>myOnTimeoutHandler</span>); soundManager.ontimeout(<span>myOtherHandler</span>);</code></dd>
-       <dd>The timeout event is not necessarily fatal, as SM2 may be rebooted and fire an <code>onready()</code> in the <code>useFlashBlock</code> case (where the user sees, and chooses to unblock, the Flash component after a failed init attempt.)</dd>
+       <dd>The timeout event is not necessarily fatal, as SM2 may be rebooted and fire an <code>onready()</code> in the <code>useFlashBlock</code> case (where the user sees, and chooses to unblock the Flash component after a failed init attempt.)</dd>
 	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
 	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
 	   <dd>This method can also be used via <code><a href="#sm2-setup-extra-properties" onclick="resetFilter()">soundManager.setup</a>({ <span>ontimeout: function() { ... }</span> });</code></dd>
@@ -1701,8 +1717,7 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 					  <p class="in">As a simple example, the following code would override the default <code>autoPlay</code>, <code>pan</code> and <code>volume</code> options for a given sound:</p>
 
 <pre class="block"><code>soundManager.createSound({
-  <span>id: 'mySound',
-  url: '/path/to/some.mp3',
+  <span>url: '/path/to/some.mp3',
   autoPlay: true,
   pan: -75,
   volume: 50</span>
