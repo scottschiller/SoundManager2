@@ -206,9 +206,6 @@ function SoundManager(smURL, smID) {
     }
     options = mixin(oOptions);
     options.url = parseURL(options.url);
-    if (!options.url) {
-      return false;
-    }
     if (options.id === undefined) {
       options.id = sm2.setupOptions.idPrefix + (idCounter++);
     }
@@ -591,7 +588,7 @@ function SoundManager(smURL, smID) {
     sm2.disable(true);
   };
   SMSound = function(oOptions) {
-    var s = this, resetProperties, add_html5_events, remove_html5_events, stop_html5_timer, start_html5_timer, attachOnPosition, onplay_called = false, onPositionItems = [], onPositionFired = 0, detachOnPosition, applyFromTo, lastURL = null, lastHTML5State;
+    var s = this, resetProperties, add_html5_events, remove_html5_events, stop_html5_timer, start_html5_timer, attachOnPosition, onplay_called = false, onPositionItems = [], onPositionFired = 0, detachOnPosition, applyFromTo, lastURL = null, lastHTML5State, urlOmitted;
     lastHTML5State = {
       duration: null,
       time: null
@@ -606,6 +603,7 @@ function SoundManager(smURL, smID) {
     this.volume = this.options.volume;
     this.isHTML5 = false;
     this._a = null;
+    urlOmitted = (this.url ? false : true);
     this.id3 = {};
     this._debug = function() {
     };
@@ -627,6 +625,11 @@ function SoundManager(smURL, smID) {
       s._iO.url = parseURL(s._iO.url);
       s.instanceOptions = s._iO;
       instanceOptions = s._iO;
+      if (!instanceOptions.url) {
+        return s;
+      }
+      if (fV === 8 && !s.url && !instanceOptions.autoPlay) {
+      }
       if (instanceOptions.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
         if (s.readyState === 3 && instanceOptions.onload) {
           wrapCallback(s, function() {
@@ -751,7 +754,11 @@ function SoundManager(smURL, smID) {
         return exit;
       }
       if (oOptions.url && oOptions.url !== s.url) {
-        s.load(s._iO);
+        if (!s.readyState && !s.isHTML5 && fV === 8 && urlOmitted) {
+          urlOmitted = false;
+        } else {
+          s.load(s._iO);
+        }
       }
       if (!s.loaded) {
         if (s.readyState === 0) {
