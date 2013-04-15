@@ -378,7 +378,7 @@
 
 <pre class="block"><code>&lt;script src="soundmanager2.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-soundManager.setup({
+<a href="doc/#soundmanager-createsound" title="soundManager.createSound() documentation" onclick="checkDomain()">soundManager.setup({
   <span><span>// where to find flash audio SWFs, as needed</span></span>
   url: '<span>/path/to/swf-files/</span>',
   <span><span>// optional: prefer HTML5 over Flash for MP3/MP4
@@ -412,13 +412,12 @@ soundManager.setup({
 							<h4>Creating and playing a sound object</h4>
 
 <pre class="block"><code><span><span>// create "mySound"...</span></span>
-soundManager.createSound({
-  id: '<span>mySound</span>',
+var mySound = <a href="doc/#soundmanager-createsound" title="soundManager.createSound() documentation" onclick="checkDomain()">soundManager.createSound</a>({
   url: '<span>/path/to/an.mp3</span>'
 });
 
 <span><span>// ...and play it</span></span>
-soundManager.play('<span>mySound</span>');
+mySound.play();
 </code></pre>
 
 					<p>Additional options and events can be specified when loading and playing sounds. For more examples of playback features, see <a href="demo/api/" class="cta">API Demos</a>.</p>
