@@ -405,12 +405,6 @@ function SoundManager(smURL, smID) {
 
     options.url = parseURL(options.url);
 
-    if (!options.url) {
-      // fatal (console.error case)
-      sm2._wD(cs + 'Missing required \'url\' parameter.', 3);
-      return false;
-    }
-
     // generate an id, if needed.
     if (options.id === undefined) {
       options.id = sm2.setupOptions.idPrefix + (idCounter++);
@@ -421,7 +415,7 @@ function SoundManager(smURL, smID) {
       sm2._wD(cs + str('badID', options.id), 2);
     }
 
-    sm2._wD(cs + options.id + ' (' + options.url + ')', 1);
+    sm2._wD(cs + options.id + (options.url ? ' (' + options.url + ')' : ''), 1);
     // </d>
 
     if (idCheck(options.id, true)) {
@@ -1421,7 +1415,7 @@ function SoundManager(smURL, smID) {
 
   SMSound = function(oOptions) {
 
-    var s = this, resetProperties, add_html5_events, remove_html5_events, stop_html5_timer, start_html5_timer, attachOnPosition, onplay_called = false, onPositionItems = [], onPositionFired = 0, detachOnPosition, applyFromTo, lastURL = null, lastHTML5State;
+    var s = this, resetProperties, add_html5_events, remove_html5_events, stop_html5_timer, start_html5_timer, attachOnPosition, onplay_called = false, onPositionItems = [], onPositionFired = 0, detachOnPosition, applyFromTo, lastURL = null, lastHTML5State, urlOmitted;
 
     lastHTML5State = {
       // tracks duration + position (time)
@@ -1452,6 +1446,9 @@ function SoundManager(smURL, smID) {
 
     // internal HTML5 Audio() object reference
     this._a = null;
+
+    // for flash 8 special-case createSound() without url, followed by load/play with url case
+    urlOmitted = (this.url ? false : true);
 
     /**
      * SMSound() public methods
@@ -1508,6 +1505,16 @@ function SoundManager(smURL, smID) {
       instanceOptions = s._iO;
 
       sm2._wD(s.id + ': load (' + instanceOptions.url + ')');
+
+      if (!instanceOptions.url) {
+        sm2._wD(s.id + ': load(): url is unassigned. Exiting.', 2);
+        return s;
+      }
+
+      if (fV === 8 && !s.url && !instanceOptions.autoPlay) {
+        // flash 8 load() -> play() won't work before onload has fired.
+        sm2._wD(s.id + ': Flash 8 load() limitation: Wait for onload() before calling play().', 1);
+      }
 
       if (instanceOptions.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
         _wDS('onURL', 1);
@@ -1685,7 +1692,6 @@ function SoundManager(smURL, smID) {
       if (!_bFromSM) {
         // ensure deletion from controller
         sm2.destroySound(s.id, true);
-
       }
 
     };
@@ -1765,8 +1771,19 @@ function SoundManager(smURL, smID) {
 
       // edge case: play() with explicit URL parameter
       if (oOptions.url && oOptions.url !== s.url) {
-        // load using merged options
-        s.load(s._iO);
+
+        // special case for createSound() followed by load() / play() with url; avoid double-load case.
+        if (!s.readyState && !s.isHTML5 && fV === 8 && urlOmitted) {
+
+          urlOmitted = false;
+
+        } else {
+
+          // load using merged options
+          s.load(s._iO);
+
+        }
+
       }
 
       if (!s.loaded) {
@@ -1777,12 +1794,16 @@ function SoundManager(smURL, smID) {
 
           // try to get this sound playing ASAP
           if (!s.isHTML5) {
+
             // assign directly because setAutoPlay() increments the instanceCount
             s._iO.autoPlay = true;
             s.load(s._iO);
+
           } else {
+
             // iOS needs this when recycling sounds, loading a new URL on an existing object.
             s.load(s._iO);
+
           }
 
           // HTML5 hack - re-set instanceOptions?
