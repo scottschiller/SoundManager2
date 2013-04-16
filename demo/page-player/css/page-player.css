@@ -146,6 +146,7 @@ ul.playlist li:hover .controls .statusbar {
  position:relative;
  cursor:ew-resize;
  cursor:-moz-grab;
+ cursor:-webkit-grab;
  cursor:grab;
 }
 
@@ -168,11 +169,13 @@ ul.playlist li .controls .statusbar {
  border-radius:2px;
  overflow:hidden;
  cursor:-moz-grab;
+ cursor:-webkit-grab;
  cursor:grab;
 }
 
 ul.playlist li .controls.dragging .statusbar {
  cursor:-moz-grabbing;
+ cursor:-webkit-grabbing;
  cursor:grabbing;
 }
 
