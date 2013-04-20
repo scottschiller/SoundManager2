@@ -609,30 +609,45 @@ function SoundManager(smURL, smID) {
 
   this.play = function(sID, oOptions) {
 
-    var result = false;
+    var result = false,
+        // hackish function-overloading use case: play('mySound', '/path/to/some.mp3');
+        overloaded = !(oOptions instanceof Object);
 
     if (!didInit || !sm2.ok()) {
       complain(sm + '.play(): ' + str(!didInit?'notReady':'notOK'));
       return result;
     }
 
-    if (!idCheck(sID)) {
-      if (!(oOptions instanceof Object)) {
-        // overloading use case: play('mySound','/path/to/some.mp3');
+    if (!idCheck(sID, overloaded)) {
+
+      if (overloaded) {
         oOptions = {
           url: oOptions
         };
       }
+
       if (oOptions && oOptions.url) {
         // overloading use case, create+play: .play('someID',{url:'/path/to.mp3'});
         sm2._wD(sm + '.play(): attempting to create "' + sID + '"', 1);
         oOptions.id = sID;
         result = sm2.createSound(oOptions).play();
       }
-      return result;
+
+    } else if (overloaded) {
+
+      // existing sound object case
+      oOptions = {
+        url: oOptions
+      };
+
     }
 
-    return sm2.sounds[sID].play(oOptions);
+    if (!result) {
+      // default case
+      result = sm2.sounds[sID].play(oOptions);
+    }
+
+    return result;
 
   };
 
@@ -1031,14 +1046,14 @@ function SoundManager(smURL, smID) {
   this.getSoundById = function(sID, _suppressDebug) {
 
     if (!sID) {
-      throw new Error(sm + '.getSoundById(): sID is null/_undefined');
+      return null;
     }
 
     var result = sm2.sounds[sID];
 
     // <d>
     if (!result && !_suppressDebug) {
-      sm2._wD('"' + sID + '" is an invalid sound ID.', 2);
+      sm2._wD(sm + '.getSoundById(): Sound "' + sID + '" not found.', 2);
     }
     // </d>
 
@@ -1506,15 +1521,17 @@ function SoundManager(smURL, smID) {
 
       sm2._wD(s.id + ': load (' + instanceOptions.url + ')');
 
-      if (!instanceOptions.url) {
+      if (!instanceOptions.url && !s.url) {
         sm2._wD(s.id + ': load(): url is unassigned. Exiting.', 2);
         return s;
       }
 
-      if (fV === 8 && !s.url && !instanceOptions.autoPlay) {
+      // <d>
+      if (!s.isHTML5 && fV === 8 && !s.url && !instanceOptions.autoPlay) {
         // flash 8 load() -> play() won't work before onload has fired.
         sm2._wD(s.id + ': Flash 8 load() limitation: Wait for onload() before calling play().', 1);
       }
+      // </d>
 
       if (instanceOptions.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
         _wDS('onURL', 1);
@@ -1567,7 +1584,8 @@ function SoundManager(smURL, smID) {
           // early HTML5 implementation (non-standard)
           s._a.autobuffer = 'auto';
 
-          // standard
+          // standard property, values: none / metadata / auto
+          // reference: http://msdn.microsoft.com/en-us/library/ie/ff974759%28v=vs.85%29.aspx
           s._a.preload = 'auto';
 
           s._a._called_load = true;
@@ -1939,7 +1957,7 @@ function SoundManager(smURL, smID) {
             // edge case: no sound hardware, or 32-channel flash ceiling hit.
             // applies only to Flash 9, non-NetStream/MovieStar sounds.
             // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29
-            sm2._wD(fN + 'No sound hardware, or 32-sound ceiling hit');
+            sm2._wD(fN + 'No sound hardware, or 32-sound ceiling hit', 2);
             if (s._iO.onplayerror) {
               s._iO.onplayerror.apply(s);
             }
