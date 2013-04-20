@@ -310,7 +310,7 @@ demo2Sound.play({volume:50});
    soundManager.play('<span>aRimSound</span>','<span>AMB_RIM1.mp3</span>');
  }
 });
-soundManager.play('<span>aRimSound</span>');</code></pre>
+soundManager.play('<span>aBassDrum</span>');</code></pre>
  <button onclick="soundManager._writeDebug('Demo 4b',1);soundManager.createSound({id: 'aBassDrum',url: '../mpc/audio/AMB_BD_1.mp3',multiShot:false,onfinish:function(){soundManager.play('aRimSound','../mpc/audio/AMB_RIM1.mp3');}});soundManager.play('aBassDrum')">Do this</button>
  <p>This will crate and play a new sound, using the "onfinish" handler to create and play a second, new sound.</p>
  <p>It is recommended to create sound objects first, to simplify troubleshooting.</p>
