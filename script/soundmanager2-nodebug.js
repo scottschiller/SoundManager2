@@ -296,13 +296,14 @@ function SoundManager(smURL, smID) {
     return sm2.sounds[sID].clearOnPosition(nPosition, oMethod);
   };
   this.play = function(sID, oOptions) {
-    var result = false;
+    var result = false,
+        overloaded = !(oOptions instanceof Object);
     if (!didInit || !sm2.ok()) {
       complain(sm + '.play(): ' + str(!didInit?'notReady':'notOK'));
       return result;
     }
-    if (!idCheck(sID)) {
-      if (!(oOptions instanceof Object)) {
+    if (!idCheck(sID, overloaded)) {
+      if (overloaded) {
         oOptions = {
           url: oOptions
         };
@@ -311,9 +312,15 @@ function SoundManager(smURL, smID) {
         oOptions.id = sID;
         result = sm2.createSound(oOptions).play();
       }
-      return result;
+    } else if (overloaded) {
+      oOptions = {
+        url: oOptions
+      };
     }
-    return sm2.sounds[sID].play(oOptions);
+    if (!result) {
+      result = sm2.sounds[sID].play(oOptions);
+    }
+    return result;
   };
   this.start = this.play;
   this.setPosition = function(sID, nMsecOffset) {
@@ -479,7 +486,7 @@ function SoundManager(smURL, smID) {
   };
   this.getSoundById = function(sID, _suppressDebug) {
     if (!sID) {
-      throw new Error(sm + '.getSoundById(): sID is null/_undefined');
+      return null;
     }
     var result = sm2.sounds[sID];
     return result;
@@ -625,10 +632,8 @@ function SoundManager(smURL, smID) {
       s._iO.url = parseURL(s._iO.url);
       s.instanceOptions = s._iO;
       instanceOptions = s._iO;
-      if (!instanceOptions.url) {
+      if (!instanceOptions.url && !s.url) {
         return s;
-      }
-      if (fV === 8 && !s.url && !instanceOptions.autoPlay) {
       }
       if (instanceOptions.url === s.url && s.readyState !== 0 && s.readyState !== 2) {
         if (s.readyState === 3 && instanceOptions.onload) {
