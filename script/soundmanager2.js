@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130324+DEV ("Mahalo" Edition)
+ * V2.97a.20130324+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -609,16 +609,21 @@ function SoundManager(smURL, smID) {
 
   this.play = function(sID, oOptions) {
 
-    var result = false,
-        // hackish function-overloading use case: play('mySound', '/path/to/some.mp3');
-        overloaded = !(oOptions instanceof Object);
+    var result = null,
+        // legacy function-overloading use case: play('mySound', '/path/to/some.mp3');
+        overloaded = (oOptions && !(oOptions instanceof Object));
 
     if (!didInit || !sm2.ok()) {
       complain(sm + '.play(): ' + str(!didInit?'notReady':'notOK'));
-      return result;
+      return false;
     }
 
     if (!idCheck(sID, overloaded)) {
+
+      if (!overloaded) {
+        // no sound found for the given ID. Bail.
+        return false;
+      }
 
       if (overloaded) {
         oOptions = {
@@ -627,8 +632,8 @@ function SoundManager(smURL, smID) {
       }
 
       if (oOptions && oOptions.url) {
-        // overloading use case, create+play: .play('someID',{url:'/path/to.mp3'});
-        sm2._wD(sm + '.play(): attempting to create "' + sID + '"', 1);
+        // overloading use case, create+play: .play('someID', {url:'/path/to.mp3'});
+        sm2._wD(sm + '.play(): Attempting to create "' + sID + '"', 1);
         oOptions.id = sID;
         result = sm2.createSound(oOptions).play();
       }
@@ -642,7 +647,7 @@ function SoundManager(smURL, smID) {
 
     }
 
-    if (!result) {
+    if (result === null) {
       // default case
       result = sm2.sounds[sID].play(oOptions);
     }
@@ -1755,7 +1760,7 @@ function SoundManager(smURL, smID) {
       s.instanceOptions = s._iO;
 
       // RTMP-only
-      if (s._iO.serverURL && !s.connected) {
+      if (!s.isHTML5 && s._iO.serverURL && !s.connected) {
         if (!s.getAutoPlay()) {
           sm2._wD(fN +' Netstream not connected yet - setting autoPlay');
           s.setAutoPlay(true);
@@ -1921,9 +1926,10 @@ function SoundManager(smURL, smID) {
 
         }
 
-        sm2._wD(fN + 'Starting to play');
+        // sm2._wD(fN + 'Starting to play');
 
-        if (!s.instanceCount || s._iO.multiShotEvents || (s.isHTML5 && s._iO.multiShot) || (!s.isHTML5 && fV > 8 && !s.getAutoPlay())) {
+        // increment instance counter, where enabled + supported
+        if (!s.instanceCount || s._iO.multiShotEvents || (s.isHTML5 && s._iO.multiShot && !useGlobalHTML5Audio) || (!s.isHTML5 && fV > 8 && !s.getAutoPlay())) {
           s.instanceCount++;
         }
 
@@ -2173,6 +2179,7 @@ function SoundManager(smURL, smID) {
       if (!s.isHTML5) {
 
         position = (fV === 9 ? s.position : position1K);
+
         if (s.readyState && s.readyState !== 2) {
           // if paused or not playing, will not resume (by playing)
           flash._setPosition(s.id, position, (s.paused || !s.playState), s._iO.multiShot);
@@ -2182,13 +2189,16 @@ function SoundManager(smURL, smID) {
 
         // Set the position in the canplay handler if the sound is not ready yet
         if (s._html5_canplay) {
+
           if (s._a.currentTime !== position1K) {
+
             /**
              * DOM/JS errors/exceptions to watch out for:
              * if seek is beyond (loaded?) position, "DOM exception 11"
              * "INDEX_SIZE_ERR": DOM exception 1
              */
             sm2._wD(s.id + ': setPosition('+position1K+')');
+
             try {
               s._a.currentTime = position1K;
               if (s.playState === 0 || s.paused) {
@@ -2198,19 +2208,25 @@ function SoundManager(smURL, smID) {
             } catch(e) {
               sm2._wD(s.id + ': setPosition(' + position1K + ') failed: ' + e.message, 2);
             }
+
           }
-        } else {
-          sm2._wD(s.id + ': setPosition(' + position1K + '): Cannot seek yet, sound not ready');
+
+        } else if (position1K) {
+
+          // warn on non-zero seek attempts
+          sm2._wD(s.id + ': setPosition(' + position1K + '): Cannot seek yet, sound not ready', 2);
+          return s;
+
         }
 
-      }
-
-      if (s.isHTML5) {
         if (s.paused) {
+
           // if paused, refresh UI right away
           // force update
           s._onTimer(true);
+
         }
+
       }
 
       return s;
@@ -3777,7 +3793,7 @@ function SoundManager(smURL, smID) {
 
     play: html5_event(function() {
 
-      sm2._wD(this._s.id + ': play()');
+      // sm2._wD(this._s.id + ': play()');
       // once play starts, no buffering
       this._s._onbufferchange(0);
 
@@ -3824,7 +3840,7 @@ function SoundManager(smURL, smID) {
         buffered = (ranges.end(0) - ranges.start(0)) * msecScale;
 
         // linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges
-        loaded = buffered/(e.target.duration*msecScale);
+        loaded = Math.min(1, buffered/(e.target.duration*msecScale));
 
         // <d>
         if (isProgress && ranges.length > 1) {
@@ -4147,7 +4163,7 @@ function SoundManager(smURL, smID) {
     waitForever: smc + 'Waiting indefinitely for Flash (will recover if unblocked)...',
     waitSWF: smc + 'Waiting for 100% SWF load...',
     needFunction: smc + 'Function object expected for %s',
-    badID: 'Warning: Sound ID "%s" should be a string, starting with a non-numeric character',
+    badID: 'Sound ID "%s" should be a string, starting with a non-numeric character',
     currentObj: smc + '_debug(): Current sound objects',
     waitOnload: smc + 'Waiting for window.onload()',
     docLoaded: smc + 'Document already loaded',
@@ -4365,11 +4381,11 @@ function SoundManager(smURL, smID) {
     // starts debug mode, creating output <div> for UAs without console object
 
     // allow force of debug mode via URL
+    // <d>
     if (sm2.debugURLParam.test(wl)) {
       sm2.debugMode = true;
     }
 
-    // <d>
     if (id(sm2.debugID)) {
       return false;
     }
