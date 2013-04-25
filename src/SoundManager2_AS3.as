@@ -511,9 +511,8 @@ package {
         oSound.loaded = true;
         // force duration update (doesn't seem to be always accurate)
         ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._whileloading", oSound.bytesLoaded, oSound.bytesTotal, oSound.length || oSound.duration);
-        // TODO: Determine if loaded or failed - bSuccess?
-        // ExternalInterface.call(baseJSObject+"['"+oSound.sID+"']._onload",bSuccess?1:0);
-        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", 1);
+        // duration > 0 means a valid sound was loaded.
+        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", (oSound.length || oSound.duration ? 1 : 0));
       }
     }
 
