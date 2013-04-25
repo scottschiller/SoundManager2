@@ -440,6 +440,11 @@ function SoundManager(smURL, smID) {
 
     } else {
 
+      if (sm2.html5Only) {
+        sm2._wD(options.id + ': No HTML5 support for this sound, and no Flash. Exiting.');
+        return make();
+      }
+
       if (fV > 8) {
         if (options.isMovieStar === null) {
           // attempt to detect MPEG-4 formats
@@ -1816,16 +1821,21 @@ function SoundManager(smURL, smID) {
           sm2._wD(fN + 'Attempting to load');
 
           // try to get this sound playing ASAP
-          if (!s.isHTML5) {
+          if (!s.isHTML5 && !sm2.html5Only) {
 
-            // assign directly because setAutoPlay() increments the instanceCount
+            // flash: assign directly because setAutoPlay() increments the instanceCount
             s._iO.autoPlay = true;
+            s.load(s._iO);
+
+          } else if (s.isHTML5) {
+
+            // iOS needs this when recycling sounds, loading a new URL on an existing object.
             s.load(s._iO);
 
           } else {
 
-            // iOS needs this when recycling sounds, loading a new URL on an existing object.
-            s.load(s._iO);
+            sm2._wD(fN + 'Unsupported type. Exiting.');
+            exit = s;
 
           }
 
@@ -3930,8 +3940,8 @@ function SoundManager(smURL, smID) {
 
     } else {
 
-      // Use type, if specified. If HTML5-only mode, no other options, so just give 'er
-      result = ((iO.type ? html5CanPlay({type:iO.type}) : html5CanPlay({url:iO.url}) || sm2.html5Only));
+      // Use type, if specified. Pass data: URIs to HTML5. If HTML5-only mode, no other options, so just give 'er
+      result = ((iO.type ? html5CanPlay({type:iO.type}) : html5CanPlay({url:iO.url}) || sm2.html5Only || iO.url.match(/data\:/i)));
 
     }
 
