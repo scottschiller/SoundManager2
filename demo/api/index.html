@@ -845,6 +845,31 @@ setTimeout(sound15.stop,1500);
 </code></pre>
 <button onclick="return doEval(document.getElementById('demo16').innerHTML)">Do this</button> <button onclick="soundManager.stop('demo16')">Make it stop!</button>
 
+<h2 id="html5-data-uri"><b>data:</b> URIs (HTML5 only)</h2>
+<p>Subject to browser support, a data: URI should work when provided to a native HTML5 <code>Audio()</code> instance.</p>
+<p>You should not use this unless you know what you're doing and are willing to rely only on HTML5 support.</p>
+<p>Additionally, data: URIs appear not to work on mobile devices (iOS: iPad, iPhone in particular.)</p>
+<p>IE 9 + 10 do not support WAV under HTML5 <code>Audio()</code>. In addition to being the only major browser lacking .WAV support, irony is not lost on the fact that MSFT co-created the WAV/RIFF spec with IBM. (See <a href="http://en.wikipedia.org/wiki/Wav" title="&quot;WAV&quot; on Wikipedia">yonder</a>.)</p>
+<script>
+function getWaveDataURI() {
+	return 'data:audio/wav;base64,UklGRiQEAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAEAAD//20GygwqE2QZlh+cJYIrOzHCNhE8KEH3RYVKxU62UlZWnlmKXBxfTGEaY4hkjGUuZmVmOWajZatkSWOGYV9f21z2WbtWI1M8TwVLfka6QaQ8ZDfbMSssTCZDIB8a3BOHDSUHugBQ+uzzku1O5xzhFNsj1W7P2MmKxGa/lLr5tbaxtK0TqrqmyqMnofGeE52em4ya4ZmZmcCZQ5o3m4icQ55boNmisaXiqHKsSrCCtPW4v72+wgbIfs0t0wnZCd8w5WzrwPEg+Iv+9QRcC7YR/hcuHkIkLSr0L4Q14joEQOZEgknUTdpRh1XrWORbkV7UYLpiP2RYZRNmYWZNZs5l62SjY/Vh5l91XaZaf1f7UyhQ/0uOR9NC0z2ZOCMzeS2oJ6EhihtIFfoOmgguAsj7W/UG77XohOJw3HnWttAYy7jFjsCluwG3pLKZrtyqeKdqpLqhaJ94nembw5r8maOZrJkdmveaMpzWndmfP6IEpR+onatjr4Wz7LehvJjBzMY8zN3Rsteo3cnj/OlR8Kr2Gf18A+sJRBCSFswc3yLcKKUuRzStOeI+zEOASNxM+VC6VCpYQlv8XVlgVmLuYyBl9GVVZl5m8mUoZfdjXWJpYAleU1s+WM5UD1H4TJZI7EP8Ps85ZTTJLvkoCCPsHLgWahAMCqcDOP3W9m/wKOrl49PdzNcG0lfM78azwb28CLics36vras3qBGlUqLjn+KdOpz9miGarpmgmfyZuprkm2ydXJ+soVmkZafIqoCuj7Lltom7ccCYxfrKk9Ba1kncY+KP6OHuOPWg+woCdQjUDiYVYRuEIYEnWS0EM3c4uT20QnRH5UsSUOVTaleYWmJd3V/nYZpj5mTKZUxmYWYWZl5lRWTGYt9gnl75W/hYoFXuUe1NnEkBRSNA/jqnNRIwUCpmJFAeJRjZEYELGgWx/kX45vGQ61PlLd8s2U3Tos0hyODC170WuZW0Z7CDrPmowqXmomygTJ6TnDubSpq/mZuZ3pmFmpmbCJ3lnhuhtqOspvqpo62aseK1d7pKv2vEuclMzwPV7tr94CXnce3D8y76kgADB18NuhP4GSIgJiYNLLkxRDeIPJpBZkbpSiVPD1OkVuhZx1xUX3thP2OlZJxlOWZlZjFmkGWPZCNjWWEpX5pcsFlqVstS4E6bShVGQ0EvPOQ2WjGjK8Eltx+MGUsT8QyRBiUAu/lX8//su+aS4ITaoNTozlvJDsT2viO6lrVSsWCtvql2poSj8qDBnuychZtymtuZlpnHmViaTpuvnG6ekqAYo/SlN6nCrK+w4LRnuS2+OcOCyP/NttOR2ZrfvOUC7FDyuvgd/4wF8AtHEpIYux7OJLcqdDAGNls7';
+}
+</script>
+<div style="max-width:50em;overflow:auto">
+<pre id="demo17" class="block"><code>if (soundManager.html5) {
+  soundManager.createSound({
+    <span><span>// explicit type, SM2 doesn't detect MIME type in data: URIs yet</span></span>
+    type: '<span>audio/wav</span>',
+    <span><span>// view source (or console) for the full URI.</span></span>
+    url: getWaveDataURI()
+  }).play();
+}</code></pre>
+</div>
+<button onclick="return doEval(document.getElementById('demo17').innerHTML)">Do this</button>
+
+<br />
+<br />
+
 <span id="flash-ram-use" title="Flash plugin RAM use (across this browser)" style="position:fixed;_position:absolute;top:0.5em;right:0.5em;background:#666;color:#fff;font-weight:bold;padding:0.3em 0.4em;cursor:pointer;cursor:hand;display:none" onclick="this.style.display='none';window.clearTimeout(t)">N/A</span>
 
 <div id="col3" style="position:absolute;position:fixed;_position:absolute;left:0px;top:0px;margin-top:0px;width:30em;padding:0px 0.5em;height:100%;border-right:1px solid #eee;overflow:auto;xbackground-color:#eee;z-index:2" class="c3">
@@ -937,7 +962,7 @@ setTimeout(sound15.stop,1500);
 		// show live debug output if no console available.
 		soundManager.onready(function() {
 			var wrapper = document.getElementById('live-debug-wrapper');
-			if (typeof console === 'undefined' || typeof console.log === 'undefined') {
+			if (typeof console === 'undefined' || typeof console.log === 'undefined' || navigator.userAgent.match(/mobile/i)) {
 				wrapper.style.display = 'block';
 			}
 		});
