@@ -3012,7 +3012,7 @@ function SoundManager(smURL, smID) {
 
       // <d>
       fN = s.id + ': ';
-      sm2._wD(fN + (loadOK ? 'onload()' : 'Failed to load? - ' + s.url), (loadOK ? 1 : 2));
+      sm2._wD(fN + (loadOK ? 'onload()' : 'Failed to load / invalid sound?' + (!s.duration ? ' Zero-length duration reported.' : ' -') + ' (' + s.url + ')'), (loadOK ? 1 : 2));
       if (!loadOK && !s.isHTML5) {
         if (sm2.sandbox.noRemote === true) {
           sm2._wD(fN + str('noNet'), 1);
