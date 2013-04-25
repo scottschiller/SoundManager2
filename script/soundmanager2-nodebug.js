@@ -220,6 +220,9 @@ function SoundManager(smURL, smID) {
       oSound = make();
       oSound._setup_html5(options);
     } else {
+      if (sm2.html5Only) {
+        return make();
+      }
       if (fV > 8) {
         if (options.isMovieStar === null) {
           options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(netStreamMimeTypes) : false) || (options.url && options.url.match(netStreamPattern)));
@@ -767,11 +770,13 @@ function SoundManager(smURL, smID) {
       }
       if (!s.loaded) {
         if (s.readyState === 0) {
-          if (!s.isHTML5) {
+          if (!s.isHTML5 && !sm2.html5Only) {
             s._iO.autoPlay = true;
             s.load(s._iO);
-          } else {
+          } else if (s.isHTML5) {
             s.load(s._iO);
+          } else {
+            exit = s;
           }
           s.instanceOptions = s._iO;
         } else if (s.readyState === 2) {
@@ -1745,7 +1750,7 @@ function SoundManager(smURL, smID) {
     if (iO.serverURL || (iO.type && preferFlashCheck(iO.type))) {
       result = false;
     } else {
-      result = ((iO.type ? html5CanPlay({type:iO.type}) : html5CanPlay({url:iO.url}) || sm2.html5Only));
+      result = ((iO.type ? html5CanPlay({type:iO.type}) : html5CanPlay({url:iO.url}) || sm2.html5Only || iO.url.match(/data\:/i)));
     }
     return result;
   };
