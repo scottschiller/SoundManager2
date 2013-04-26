@@ -445,6 +445,14 @@ function SoundManager(smURL, smID) {
         return make();
       }
 
+      // TODO: Move HTML5/flash checks into generic URL parsing/handling function.
+
+      if (sm2.html5.usingFlash && options.url && options.url.match(/data\:/i)) {
+        // data: URIs not supported by Flash, either.
+        sm2._wD(options.id + ': data: URIs not supported via Flash. Exiting.');
+        return make();
+      }
+
       if (fV > 8) {
         if (options.isMovieStar === null) {
           // attempt to detect MPEG-4 formats
@@ -1611,6 +1619,17 @@ function SoundManager(smURL, smID) {
         }
 
       } else {
+
+        if (sm2.html5Only) {
+          sm2._wD(s.id + ': No flash support. Exiting.');
+          return s;
+        }
+
+        if (s._iO.url && s._iO.url.match(/data\:/i)) {
+          // data: URIs not supported by Flash, either.
+          sm2._wD(s.id + ': data: URIs not supported via Flash. Exiting.');
+          return s;
+        }
 
         try {
           s.isHTML5 = false;
