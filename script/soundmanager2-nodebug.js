@@ -223,6 +223,9 @@ function SoundManager(smURL, smID) {
       if (sm2.html5Only) {
         return make();
       }
+      if (sm2.html5.usingFlash && options.url && options.url.match(/data\:/i)) {
+        return make();
+      }
       if (fV > 8) {
         if (options.isMovieStar === null) {
           options.isMovieStar = !!(options.serverURL || (options.type ? options.type.match(netStreamMimeTypes) : false) || (options.url && options.url.match(netStreamPattern)));
@@ -667,6 +670,12 @@ function SoundManager(smURL, smID) {
         } else {
         }
       } else {
+        if (sm2.html5Only) {
+          return s;
+        }
+        if (s._iO.url && s._iO.url.match(/data\:/i)) {
+          return s;
+        }
         try {
           s.isHTML5 = false;
           s._iO = policyFix(loopFix(instanceOptions));
