@@ -358,7 +358,7 @@ function SoundManager(smURL, smID) {
 
   this.ok = function() {
 
-    return (needsFlash?(didInit && !disabled):(sm2.useHTML5Audio && sm2.hasHTML5));
+    return (needsFlash ? (didInit && !disabled) : (sm2.useHTML5Audio && sm2.hasHTML5));
 
   };
 
@@ -4086,6 +4086,9 @@ function SoundManager(smURL, smID) {
      */
 
     if (!sm2.useHTML5Audio || !sm2.hasHTML5) {
+      // without HTML5, we need Flash.
+      sm2.html5.usingFlash = true;
+      needsFlash = true;
       return false;
     }
 
@@ -4283,7 +4286,7 @@ function SoundManager(smURL, smID) {
   complain = function(sMsg) {
 
     // <d>
-    if (console !== _undefined && console.warn !== _undefined) {
+    if (hasConsole && console.warn !== _undefined) {
       console.warn(sMsg);
     } else {
       sm2._wD(sMsg);
@@ -5769,12 +5772,11 @@ function SoundManager(smURL, smID) {
           a2 = 'sm2-preferflash=',
           b = null, 
           b2 = null,
-          hasCon = (window.console !== _undefined && typeof console.log === 'function'),
           l = wl.toLowerCase();
 
       if (l.indexOf(a) !== -1) {
         b = (l.charAt(l.indexOf(a)+a.length) === '1');
-        if (hasCon) {
+        if (hasConsole) {
           console.log((b?'Enabling ':'Disabling ')+'useHTML5Audio via URL parameter');
         }
         sm2.setup({
@@ -5784,7 +5786,7 @@ function SoundManager(smURL, smID) {
 
       if (l.indexOf(a2) !== -1) {
         b2 = (l.charAt(l.indexOf(a2)+a2.length) === '1');
-        if (hasCon) {
+        if (hasConsole) {
           console.log((b2?'Enabling ':'Disabling ')+'preferFlash via URL parameter');
         }
         sm2.setup({

@@ -185,7 +185,7 @@ function SoundManager(smURL, smID) {
     return sm2;
   };
   this.ok = function() {
-    return (needsFlash?(didInit && !disabled):(sm2.useHTML5Audio && sm2.hasHTML5));
+    return (needsFlash ? (didInit && !disabled) : (sm2.useHTML5Audio && sm2.hasHTML5));
   };
   this.supported = this.ok;
   this.getMovie = function(smID) {
@@ -1826,6 +1826,8 @@ function SoundManager(smURL, smID) {
   };
   testHTML5 = function() {
     if (!sm2.useHTML5Audio || !sm2.hasHTML5) {
+      sm2.html5.usingFlash = true;
+      needsFlash = true;
       return false;
     }
     var a = (Audio !== _undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
