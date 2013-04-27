@@ -1275,7 +1275,7 @@ function SoundManager(smURL, smID) {
 
     // <d>
     if (sm2.soundIDs.length) {
-      sm2._wD('Destroying ' + sm2.soundIDs.length + ' SMSound objects...');
+      sm2._wD('Destroying ' + sm2.soundIDs.length + ' SMSound object' + (sm2.soundIDs.length !== 1 ? 's' : '') + '...');
     }
     // </d>
 
