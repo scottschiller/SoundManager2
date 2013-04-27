@@ -4173,6 +4173,9 @@ function SoundManager(smURL, smID) {
     support.canPlayType = (a?cp:null);
     sm2.html5 = mixin(sm2.html5, support);
 
+    sm2.html5.usingFlash = featureCheck();
+    needsFlash = sm2.html5.usingFlash;
+
     return true;
 
   };
@@ -5569,7 +5572,7 @@ function SoundManager(smURL, smID) {
     if (sm2.useHTML5Audio && sm2.hasHTML5) {
       for (item in sm2.audioFormats) {
         if (sm2.audioFormats.hasOwnProperty(item)) {
-          tests.push(item + ' = ' + sm2.html5[item] + (!sm2.html5[item] && hasFlash && sm2.flash[item] ? ' (using flash)' : (sm2.preferFlash && sm2.flash[item] && hasFlash ? ' (preferring flash)': (!sm2.html5[item] ? ' (' + (sm2.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
+          tests.push(item + ' = ' + sm2.html5[item] + (!sm2.html5[item] && needsFlash && sm2.flash[item] ? ' (using flash)' : (sm2.preferFlash && sm2.flash[item] && needsFlash ? ' (preferring flash)': (!sm2.html5[item] ? ' (' + (sm2.audioFormats[item].required ? 'required, ':'') + 'and no flash support)' : ''))));
         }
       }
       sm2._wD('SoundManager 2 HTML5 support: ' + tests.join(', '), 1);
@@ -5803,8 +5806,6 @@ function SoundManager(smURL, smID) {
     }
 
     testHTML5();
-    sm2.html5.usingFlash = featureCheck();
-    needsFlash = sm2.html5.usingFlash;
 
     if (!hasFlash && needsFlash) {
       messages.push(strings.needFlash);
