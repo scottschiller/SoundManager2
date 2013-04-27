@@ -393,6 +393,13 @@ dt,
   background:#f6fcff;
 }
 
+.no-code-highlight pre,
+.no-code-highlight code,
+.no-code-highlight .code
+.no-code-highlight {
+  background: transparent;
+}
+
 pre,
 #soundmanager-debug {
   font-size: 100%;
