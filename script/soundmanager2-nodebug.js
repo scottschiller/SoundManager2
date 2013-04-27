@@ -176,11 +176,13 @@ function SoundManager(smURL, smID) {
     if (options !== _undefined && didInit && needsFlash && sm2.ok() && (options.flashVersion !== _undefined || options.url !== _undefined || options.html5Test !== _undefined)) {
     }
     assign(options);
-    if (noURL && didDCLoaded && options.url !== _undefined) {
-      sm2.beginDelayedInit();
-    }
-    if (!didDCLoaded && options.url !== _undefined && doc.readyState === 'complete') {
-      setTimeout(domContentLoaded, 1);
+    if (options) {
+      if (noURL && didDCLoaded && options.url !== _undefined) {
+        sm2.beginDelayedInit();
+      }
+      if (!didDCLoaded && options.url !== _undefined && doc.readyState === 'complete') {
+        setTimeout(domContentLoaded, 1);
+      }
     }
     return sm2;
   };
