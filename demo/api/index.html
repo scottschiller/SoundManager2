@@ -276,7 +276,7 @@ soundManager.play('<span>mySound2</span>');</code></pre>
  <h2 id="create-with-onfinish">Demo 2: Create with <code>onfinish</code> event handler + play with volume argument</h2>
 <pre id="demo2" class="block"><code>var demo2Sound = soundManager.createSound({
  url: '<span>../mpc/audio/CHINA_1.mp3</span>',
- onfinish:function() {
+ onfinish: function() {
    soundManager._writeDebug(this.id + '<span> finished playing</span>');
  }
 });
@@ -398,6 +398,7 @@ if (typeof addedListeners === '<span>undefined</span>') {
 }
 
 s.play({
+  multiShot: false,
   whileplaying: function() {
     <span><span>// demo only: show sound position while playing, for context</span></span>
     soundManager._writeDebug(<span>'position = ' + this.position</span>);
@@ -592,7 +593,7 @@ soundManager.createSound({
      volume:75, <span><span>// volume for when un-muted</span></span>
      pan:-75,   <span><span>// mostly on left channel</span></span>&nbsp;
      <span><span>// .. and clean-up afterwards</span></span>
-     onfinish:function() {
+     onfinish: function() {
        this.destruct();
      }
    });
@@ -601,7 +602,7 @@ soundManager.createSound({
 
    soundManager.play('<span>s440hz</span>', {
      pan:<span>75</span>,
-     onfinish:function() {
+     onfinish: function() {
        document.getElementById('<span>btn-d5b</span>').disabled = false;
      }
    });
@@ -634,7 +635,7 @@ soundManager.createSound({
    this.play({
      volume:75,
      <span><span>// .. and clean-up afterwards</span></span>
-     onfinish:function() {
+     onfinish: function() {
        this.destruct();
      }
    });
@@ -667,7 +668,7 @@ soundManager.createSound({
 
 // Alternate (demo) approach, call methods directly on sound object itself:</span></span>
 foo.play({
- onfinish:function() {
+ onfinish: function() {
    <span><span>// once sound has loaded and played, unload and destroy it.</span></span>
    this.destruct(); <span><span>// will also try to unload before destroying.</span></span>
  }
@@ -681,8 +682,13 @@ foo.play({
  url: '<span>../mpc/audio/AMB_HHOP.mp3</span>'
 });
 
-preload.load(); <span><span>// load the sound ahead of time</span></span>
-setTimeout(preload.play,1500); <span><span>// and start playing it 1.5 seconds from now</span></span>
+<span><span>// load the sound ahead of time</span></span>
+preload.load({
+  <span><span>// and start playing it at onload</span></span>
+  onload: function() {
+    this.play();
+  }
+});
 </code></pre>
 <button onclick="return doEval(document.getElementById('demo7').innerHTML)">Do this</button>
 
@@ -845,7 +851,7 @@ setTimeout(sound15.stop,1500);
 </code></pre>
 <button onclick="return doEval(document.getElementById('demo16').innerHTML)">Do this</button> <button onclick="soundManager.stop('demo16')">Make it stop!</button>
 
-<h2 id="html5-data-uri"><b>data:</b> URIs (HTML5 only)</h2>
+<h2 id="html5-data-uri"><b>data:</b> URIs (HTML5 only, experimental)</h2>
 <p>Subject to browser support, a data: URI should work when provided to a native HTML5 <code>Audio()</code> instance.</p>
 <p>You should not use this unless you know what you're doing and are willing to rely only on HTML5 support.</p>
 <p>Additionally, data: URIs appear not to work on mobile devices (iOS: iPad, iPhone in particular.)</p>
