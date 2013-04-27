@@ -1876,6 +1876,8 @@ function SoundManager(smURL, smID) {
     }
     support.canPlayType = (a?cp:null);
     sm2.html5 = mixin(sm2.html5, support);
+    sm2.html5.usingFlash = featureCheck();
+    needsFlash = sm2.html5.usingFlash;
     return true;
   };
   strings = {
@@ -2581,8 +2583,6 @@ function SoundManager(smURL, smID) {
       });
     }
     testHTML5();
-    sm2.html5.usingFlash = featureCheck();
-    needsFlash = sm2.html5.usingFlash;
     if (!hasFlash && needsFlash) {
       messages.push(strings.needFlash);
       sm2.setup({
