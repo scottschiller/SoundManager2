@@ -3792,6 +3792,14 @@ function SoundManager(smURL, smID) {
     error: html5_event(function() {
 
       sm2._wD(this._s.id + ': HTML5 error, code ' + this.error.code);
+      /**
+       * HTML5 error codes, per W3C
+       * Error 1: Client aborted download at user's request.
+       * Error 2: Network error after load started.
+       * Error 3: Decoding issue.
+       * Error 4: Media (audio file) not supported.
+       * Reference: http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
+       */
       // call load with error state?
       this._s._onload(false);
 
