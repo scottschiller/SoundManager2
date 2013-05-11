@@ -1048,12 +1048,11 @@ writeDebug(&#39;ns: time/duration, bytesloaded/total: &#39;+nP+&#39;/&#39;+nD+&#
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
-              <p>TODO: Determine if loaded or failed - bSuccess?
-ExternalInterface.call(baseJSObject+&quot;[&#39;&quot;+oSound.sID+&quot;&#39;]._onload&quot;,bSuccess?1:0);</p>
+              <p>duration &gt; 0 means a valid sound was loaded.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._onload"</span>, <span class="number">1</span>);
+            <div class="content"><div class='highlight'><pre>        ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._onload"</span>, (oSound.length || oSound.duration ? <span class="number">1</span> : <span class="number">0</span>));
       }
     }
 
