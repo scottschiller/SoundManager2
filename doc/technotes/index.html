@@ -86,7 +86,8 @@ soundManager.setup({
 	   <strong><a href="../technotes/">Technical Notes</a></strong>
 	   <ul>
 		<li><a href="../technotes/#requirements">System Requirements</a></li>
-		<li><a href="../technotes/#serving-audio">Serving To Clients</a></li>
+		<li><a href="../technotes/#serving-audio">Serving To HTML5 + Flash Clients</a></li>
+		<li><a href="../technotes/#client-requests">How Clients Download Audio</a></li>
 		<li><a href="../technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 		<li><a href="../technotes/#debug-output">Debug + Console Output</a></li>
 	   </ul>
@@ -231,7 +232,7 @@ soundManager.setup({
 
 				<ul>
 					<li>Likes <code>Content-Length</code> HTTP response headers (can affect duration and playback events if missing.)</li>
-					<li>Arbitrary seeking, dynamic loading/buffering works when server supports HTTP partials / range requests. Without this support, behaviour falls back to a Flash-like single-connection, sequential/progressive-style download.</li>
+					<li>Arbitrary seeking, dynamic loading/buffering works when the server supports <a href="#byte-serving">Byte Serving</a> via byte ranges, also known as HTTP partials / range requests. Without this support, behaviour falls back to a Flash-like single-connection, sequential/progressive-style download.</li>
 					<li>Likes a proper MIME type response from the server, e.g., <code>audio/mpeg</code> for MP3 content.</li>
 				</ul>
 
@@ -250,9 +251,136 @@ soundManager.setup({
 
 			</div>
 
-
 		</div>
 
+		<div id="client-requests" class="columnar">
+
+			<div class="c1">
+
+				<h2>How Clients Download Audio</h2>
+				<p>Progressive, sequential HTTP vs. HTTP 206 partials / range requests.</p>
+
+			</div>
+
+			<div class="c2">
+
+				<h3>How HTML5 + Flash Clients Download Audio</h3>
+
+				<p>In terms of HTTP, assets are typically requested and downloaded in sequential byte order over a single connection. Flash typically works this way, but HTML5 clients can use behaviours that are closer to streaming - instead, using multiple requests for pieces of data.</p>
+
+				<p>Browsers can request audio from servers either sequentially or using <a href="#byte-serving">Byte Serving</a> (AKA "partials"), depending on client and server capabilities. The key difference is that with byte serving, clients request data in a "streaming" fashion and can buffer at will, therefore allowing arbitrary seeking, pausing and requesting of audio data in pieces - similar to how video playback typically works on YouTube, for example. Thus, preloading and <code>onload()</code> is less-meaningful when byte serving is involved.</p>
+
+				<h4 id="progressive-download">Traditional, "progressive" download (single request)</h4>
+
+				<p>The typical HTTP file download can be described as follows:</p>
+
+				<ul>
+					<li>Single HTTP request, one TCP connection</li>
+					<li>All bytes are sent sequentially "over the wire"</li>
+					<li>Network connection is closed when the download completes (or fails)</li>
+					<li>SoundManager 2 fires relevant sound <code>onload()</code> callback when the connection closes and the sound is deemed to be valid</li>
+				</ul>
+
+				<p>In terms of HTTP traffic, the sequence is something like this (excluding some headers for brevity):</p>
+
+				<ul>
+					<li><b>Client request</b>
+						<ul class="flat">
+						 	<li>GET some.mp3 HTTP/1.1</li>
+						</ul>
+					</li>
+					<li>
+						<b>Server response</b>
+						<ul class="flat">
+							<li>HTTP/1.1 200 OK</li>
+							<li>Content-Length: 158958</li>
+							<li>Connection: close</li>
+							<li>Content-type: audio/mpeg</li>
+						</ul>
+				</ul>
+
+				<h4>Progressive downloading behaviour in SoundManager 2</h4>
+
+				<p>This method is typically used by Flash when requesting audio via standard HTTP, and HTML5 clients in the event that <a href="#byte-serving">Byte Serving</a> (HTTP 206/Partial Content) is not implemented or cannot be negotiated.</p>
+
+				<ul>
+					<li>Playback begins after a small amount of buffering, once the download has started.</li>
+					<li>Once started, the download progress continues until all bytes are received. Stopping or pausing playback does not cancel the download.</li>
+					<li>During load, a SM2 sound object's <code>whileloading()</code> event will fire at a regular interval with <code>bytesLoaded</code>, <code>bytesTotal</code> and <code>duration</code> properties updating as the file progresses. Because Flash only reflects the "amount of duration loaded", <code>durationEstimate</code> is provided as a means of reflecting the total duration before load has completed (at which point duration is 100% and accurate.)</li>
+					<li>During load, the user can only seek within the amount of data (duration) downloaded.</li>
+					<li><code>onload()</code> fires when the connection is closed, and all bytes have been received.</li>
+				</ul>
+
+				<h4 id="byte-serving">Byte Serving (partials / byte range requests, "streaming"-style delivery)</h4>
+
+				<p>HTML5 clients will send a <b>Accept-ranges: bytes</b> header in the HTTP request for an audio asset to indicate their capability for Byte Serving, along with a <b>Range</b> header indicating what piece of the file to download.</p>
+				<p>If the server supports partials, it will reply with a <b>HTTP/1.1 206 Partial Content</b> header and a <b>Content-Range</b> header indicating the bytes it is going to send.</p>
+				<p>It appears that servers will return the whole range in the first response unless interrupted (and when a client requests a range of <b>"0-"</b> as in this case), but the initial connection may be dropped by the client if it wishes to stop "buffering" at any point, or if the user tries to seek to a new position in the audio that has not yet buffered.</p>
+
+				<ul>
+					<li>
+						<b>Client request</b>
+						<ul class="flat">
+							<li>GET some.mp3 HTTP/1.1</li>
+							<li>Range: bytes=0-</li>
+						</ul>
+					</li>
+					<li>
+						<b>Server response</b>
+						<ul class="flat">
+							<li>HTTP/1.1 206 Partial Content</li>
+							<li>Accept-ranges: bytes</li>
+							<li>Content-length: 4237566</li>
+							<li>Content-Range: bytes 0-4237565/7237566</li>
+						</ul>
+					</li>
+					<li>The first response includes all bytes in this case, but a client may drop this connection and make a new range request, if needed; for example, the user may seek to a new position in the file where data is not yet available, and the client will make a new request to buffer data beginning at the appropriate offset.</li>
+				</ul>
+
+				<h4>HTTP/1.1 206 Partial Content request/response example</h4>
+
+				<ul>
+					<li>
+						<b>Client request</b>
+						<ul class="flat">
+							<li>GET some.ogg HTTP/1.1</li>
+							<li>Range: bytes=5210604-5275910</li>
+							<li>If-Range: "508107-4d8a0b4e90d26"</li>
+						</ul>
+					</li>
+					<li>
+						<b>Server response</b>
+						<ul class="flat">
+							<li>HTTP/1.1 206 Partial Content</li>
+							<li>Accept-Ranges: bytes</li>
+							<li>Content-length: 65307</li>
+							<li>Content-Range: bytes 5210604-5275910/5275911</li>
+							<li>Content-Type: audio/ogg</li>
+						</ul>
+					</li>
+				</ul>
+
+				<h4>Byte Serving behaviour in SoundManager 2</h4>
+
+				<p>Byte Serving is automatically negotiated between client and server, and offers a number of advantages over traditional downloads. Most notably, Byte Serving is closer to a "streaming" technology and enables clients to seek, buffer and resume playback at arbitrary positions within a file once the duration is known. Larger files benefit most from this technique, since they can be handled in smaller chunks vs. being held entirely in memory <i>a la</i> Flash.</p>
+
+				<p>While SoundManager 2 uses the same events for HTML5 and Flash regardless of transport mechanism, there are some notable differences in SoundManager 2's behaviour when using HTML5 and Byte Serving.</p>
+
+				<p>Most importantly, the concept of "loaded" (i.e., preloading data and waiting for <code>onload()</code>) with partials is irrelevant due to the way clients are able to pause, cancel and resume requests.</p>
+
+				<ul>
+					<li>Playback begins after a small amount of buffering, once the download has started.</li>
+					<li>The HTML5-native <code>canplay()</code> event fires when playback is ready to begin. This will cause SoundManager 2 to fire a sound's <code>onload()</code> callback. At this point, the sound's duration should be known, but the SM2-provided <code>bytesLoaded</code> and <code>bytesTotal</code> sound properties may not be known and thus are 0/0 during load time, and 1/1 if still undefined at load time.</li>
+					<li>SoundManager 2 attempts to fire <code>whileloading()</code> events as the HTML5-native <code>progress()</code> event fires, but keep in mind that any "bytes loaded" data may refer to blocks (i.e., buffered sequences of data) that are non-sequential and thus <code>bytesLoaded</code> and <code>bytesTotal</code> should not be relied on as an indicator of "total load progress".</li>
+					<li>HTML5 clients may use their own heuristic to determine how much to buffer, if and when to pause, cancel or resume requesting data.</li>
+					<li>Clients may request metadata from the end of a file in some cases, as with OGG formats, in order to determine information like the total duration of the sound.</li>
+					<li>During load (and once the duration is known), the user can seek to any position within the file.</li>
+					<li>A client may drop an open request in order to request a new byte range - for example, to buffer and resume playback if the user jumps to half-way through the file where that data has not been downloaded yet.</li>
+				</ul>
+
+			</div>
+
+		</div>
 
 		<div id="mobile-device-limitations" class="columnar">
 
@@ -274,7 +402,7 @@ soundManager.setup({
 				<h3>Possible Alternatives</h3>
 				<p>The Webkit Audio API (possibly a future standard as the Web Audio API) allows for low-level access, manipulation and control of audio from JavaScript. This API is mostly separate from the HTML5 audio API, but will ultimately allow for better fine-grained control and mixing of sound.</p>
 				<p>Once playback is allowed, the Webkit Audio API should be able to get around many of the current HTML5 audio limitations present on iOS including multiple sound playback, volume and pan control, and dynamic filtering / processing effects. However, the API is not a standard and is not consistently supported in Webkit, let alone other browsers.</p>				
-				<p>At time of writing (March 2013), SM2 does not use the Webkit Audio API. It may be experimentally or more formally added at some point in the future, when the API is more universally-supported.</p>
+				<p>SM2 does not presently use the Webkit Audio API. It may be experimentally or more formally added at some point in the future, when the API is more universally-supported.</p>
 			</div>
 
 		</div>
