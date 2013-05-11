@@ -35,7 +35,7 @@ body {
 @media all and (min-width: 1800px) {
   /* holy CSS3 media queries, Batman! (in this case, larger screen widths get this rule.) */
   body {
-    font-size: 110%;
+    font-size: 105%;
   }
   body.home .sm2-speaker {
     left: -2.5% !important;
@@ -198,7 +198,6 @@ body.home #about-header {
 body.home #about-header .feature {
  /* special alignment tweak */
  position: relative;
- top: -0.25em;
  vertical-align: middle;
 }
 
@@ -252,11 +251,10 @@ body.home #about-sm2 strong {
 a.feature-hot,
 a.feature {
   display: inline-block;
-  -webkit-transition: all 0.25s ease-in-out;
   -moz-transition: all 0.25s ease-in-out;
+  -webkit-transition: all 0.25s ease-in-out;
   transition: all 0.25s ease-in-out;
   text-shadow: 0px 1px 0px rgba(0,0,0,0.33);
-  box-shadow: inset 0px 0px 3px rgba(0,0,0,0.33);
 }
 
 @-moz-keyframes highlight {
@@ -821,7 +819,12 @@ p code,
 }
 
 ul {
-  line-height:1.5em;
+	/* lists inside main content area */
+	line-height: 1.75em;
+}
+
+ul li {
+	margin-bottom: 0.75em;
 }
 
 #nav ul {
@@ -844,8 +847,8 @@ ul {
   position:absolute;
   z-index:1;
   display:none;
-  min-width:18em;
-  max-width:20em;
+  min-width:19em;
+  max-width:21em;
   background:#3399cc;
   background: -moz-linear-gradient(top, rgba(51,153,204,0.99) 0%, rgba(35,96,127,0.96) 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,153,204,0.99)), color-stop(100%,rgba(35,96,127,0.96))); /* Chrome,Safari4+ */
@@ -854,7 +857,7 @@ ul {
   background: -ms-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* IE10+ */
   background: linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* W3C */
   text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
-  _width:18em;
+  _width:19em;
   *top:2.3em;
   *left:0px;
 }
@@ -1655,21 +1658,19 @@ a.feature,
   position:relative;
   display:inline-block;
   background:#3399ff;
-  padding:0.3em 0.66em;
-  margin:-0.3em 0px 0px -0.66em;
+  font-size: 1.1em;
+  line-height: 1.75em;
+  padding: 0px 0.5em;
+  margin: 0px 0.125em;
   color:#fff;
   font-weight:bold;
   border:3px solid #cce6ff;
   border:3px solid rgba(255,255,255,0.66);
   border-radius:8px;
-  font-size: 1.1em;
-  line-height:1em;
-  *line-height:1.1em;
   text-decoration:none;
 }
 
 a.feature {
-  display:inline;
   margin-left:0px;
 }
 
@@ -1840,13 +1841,6 @@ ul.inthewild a span {
   width: 64px;
   height: 40px;
   margin: -20px 0px 0px -32px;
-}
-
-#opera {
-  background-position: 0 -373px;
-  width: 79px;
-  height: 32px;
-  margin: -16px 0px 0px -40px;
 }
 
 #soundcloud {
@@ -2913,4 +2907,15 @@ div.icons ul li.package {
 
 .bonus-demos li img {
  border-radius: 4px;
+}
+
+#client-requests ul.flat {
+	/* nested examples as in HTML5 vs. flash download behaviours */
+	list-style-type: none;
+	padding-left: 0.5em;
+	margin-top: 0.5em;
+}
+
+#client-requests ul.flat li {
+	margin-bottom: 0px;
 }
