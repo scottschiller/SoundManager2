@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20130324";
+    public var version:String = "V2.97a.20130512";
     public var version_as:String = "(AS3/Flash 9)";
 
     /**
@@ -205,8 +205,7 @@ package {
       try {
         if (isFirstCall == true) {
           flashDebug('Testing Flash -&gt; JS...');
-          var d: Date = new Date();
-          ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime(), version);
+          ExternalInterface.call(baseJSController + "._externalInterfaceOK", version);
           flashDebug('Flash -&gt; JS OK');
           flashDebug('Waiting for JS -&gt; Flash...');
         } else {
