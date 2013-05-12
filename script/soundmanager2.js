@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130324+DEV
+ * V2.97a.20130512
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -189,7 +189,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20130324+DEV';
+  this.versionNumber = 'V2.97a.20130512';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -5031,10 +5031,9 @@ function SoundManager(smURL, smID) {
 
   };
 
-  this._externalInterfaceOK = function(flashDate, swfVersion) {
+  this._externalInterfaceOK = function(swfVersion) {
 
     // flash callback confirming flash loaded, EI working etc.
-    // flashDate = approx. timing/delay info for JS/flash bridge
     // swfVersion: SWF build string
 
     if (sm2.swfLoaded) {
