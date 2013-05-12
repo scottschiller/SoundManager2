@@ -199,6 +199,7 @@ body.home #about-header .feature {
  /* special alignment tweak */
  position: relative;
  vertical-align: middle;
+ font-size: 1.2em;
 }
 
 body.home .sm2-speaker {
@@ -1679,7 +1680,6 @@ a.feature {
   background:#ff0000;
   border-color:#ff6666;
   color:#fff;
-  line-height:1em;
 }
 
 .newer a:hover,
