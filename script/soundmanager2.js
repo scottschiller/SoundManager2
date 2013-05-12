@@ -2197,13 +2197,11 @@ function SoundManager(smURL, smID) {
         nMsecOffset = 0;
       }
 
-      var original_pos,
-          position, position1K,
+      var position, position1K,
           // Use the duration from the instance options, if we don't have a track duration yet.
           // position >= 0 and <= current available (loaded) duration
           offset = (s.isHTML5 ? Math.max(nMsecOffset, 0) : Math.min(s.duration || s._iO.duration, Math.max(nMsecOffset, 0)));
 
-      original_pos = s.position;
       s.position = offset;
       position1K = s.position/msecScale;
       s._resetOnPosition(s.position);
@@ -3964,7 +3962,12 @@ function SoundManager(smURL, smID) {
 
     var result;
 
-    if (iO.serverURL || (iO.type && preferFlashCheck(iO.type))) {
+    if (!iO || (!iO.type && !iO.url && !iO.serverURL)) {
+
+      // nothing to check
+      result = false;
+
+    } else if (iO.serverURL || (iO.type && preferFlashCheck(iO.type))) {
 
       // RTMP, or preferring flash
       result = false;
@@ -4536,6 +4539,7 @@ function SoundManager(smURL, smID) {
         sm2Debugger.handleEvent(sEventType, bSuccess, sMessage);
       } catch(e) {
         // oh well
+        return false;
       }
     }
 
@@ -4733,6 +4737,7 @@ function SoundManager(smURL, smID) {
         obj = new AX('ShockwaveFlash.ShockwaveFlash');
       } catch(e) {
         // oh well
+        obj = null;
       }
       hasPlugin = (!!obj);
       // cleanup, because it is ActiveX after all
@@ -4749,7 +4754,6 @@ function SoundManager(smURL, smID) {
 
     var flashNeeded,
         item,
-        result = true,
         formats = sm2.audioFormats,
         // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (original iPad) + iOS4 works.
         isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)/i)));
@@ -4766,8 +4770,6 @@ function SoundManager(smURL, smID) {
       if (sm2.oMC) {
         sm2.oMC.style.display = 'none';
       }
-
-      result = false;
 
     } else {
 
