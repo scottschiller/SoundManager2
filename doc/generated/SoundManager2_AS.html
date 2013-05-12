@@ -99,7 +99,7 @@
 
   <span class="function"><span class="keyword">function</span> <span class="title">SoundManager2</span><span class="params">()</span> {</span>
 
-    <span class="keyword">var</span> version = <span class="string">"V2.97a.20130324"</span>;
+    <span class="keyword">var</span> version = <span class="string">"V2.97a.20130512"</span>;
     <span class="keyword">var</span> version_as = <span class="string">"(AS2/Flash 8)"</span>;
 
     <span class="comment">/**
@@ -325,8 +325,7 @@
             didSandboxMessage = <span class="literal">true</span>;
             flashDebug(<span class="string">'&lt;br&gt;&lt;b&gt;Fatal: Security sandbox error: Got "'</span> + sandboxType + <span class="string">'", expected "remote" or "localTrusted".&lt;br&gt;Additional security permissions need to be granted.&lt;br&gt;See &lt;a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html"&gt;flash security settings panel&lt;/a&gt; for non-HTTP, eg. file:// use.&lt;/b&gt;&lt;br&gt;http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html&lt;br&gt;&lt;br&gt;You may also be able to right-click this movie and choose from the menu: &lt;br&gt;"Global Settings" -&gt; "Advanced" tab -&gt; "Trusted Location Settings"&lt;br&gt;'</span>);
           }
-          <span class="keyword">var</span> d = <span class="keyword">new</span> Date();
-          ExternalInterface.call(baseJSController + <span class="string">"._externalInterfaceOK"</span>, d.getTime(), version);
+          ExternalInterface.call(baseJSController + <span class="string">"._externalInterfaceOK"</span>, version);
           <span class="keyword">if</span> (!didSandboxMessage) {
             flashDebug(<span class="string">'Flash -&amp;gt; JS OK'</span>);
             flashDebug(<span class="string">'Waiting for JS -&amp;gt; Flash...'</span>);
