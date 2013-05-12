@@ -103,7 +103,7 @@
 
   <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SoundManager2_AS3</span> <span class="keyword">extends</span> <span class="title">Sprite</span> {</span>
 
-    <span class="keyword">public</span> <span class="keyword">var</span> version:String = <span class="string">"V2.97a.20130324"</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> version:String = <span class="string">"V2.97a.20130512"</span>;
     <span class="keyword">public</span> <span class="keyword">var</span> version_as:String = <span class="string">"(AS3/Flash 9)"</span>;
 
     <span class="comment">/**
@@ -443,8 +443,7 @@ _externalInterfaceTest(true);</p>
       <span class="keyword">try</span> {
         <span class="keyword">if</span> (isFirstCall == <span class="literal">true</span>) {
           flashDebug(<span class="string">'Testing Flash -&amp;gt; JS...'</span>);
-          <span class="keyword">var</span> d: Date = <span class="keyword">new</span> Date();
-          ExternalInterface.call(baseJSController + <span class="string">"._externalInterfaceOK"</span>, d.getTime(), version);
+          ExternalInterface.call(baseJSController + <span class="string">"._externalInterfaceOK"</span>, version);
           flashDebug(<span class="string">'Flash -&amp;gt; JS OK'</span>);
           flashDebug(<span class="string">'Waiting for JS -&amp;gt; Flash...'</span>);
         } <span class="keyword">else</span> {</pre></div></div>
