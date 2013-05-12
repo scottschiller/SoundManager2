@@ -942,10 +942,8 @@ function SoundManager(smURL, smID) {
       if (nMsecOffset === _undefined) {
         nMsecOffset = 0;
       }
-      var original_pos,
-          position, position1K,
+      var position, position1K,
           offset = (s.isHTML5 ? Math.max(nMsecOffset, 0) : Math.min(s.duration || s._iO.duration, Math.max(nMsecOffset, 0)));
-      original_pos = s.position;
       s.position = offset;
       position1K = s.position/msecScale;
       s._resetOnPosition(s.position);
@@ -1758,7 +1756,9 @@ function SoundManager(smURL, smID) {
   };
   html5OK = function(iO) {
     var result;
-    if (iO.serverURL || (iO.type && preferFlashCheck(iO.type))) {
+    if (!iO || (!iO.type && !iO.url && !iO.serverURL)) {
+      result = false;
+    } else if (iO.serverURL || (iO.type && preferFlashCheck(iO.type))) {
       result = false;
     } else {
       result = ((iO.type ? html5CanPlay({type:iO.type}) : html5CanPlay({url:iO.url}) || sm2.html5Only || iO.url.match(/data\:/i)));
@@ -2086,6 +2086,7 @@ function SoundManager(smURL, smID) {
       try {
         obj = new AX('ShockwaveFlash.ShockwaveFlash');
       } catch(e) {
+        obj = null;
       }
       hasPlugin = (!!obj);
       obj = null;
@@ -2096,7 +2097,6 @@ function SoundManager(smURL, smID) {
   featureCheck = function() {
     var flashNeeded,
         item,
-        result = true,
         formats = sm2.audioFormats,
         isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)/i)));
     if (isSpecial) {
@@ -2105,7 +2105,6 @@ function SoundManager(smURL, smID) {
       if (sm2.oMC) {
         sm2.oMC.style.display = 'none';
       }
-      result = false;
     } else {
       if (sm2.useHTML5Audio) {
         if (!sm2.html5 || !sm2.html5.canPlayType) {
