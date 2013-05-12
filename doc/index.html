@@ -853,7 +853,7 @@ if (soundManager.canPlayURL(sURL)) {
 				  <dl id="soundmanager-createsound" class="f-block f-createsound s-autoplay">
 
 				   <dt><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
-				   <dd title="object:options">Creates a sound object, supporting an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. A <code>url</code> parameter is recommended, but not required.</dd>
+				   <dd title="object:options">Creates a sound object, supporting an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. At minimum, a <code>url</code> parameter is required.</dd>
 				   <dd>
 				    Minimal example:
 <pre class="block"><code>var someSound = soundManager.createSound({ <span>
@@ -863,9 +863,8 @@ if (soundManager.canPlayURL(sURL)) {
 				   <dd>
 				    With optional parameters:
 <pre class="block"><code>var mySoundObject = soundManager.createSound({<span>
- <span>// optional, for getSoundById() look-ups and convenience methods. If omitted, an id will be generated.</span>
+ <span>// optional id, for getSoundById() look-ups etc. If omitted, an id will be generated.</span>
  id: 'mySound',
- <span>// a url is recommended, but not required.</span>
  url: '/audio/mysoundfile.mp3',
  <span>// optional sound parameters here, see <a href="#sound-properties" title="SoundManager 2 API Info: Sound Properties Object" onclick="resetFilter()">Sound Properties</a> for full list</span>
  volume: 50,
