@@ -397,7 +397,7 @@ function ThreeSixtyPlayer() {
     }
 
     var o = self.getTheDamnLink(e),
-        sURL, soundURL, thisSound, oContainer, has_vis, diameter;
+        canvasElements, sURL, soundURL, thisSound, oContainer, has_vis, diameter;
 
     if (o.nodeName.toLowerCase() !== 'a') {
       o = self.isChildOfNode(o,'a');
@@ -465,12 +465,15 @@ function ThreeSixtyPlayer() {
 
       diameter = parseInt(self.getElementsByClassName('sm2-360ui','div',oContainer)[0].offsetWidth, 10);
 
+      // see note re: IE <9 and excanvas when Modernizr is included, making weird things happen with <canvas>.
+      canvasElements = self.getElementsByClassName('sm2-canvas','canvas',oContainer),
+
       thisSound._360data = {
         oUI360: self.getParentByClassName(o,'ui360'), // the (whole) entire container
         oLink: o, // DOM node for reference within SM2 object event handlers
         className: self.css.sPlaying,
         oUIBox: self.getElementsByClassName('sm2-360ui','div',oContainer)[0],
-        oCanvas: self.getElementsByClassName('sm2-canvas','canvas',oContainer)[0],
+        oCanvas: canvasElements[canvasElements.length-1],
         oButton: self.getElementsByClassName('sm2-360btn','span',oContainer)[0],
         oTiming: self.getElementsByClassName('sm2-timing','div',oContainer)[0],
         oCover: self.getElementsByClassName('sm2-cover','div',oContainer)[0],
@@ -729,7 +732,7 @@ function ThreeSixtyPlayer() {
         canvas = oCanvas,
         ctx, innerRadius, doesntLikeZero, endPoint;
 
-    if (canvas.getContext){
+    if (canvas.getContext) {
       // use getContext to use the canvas for drawing
       ctx = canvas.getContext('2d');
     }
@@ -799,13 +802,17 @@ function ThreeSixtyPlayer() {
     var canvas = oCanvas,
         ctx = null,
         width, height;
-    if (canvas.getContext){
+
+    if (canvas.getContext) {
       // use getContext to use the canvas for drawing
       ctx = canvas.getContext('2d');
     }
-    width = canvas.offsetWidth;
-    height = canvas.offsetHeight;
-    ctx.clearRect(-(width/2), -(height/2), width, height);
+
+    if (ctx) {
+      width = canvas.offsetWidth;
+      height = canvas.offsetHeight;
+      ctx.clearRect(-(width/2), -(height/2), width, height);
+    }
 
   };
 
@@ -1018,7 +1025,7 @@ function ThreeSixtyPlayer() {
     sm._writeDebug('threeSixtyPlayer.init()');
 
     var oItems = self.getElementsByClassName('ui360','div'),
-        i, j, oLinks = [], is_vis = false, foundItems = 0, oCanvas, oCanvasCTX, oCover, diameter, radius, uiData, uiDataVis, oUI, oBtn, o, o2, oID;
+        i, j, oLinks = [], is_vis = false, foundItems = 0, canvasElements, oCanvas, oCanvasCTX, oCover, diameter, radius, uiData, uiDataVis, oUI, oBtn, o, o2, oID;
 
     for (i=0,j=oItems.length; i<j; i++) {
       oLinks.push(oItems[i].getElementsByTagName('a')[0]);
@@ -1067,13 +1074,21 @@ function ThreeSixtyPlayer() {
           o = oLinks[i].parentNode;
           o2 = document.createElement('canvas');
           o2.className = 'sm2-canvas';
-          oID = 'sm2_canvas_'+parseInt(Math.random()*1048576, 10);
+          oID = 'sm2_canvas_'+i+(new Date().getTime());
           o2.id = oID;
           o2.width = diameter;
           o2.height = diameter;
           oUI.appendChild(o2);
           window.G_vmlCanvasManager.initElement(o2); // Apply ExCanvas compatibility magic
           oCanvas = document.getElementById(oID);
+          /**
+           * 05/2013: If present, Modernizr results in two canvas elements or something being made, one being <:canvas>.
+           * When this is the case, the first doesn't have getContext('2d') and such - so, use the second.
+           */
+           canvasElements = oCanvas.parentNode.getElementsByTagName('canvas');
+           if (canvasElements.length > 1) {
+             oCanvas = canvasElements[canvasElements.length-1];
+           }
         } else { 
           // add a handler for the button
           oCanvas = oLinks[i].parentNode.getElementsByTagName('canvas')[0];
