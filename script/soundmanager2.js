@@ -5421,7 +5421,7 @@ function SoundManager(smURL, smID) {
     waitingForEI = true;
     event.remove(window, 'load', delayWaitForEI);
 
-    if (tryInitOnFocus && !isFocused) {
+    if (hasFlash && tryInitOnFocus && !isFocused) {
       // Safari won't load flash in background tabs, only when focused.
       _wDS('waitFocus');
       return false;
