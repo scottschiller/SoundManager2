@@ -2424,7 +2424,7 @@ function SoundManager(smURL, smID) {
     }
     waitingForEI = true;
     event.remove(window, 'load', delayWaitForEI);
-    if (tryInitOnFocus && !isFocused) {
+    if (hasFlash && tryInitOnFocus && !isFocused) {
       return false;
     }
     if (!didInit) {
