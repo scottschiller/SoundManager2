@@ -139,7 +139,7 @@ function SoundManager(smURL, smID) {
   this.html5Only = false;
   this.ignoreFlash = false;
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, rebootIntoHTML5, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), isFirefox = (ua.match(/firefox/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
@@ -2412,6 +2412,15 @@ function SoundManager(smURL, smID) {
   delayWaitForEI = function() {
     setTimeout(waitForEI, 1000);
   };
+  rebootIntoHTML5 = function() {
+    window.setTimeout(function() {
+      sm2.setup({
+        preferFlash: false
+      }).reboot();
+      sm2.didFlashBlock = true;
+      sm2.beginDelayedInit();
+    }, 1);
+  };
   waitForEI = function() {
     var p,
         loadIncomplete = false;
@@ -2447,13 +2456,7 @@ function SoundManager(smURL, smID) {
             }
           } else {
             if (!sm2.useFlashBlock && canIgnoreFlash) {
-              window.setTimeout(function() {
-                sm2.setup({
-                  preferFlash: false
-                }).reboot();
-                sm2.didFlashBlock = true;
-                sm2.beginDelayedInit();
-              }, 1);
+              rebootIntoHTML5();
             } else {
               processOnEvents({type:'ontimeout', ignoreInit: true});
             }
@@ -2461,7 +2464,11 @@ function SoundManager(smURL, smID) {
         } else {
           if (sm2.flashLoadTimeout === 0) {
           } else {
-            failSafely(true);
+            if (!sm2.useFlashBlock && canIgnoreFlash) {
+              rebootIntoHTML5();
+            } else {
+              failSafely(true);
+            }
           }
         }
       }

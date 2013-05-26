@@ -265,7 +265,7 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, rebootIntoHTML5, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), isFirefox = (ua.match(/firefox/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
@@ -5402,6 +5402,27 @@ function SoundManager(smURL, smID) {
 
   };
 
+  rebootIntoHTML5 = function() {
+
+    // special case: try for a reboot with preferFlash: false, if 100% HTML5 mode is possible and useFlashBlock is not enabled.
+
+    window.setTimeout(function() {
+
+      complain(smc + 'useFlashBlock is false, 100% HTML5 mode is possible. Rebooting with preferFlash: false...');
+
+      sm2.setup({
+        preferFlash: false
+      }).reboot();
+
+      // if for some reason you want to detect this case, use an ontimeout() callback and look for html5Only and didFlashBlock == true.
+      sm2.didFlashBlock = true;
+
+      sm2.beginDelayedInit();
+
+    }, 1);
+
+  };
+
   waitForEI = function() {
 
     var p,
@@ -5446,18 +5467,28 @@ function SoundManager(smURL, smID) {
 
       // <d>
       if (!didInit) {
+
         sm2._wD(sm + ': No Flash response within expected time. Likely causes: ' + (p === 0 ? 'SWF load failed, ':'') + 'Flash blocked or JS-Flash security error.' + (sm2.debugFlash?' ' + str('checkSWF'):''), 2);
+
         if (!overHTTP && p) {
+
           _wDS('localFail', 2);
+
           if (!sm2.debugFlash) {
             _wDS('tryDebug', 2);
           }
+
         }
+
         if (p === 0) {
+
           // if 0 (not null), probably a 404.
           sm2._wD(str('swf404', sm2.url), 1);
+
         }
+
         debugTS('flashtojs', false, ': Timed out' + overHTTP?' (Check flash security or flash blockers)':' (No plugin/missing SWF?)');
+
       }
       // </d>
 
@@ -5467,7 +5498,7 @@ function SoundManager(smURL, smID) {
 
         if (p === null) {
 
-          // SWF failed. Maybe blocked.
+          // SWF failed to report load progress. Possibly blocked.
 
           if (sm2.useFlashBlock || sm2.flashLoadTimeout === 0) {
 
@@ -5485,22 +5516,7 @@ function SoundManager(smURL, smID) {
 
             if (!sm2.useFlashBlock && canIgnoreFlash) {
 
-              // special case: try for a reboot with preferFlash: false, if 100% HTML5 mode is possible and useFlashBlock is not enabled.
-
-              window.setTimeout(function() {
-
-                complain(smc + 'useFlashBlock is false, 100% HTML5 mode is possible. Rebooting with preferFlash: false...');
-
-                sm2.setup({
-                  preferFlash: false
-                }).reboot();
-
-                // if for some reason you want to detect this case, use an ontimeout() callback and look for html5Only and didFlashBlock == true.
-                sm2.didFlashBlock = true;
-  
-                sm2.beginDelayedInit();
-
-              }, 1);
+              rebootIntoHTML5();
 
             } else {
 
@@ -5515,7 +5531,7 @@ function SoundManager(smURL, smID) {
 
         } else {
 
-          // flash loaded? Shouldn't be a blocking issue, then.
+          // SWF loaded? Shouldn't be a blocking issue, then.
 
           if (sm2.flashLoadTimeout === 0) {
 
@@ -5523,11 +5539,20 @@ function SoundManager(smURL, smID) {
 
           } else {
 
-            failSafely(true);
+            if (!sm2.useFlashBlock && canIgnoreFlash) {
+
+              rebootIntoHTML5();
+
+            } else {
+
+              failSafely(true);
+
+            }
 
           }
 
         }
+
       }
 
     }, sm2.flashLoadTimeout);
@@ -5809,7 +5834,7 @@ function SoundManager(smURL, smID) {
     // </d>
 
     if (!hasFlash && sm2.hasHTML5) {
-      sm2._wD('SoundManager: No Flash detected' + (!sm2.useHTML5Audio ? ', enabling HTML5.' : '. Trying HTML5-only mode.'), 1);
+      sm2._wD('SoundManager 2: No Flash detected' + (!sm2.useHTML5Audio ? ', enabling HTML5.' : '. Trying HTML5-only mode.'), 1);
       sm2.setup({
         'useHTML5Audio': true,
         // make sure we aren't preferring flash, either
