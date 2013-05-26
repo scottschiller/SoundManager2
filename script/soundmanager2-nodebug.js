@@ -666,9 +666,6 @@ function SoundManager(smURL, smID) {
           s._a.autobuffer = 'auto';
           s._a.preload = 'auto';
           s._a._called_load = true;
-          if (instanceOptions.autoPlay) {
-            s.play();
-          }
         } else {
         }
       } else {
@@ -1291,7 +1288,9 @@ function SoundManager(smURL, smID) {
           }
         }
         if (!sameURL) {
-          resetProperties(false);
+          if (lastURL) {
+            resetProperties(false);
+          }
           a.src = instanceOptions.url;
           s.url = instanceOptions.url;
           lastURL = instanceOptions.url;

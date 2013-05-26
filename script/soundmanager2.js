@@ -1612,10 +1612,6 @@ function SoundManager(smURL, smID) {
 
           s._a._called_load = true;
 
-          if (instanceOptions.autoPlay) {
-            s.play();
-          }
-
         } else {
 
           sm2._wD(s.id + ': Ignoring request to load again');
@@ -2911,9 +2907,11 @@ function SoundManager(smURL, smID) {
 
         if (!sameURL) {
 
-          // don't retain onPosition() stuff with new URL.
+          // don't retain onPosition() stuff with new URLs.
 
-          resetProperties(false);
+          if (lastURL) {
+            resetProperties(false);
+          }
 
           // assign new HTML5 URL
 
