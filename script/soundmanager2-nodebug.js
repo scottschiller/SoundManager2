@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130512
+ * V2.97a.20130512+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -810,7 +810,7 @@ function SoundManager(smURL, smID) {
           };
           if (s.isHTML5 && !s._html5_canplay) {
             s.load({
-              oncanplay: onready
+              _oncanplay: onready
             });
             exit = false;
           } else if (!s.isHTML5 && !s.loaded && (!s.readyState || s.readyState !== 2)) {

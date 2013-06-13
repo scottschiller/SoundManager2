@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130512
+ * V2.97a.20130512+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -1925,8 +1925,8 @@ function SoundManager(smURL, smID) {
             sm2._wD(fN + 'Beginning load for from/to case');
 
             s.load({
-              // TODO: was _oncanplay. Sounds wrong.
-              oncanplay: onready
+              // note: custom HTML5-only event added for from/to implementation.
+              _oncanplay: onready
             });
 
             exit = false;
