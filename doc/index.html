@@ -826,8 +826,8 @@ if (soundManager.canPlayLink(aLink)) {
 				   <dd>Example:
 <pre class="block"><code><span><span>// link example: &lt;a id="song1" href="foo.php?songID=1" type="audio/mp3"&gt;play #1&lt;/a&gt;</span></span>
 var aLink = document.getElementById('<span>song1</span>');
-if (soundManager.canPlayLink(aLink)) {
- soundManager.play('<span>song1Sound</span>', aLink.href);
+if (soundManager.canPlayMIME(aLink.type)) {
+ soundManager.createSound('<span>song1Sound</span>', aLink.href);
 }</code></pre></dd>
 				   <dd>If no <code>type</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
 				   </dl>
@@ -838,7 +838,7 @@ if (soundManager.canPlayLink(aLink)) {
 				    <dd>Example:
 <pre class="block"><code>var sURL = '<span>/path/to/some.mp3</span>';
 if (soundManager.canPlayURL(sURL)) {
- soundManager.createSound('<span>fooSound</span>',sURL);
+ soundManager.createSound('<span>fooSound</span>', sURL);
 }</code></pre></dd>
 				    <dd>If no <code>href</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
 				   </dl>
