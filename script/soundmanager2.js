@@ -2041,6 +2041,16 @@ function SoundManager(smURL, smID) {
 
             event.add(audioClone, 'ended', onended);
 
+            // apply volume to clones, too
+            if (s._iO.volume !== undefined) {
+              audioClone.volume = Math.max(0, Math.min(1, s._iO.volume/100));
+            }
+
+            // playing multiple muted sounds? if you do this, you're weird ;) - but let's cover it.
+            if (s._iO.muted) {
+              audioClone.muted = true;
+            }
+
             if (s._iO.position) {
               // HTML5 audio can't seek before onplay() event has fired.
               // wait for canplay, then seek to position and start playback.
