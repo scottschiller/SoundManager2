@@ -872,6 +872,12 @@ function SoundManager(smURL, smID) {
               audioClone.play();
             };
             event.add(audioClone, 'ended', onended);
+            if (s._iO.volume !== undefined) {
+              audioClone.volume = Math.max(0, Math.min(1, s._iO.volume/100));
+            }
+            if (s._iO.muted) {
+              audioClone.muted = true;
+            }
             if (s._iO.position) {
               event.add(audioClone, 'canplay', oncanplay);
             } else {
