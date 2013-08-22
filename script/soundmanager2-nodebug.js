@@ -1125,6 +1125,7 @@ function SoundManager(smURL, smID) {
           item.fired = true;
           onPositionFired++;
           item.method.apply(item.scope, [item.position]);
+		  j = onPositionItems.length;
         }
       }
       return true;
