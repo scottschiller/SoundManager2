@@ -2022,7 +2022,7 @@ function SoundManager(smURL, smID) {
             audioClone = new Audio(s._iO.url);
 
             onended = function() {
-              event.remove(audioClone, 'onended', onended);
+              event.remove(audioClone, 'ended', onended);
               s._onfinish(s);
               // cleanup
               html5Unload(audioClone);
