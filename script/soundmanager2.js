@@ -2047,7 +2047,7 @@ function SoundManager(smURL, smID) {
             }
 
             // playing multiple muted sounds? if you do this, you're weird ;) - but let's cover it.
-            if (s._iO.muted) {
+            if (s.muted) {
               audioClone.muted = true;
             }
 
@@ -2437,6 +2437,10 @@ function SoundManager(smURL, smID) {
       if (!s.isHTML5) {
         flash._setVolume(s.id, (sm2.muted && !s.muted) || s.muted?0:nVol);
       } else if (s._a) {
+        if (sm2.muted && !s.muted) {
+          s.muted = true;
+          s._a.muted = true;
+        }
         // valid range: 0-1
         s._a.volume = Math.max(0, Math.min(1, nVol/100));
       }
@@ -2674,7 +2678,7 @@ function SoundManager(smURL, smID) {
 
         for (item in op) {
           if (op.hasOwnProperty(item)) {
-            s.onPosition(parseInt(item, 10), op[item]); 
+            s.onPosition(parseInt(item, 10), op[item]);
           }
         }
 
@@ -3283,7 +3287,7 @@ function SoundManager(smURL, smID) {
 
       /**
        * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
-       * 
+       *
        * @param {object} oData
        */
 
@@ -3302,7 +3306,7 @@ function SoundManager(smURL, smID) {
       /**
        * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
        * RTMP may include song title, MovieStar content may include encoding info
-       * 
+       *
        * @param {array} oMDProps (names)
        * @param {array} oMDData (values)
        */
@@ -3327,7 +3331,7 @@ function SoundManager(smURL, smID) {
       /**
        * internal: flash 8 + flash 9 ID3 feature
        * may include artist, song title etc.
-       * 
+       *
        * @param {array} oID3Props (names)
        * @param {array} oID3Data (values)
        */
@@ -4897,7 +4901,7 @@ function SoundManager(smURL, smID) {
         if (h5IntervalTimer === null && h5TimerCount === 0) {
 
           h5IntervalTimer = setInterval(timerExecute, sm2.html5PollingInterval);
-   
+
         }
 
         h5TimerCount++;
@@ -5815,7 +5819,7 @@ function SoundManager(smURL, smID) {
 
       var a = 'sm2-usehtml5audio=',
           a2 = 'sm2-preferflash=',
-          b = null, 
+          b = null,
           b2 = null,
           l = wl.toLowerCase();
 
