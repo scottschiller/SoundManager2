@@ -3395,7 +3395,7 @@ function SoundManager(smURL, smID) {
 
   getDocument = function() {
 
-    return (doc.body || doc._docElement || doc.getElementsByTagName('div')[0]);
+    return (doc.body || doc.getElementsByTagName('div')[0]);
 
   };
 
