@@ -2934,6 +2934,7 @@ function SoundManager(smURL, smID) {
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
           s._a = new Audio(instanceOptions.url);
+          s._a.load();
 
         } else {
 
