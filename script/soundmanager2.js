@@ -58,6 +58,10 @@ function SoundManager(smURL, smID) {
 
     'url': (smURL || null),             // path (directory) where SoundManager 2 SWFs exist, eg., /path/to/swfs/
     'flashVersion': 8,                  // flash build to use (8 or 9.) Some API features require 9.
+    'flashFilename': 'soundmanager2.swf',
+    'flashDebugFilename': 'soundmanager2_debug.swf',
+    'flash9Filename': 'soundmanager2_flash9.swf',
+    'flash9DebugFilename': 'soundmanager2_flash9_debug.swf',
     'debugMode': true,                  // enable debugging output (console.log() with HTML fallback)
     'debugFlash': false,                // enable debugging output inside SWF, troubleshoot Flash/browser issues
     'useConsole': true,                 // use console.log() if available (otherwise, writes to #soundmanager-debug element)
@@ -265,7 +269,7 @@ function SoundManager(smURL, smID) {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
+  sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, debugMovieFilename, movieFilename, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), isFirefox = (ua.match(/firefox/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
@@ -4371,6 +4375,25 @@ function SoundManager(smURL, smID) {
 
   };
 
+  debugMovieFilename = function(flashVersion) {
+    if (flashVersion == 8) {
+      return sm2.flashDebugFilename;
+    } else {
+      return sm2.flash9DebugFilename;
+    }
+  };
+
+  movieFilename = function(flashVersion) {
+    var filename = flashVersion == 8 ? sm2.flashFilename : sm2.flash9Filename;
+
+    // debug flash movie, if applicable
+    if (sm2.debugMode || sm2.debugFlash) {
+      filename = debugMovieFilename(flashVersion);
+    }
+
+    return filename;
+  };
+
   setVersionInfo = function() {
 
     // short-hand for internal use
@@ -4381,10 +4404,6 @@ function SoundManager(smURL, smID) {
       sm2._wD(str('badFV', fV, defaultFlashVersion));
       sm2.flashVersion = fV = defaultFlashVersion;
     }
-
-    // debug flash movie, if applicable
-
-    var isDebug = (sm2.debugMode || sm2.debugFlash?'_debug.swf':'.swf');
 
     if (sm2.useHTML5Audio && !sm2.html5Only && sm2.audioFormats.mp4.required && fV < 9) {
       sm2._wD(str('needfl9'));
@@ -4410,7 +4429,7 @@ function SoundManager(smURL, smID) {
     sm2.filePattern = sm2.filePatterns[(fV !== 8?'flash9':'flash8')];
 
     // if applicable, use _debug versions of SWFs
-    sm2.movieURL = (fV === 8?'soundmanager2.swf':'soundmanager2_flash9.swf').replace('.swf', isDebug);
+    sm2.movieURL = movieFilename(fV);
 
     sm2.features.peakData = sm2.features.waveformData = sm2.features.eqData = (fV > 8);
 
