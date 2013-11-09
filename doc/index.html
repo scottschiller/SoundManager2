@@ -826,8 +826,8 @@ if (soundManager.canPlayLink(aLink)) {
 				   <dd>Example:
 <pre class="block"><code><span><span>// link example: &lt;a id="song1" href="foo.php?songID=1" type="audio/mp3"&gt;play #1&lt;/a&gt;</span></span>
 var aLink = document.getElementById('<span>song1</span>');
-if (soundManager.canPlayLink(aLink)) {
- soundManager.play('<span>song1Sound</span>', aLink.href);
+if (soundManager.canPlayMIME(aLink.type)) {
+ soundManager.createSound('<span>song1Sound</span>', aLink.href);
 }</code></pre></dd>
 				   <dd>If no <code>type</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
 				   </dl>
@@ -838,7 +838,7 @@ if (soundManager.canPlayLink(aLink)) {
 				    <dd>Example:
 <pre class="block"><code>var sURL = '<span>/path/to/some.mp3</span>';
 if (soundManager.canPlayURL(sURL)) {
- soundManager.createSound('<span>fooSound</span>',sURL);
+ soundManager.createSound('<span>fooSound</span>', sURL);
 }</code></pre></dd>
 				    <dd>If no <code>href</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
 				   </dl>
@@ -1499,8 +1499,9 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 						   <dt>durationEstimate</dt>
 						   <dd>The estimated duration of the sound, specified in milliseconds.</dd>
 						   <dd>Due to the dynamic nature of <code>duration</code> while loading, this attempts to provide the full duration by calculating <code>parseInt((self.bytesTotal/self.bytesLoaded)*self.duration)</code> and is updated with each <code>whileloading()</code> interval.</dd>
-						   <dd>Once the sound has fully loaded, <code>duration</code> should be referenced as it will contain the final and accurate value.</dd>
-						   <dd>Note that this method works only with Constant Bitrate (CBR)-encoded MP3s due to the consistent data/time assumption. VBR-encoded MP3s will give inaccurate results.</dd>
+						   <dd>(Flash-only): Once the sound has fully loaded (<code>onload()</code> has fired), <code>durationEstimate</code> will be updated with the final, Flash-calculated value of <code>duration</code>.</dd>
+						   <dd>Note that the <code>durationEstimate</code> method works only with Constant Bitrate (CBR)-encoded MP3s due to the consistent data/time assumption. VBR-encoded MP3s will give inaccurate results.</dd>
+						   <dd>HTML5 behaviour: Both <code>duration</code> and <code>durationEstimate</code> are updated at regular intervals during loading of HTML5 audio, directly referencing the duration property provided on the native HTML5 object. Unlike Flash, HTML5 typically gets the true and final duration value by the time playback begins.</dd>
 						   </dl>
 						
 						   <dl id="smsound-eqdata" class="f-block s-eqdata">
@@ -1597,6 +1598,8 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 						   <dd>1 = loading</dd>
 						   <dd>2 = failed/error</dd>
 						   <dd>3 = loaded/success</dd>
+						   <dd>Under Flash, <code>readyState</code> will move from 0 to 1, and then change to 3 when the sound's <code>onload()</code> event fires (and all bytes have loade.)</dd>
+						   <dd>Under HTML5, <code>readyState</code> will move from 0 to 1 when initializing the HTTP request (from <code>load()</code>), and will quickly change to 3 when the sound is ready to play. Note that HTML5 is buffer-based and <code>onload()</code> means "enough audio data has buffered to begin playback".</dd>
 						   </dl>
 
 						   <dl id="smsound-type" class="f-block s-type">
