@@ -858,7 +858,7 @@ function SoundManager(smURL, smID) {
           } else {
             audioClone = new Audio(s._iO.url);
             onended = function() {
-              event.remove(audioClone, 'onended', onended);
+              event.remove(audioClone, 'ended', onended);
               s._onfinish(s);
               html5Unload(audioClone);
               audioClone = null;
@@ -1128,6 +1128,7 @@ function SoundManager(smURL, smID) {
           item.fired = true;
           onPositionFired++;
           item.method.apply(item.scope, [item.position]);
+		  j = onPositionItems.length;
         }
       }
       return true;

@@ -2571,7 +2571,7 @@ function SoundManager(smURL, smID) {
     this._processOnPosition = function() {
 
       var i, item, j = onPositionItems.length;
-
+		
       if (!j || !s.playState || onPositionFired >= j) {
         return false;
       }
@@ -2582,9 +2582,10 @@ function SoundManager(smURL, smID) {
           item.fired = true;
           onPositionFired++;
           item.method.apply(item.scope, [item.position]);
+		  j = onPositionItems.length; //  reset j -- onPositionItems.length can be changed in the item callback above... occasionally breaking the loop.
         }
       }
-
+	
       return true;
 
     };
@@ -2674,7 +2675,7 @@ function SoundManager(smURL, smID) {
 
         for (item in op) {
           if (op.hasOwnProperty(item)) {
-            s.onPosition(parseInt(item, 10), op[item]); 
+            s.onPosition(parseInt(item, 10), op[item]);
           }
         }
 
@@ -3283,7 +3284,7 @@ function SoundManager(smURL, smID) {
 
       /**
        * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
-       * 
+       *
        * @param {object} oData
        */
 
@@ -3302,7 +3303,7 @@ function SoundManager(smURL, smID) {
       /**
        * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
        * RTMP may include song title, MovieStar content may include encoding info
-       * 
+       *
        * @param {array} oMDProps (names)
        * @param {array} oMDData (values)
        */
@@ -3327,7 +3328,7 @@ function SoundManager(smURL, smID) {
       /**
        * internal: flash 8 + flash 9 ID3 feature
        * may include artist, song title etc.
-       * 
+       *
        * @param {array} oID3Props (names)
        * @param {array} oID3Data (values)
        */
@@ -4897,7 +4898,7 @@ function SoundManager(smURL, smID) {
         if (h5IntervalTimer === null && h5TimerCount === 0) {
 
           h5IntervalTimer = setInterval(timerExecute, sm2.html5PollingInterval);
-   
+
         }
 
         h5TimerCount++;
@@ -5815,7 +5816,7 @@ function SoundManager(smURL, smID) {
 
       var a = 'sm2-usehtml5audio=',
           a2 = 'sm2-preferflash=',
-          b = null, 
+          b = null,
           b2 = null,
           l = wl.toLowerCase();
 
