@@ -385,8 +385,8 @@ if (window.is_home) {
     }
 
     soundManager.setup({
-      // even if HTML5 supports MP3, prefer flash so the visualization features can be used.
-      preferFlash: true,
+      // HTML5 by default.
+      preferFlash: false,
       useFlashBlock: true,
       useHighPerformance: true,
       bgColor: '#ffffff',
@@ -516,7 +516,7 @@ if (window.is_home) {
 	    for (item in s.audioFormats) {
 	      if (s.audioFormats.hasOwnProperty(item)) {
 	        needsFlash = (soundManager.filePattern.test('.' + item));
-	        items.push('<span class="' + (s.html5[item] ? 'true' : 'false') + (!s.html5[item] && needsFlash ? ' partial' : '') + '" title="' + (s.html5[item] ? 'Native HTML5 support found' : 'No HTML5 support found' + (needsFlash ? ', using Flash fallback' : ', no Flash support either')) + '">' + (s.html5[item] ? '&lt;' : '') + item + (s.html5[item] ? '&gt;' : '') + '</span>');
+	        items.push('<span class="' + (s.html5[item] ? 'true' : 'false') + (!s.html5[item] && needsFlash ? ' partial' : '') + '" title="' + (s.html5[item] ? 'Native HTML5 support found' : 'No HTML5 support found' + (needsFlash ? ', using Flash fallback if present' : ', no Flash support either')) + '">' + (s.html5[item] ? '&lt;' : '') + item + (s.html5[item] ? '&gt;' : '') + '</span>');
 	      }
 	    }
 
