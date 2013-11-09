@@ -758,6 +758,15 @@ function SoundManager(smURL, smID) {
   };
 
   /**
+   * Set volume for all soundIDs
+   */
+  this.masterVolume = function(volume){
+    for(var i = 0;i<this.soundIDs.length;i++){
+        this.setVolume(this.soundIDs[i], volume);
+    }
+  };
+
+  /**
    * Calls the resume() method of a SMSound object by ID.
    *
    * @param {string} sID The ID of the sound
