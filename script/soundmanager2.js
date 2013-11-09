@@ -1009,7 +1009,7 @@ function SoundManager(smURL, smID) {
 
     if (!result && needsFlash) {
       // if flash 9, test netStream (movieStar) types as well.
-      result = (sMIME && sm2.ok() ? !!((fV > 8 ? sMIME.match(netStreamMimeTypes) : null) || sMIME.match(sm2.mimePattern)) : null);
+      result = (sMIME && sm2.ok() ? !!((fV > 8 ? sMIME.match(netStreamMimeTypes) : null) || sMIME.match(sm2.mimePattern)) : null); // TODO: make less "weird" (per JSLint)
     }
 
     return result;
@@ -3865,7 +3865,7 @@ function SoundManager(smURL, smID) {
       // note: can fire repeatedly after "loaded" event, due to use of HTTP range/partials
 
       var s = this._s,
-          i, j, str, buffered = 0,
+          i, j, progStr, buffered = 0,
           isProgress = (e.type === 'progress'),
           ranges = e.target.buffered,
           // firefox 3.6 implements e.loaded/total (bytes)
@@ -3897,12 +3897,12 @@ function SoundManager(smURL, smID) {
 
         // <d>
         if (isProgress && ranges.length > 1) {
-          str = [];
+          progStr = [];
           j = ranges.length;
           for (i=0; i<j; i++) {
-            str.push(e.target.buffered.start(i)*msecScale +'-'+ e.target.buffered.end(i)*msecScale);
+            progStr.push(e.target.buffered.start(i)*msecScale +'-'+ e.target.buffered.end(i)*msecScale);
           }
-          sm2._wD(this._s.id + ': progress, timeRanges: ' + str.join(', '));
+          sm2._wD(this._s.id + ': progress, timeRanges: ' + progStr.join(', '));
         }
 
         if (isProgress && !isNaN(loaded)) {
@@ -4127,7 +4127,7 @@ function SoundManager(smURL, smID) {
 
     function cp(m) {
 
-      var canPlay, i, j,
+      var canPlay, j,
           result = false,
           isOK = false;
 
@@ -4271,20 +4271,25 @@ function SoundManager(smURL, smID) {
     // arguments: o [,items to replace]
     // <d>
 
+    var args,
+        i, j, o,
+        sstr;
+
     // real array, please
-    var args = slice.call(arguments),
+    args = slice.call(arguments);
 
-    // first arg
-    o = args.shift(),
+    // first argument
+    o = args.shift();
 
-    str = (strings && strings[o]?strings[o]:''), i, j;
-    if (str && args && args.length) {
+    sstr = (strings && strings[o] ? strings[o] : '');
+
+    if (sstr && args && args.length) {
       for (i = 0, j = args.length; i < j; i++) {
-        str = str.replace('%s', args[i]);
+        sstr = sstr.replace('%s', args[i]);
       }
     }
 
-    return str;
+    return sstr;
     // </d>
 
   };
@@ -5103,7 +5108,10 @@ function SoundManager(smURL, smID) {
 
       // <d>
 
-      var options = [], title, str = [], delimiter = ' + ';
+      var options = [],
+          title,
+          msg = [],
+          delimiter = ' + ';
 
       title = 'SoundManager ' + sm2.version + (!sm2.html5Only && sm2.useHTML5Audio ? (sm2.hasHTML5 ? ' + HTML5 audio' : ', no HTML5 audio support') : '');
 
@@ -5146,10 +5154,10 @@ function SoundManager(smURL, smID) {
       }
 
       if (options.length) {
-        str = str.concat([options.join(delimiter)]);
+        msg = msg.concat([options.join(delimiter)]);
       }
 
-      sm2._wD(title + (str.length ? delimiter + str.join(', ') : ''), 1);
+      sm2._wD(title + (msg.length ? delimiter + msg.join(', ') : ''), 1);
 
       showSupport();
 
