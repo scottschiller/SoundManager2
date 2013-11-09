@@ -2047,7 +2047,7 @@ function SoundManager(smURL, smID) {
             }
 
             // playing multiple muted sounds? if you do this, you're weird ;) - but let's cover it.
-            if (s._iO.muted) {
+            if (s.muted) {
               audioClone.muted = true;
             }
 
@@ -2437,6 +2437,10 @@ function SoundManager(smURL, smID) {
       if (!s.isHTML5) {
         flash._setVolume(s.id, (sm2.muted && !s.muted) || s.muted?0:nVol);
       } else if (s._a) {
+        if (sm2.muted && !s.muted) {
+          s.muted = true;
+          s._a.muted = true;
+        }
         // valid range: 0-1
         s._a.volume = Math.max(0, Math.min(1, nVol/100));
       }
