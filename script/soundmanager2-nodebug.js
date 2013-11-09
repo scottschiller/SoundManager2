@@ -1724,7 +1724,7 @@ function SoundManager(smURL, smID) {
     }),
     progress: html5_event(function(e) {
       var s = this._s,
-          i, j, str, buffered = 0,
+          i, j, progStr, buffered = 0,
           isProgress = (e.type === 'progress'),
           ranges = e.target.buffered,
           loaded = (e.loaded||0),
@@ -1846,7 +1846,7 @@ function SoundManager(smURL, smID) {
     var a = (Audio !== _undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
     function cp(m) {
-      var canPlay, i, j,
+      var canPlay, j,
           result = false,
           isOK = false;
       if (!a || typeof a.canPlayType !== 'function') {
