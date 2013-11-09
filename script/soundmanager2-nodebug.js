@@ -36,7 +36,7 @@ function SoundManager(smURL, smID) {
     'useFlashBlock': false,
     'useHTML5Audio': true,
     'html5Test': /^(probably|maybe)$/i,
-    'preferFlash': true,
+    'preferFlash': false,
     'noSWFCache': false,
     'idPrefix': 'sound'
   };
@@ -875,7 +875,7 @@ function SoundManager(smURL, smID) {
             if (s._iO.volume !== undefined) {
               audioClone.volume = Math.max(0, Math.min(1, s._iO.volume/100));
             }
-            if (s._iO.muted) {
+            if (s.muted) {
               audioClone.muted = true;
             }
             if (s._iO.position) {
@@ -1059,6 +1059,10 @@ function SoundManager(smURL, smID) {
       if (!s.isHTML5) {
         flash._setVolume(s.id, (sm2.muted && !s.muted) || s.muted?0:nVol);
       } else if (s._a) {
+        if (sm2.muted && !s.muted) {
+          s.muted = true;
+          s._a.muted = true;
+        }
         s._a.volume = Math.max(0, Math.min(1, nVol/100));
       }
       s._iO.volume = nVol;
@@ -1307,6 +1311,7 @@ function SoundManager(smURL, smID) {
       } else {
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
           s._a = new Audio(instanceOptions.url);
+          s._a.load();
         } else {
           s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
         }
@@ -1542,7 +1547,7 @@ function SoundManager(smURL, smID) {
     };
   };
   getDocument = function() {
-    return (doc.body || doc._docElement || doc.getElementsByTagName('div')[0]);
+    return (doc.body || doc.getElementsByTagName('div')[0]);
   };
   id = function(sID) {
     return doc.getElementById(sID);
