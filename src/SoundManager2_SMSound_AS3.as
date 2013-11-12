@@ -24,6 +24,7 @@ package {
   import flash.utils.getTimer;
   import flash.net.NetConnection;
   import flash.net.NetStream;
+  import flash.net.Responder;
 
   public class SoundManager2_SMSound_AS3 extends Sound {
 
@@ -141,6 +142,14 @@ package {
 
     }
 
+    public function rtmpResponder(result:Object):void {
+      // callback from Flash Media Server (RTMP) for 'getStreamLength' server-side method - result should be a floating-point.
+      // http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html
+      writeDebug('RTMP server getStreamLength() response: ' + result);
+      // we now know the duration. type cast to floating-point - this will update JS-land during whileloading() / whileplaying().
+      this.duration = Number(result) * 1000;
+    }
+
     public function netStatusHandler(event:NetStatusEvent):void {
 
       if (this.useEvents) {
@@ -156,7 +165,7 @@ package {
             // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
             this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
             this.st = new SoundTransform();
-            this.cc.onMetaData = this.metaDataHandler;
+            this.cc.onMetaData = this.onMetaData;
             this.cc.setCaption = this.captionHandler;
             this.ns.client = this.cc;
             this.ns.receiveAudio(true);
@@ -164,6 +173,11 @@ package {
             this.connected = true;
             // RTMP-only
             if (this.serverUrl && this.useEvents) {
+              var responder:Responder = new Responder(rtmpResponder);
+              // call a method on server to get the length of the stream (like onMetaData, but Flash Media Server-specific)
+              // Red5 and other RTMP servers appear to provide duration via onMetaData event(s) in the stream.
+              // http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html
+              nc.call('getStreamLength', responder, this.sURL);
               writeDebug('NetConnection: connected');
               writeDebug('firing _onconnect for '+this.sID);
               ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
@@ -230,7 +244,7 @@ package {
       return this.sm.writeDebug (s,logLevel); // defined in main SM object
     }
 
-    public function metaDataHandler(infoObject: Object) : void {
+    public function onMetaData(infoObject: Object) : void {
       var prop:String;
       if (sm.debugEnabled) {
         var data:String = new String();
@@ -311,7 +325,7 @@ package {
         // mark for later Netstream.Play.Stop / sound completion
         this.finished = false;
 
-        this.cc.onMetaData = this.metaDataHandler;
+        this.cc.onMetaData = this.onMetaData;
 
         // Don't seek if we don't have to because it destroys the buffer
         var set_position:Boolean = this.lastValues.position != null && this.lastValues.position != nMsecOffset;
