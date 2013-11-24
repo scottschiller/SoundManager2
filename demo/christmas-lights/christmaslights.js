@@ -719,9 +719,16 @@
 
       window.smashInit = smashInit;
 
-      // start in either case
-      soundManager.onready(smashInit);
-      soundManager.ontimeout(smashInit);
+      soundManager.setup({
+        url: '../../swf/',
+        // preferFlash: true,
+        flashVersion: 9,
+        useHighPerformance: true,
+        wmode: 'transparent',
+        debugMode: false,
+        onready: smashInit,
+        ontimeout: smashInit
+      });
 
     });
 
@@ -744,12 +751,11 @@
             }
           }
         }
-
-          function scriptOnload() {
-            this.onreadystatechange = null;
-            this.onload = null;
-            window.setTimeout(onLoad, 20);
-          }
+        function scriptOnload() {
+          this.onreadystatechange = null;
+          this.onload = null;
+          window.setTimeout(onLoad, 20);
+        }
         var oS = document.createElement('script');
         oS.type = 'text/javascript';
         oS.setAttribute('async', true);
@@ -765,20 +771,15 @@
     }
 
     if (typeof window.YUI === 'undefined') {
+
       loadScript(YUI_SEED_URL, function() {
+
         initChristmasLights();
+
       });
+
     }
 
   }());
-
-  soundManager.setup({
-    url: '../../swf/',
-    preferFlash: true,
-    flashVersion: 9,
-    useHighPerformance: true,
-    wmode: 'transparent',
-    debugMode: false
-  });
 
 }());
