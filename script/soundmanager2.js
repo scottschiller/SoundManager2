@@ -84,7 +84,7 @@ function SoundManager(smURL, smID) {
     'useFlashBlock': false,             // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
     'useHTML5Audio': true,              // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
     'html5Test': /^(probably|maybe)$/i, // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
-    'preferFlash': true,                // overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.
+    'preferFlash': false,               // overrides useHTML5audio, will use Flash for MP3/MP4/AAC if present. Potential option if HTML5 playback with these formats is quirky.
     'noSWFCache': false,                // if true, appends ?ts={date} to break aggressive SWF caching.
     'idPrefix': 'sound',                // if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.
     'useWebkitAudioContext': true       // EXPERIMENTAL/TESTING: Enable visualization/analysis features
@@ -283,6 +283,7 @@ function SoundManager(smURL, smID) {
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
   hasConsole = (window.console !== _undefined && console.log !== _undefined), isFocused = (doc.hasFocus !== _undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === _undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i, msecScale = 1000,
   emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
+  emptyWAV = 'data:audio/wave;base64,/UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAD//w==', // tiny WAV for HTML5 unloading
   overHTTP = (doc.location?doc.location.protocol.match(/http/i):null),
   http = (!overHTTP ? 'http:/'+'/' : ''),
   // mp3, mp4, aac etc.
@@ -1024,7 +1025,7 @@ function SoundManager(smURL, smID) {
 
     if (!result && needsFlash) {
       // if flash 9, test netStream (movieStar) types as well.
-      result = (sMIME && sm2.ok() ? !!((fV > 8 ? sMIME.match(netStreamMimeTypes) : null) || sMIME.match(sm2.mimePattern)) : null);
+      result = (sMIME && sm2.ok() ? !!((fV > 8 ? sMIME.match(netStreamMimeTypes) : null) || sMIME.match(sm2.mimePattern)) : null); // TODO: make less "weird" (per JSLint)
     }
 
     return result;
@@ -3922,7 +3923,7 @@ function SoundManager(smURL, smID) {
       // note: can fire repeatedly after "loaded" event, due to use of HTTP range/partials
 
       var s = this._s,
-          i, j, str, buffered = 0,
+          i, j, progStr, buffered = 0,
           isProgress = (e.type === 'progress'),
           ranges = e.target.buffered,
           // firefox 3.6 implements e.loaded/total (bytes)
@@ -3954,12 +3955,12 @@ function SoundManager(smURL, smID) {
 
         // <d>
         if (isProgress && ranges.length > 1) {
-          str = [];
+          progStr = [];
           j = ranges.length;
           for (i=0; i<j; i++) {
-            str.push(e.target.buffered.start(i)*msecScale +'-'+ e.target.buffered.end(i)*msecScale);
+            progStr.push(e.target.buffered.start(i)*msecScale +'-'+ e.target.buffered.end(i)*msecScale);
           }
-          sm2._wD(this._s.id + ': progress, timeRanges: ' + str.join(', '));
+          sm2._wD(this._s.id + ': progress, timeRanges: ' + progStr.join(', '));
         }
 
         if (isProgress && !isNaN(loaded)) {
@@ -4068,8 +4069,9 @@ function SoundManager(smURL, smID) {
 
     if (oAudio) {
 
-      // Firefox likes '' for unload (used to work, but no longer?) - however, may request hosting page URL (bad.) Most other UAs dislike '' and fail to unload.
-      url = (isSafari && !is_iDevice ? null : (isFirefox ? emptyURL : null));
+      // Firefox and Chrome accept short WAVe data: URIs. Chome dislikes audio/wav, but accepts audio/wav for data: MIME.
+      // Desktop Safari complains / fails on data: URI, so it gets about:blank.
+      url = (isSafari ? emptyURL : (sm2.html5.canPlayType('audio/wav') ? emptyWAV : emptyURL));
 
       oAudio.src = url;
 
@@ -4184,7 +4186,7 @@ function SoundManager(smURL, smID) {
 
     function cp(m) {
 
-      var canPlay, i, j,
+      var canPlay, j,
           result = false,
           isOK = false;
 
@@ -4328,20 +4330,25 @@ function SoundManager(smURL, smID) {
     // arguments: o [,items to replace]
     // <d>
 
+    var args,
+        i, j, o,
+        sstr;
+
     // real array, please
-    var args = slice.call(arguments),
+    args = slice.call(arguments);
 
-    // first arg
-    o = args.shift(),
+    // first argument
+    o = args.shift();
 
-    str = (strings && strings[o]?strings[o]:''), i, j;
-    if (str && args && args.length) {
+    sstr = (strings && strings[o] ? strings[o] : '');
+
+    if (sstr && args && args.length) {
       for (i = 0, j = args.length; i < j; i++) {
-        str = str.replace('%s', args[i]);
+        sstr = sstr.replace('%s', args[i]);
       }
     }
 
-    return str;
+    return sstr;
     // </d>
 
   };
@@ -5160,7 +5167,10 @@ function SoundManager(smURL, smID) {
 
       // <d>
 
-      var options = [], title, str = [], delimiter = ' + ';
+      var options = [],
+          title,
+          msg = [],
+          delimiter = ' + ';
 
       title = 'SoundManager ' + sm2.version + (!sm2.html5Only && sm2.useHTML5Audio ? (sm2.hasHTML5 ? ' + HTML5 audio' : ', no HTML5 audio support') : '');
 
@@ -5203,10 +5213,10 @@ function SoundManager(smURL, smID) {
       }
 
       if (options.length) {
-        str = str.concat([options.join(delimiter)]);
+        msg = msg.concat([options.join(delimiter)]);
       }
 
-      sm2._wD(title + (str.length ? delimiter + str.join(', ') : ''), 1);
+      sm2._wD(title + (msg.length ? delimiter + msg.join(', ') : ''), 1);
 
       showSupport();
 
