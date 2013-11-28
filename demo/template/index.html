@@ -30,6 +30,10 @@ soundManager.setup({
   // optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)
   // flashVersion: 9,
 
+  // optional: use 100% HTML5 mode if available (based on required audio format support)
+  // otherwise, Flash will be preferred and needed for MP3 + MP4 format playback, if those formats are 'required'
+  // preferFlash: false
+
   // use soundmanager2-nodebug-jsmin.js, or disable debug mode (enabled by default) after development/testing
   // debugMode: false,
 
@@ -115,6 +119,8 @@ function checkDomain() {
 &lt;script&gt;
 soundManager.setup({
   url: '<em><em>/path/to/swf-files/</em></em>',
+  <span><span>// optional: use 100% HTML5 mode where available
+  // <a href="../../doc/#soundmanager-preferflash" title="soundManager.preferFlash documentation" onclick="checkDomain()">preferFlash</a>: false,</span></span>
   onready: function() {
     var mySound = soundManager.createSound({
       id: '<em><em>aSound</em></em>',
@@ -146,6 +152,9 @@ soundManager.setup({
 
   <span><span>// optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)
   // flashVersion: <em><em>9</em></em>,
+
+  <span><span>// optional: use 100% HTML5 mode where available</span></span>
+  <span><span>// <a href="../../doc/#soundmanager-preferflash" title="soundManager.preferFlash documentation" onclick="checkDomain()">preferFlash</a>: false,</span></span>
 
   // use soundmanager2-nodebug-jsmin.js, <i>or</i> disable debug mode (enabled by default) after development/testing
   // debugMode: <em><em>false</em></em>,
@@ -180,13 +189,9 @@ soundManager.setup({
 
 &lt;/script&gt;</code></pre>
 
- <h2 id="onready-ontimeout">Options: <code>soundManager.onready()</code> + <code>soundManager.ontimeout()</code></h2>
-
- <p>If you would like to keep things separate, you can register callback handlers by calling <code><a href="../../doc/#soundmanager-onready" onclick="checkDomain()">soundManager.onready()</a></code> and <code><a href="../../doc/#soundmanager-ontimeout" onclick="checkDomain()">soundManager.ontimeout()</a></code> independently.</p>
-
  <h2 id="html5-notes">HTML5 Support Notes</h2>
- <p>Read up on <a href="../../doc/#soundmanager-usehtml5audio" onclick="checkDomain()">HTML5 audio support</a>, if you're feeling adventurous. iPad/iPhone and devices without flash installed will always attempt to use it.</p>
-
+ <p>By default, SM2 presently prefers Flash for MP3 + MP4 playback even on clients that support it natively via HTML5 due to some inconsistencies between browsers. If you'd like to go for 100% HTML5 mode, include <code>preferFlash: false</code> in your <code>soundManager.setup()</code> call.</p>
+ <p>Read up on <a href="../../doc/#soundmanager-usehtml5audio" onclick="checkDomain()">HTML5 audio support</a>, if you're feeling adventurous. iPad/iPhone and devices without flash installed will always use 100% HTML5 mode.</p>
 
  <h2 id="flashblock-handling">Handling flash blockers</h2>
  <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="checkDomain()">Flashblock</a> example.</p>

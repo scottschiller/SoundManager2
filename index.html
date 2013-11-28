@@ -81,7 +81,7 @@
 						<li><a href="doc/#smdefaults">Global Sound Defaults</a></li>
 						<li><a href="doc/#api">SoundManager Core API</a></li>
 						<li><a href="doc/#smsoundmethods">Sound Object (SMSound) API</a></li>
-						<li><a href="doc/generated/script/soundmanager2.html">Generated Documentation</a></li>
+						<li><a href="doc/generated/soundmanager2.html">Generated Documentation</a></li>
 					</ul>
 				</li>
 				<li>
@@ -95,6 +95,9 @@
 					<a href="doc/technotes/">Technical Notes</a>
 					<ul>
 						<li><a href="doc/technotes/#requirements">System Requirements</a></li>
+						<li><a href="doc/technotes/#serving-audio">Serving To HTML5 + Flash Clients</a></li>
+						<li><a href="doc/technotes/#client-requests">How Clients Download Audio</a></li>
+						<li><a href="doc/technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 						<li><a href="doc/technotes/#debug-output">Debug + Console Output</a></li>
 					</ul>
 					</li>
@@ -253,14 +256,12 @@
 
 					<div class="column">
 						<div class="column-wrapper">
-							<h3 style="cursor:help" title="Gzip-compressed file size on a typical set-up is 11 KB. And was it supposed to be the &quot;Swiss Army&quot; kind? I forget.">The ginsu knife: <b style="white-space:nowrap">11 KB<span style="color:#999">*</span><span class="performance icon"></span></b></h3>
+							<h3 style="cursor:help" title="Gzip-compressed file size on a typical set-up is 11 KB. And was it supposed to be the &quot;Swiss Army&quot; kind? I forget.">The ginsu knife: <b style="white-space:nowrap">11 KB<span class="performance icon"></span></b></h3>
 							<h4>Big&nbsp;features, <b>small footprint</b></h4>
 							<p><em>But wait, there's more!</em></p>
-							<div>
-								<p>Performance is an important metric, too. SoundManager 2 packs a comprehensive, feature-rich API into as little as <a href="doc/getstarted/#basic-inclusion" title="SoundManager 2: Build options (down to ~11 KB in size)" style="white-space:nowrap" class="cta">11 KB</a> over the wire when optimized; that's less than 8% of the original, uncompressed file size.</p>
-							</div>
+							<p>Performance is an important metric, too. SoundManager 2 packs a comprehensive, feature-rich API into as little as <a href="doc/getstarted/#basic-inclusion" title="SoundManager 2: Build options (down to ~11 KB in size)" style="white-space:nowrap" class="cta">11 KB</a> over the wire when optimized; that's less than 8% of the original, uncompressed file size.</p>
+							<p>SM2 is self-contained, having no external dependencies, and is compatible with popular JavaScript frameworks.</p>
 							<p>The source code is BSD-licensed and is provided in fully-commented, non-debug and compiler-optimized "minified" versions appropriate for development and production use.</p>
-							<p class="sidenote">* Gzip-compressed file size on a typical set-up is 11 KB. And was it supposed to be the <i>Swiss Army</i> kind? I forget.</p>
 						</div>
 					</div>
 
@@ -295,8 +296,8 @@
 							<ul id="inline-playlist" class="playlist">
 								<li><a href="http://freshly-ground.com/data/audio/mpc/20060826 - Armstrong.mp3" class="button-exclude inline-exclude threesixty-exclude">Armstrong Beat</a></li>
 								<li><a href="http://freshly-ground.com/data/audio/mpc/20090119 - Untitled Groove.mp3" class="button-exclude inline-exclude threesixty-exclude">Untitled Groove</a></li>
-								<li><a href="http://freshly-ground.com/data/audio/sm2/quail-64kbps-he-aac-from-itunes-renamed-from-mp4.aac" title="48 kbps MPEG4 High-Efficiency AAC test sound: BC Quail" class="button-exclude inline-exclude threesixty-exclude">BC Quail <span class="sidenote">(HE-AAC)</span></a></li>
-								<li><a href="http://freshly-ground.com/data/audio/sm2/20060924%20-%20Ghosts%20&amp;%20Goblins%20Reconstructed.ogg" title="Ghosts + Goblins Reconstructed: OGG sound format, requires HTML5 Audio() support to play" class="muxtape-html5 button-exclude inline-exclude threesixty-exclude">Ghosts+Goblins Reconstructed <span class="sidenote">(OGG)</span></a></li>
+								<li><a href="http://freshly-ground.com/data/audio/sm2/birds-in-kauai-128kbps-aac-lc.mp4" title="128 kbps MPEG-4 AAC LC (Low Complexity) sound: Birds in Kaua'i" class="button-exclude inline-exclude threesixty-exclude">Birds In Kaua'i <span class="sidenote">(128 kbps AAC)</span></a></li>
+								<li><a href="http://freshly-ground.com/data/audio/sm2/20130320 - Po'ipu Beach Waves.ogg" title="Po'ipu Beach Waves: OGG sound format, requires HTML5 Audio() support to play" class="muxtape-html5 button-exclude inline-exclude threesixty-exclude">Po'ipu Beach Waves <span class="sidenote">(OGG)</span></a></li>
 								<li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" title="WAV sound format, requires HTML5 Audio() support to play" class="muxtape-html5 button-exclude inline-exclude threesixty-exclude">A corked beer bottle <span class="sidenote">(WAV)</span></a></li>
 							</ul>
 							<div class="demo-more">
@@ -378,12 +379,14 @@
 
 <pre class="block"><code>&lt;script src="soundmanager2.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-soundManager.setup({
+<a href="doc/#soundmanager-setup" title="soundManager.setup() documentation" onclick="checkDomain()">soundManager.setup</a>({
   <span><span>// where to find flash audio SWFs, as needed</span></span>
   url: '<span>/path/to/swf-files/</span>',
+  <span><span>// optional: prefer HTML5 over Flash for MP3/MP4
+  // <a href="doc/#soundmanager-preferflash" title="soundManager.preferFlash documentation" onclick="checkDomain()">preferFlash</a>: false,</span></span>
   onready: function() {
     <span><span>// SM2 is ready to play audio!</span></span>
-  })
+  }
 });
 &lt;/script&gt;</code></pre>
 
@@ -410,13 +413,12 @@ soundManager.setup({
 							<h4>Creating and playing a sound object</h4>
 
 <pre class="block"><code><span><span>// create "mySound"...</span></span>
-soundManager.createSound({
-  id: '<span>mySound</span>',
+var mySound = <a href="doc/#soundmanager-createsound" title="soundManager.createSound() documentation" onclick="checkDomain()">soundManager.createSound</a>({
   url: '<span>/path/to/an.mp3</span>'
 });
 
 <span><span>// ...and play it</span></span>
-soundManager.play('<span>mySound</span>');
+mySound.play();
 </code></pre>
 
 					<p>Additional options and events can be specified when loading and playing sounds. For more examples of playback features, see <a href="demo/api/" class="cta">API Demos</a>.</p>
@@ -493,9 +495,6 @@ soundManager.play('<span>mySound</span>');
 									</li>
 									<li>
 										<a id="pitchfork" href="http://www.pitchfork.com/" title="Pitchfork"><span>Pitchfork</span></a>
-									</li>
-									<li>
-										<a id="opera" href="http://www.opera.com/" title="Opera Software ASA (Media Player component)"><span>Opera Software ASA</span></a>
 									</li>
 									<li>
 										<a id="eight-tracks" href="http://8tracks.com/" title="8tracks"><span>8tracks</span></a>

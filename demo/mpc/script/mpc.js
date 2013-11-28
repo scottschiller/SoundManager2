@@ -17,14 +17,6 @@ var MPC = function() {
     self._showStatus(this.id,this.bytesLoaded,this.bytesTotal);
   }
 
-  this.onid3 = function() {
-    soundManager._writeDebug('mpc.onid3()');
-    var oName = null;
-    for (var oName in this.id3) {
-      soundManager._writeDebug(oName+': '+this.id3[oName]) // write out name/value ID3 pairs (eg. "artist: Beck")
-    }
-  }
-
   this.onload = function() {
     var sID = this.id;
     self._getButton(this.id).className = '';
@@ -84,57 +76,59 @@ soundManager.setup({
   bgColor: '#333333',
   wmode: 'transparent',
   debugMode: false,
-  consoleOnly: false,
-  useFlashBlock: true
-});
+  preferFlash: false,
+  html5PollingInterval: 50,
+  onready: function() {
 
-soundManager.onready(function() {
+    soundManager.setup({
+      defaultOptions: {
+        autoLoad: true,
+        multiShot: true,
+        whileloading: mpc.showProgress,
+        onid3: mpc.onid3,
+        onload: mpc.onload,
+        onplay: mpc.onplay,
+        whileplaying: mpc.whileplaying,
+        onfinish: mpc.onfinish
+      }
+    });
 
-  // This is the "onload" equivalent which is called when SoundManager has been initialised (sounds can be created, etc.)
+    // This is the "onload" equivalent which is called when SoundManager has been initialised (sounds can be created, etc.)
+    mpc.init();
 
-  mpc.init();
-
-  // set up some default options / event handlers - so all sounds created are given these handlers
-
-  soundManager.setup({
-    defaultOptions: {
-      autoLoad: true,
-      whileloading: mpc.showProgress,
-      onid3: mpc.onid3,
-      onload: mpc.onload,
-      onplay: mpc.onplay,
-      whileplaying: mpc.whileplaying,
-      onfinish: mpc.onfinish
+    if (!soundManager.html5.needsFlash) {
+      document.getElementById('isHTML5').style.display = 'inline';
     }
-  });
 
-  if (!soundManager.html5.needsFlash) {
-    document.getElementById('isHTML5').style.display = 'inline';
-  }
-  var soundURLs = 'AMB_BD_1,AMB_FTM2,AMB_HHCL,AMB_HHOP,AMB_HHPD,AMB_HTM,AMB_LTM2,AMB_MTM,AMB_RIM1,AMB_SN13,AMB_SN_5,CHINA_1,CRASH_1,CRASH_5,CRASH_6,RIDE_1'.split(',');
-  for (var i=0; i<soundURLs.length; i++) {
-    soundManager.createSound('s'+i, 'audio/'+soundURLs[i]+'.mp3');
-  }
+    var soundURLs = 'AMB_BD_1,AMB_FTM2,AMB_HHCL,AMB_HHOP,AMB_HHPD,AMB_HTM,AMB_LTM2,AMB_MTM,AMB_RIM1,AMB_SN13,AMB_SN_5,CHINA_1,CRASH_1,CRASH_5,CRASH_6,RIDE_1'.split(',');
+    for (var i=0; i<soundURLs.length; i++) {
+      soundManager.createSound({
+        id: 's'+i,
+        url: 'audio/'+soundURLs[i]+'.mp3'
+      });
+    }
 
-  /**
-   * createSound options can also be set on a per-file basis, with specific option overrides.
-   * (Options not specified here will inherit defaults as defined in soundManager.defaultOptions.)
-   *
-   * eg.
-   *
-   * soundManager.createSound({
-   *  id: 'mySound',
-   *  url: '/path/to/some.mp3',
-   *  stream: true,
-   *  autoPlay: true,
-   *  multiShot: false,
-   *  whileloading: function() { alert('sound '+this.id+': '+this.bytesLoaded+' of '+this.bytesTotal+' bytes loaded.'); } // event handler: "this" is scoped to SMSound() object instance for easy access to methods/properties
-   * });
-   *
-   * - OR -
-   *
-   * If you just want a sound with all default options, you can also specify just the required id and URL as string parameters:
-   *
-   * soundManager.createSound('mySound','/path/to/some.mp3');
-   */
+    /**
+     * createSound options can also be set on a per-file basis, with specific option overrides.
+     * (Options not specified here will inherit defaults as defined in soundManager.defaultOptions.)
+     *
+     * eg.
+     *
+     * soundManager.createSound({
+     *  id: 'mySound',
+     *  url: '/path/to/some.mp3',
+     *  stream: true,
+     *  autoPlay: true,
+     *  multiShot: false,
+     *  whileloading: function() { alert('sound '+this.id+': '+this.bytesLoaded+' of '+this.bytesTotal+' bytes loaded.'); } // event handler: "this" is scoped to SMSound() object instance for easy access to methods/properties
+     * });
+     *
+     * - OR -
+     *
+     * If you just want a sound with all default options, you can also specify just the required id and URL as string parameters:
+     *
+     * soundManager.createSound('mySound','/path/to/some.mp3');
+     */
+  }
 });
+

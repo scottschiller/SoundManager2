@@ -70,7 +70,7 @@ soundManager.setup({
 		<li><a href="#smdefaults">Global Sound Defaults</a></li>
 		<li><a href="#api">SoundManager Core API</a></li>
 		<li><a href="#smsoundmethods">Sound Object (SMSound) API</a></li>
-		<li><a href="generated/script/soundmanager2.html">Generated Documentation</a></li>
+		<li><a href="generated/soundmanager2.html">Generated Documentation</a></li>
 	   </ul>
 	  </li>
 	
@@ -86,6 +86,9 @@ soundManager.setup({
 	   <a href="technotes/">Technical Notes</a>
 	   <ul>
 		<li><a href="technotes/#requirements">System Requirements</a></li>
+		<li><a href="technotes/#serving-audio">Serving To HTML5 + Flash Clients</a></li>
+		<li><a href="technotes/#client-requests">How Clients Download Audio</a></li>
+		<li><a href="technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 		<li><a href="technotes/#debug-output">Debug + Console Output</a></li>
 	   </ul>
 	  </li>
@@ -353,7 +356,7 @@ soundManager.setup({
 		  <h3 id="soundmanager-setup">SoundManager Properties: soundManager.setup()</h3>
 
 	      <p>
-			Just getting started? See <a href="getstarted/#basic-inclusion">the basics</a>. For nicely-formatted, annotated source code, see the <a href="generated/script/soundmanager2.html">pretty-printed version</a>.
+			Just getting started? See <a href="getstarted/#basic-inclusion">the basics</a>. For nicely-formatted, annotated source code, see the <a href="generated/soundmanager2.html">pretty-printed version</a>.
 		  </p>
 
 		  <div class="f-block f-useconsole f-consoleonly f-waitforwindowload f-allowscriptaccess f-bgcolor f-setup">
@@ -428,6 +431,12 @@ soundManager.setup({
 		</li>
 
 		<li>
+			<div>idPrefix: <em>'sound'</em>,</div>
+			<span>// if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.</span>
+		</li>
+
+
+		<li>
 			<div>noSWFCache: <em>false</em>,</div>
 			<span>// if true, appends ?ts={date} to break aggressive SWF caching.</span>
 		</li>
@@ -467,6 +476,7 @@ soundManager.setup({
 			<span>// flash rendering mode - null, 'transparent', or 'opaque' (last two allow z-index)</span>
 		</li>
 
+
 	</ul>
 
 </div>
@@ -490,6 +500,7 @@ soundManager.setup({
 <pre class="block"><code>soundManager.setup({
   url: <span>'/path/to/swfs/'</span>,
   flashVersion: <span>9</span>,
+  preferFlash: <span>false</span>, <span><span>// prefer 100% HTML5 mode, where both supported</span></span>
   onready: function() {
     <span><span>// console.log('SM2 ready!');</span></span>
   },
@@ -567,12 +578,13 @@ soundManager.setup({
 		  <div class="f-block f-preferflash">
 			<h4 id="soundmanager-preferflash">preferFlash</h4>
 			<p>This property handles "mixed-mode" HTML5 + flash cases, and may prevent 100% HTML5 mode when enabled depending on the configuration of <a href="#soundmanager-audioformats">soundManager.audioFormats</a>. In the event HTML5 supports the default "required" formats (presently MP3), and <code>preferFlash</code> is true (and flash is installed), flash will be used for MP3/MP4 content while allowing HTML5 to play OGG, WAV and other supported formats.</p>
-			<p><em>Important note:</em> Because HTML5 audio has some critical bugs across various browsers and operating systems, <code>preferFlash</code> is <code>true</code> by default to help ensure MP3/MP4 play consistently. If set to <code>false</code> or flash is not available, "HTML5-only" mode will kick in and will apply to all formats. If you prefer 100% HTML5 mode even when Flash is present, set this property to <code>false</code>.</p>
+			<p><em>Important note:</em> Because HTML5 audio has some bugs across various browsers and operating systems, <code>preferFlash</code> is <code>true</code> by default to help ensure MP3/MP4 play consistently. If set to <code>false</code> or flash is not available, "HTML5-only" mode will kick in and will apply to all formats.</p>
+			<p>To encourage 100% HTML5 mode, call <code>soundMangager.setup({ preferFlash: false })</code> and then Flash will not be used for MP3/MP4 playback, provided that HTML5 supports them.</p>
 		  </div>
 
 		   <div class="f-block f-url">
 		    <h4 id="soundmanager-url">url</h4>
-		    <p class="in"><code>soundManager.setupOptions.url</code> specifies the "online", generally HTTP-based path which SM2 will load .SWF movies from. The "local" (current) directory will be used by default. The appropriate .SWF required (depending on the desired Flash version) will be appended to the URL.</p>
+		    <p class="in"><code>soundManager.url</code>, applied via <code>soundManager.setup()</code>, specifies the "online", generally HTTP-based path which SM2 will load .SWF movies from. The "local" (current) path of <code>./</code> will be used by default. The appropriate .SWF required (depending on the desired Flash version) will be appended to the URL.</p>
 		    <p class="in">Example: <code>soundManager.setup({ url: '<span>/path/to/swf-directory/</span>' });</code> (Note trailing slash)</p>
 			<p>For a simple demo of this in action, see the <a href="../demo/template/">basic template</a>.</p>
 		    <p class="in">For cases where SM2 is being used "offline" in non-HTTP cases (eg., development environments), see <code>altURL</code>.</p>
@@ -648,14 +660,14 @@ soundManager.setup({
 
 			<h4 id="soundmanager-usehtml5audio">useHTML5Audio</h4>
 			
-			<p style="background:#f0f9ff"><b style="color:#993333">Beta notice</b>: HTML5 support is in active development. Experimental API bits will be labeled as such, but should remain largely forward-compatible. See <a href="download/#revision-history">Revision History</a> for the latest updates on HTML5 playback support.</p>
+			<p style="background:#f0f9ff">HTML5 support is in active development. See <a href="download/#revision-history">Revision History</a> for the latest updates on HTML5 playback support.</p>
 			
 			<p><code>useHTML5Audio</code> determines whether HTML5 <code>Audio()</code> support is used (as available) to play sound, with flash as the fallback for playing MP3 and MP4 (AAC) formats. Browser support for HTML5 Audio varies, and format support (eg. MP3, MP4/AAC, OGG, WAV) can vary by browser/platform.</p>
 
 			<p>The SM2 API is effectively transparent, consistent whether using flash or HTML5 <code>Audio()</code> for sound playback behind the scenes. The HTML5 Audio API is roughly equivalent to the flash 8 feature set, minus ID3 tag support and a few other items. (Flash 9 features like waveform data etc. are not available in HTML5 mode.)</p>
 
-			<p>By default, "100% HTML5 mode" applies to Apple iPad 3.2+, iPhone / iOS 4.0+ devices and others without flash. In other cases, HTML5 support is tested and if MP3/MP4 aren't natively supported, flash will be used as a backup method of playing these "required" formats. (It is assumed MP3 playback is required by default, but this is user-configurable via <code><a href="#soundmanager-audioformats">soundManager.audioFormats</a></code>.) HTML5 may also enable support for additional formats such as OGG and WAV.</p>
-			<p>In the case when HTML5 + Flash are present, Flash will presently get preference for MP3/MP4 because of <code>soundManager.preferFlash = true</code> as HTML5 audio is still buggy between browsers and platforms; where desired, you can set <code>preferFlash = false</code> and in some cases enjoy 100% HTML5 mode (eg., under Safari, IE 9 and Chrome.) For some browsers, Flash will be needed if support for formats like MP3 (not supported via HTML5 in Firefox) are "required."</p>
+			<p>By default, "100% HTML5 mode" applies to Apple iPad 3.2+ (iPad version 1.0), iPhone / iOS 4.0+ devices and others without flash. In other cases, HTML5 support is tested and if MP3/MP4 aren't natively supported, flash will be used as a backup method of playing these "required" formats. (It is assumed MP3 playback is required by default, but this is user-configurable via <code><a href="#soundmanager-audioformats">soundManager.audioFormats</a></code>.) HTML5 may also enable support for additional formats such as OGG and WAV.</p>
+			<p>In the case when HTML5 + Flash are present, Flash will presently get preference for MP3/MP4 because of SM2's default <code>preferFlash: true</code> setup option, as HTML5 audio is still buggy between browsers and platforms; where desired, you can use <code>soundManager.setup({ preferFlash: false })</code> and in some cases enjoy 100% HTML5 mode (eg., under Safari, IE 9 and Chrome.) For some browsers, Flash will be needed if support for formats like MP3 (not supported via HTML5 in Firefox) are "required."</p>
 
 			<h5>SoundManager 2 + useHTML5Audio: Init Process</h5>
 
@@ -814,8 +826,8 @@ if (soundManager.canPlayLink(aLink)) {
 				   <dd>Example:
 <pre class="block"><code><span><span>// link example: &lt;a id="song1" href="foo.php?songID=1" type="audio/mp3"&gt;play #1&lt;/a&gt;</span></span>
 var aLink = document.getElementById('<span>song1</span>');
-if (soundManager.canPlayLink(aLink)) {
- soundManager.play('<span>song1Sound</span>', aLink.href);
+if (soundManager.canPlayMIME(aLink.type)) {
+ soundManager.createSound('<span>song1Sound</span>', aLink.href);
 }</code></pre></dd>
 				   <dd>If no <code>type</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
 				   </dl>
@@ -826,7 +838,7 @@ if (soundManager.canPlayLink(aLink)) {
 				    <dd>Example:
 <pre class="block"><code>var sURL = '<span>/path/to/some.mp3</span>';
 if (soundManager.canPlayURL(sURL)) {
- soundManager.createSound('<span>fooSound</span>',sURL);
+ soundManager.createSound('<span>fooSound</span>', sURL);
 }</code></pre></dd>
 				    <dd>If no <code>href</code> attribute is found, this method will return <code>null</code> instead of <code>false</code>.</dd>
 				   </dl>
@@ -841,21 +853,28 @@ if (soundManager.canPlayURL(sURL)) {
 				  <dl id="soundmanager-createsound" class="f-block f-createsound s-autoplay">
 
 				   <dt><span>object:SMSound </span>createSound(<span>object:options</span>)</dt>
-				   <dd title="object:options">Creates a sound with an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. Requires <code>id</code> and <code>url</code> at a minimum.</dd>
+				   <dd title="object:options">Creates a sound object, supporting an arbitrary number of optional arguments. Returns a <code>SMSound</code> object instance. At minimum, a <code>url</code> parameter is required.</dd>
 				   <dd>
-				    Example:
-<pre class="block"><code>soundManager.createSound({<span>
- id: 'mySound', <span>// required</span>
- url: '/audio/mysoundfile.mp3', <span>// required</span>
+				    Minimal example:
+<pre class="block"><code>var someSound = soundManager.createSound({ <span>
+  url: '/path/to/an.mp3'
+</span>});</pre></code>
+				   </dd>
+				   <dd>
+				    With optional parameters:
+<pre class="block"><code>var mySoundObject = soundManager.createSound({<span>
+ <span>// optional id, for getSoundById() look-ups etc. If omitted, an id will be generated.</span>
+ id: 'mySound',
+ url: '/audio/mysoundfile.mp3',
  <span>// optional sound parameters here, see <a href="#sound-properties" title="SoundManager 2 API Info: Sound Properties Object" onclick="resetFilter()">Sound Properties</a> for full list</span>
  volume: 50,
  autoPlay: true,
- whileloading: soundIsLoadingFunction
+ whileloading: function() { console.log(this.id + ' is loading'); }
 </span>});</code></pre>
-   <p>Each <code>createSound()</code> call results in the creation of a <code>SMSound</code> object which stores all properties, methods and events relevant to that particular sound instance.</p>
+   <p>Each <code>createSound()</code> call results in the creation of a <code>SMSound</code> object which stores all properties, methods and events relevant to that particular sound instance. If you keep the <code>SMSound</code> object in scope, you probably don't need to specify an ID. However, if you <i>do</i> provide an <code>id</code>, you can easily get a reference to the given sound via <code>soundManager.getSoundById()</code> (for the above example, you would use <code>mySound</code>.)</p>
+   <p>When specifying an <code>id</code> you can also use controller-level convenience methods, i.e., <code>soundManager.play('<span>mySound</span>')</code>, <code>soundManager.stop('<span>mySound</span>')</code> and so on.</p>
    <p>Individual sound objects can also easily be referenced as returned from <code>createSound()</code>:</p>
 <pre class="block"><code>var mySoundObject = soundManager.createSound({<span>
- id: 'mySound',
  url: '/audio/mysoundfile.mp3'
 </span>});
 mySoundObject.play(); <span><span>// SMSound object instance</span></span></code></pre>
@@ -917,7 +936,7 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 }</span>);</code></pre>
 	   </dd>
 	   <dd>Queueing multiple handlers: <code>soundManager.ontimeout(<span>myOnTimeoutHandler</span>); soundManager.ontimeout(<span>myOtherHandler</span>);</code></dd>
-       <dd>The timeout event is not necessarily fatal, as SM2 may be rebooted and fire an <code>onready()</code> in the <code>useFlashBlock</code> case (where the user sees, and chooses to unblock, the Flash component after a failed init attempt.)</dd>
+       <dd>The timeout event is not necessarily fatal, as SM2 may be rebooted and fire an <code>onready()</code> in the <code>useFlashBlock</code> case (where the user sees, and chooses to unblock the Flash component after a failed init attempt.)</dd>
 	   <dd>The same listener may be added multiple times; there is no duplicate checking. Queue is processed in order of addition.</dd>
 	   <dd>If <code>soundManager.reboot()</code> is called, all listeners' "fired" flags will be reset and they will be eligible to fire again when SM2 starts.</dd>
 	   <dd>This method can also be used via <code><a href="#sm2-setup-extra-properties" onclick="resetFilter()">soundManager.setup</a>({ <span>ontimeout: function() { ... }</span> });</code></dd>
@@ -1480,8 +1499,9 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 						   <dt>durationEstimate</dt>
 						   <dd>The estimated duration of the sound, specified in milliseconds.</dd>
 						   <dd>Due to the dynamic nature of <code>duration</code> while loading, this attempts to provide the full duration by calculating <code>parseInt((self.bytesTotal/self.bytesLoaded)*self.duration)</code> and is updated with each <code>whileloading()</code> interval.</dd>
-						   <dd>Once the sound has fully loaded, <code>duration</code> should be referenced as it will contain the final and accurate value.</dd>
-						   <dd>Note that this method works only with Constant Bitrate (CBR)-encoded MP3s due to the consistent data/time assumption. VBR-encoded MP3s will give inaccurate results.</dd>
+						   <dd>(Flash-only): Once the sound has fully loaded (<code>onload()</code> has fired), <code>durationEstimate</code> will be updated with the final, Flash-calculated value of <code>duration</code>.</dd>
+						   <dd>Note that the <code>durationEstimate</code> method works only with Constant Bitrate (CBR)-encoded MP3s due to the consistent data/time assumption. VBR-encoded MP3s will give inaccurate results.</dd>
+						   <dd>HTML5 behaviour: Both <code>duration</code> and <code>durationEstimate</code> are updated at regular intervals during loading of HTML5 audio, directly referencing the duration property provided on the native HTML5 object. Unlike Flash, HTML5 typically gets the true and final duration value by the time playback begins.</dd>
 						   </dl>
 						
 						   <dl id="smsound-eqdata" class="f-block s-eqdata">
@@ -1578,6 +1598,8 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 						   <dd>1 = loading</dd>
 						   <dd>2 = failed/error</dd>
 						   <dd>3 = loaded/success</dd>
+						   <dd>Under Flash, <code>readyState</code> will move from 0 to 1, and then change to 3 when the sound's <code>onload()</code> event fires (and all bytes have loade.)</dd>
+						   <dd>Under HTML5, <code>readyState</code> will move from 0 to 1 when initializing the HTTP request (from <code>load()</code>), and will quickly change to 3 when the sound is ready to play. Note that HTML5 is buffer-based and <code>onload()</code> means "enough audio data has buffered to begin playback".</dd>
 						   </dl>
 
 						   <dl id="smsound-type" class="f-block s-type">
@@ -1698,8 +1720,7 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 					  <p class="in">As a simple example, the following code would override the default <code>autoPlay</code>, <code>pan</code> and <code>volume</code> options for a given sound:</p>
 
 <pre class="block"><code>soundManager.createSound({
-  <span>id: 'mySound',
-  url: '/path/to/some.mp3',
+  <span>url: '/path/to/some.mp3',
   autoPlay: true,
   pan: -75,
   volume: 50</span>

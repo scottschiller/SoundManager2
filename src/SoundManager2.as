@@ -36,7 +36,7 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "V2.97a.20130101";
+    var version = "V2.97a.20130512";
     var version_as = "(AS2/Flash 8)";
 
     /**
@@ -138,8 +138,7 @@ class SoundManager2 {
             didSandboxMessage = true;
             flashDebug('<br><b>Fatal: Security sandbox error: Got "' + sandboxType + '", expected "remote" or "localTrusted".<br>Additional security permissions need to be granted.<br>See <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">flash security settings panel</a> for non-HTTP, eg. file:// use.</b><br>http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html<br><br>You may also be able to right-click this movie and choose from the menu: <br>"Global Settings" -> "Advanced" tab -> "Trusted Location Settings"<br>');
           }
-          var d = new Date();
-          ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime(), version);
+          ExternalInterface.call(baseJSController + "._externalInterfaceOK", version);
           if (!didSandboxMessage) {
             flashDebug('Flash -&gt; JS OK');
             flashDebug('Waiting for JS -&gt; Flash...');

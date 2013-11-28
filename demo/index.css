@@ -1,14 +1,21 @@
 body {
   background:#fff;
-  color: #272727; /* scandalous. */
+  color: #444; /* scandalous. */
   margin:0px;
   padding:0px;
-  font:75% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
+  font:76% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
   /* wacky IE 6 horizontal scrollbar hack */
   _width:99.5%;
   /* a little fun: transition font size with @media shift. */
   -moz-transition: font-size 0.1s;
   -webkit-transition: font-size 0.1s;
+}
+
+@media all and (min-width: 1280px) {
+  /* holy CSS3 media queries, Batman! (in this case, larger screen widths get this rule.) */
+  body {
+    font-size: 80%;
+  }
 }
 
 @media all and (min-width: 1600px) {
@@ -28,7 +35,7 @@ body {
 @media all and (min-width: 1800px) {
   /* holy CSS3 media queries, Batman! (in this case, larger screen widths get this rule.) */
   body {
-    font-size: 118%;
+    font-size: 105%;
   }
   body.home .sm2-speaker {
     left: -2.5% !important;
@@ -54,6 +61,10 @@ body,
   background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaAgMAAADUJKRdAAAADFBMVEX8/Pz19fX09PT29vY9qbYoAAAAaElEQVR4Xk2MoREDMRADrzSDBQcEQj71GBw4kBbSQKp4YBBw9PsJyLxtsR2tZNfx/LyPhzX7R1Ue2SfjKlicDKBNdpBXsz790Nj8kUlo+WR47PvEPfY+gb7+kMhm5801EBsLvq/z3v8Apg8pkRmgbrsAAAAASUVORK5CYII=);
   /* old IE */
   *background: #fff url(../demo/_image/tiny_grid.png);
+}
+
+#nav ul li strong a {
+  background-position: 0px 5px;
 }
 
 /* below block commented out as it crashes YUI Compressor (as of 12/2011) - moved out to make-rollups script. */
@@ -90,41 +101,38 @@ body,
   font-style: normal;
 }
 
-h1,
-h2.special {
-  letter-spacing:-0.005em;
-}
-
 h2.special {
   font-family:"ChunkFive","ChunkFiveRegular","helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
-  letter-spacing:0px;
-  font-weight:normal;
-  display:inline;
+  font-weight: normal;
+  display: inline;
 }
 
 h1, h2, h3, h4 {
-  font-size:1em;
-  margin:0px;
-  padding:0px;
-  vertical-align:middle;
+  font-size: 1em;
+  margin: 0px;
+  padding: 0px;
+  vertical-align: middle;
+  font-weight: 300;
 }
 
 h4.new,
 h4.recent,
 h4.flash9 {
-  min-height:24px;
+  min-height: 24px;
 }
 
 h1 {
-  font-size:2em;
+  font-size: 2em;
+  font-weight: 500;
 }
 
 h2 {
-  font-size:1.5em;
+  font-size: 1.5em;
 }
 
 h3 {
   font-size: 1.17em;
+  font-weight: bold;
   border-top: 0.25em solid #333;
   border-bottom: 1px dotted #999;
   padding-top: 0.25em;
@@ -155,6 +163,7 @@ h3,
 h4 {
   margin:1.5em 0px 0.5em 0px;
   font-size:1.15em;
+  font-weight: 500;
 }
 
 h5 {
@@ -189,8 +198,8 @@ body.home #about-header {
 body.home #about-header .feature {
  /* special alignment tweak */
  position: relative;
- top: -0.25em;
  vertical-align: middle;
+ font-size: 1.2em;
 }
 
 body.home .sm2-speaker {
@@ -226,11 +235,6 @@ body.home #about-sm2 h2.special {
   margin-top:0.1em;
 }
 
-body.home #about-sm2 h2.special,
-body.home #about-sm2 h3 {
-  letter-spacing:0px;
-}
-
 body.home #about-sm2 h3 {
   font-size: 2.25em;
 }
@@ -248,11 +252,10 @@ body.home #about-sm2 strong {
 a.feature-hot,
 a.feature {
   display: inline-block;
-  -webkit-transition: all 0.25s ease-in-out;
   -moz-transition: all 0.25s ease-in-out;
+  -webkit-transition: all 0.25s ease-in-out;
   transition: all 0.25s ease-in-out;
   text-shadow: 0px 1px 0px rgba(0,0,0,0.33);
-  box-shadow: inset 0px 0px 3px rgba(0,0,0,0.33);
 }
 
 @-moz-keyframes highlight {
@@ -297,7 +300,6 @@ body.home #about-sm2 h3 {
   padding-bottom: 0px;
   margin-bottom: 0px;
   font-weight: 300;
-  letter-spacing: -0.005em;
 }
 
 body.home h4 {
@@ -376,7 +378,7 @@ pre code,
 dt,
 #soundmanager-debug,
 .c3 ul li ul li {
-  font-family:"DejaVu Sans Mono","DejaVuSansMonoBook",monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
+  font-family:Menlo,"DejaVu Sans Mono","DejaVuSansMonoBook",monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
 }
 
 pre,
@@ -388,6 +390,13 @@ dt,
   line-height:auto;
   color:#006699;
   background:#f6fcff;
+}
+
+.no-code-highlight pre,
+.no-code-highlight code,
+.no-code-highlight .code
+.no-code-highlight {
+  background: transparent;
 }
 
 pre,
@@ -460,19 +469,18 @@ body.home #soundmanager-debug div {
   color:#333;
 }
 
-#soundmanager-debug div.sm2-alt {
+#soundmanager-debug div {
   background-color:#fff;
-  color:#556677;
+}
+
+#soundmanager-debug div.sm2-alt {
+  background-color: #f3f9ff;
+  color:#336699;
 }
 
 #live-debug {
   display:table;
   *display:block;
-}
-
-#live-debug #soundmanager-debug .sm2-alt {
-  background-color:#f3f9ff;
-  color:#336699;
 }
 
 dd pre,
@@ -547,6 +555,12 @@ pre.block code,
 
 pre.block code {
   padding: 1em;
+}
+
+h2 code {
+ /* common header stuffs */
+ background: none;
+ font-size: 93%;
 }
 
 dl {
@@ -628,7 +642,6 @@ h2 {
   font-size:1.25em;
   font-weight:300;
   padding-top:2px;
-  letter-spacing:-1px;
 }
 
 #top h1,
@@ -764,6 +777,11 @@ body.home #main {
   padding-bottom: 0.25em;
 }
 
+p code,
+.columnar .c2 p code {
+  font-size: 97%;
+}
+
 .three .columnar {
   position:relative;
 }
@@ -802,7 +820,12 @@ body.home #main {
 }
 
 ul {
-  line-height:1.5em;
+	/* lists inside main content area */
+	line-height: 1.75em;
+}
+
+ul li {
+	margin-bottom: 0.75em;
 }
 
 #nav ul {
@@ -825,18 +848,18 @@ ul {
   position:absolute;
   z-index:1;
   display:none;
-  min-width:17em;
-  max-width:20em;
+  min-width:19em;
+  max-width:21em;
   background:#3399cc;
-  background: -moz-linear-gradient(top, rgba(51,153,204,0.97) 0%, rgba(35,96,127,0.94) 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,153,204,0.97)), color-stop(100%,rgba(35,96,127,0.94))); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* IE10+ */
-  background: linear-gradient(top, rgba(51,153,204,0.97) 0%,rgba(35,96,127,0.94) 100%); /* W3C */
+  background: -moz-linear-gradient(top, rgba(51,153,204,0.99) 0%, rgba(35,96,127,0.96) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,153,204,0.99)), color-stop(100%,rgba(35,96,127,0.96))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* IE10+ */
+  background: linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* W3C */
   text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
-  _width:17em;
-  *top:1.5em;
+  _width:19em;
+  *top:2.3em;
   *left:0px;
 }
 
@@ -850,30 +873,35 @@ ul {
 }
 
 #nav ul li ul li {
-  float:none;
-  display:block;
-  width:100%;
+  float: none;
+  display: block;
+  width: 100%;
 }
 
 #nav ul li ul li a {
-  display:block;
-  width:auto;
-  border:none;
-  padding:0.5em;
-  padding-left:1em;
-  color:#fff;
-  font-weight: bold;
+  display: block;
+  width: auto;
+  border: none;
+  padding: 0.5em 0px 0.5em 1em;
+  font-size: 1.1em;
+  line-height: 1.1em;
+  color: #fff;
+  font-weight: 300;
   color:rgba(255,255,255,0.9);
+  border-bottom: 1px dotted rgba(0,0,0,0.2);
+  border-top: 1px dotted rgba(255,255,255,0.2);
+}
+
+#nav ul li ul li:first-of-type a {
+	border-top: none;
 }
 
 #nav ul li a {
-  display:inline-block;
-  padding:0.35em 0.5em;
-  padding-left:0.75em;
-  padding-right:0.75em;
-  text-decoration:none;
-  font-weight:bold;
-  color:#fff;
+  display: inline-block;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  font-weight: bold;
+  color: #fff;
 }
 
 #nav ul li ul li a:hover {
@@ -885,16 +913,18 @@ ul {
 #nav>ul>li>strong>a {
   /* top-level links */
   color:#ddd;
-  font-size: 1.1em;
+  font-size: 1.25em;
+  font-weight: 300;
+  vertical-align: bottom;
 }
 
 #nav ul li strong a {
   color:#333;
 }
 
-#nav>ul>li>strong>a {
+#nav > ul > li > strong > a {
   /* tweak for good browsers that respect larger font size */
-  padding-bottom: 5px;
+  padding-bottom: 8px;
 }
 
 #nav ul li a:hover,
@@ -912,7 +942,7 @@ ul {
   margin-left:1em;
   font-size:85%;
   margin-bottom:0px;
-  margin-top:0.45em;
+  bottom: -1em;
   color:#999;
 }
 
@@ -982,15 +1012,14 @@ ul.standard ul {
 .c3 ul li a {
   display: block;
   text-decoration:none;
-  line-height: 21px;
 }
 
 .c3 ul li,
 .c3 ul li a,
 .c3 ul li a:hover,
 .c3 ul li a:focus {
-  color:#222;
-  _color:#222;
+  color:#555;
+  _color:#555;
   outline:none;
 }
 
@@ -1055,7 +1084,8 @@ ul.standard ul {
 
 .c3 h2 .l,
 .c3 h2 .r {
-  border-top:2em solid #333;
+  border-top: 2em solid #333;
+  border-top: 2.1em solid #333\9; /* IE 8 */
 }
 
 .wedge .l,
@@ -1077,7 +1107,6 @@ ul.standard ul {
   width:16px;
   height:100%;
   margin-left:-16px;
-  border-top:2em solid #333;
 }
 
 .wedge .r,
@@ -1099,6 +1128,7 @@ ul.standard ul {
 
 .wedge .l {
   background-position:-64px -64px;
+  border-top: 2em solid #3399cc
 }
 
 .wedge .r {
@@ -1161,10 +1191,10 @@ ul.standard ul {
 .c3 ul li ul li {
   background-color: #fcfcfc;
   background-color: rgba(255,255,255,0.5);
-  font-size: 100%;
-  line-height:1.5em;
+  font-size: 97%;
+  line-height:2.4em;
   text-indent:0.5em;
-  padding:0.25em 0.25em 0.25em 0.25em;
+  padding: 0px 0.25em;
   cursor:hand;
   border-bottom: 1px dotted #eee;
 }
@@ -1181,6 +1211,7 @@ ul.standard ul {
 }
 
 .c3 h3 {
+  position: relative;
   margin: 0px;
   padding: 0px;
   height: auto;
@@ -1216,7 +1247,7 @@ ul.standard ul {
 }
 
 #get-satisfaction a {
-  color:#333;
+  color:#555;
 }
 
 #get-satisfaction a:hover {
@@ -1321,7 +1352,6 @@ dd.deprecation-note {
   font-family:"Helvetica Neue","Helvetica",helvetica,arial,verdana,sans-serif;
   font-weight:300;
   font-size:2.5em;
-  letter-spacing:-1px;
 }
 
 .c2 .option {
@@ -1417,8 +1447,7 @@ div#gsfn_list_widget .powered_by a:hover {
 }
 
 div#gsfn_list_widget div#gsfn_content {
-  font-size:85%;
-  font-size:0.9em;
+  font-size:0.88em;
   padding-left:0.5em;
   padding-right:0.5em;
 }
@@ -1485,8 +1514,8 @@ div#gsfn_list_widget div#gsfn_content p.gsfn_summary {
 a.cta {
   margin-top:-0.3em;
   padding:0.2em 0.25em;
-  margin-left: -0.2em;
-  margin-right: -0.2em;
+  margin-left: -0.25em;
+  margin-right: -0.25em;
   *margin: 0px;
   *padding: 0px 2px;
   *margin: 0px -2px 0px -2px;
@@ -1506,6 +1535,21 @@ body.home a.cta:hover {
  text-shadow: none;
 }
 
+pre code a,
+.c2 pre code a {
+	color: #3399cc;
+	font-weight: 400;
+	text-decoration: none;
+	text-shadow: none;
+}
+
+pre code a:hover,
+.c2 pre code a:hover {
+	background-color: #3399cc;
+	color: #fff;
+	font-weight: 400;
+}
+
 /* redefine for simple mp3 button demo */
 .c2 a.sm2_button {
   border-radius:6px;
@@ -1516,10 +1560,8 @@ body.home a.cta:hover {
 }
 
 .c2 a {
-  margin-left:-0.2em;
-  margin-right:-0.2em;
   color:#3399cc;
-  font-weight:bold;
+  font-weight:500;
   text-decoration:none;
 }
 
@@ -1535,6 +1577,8 @@ a.cta span {
 a.cta:hover,
 .c2 a:hover,
 #sm2-options a:hover {
+  position: relative;
+  z-index: 1;
   background-color:#3399cc;
   border-color:#3399cc;
   color:#fff;
@@ -1615,21 +1659,19 @@ a.feature,
   position:relative;
   display:inline-block;
   background:#3399ff;
-  padding:0.3em 0.66em;
-  margin:-0.3em 0px 0px -0.66em;
+  font-size: 1.1em;
+  line-height: 1.75em;
+  padding: 0px 0.5em;
+  margin: 0px 0.125em;
   color:#fff;
   font-weight:bold;
   border:3px solid #cce6ff;
   border:3px solid rgba(255,255,255,0.66);
   border-radius:8px;
-  font-size: 1.1em;
-  line-height:1em;
-  *line-height:1.1em;
   text-decoration:none;
 }
 
 a.feature {
-  display:inline;
   margin-left:0px;
 }
 
@@ -1638,7 +1680,6 @@ a.feature {
   background:#ff0000;
   border-color:#ff6666;
   color:#fff;
-  line-height:1em;
 }
 
 .newer a:hover,
@@ -1800,13 +1841,6 @@ ul.inthewild a span {
   width: 64px;
   height: 40px;
   margin: -20px 0px 0px -32px;
-}
-
-#opera {
-  background-position: 0 -373px;
-  width: 79px;
-  height: 32px;
-  margin: -16px 0px 0px -40px;
 }
 
 #soundcloud {
@@ -2549,11 +2583,6 @@ body.home #main p.sidenote {
   color: #666;
 }
 
-body.home #main {
-  /* default: slightly-lighter text */
-  color: #272727;
-}
-
 body.home h2 {
   margin-top: 0px;
 }
@@ -2591,7 +2620,6 @@ body.home ul.playlist li {
 
 body.home ul.playlist .sidenote {
   font-size: 85%;
-  letter-spacing: 0px;
 }
 
 body.home .demo-more,
@@ -2879,4 +2907,15 @@ div.icons ul li.package {
 
 .bonus-demos li img {
  border-radius: 4px;
+}
+
+#client-requests ul.flat {
+	/* nested examples as in HTML5 vs. flash download behaviours */
+	list-style-type: none;
+	padding-left: 0.5em;
+	margin-top: 0.5em;
+}
+
+#client-requests ul.flat li {
+	margin-bottom: 0px;
 }

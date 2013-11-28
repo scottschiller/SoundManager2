@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20130101";
+    public var version:String = "V2.97a.20130512";
     public var version_as:String = "(AS3/Flash 9)";
 
     /**
@@ -205,8 +205,7 @@ package {
       try {
         if (isFirstCall == true) {
           flashDebug('Testing Flash -&gt; JS...');
-          var d: Date = new Date();
-          ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime(), version);
+          ExternalInterface.call(baseJSController + "._externalInterfaceOK", version);
           flashDebug('Flash -&gt; JS OK');
           flashDebug('Waiting for JS -&gt; Flash...');
         } else {
@@ -511,9 +510,8 @@ package {
         oSound.loaded = true;
         // force duration update (doesn't seem to be always accurate)
         ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._whileloading", oSound.bytesLoaded, oSound.bytesTotal, oSound.length || oSound.duration);
-        // TODO: Determine if loaded or failed - bSuccess?
-        // ExternalInterface.call(baseJSObject+"['"+oSound.sID+"']._onload",bSuccess?1:0);
-        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", 1);
+        // duration > 0 means a valid sound was loaded.
+        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", (oSound.length || oSound.duration ? 1 : 0));
       }
     }
 
