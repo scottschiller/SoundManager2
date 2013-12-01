@@ -87,7 +87,7 @@ function SoundManager(smURL, smID) {
     'preferFlash': false,               // overrides useHTML5audio, will use Flash for MP3/MP4/AAC if present. Potential option if HTML5 playback with these formats is quirky.
     'noSWFCache': false,                // if true, appends ?ts={date} to break aggressive SWF caching.
     'idPrefix': 'sound',                // if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.
-    'useWebkitAudioContext': true       // EXPERIMENTAL/TESTING: Enable visualization/analysis features
+    'useAudioContext': true             // EXPERIMENTAL/TESTING: Enable Web Audio API-based visualization/analysis features, where supported
   };
 
   this.defaultOptions = {
@@ -294,7 +294,8 @@ function SoundManager(smURL, smID) {
   // experimental Webkit Audio API stuffs
   WebkitAudioWrapper,
   audioContext,
-  AudioContext = (window.webkitAudioContext || window.AudioContext);
+  // Disabled by default for iOS + mobile. Causes VERY LOUD buzzing noise on iOS simulator with iOS 7. Be careful.
+  AudioContext = (!mobileHTML5 ? (window.webkitAudioContext || window.AudioContext) : null);
 
   this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i; // default mp3 set
 
@@ -3051,7 +3052,7 @@ function SoundManager(smURL, smID) {
         }
       }
 
-      if (sm2.setupOptions.useWebkitAudioContext && !s.webkitAudioWrapper && WebkitAudioWrapper) {
+      if (sm2.setupOptions.useAudioContext && !s.webkitAudioWrapper && WebkitAudioWrapper) {
         s.webkitAudioWrapper = new WebkitAudioWrapper(s, s._a);
       } /* else {
         // re-initialize/assign web audio API stuffs?
@@ -5971,9 +5972,9 @@ function SoundManager(smURL, smID) {
 
   preInit = function() {
 
-    if (sm2.setupOptions.useWebkitAudioContext && sm2.setupOptions.useHTML5Audio && AudioContext) {
+    if (sm2.setupOptions.useAudioContext && sm2.setupOptions.useHTML5Audio && AudioContext) {
 
-      messages.push('webkitAudioContext supported - enabling experimental Webkit Audio API for waveform + spectrum visualizations');
+      messages.push('Web Audio API / AudioContext supported - enabling experimental Web Audio API for waveform + spectrum visualizations');
 
     }
 
@@ -6115,15 +6116,17 @@ function SoundManager(smURL, smID) {
         return false;
       }
 
+try {
+
       source = audioContext.createMediaElementSource(oAudio);
 
       if (analyser) {
 
-        // console.log('connecting source + analyser');
+        console.log('connecting source + analyser');
         source.connect(analyser);
         analyser.connect(audioContext.destination);
         connected = true;
-
+        console.log('connect OK');
       }
 
       if (addedEvent) {
@@ -6134,6 +6137,12 @@ function SoundManager(smURL, smID) {
       if (onconnect) {
         onconnect();
       }
+
+} catch(e) {
+
+  console.log('caught exception', e);
+
+}
 
     }
 
@@ -6181,11 +6190,12 @@ function SoundManager(smURL, smID) {
       try {
 
         // match Flash 9?
+        // NOTE: This barfs under Safari 7 with an exception: Trying to set a read-only property.
         analyser.fftSize = 512;
 
         // Note: Should be "half the FFT size?" per https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html#dfn-frequencyBinCount
-        // Appaears to throw error on Safari under iOS 6, read-only property complaint.
-        analyser.frequencyBinCount = 256;
+        // Appears to throw error on Safari under iOS 6, read-only property complaint.
+        // analyser.frequencyBinCount = 256;
 
       } catch(e) {
 
