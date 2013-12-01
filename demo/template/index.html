@@ -43,7 +43,7 @@ soundManager.setup({
     // SM2 has started - now you can create and play sounds!
 
     var mySound = soundManager.createSound({
-      id: 'aSound',
+      id: 'aSound', // optional: an id will be generated if not provided.
       url: '../_mp3/click-high.mp3'
       // onload: function() { console.log('sound loaded!', this); }
       // other options here..
@@ -160,7 +160,7 @@ soundManager.setup({
     <span><span>// SM2 has started - now you can create and play sounds!</span></span>
 
     var mySound = soundManager.createSound({
-      id: '<em><em>aSound</em></em>',
+      id: '<em><em>aSound</em></em>', <span><span>// optional: provide your own unique id</span></span>
       url: '<em><em>/path/to/an.mp3</em></em>'
       <span><span>// onload: function() { console.log('sound loaded!', this); }
       // <a href="../../doc/#smdefaults" onclick="checkDomain()">other options</a> here..</span></span>
@@ -174,7 +174,7 @@ soundManager.setup({
 
   ontimeout: function() {
 
-    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?
+    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? No HTML5 audio support? Show an error, etc.?
     // See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="checkDomain()">flashblock demo</a> when you want to start getting fancy.</span></span>
 
   }
