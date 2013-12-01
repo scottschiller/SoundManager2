@@ -1610,7 +1610,12 @@ a.cta-more:hover {
   color:#3399cc;
 }
 
-li.html5support span {
+div.html5support {
+  clear: both;
+  padding-top: 2em;
+}
+
+div.html5support span {
   padding:0px 5px;
   display:inline-block;
   text-align:center;
@@ -1622,23 +1627,23 @@ li.html5support span {
   margin-bottom:0.25em;
 }
 
-li.html5support em {
+div.html5support em {
   font-weight:bold;
 }
 
-li.html5support span.true {
+div.html5support span.true {
   background:#669966;
 }
 
-li.html5support span.partial {
+div.html5support span.partial {
   background:#993333;
 }
 
-li.html5support em.partial {
+div.html5support em.partial {
   color:#993333;
 }
 
-li.html5support em.true {
+div.html5support em.true {
   color:#669966;
 }
 
@@ -1942,7 +1947,7 @@ ul.playlist li .peak .r {
   left:9px;
 }
 
-ul.playlist li a.not-supported {
+a.not-supported {
   /* give user a hint that the format doesn't work */
   text-decoration:line-through;
   color:#666;
