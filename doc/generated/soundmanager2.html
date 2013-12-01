@@ -71,7 +71,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20130512
+ * V2.97a.20131201
  */</span>
 
 <span class="comment">/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */</span>
@@ -136,7 +136,7 @@
     <span class="string">'useFlashBlock'</span>: <span class="literal">false</span>,             <span class="comment">// *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.</span>
     <span class="string">'useHTML5Audio'</span>: <span class="literal">true</span>,              <span class="comment">// use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.</span>
     <span class="string">'html5Test'</span>: <span class="regexp">/^(probably|maybe)$/i</span>, <span class="comment">// HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.</span>
-    <span class="string">'preferFlash'</span>: <span class="literal">true</span>,                <span class="comment">// overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.</span>
+    <span class="string">'preferFlash'</span>: <span class="literal">false</span>,               <span class="comment">// overrides useHTML5audio, will use Flash for MP3/MP4/AAC if present. Potential option if HTML5 playback with these formats is quirky.</span>
     <span class="string">'noSWFCache'</span>: <span class="literal">false</span>,                <span class="comment">// if true, appends ?ts={date} to break aggressive SWF caching.</span>
     <span class="string">'idPrefix'</span>: <span class="string">'sound'</span>                 <span class="comment">// if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.</span>
 
@@ -276,7 +276,7 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>
-  <span class="keyword">this</span>.versionNumber = <span class="string">'V2.97a.20130512'</span>;
+  <span class="keyword">this</span>.versionNumber = <span class="string">'V2.97a.20131201'</span>;
   <span class="keyword">this</span>.version = <span class="literal">null</span>;
   <span class="keyword">this</span>.movieURL = <span class="literal">null</span>;
   <span class="keyword">this</span>.altURL = <span class="literal">null</span>;
@@ -437,13 +437,14 @@
    */</span>
 
   <span class="keyword">var</span> SMSound,
-  sm2 = <span class="keyword">this</span>, globalHTML5Audio = <span class="literal">null</span>, flash = <span class="literal">null</span>, sm = <span class="string">'soundManager'</span>, smc = sm + <span class="string">': '</span>, h5 = <span class="string">'HTML5::'</span>, id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = <span class="literal">true</span>, debugTS, didAppend = <span class="literal">false</span>, appendSuccess = <span class="literal">false</span>, didInit = <span class="literal">false</span>, disabled = <span class="literal">false</span>, windowLoaded = <span class="literal">false</span>, _wDS, wdCount = <span class="number">0</span>, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = [<span class="string">'log'</span>, <span class="string">'info'</span>, <span class="string">'warn'</span>, <span class="string">'error'</span>], defaultFlashVersion = <span class="number">8</span>, disableObject, failSafely, normalizeMovieURL, oRemoved = <span class="literal">null</span>, oRemovedHTML = <span class="literal">null</span>, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = <span class="literal">false</span>, initPending = <span class="literal">false</span>, startTimer, stopTimer, timerExecute, h5TimerCount = <span class="number">0</span>, h5IntervalTimer = <span class="literal">null</span>, parseURL, messages = [],
+  sm2 = <span class="keyword">this</span>, globalHTML5Audio = <span class="literal">null</span>, flash = <span class="literal">null</span>, sm = <span class="string">'soundManager'</span>, smc = sm + <span class="string">': '</span>, h5 = <span class="string">'HTML5::'</span>, id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = <span class="literal">true</span>, debugTS, didAppend = <span class="literal">false</span>, appendSuccess = <span class="literal">false</span>, didInit = <span class="literal">false</span>, disabled = <span class="literal">false</span>, windowLoaded = <span class="literal">false</span>, _wDS, wdCount = <span class="number">0</span>, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, rebootIntoHTML5, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = [<span class="string">'log'</span>, <span class="string">'info'</span>, <span class="string">'warn'</span>, <span class="string">'error'</span>], defaultFlashVersion = <span class="number">8</span>, disableObject, failSafely, normalizeMovieURL, oRemoved = <span class="literal">null</span>, oRemovedHTML = <span class="literal">null</span>, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = <span class="literal">false</span>, initPending = <span class="literal">false</span>, startTimer, stopTimer, timerExecute, h5TimerCount = <span class="number">0</span>, h5IntervalTimer = <span class="literal">null</span>, parseURL, messages = [],
   canIgnoreFlash, needsFlash = <span class="literal">null</span>, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = <span class="literal">false</span>, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = <span class="number">0</span>,
-  is_iDevice = ua.match(<span class="regexp">/(ipad|iphone|ipod)/i</span>), isAndroid = ua.match(<span class="regexp">/android/i</span>), isIE = ua.match(<span class="regexp">/msie/i</span>), isWebkit = ua.match(<span class="regexp">/webkit/i</span>), isSafari = (ua.match(<span class="regexp">/safari/i</span>) &amp;&amp; !ua.match(<span class="regexp">/chrome/i</span>)), isOpera = (ua.match(<span class="regexp">/opera/i</span>)), isFirefox = (ua.match(<span class="regexp">/firefox/i</span>)),
+  is_iDevice = ua.match(<span class="regexp">/(ipad|iphone|ipod)/i</span>), isAndroid = ua.match(<span class="regexp">/android/i</span>), isIE = ua.match(<span class="regexp">/msie/i</span>), isWebkit = ua.match(<span class="regexp">/webkit/i</span>), isSafari = (ua.match(<span class="regexp">/safari/i</span>) &amp;&amp; !ua.match(<span class="regexp">/chrome/i</span>)), isOpera = (ua.match(<span class="regexp">/opera/i</span>)),
   mobileHTML5 = (ua.match(<span class="regexp">/(mobile|pre\/|xoom)/i</span>) || is_iDevice || isAndroid),
   isBadSafari = (!wl.match(<span class="regexp">/usehtml5audio/i</span>) &amp;&amp; !wl.match(<span class="regexp">/sm2\-ignorebadua/i</span>) &amp;&amp; isSafari &amp;&amp; !ua.match(<span class="regexp">/silk/i</span>) &amp;&amp; ua.match(<span class="regexp">/OS X 10_6_([3-7])/i</span>)), <span class="comment">// Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159</span>
   hasConsole = (window.console !== _<span class="literal">undefined</span> &amp;&amp; console.log !== _<span class="literal">undefined</span>), isFocused = (doc.hasFocus !== _<span class="literal">undefined</span>?doc.hasFocus():<span class="literal">null</span>), tryInitOnFocus = (isSafari &amp;&amp; (doc.hasFocus === _<span class="literal">undefined</span> || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = <span class="regexp">/(mp3|mp4|mpa|m4a|m4b)/i</span>, msecScale = <span class="number">1000</span>,
   emptyURL = <span class="string">'about:blank'</span>, <span class="comment">// safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)</span>
+  emptyWAV = <span class="string">'data:audio/wave;base64,/UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAD//w=='</span>, <span class="comment">// tiny WAV for HTML5 unloading</span>
   overHTTP = (doc.location?doc.location.protocol.match(<span class="regexp">/http/i</span>):<span class="literal">null</span>),
   http = (!overHTTP ? <span class="string">'http:/'</span>+<span class="string">'/'</span> : <span class="string">''</span>),</pre></div></div>
             
@@ -1656,7 +1657,7 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      result = (sMIME &amp;&amp; sm2.ok() ? !!((fV &gt; <span class="number">8</span> ? sMIME.match(netStreamMimeTypes) : <span class="literal">null</span>) || sMIME.match(sm2.mimePattern)) : <span class="literal">null</span>);
+            <div class="content"><div class='highlight'><pre>      result = (sMIME &amp;&amp; sm2.ok() ? !!((fV &gt; <span class="number">8</span> ? sMIME.match(netStreamMimeTypes) : <span class="literal">null</span>) || sMIME.match(sm2.mimePattern)) : <span class="literal">null</span>); <span class="comment">// TODO: make less "weird" (per JSLint)</span>
     }
 
     <span class="keyword">return</span> result;
@@ -2929,10 +2930,6 @@ reference: <a href="http://msdn.microsoft.com/en-us/library/ie/ff974759%28v=vs.8
 
           s._a._called_load = <span class="literal">true</span>;
 
-          <span class="keyword">if</span> (instanceOptions.autoPlay) {
-            s.play();
-          }
-
         } <span class="keyword">else</span> {
 
           sm2._wD(s.id + <span class="string">': Ignoring request to load again'</span>);
@@ -3648,11 +3645,11 @@ re-apply from/to to instance options, and start playback</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-136">&#182;</a>
               </div>
-              <p>TODO: was _oncanplay. Sounds wrong.</p>
+              <p>note: custom HTML5-only event added for from/to implementation.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>              oncanplay: onready
+            <div class="content"><div class='highlight'><pre>              _oncanplay: onready
             });
 
             exit = <span class="literal">false</span>;
@@ -3844,7 +3841,7 @@ applies only to Flash 9, non-NetStream/MovieStar sounds.
             audioClone = <span class="keyword">new</span> Audio(s._iO.url);
 
             onended = <span class="keyword">function</span>() {
-              event.remove(audioClone, <span class="string">'onended'</span>, onended);
+              event.remove(audioClone, <span class="string">'ended'</span>, onended);
               s._onfinish(s);</pre></div></div>
             
         </li>
@@ -3874,9 +3871,7 @@ applies only to Flash 9, non-NetStream/MovieStar sounds.
               audioClone.play();
             };
 
-            event.add(audioClone, <span class="string">'ended'</span>, onended);
-
-            <span class="keyword">if</span> (s._iO.position) {</pre></div></div>
+            event.add(audioClone, <span class="string">'ended'</span>, onended);</pre></div></div>
             
         </li>
         
@@ -3886,6 +3881,42 @@ applies only to Flash 9, non-NetStream/MovieStar sounds.
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-146">&#182;</a>
+              </div>
+              <p>apply volume to clones, too</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="keyword">if</span> (s._iO.volume !== <span class="literal">undefined</span>) {
+              audioClone.volume = Math.max(<span class="number">0</span>, Math.min(<span class="number">1</span>, s._iO.volume/<span class="number">100</span>));
+            }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-147">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-147">&#182;</a>
+              </div>
+              <p>playing multiple muted sounds? if you do this, you&#39;re weird ;) - but let&#39;s cover it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="keyword">if</span> (s.muted) {
+              audioClone.muted = <span class="literal">true</span>;
+            }
+
+            <span class="keyword">if</span> (s._iO.position) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-148">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-148">&#182;</a>
               </div>
               <p>HTML5 audio can&#39;t seek before onplay() event has fired.
 wait for canplay, then seek to position and start playback.</p>
@@ -3898,11 +3929,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-147">
+        <li id="section-149">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-147">&#182;</a>
+                <a class="pilcrow" href="#section-149">&#182;</a>
               </div>
               <p>begin playback at currentTime: 0</p>
 
@@ -3924,11 +3955,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-148">
+        <li id="section-150">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-148">&#182;</a>
+                <a class="pilcrow" href="#section-150">&#182;</a>
               </div>
               <p>just for convenience</p>
 
@@ -3963,11 +3994,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-149">
+        <li id="section-151">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-149">&#182;</a>
+                <a class="pilcrow" href="#section-151">&#182;</a>
               </div>
               <p>remove onPosition listeners, if any</p>
 
@@ -3978,11 +4009,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-150">
+        <li id="section-152">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-150">&#182;</a>
+                <a class="pilcrow" href="#section-152">&#182;</a>
               </div>
               <p>and &quot;to&quot; position, if set</p>
 
@@ -3999,11 +4030,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-151">
+        <li id="section-153">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-151">&#182;</a>
+                <a class="pilcrow" href="#section-153">&#182;</a>
               </div>
               <p>hack for netStream: just unload</p>
 
@@ -4022,11 +4053,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-152">
+        <li id="section-154">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-152">&#182;</a>
+                <a class="pilcrow" href="#section-154">&#182;</a>
               </div>
               <p>act like Flash, though</p>
 
@@ -4037,11 +4068,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-153">
+        <li id="section-155">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-153">&#182;</a>
+                <a class="pilcrow" href="#section-155">&#182;</a>
               </div>
               <p>hack: reflect old position for onstop() (also like Flash)</p>
 
@@ -4052,11 +4083,11 @@ wait for canplay, then seek to position and start playback.</p>
         </li>
         
         
-        <li id="section-154">
+        <li id="section-156">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-154">&#182;</a>
+                <a class="pilcrow" href="#section-156">&#182;</a>
               </div>
               <p>html5 has no stop()
 NOTE: pausing means iOS requires interaction to resume.</p>
@@ -4070,11 +4101,11 @@ NOTE: pausing means iOS requires interaction to resume.</p>
         </li>
         
         
-        <li id="section-155">
+        <li id="section-157">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-155">&#182;</a>
+                <a class="pilcrow" href="#section-157">&#182;</a>
               </div>
               <p>and update UI</p>
 
@@ -4119,11 +4150,11 @@ NOTE: pausing means iOS requires interaction to resume.</p>
         </li>
         
         
-        <li id="section-156">
+        <li id="section-158">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-156">&#182;</a>
+                <a class="pilcrow" href="#section-158">&#182;</a>
               </div>
               <p>only increment the instanceCount if the sound isn&#39;t loaded (TODO: verify RTMP)</p>
 
@@ -4168,11 +4199,11 @@ NOTE: pausing means iOS requires interaction to resume.</p>
         </li>
         
         
-        <li id="section-157">
+        <li id="section-159">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-157">&#182;</a>
+                <a class="pilcrow" href="#section-159">&#182;</a>
               </div>
               <p>Use the duration from the instance options, if we don&#39;t have a track duration yet.
 position &gt;= 0 and &lt;= current available (loaded) duration</p>
@@ -4195,11 +4226,11 @@ position &gt;= 0 and &lt;= current available (loaded) duration</p>
         </li>
         
         
-        <li id="section-158">
+        <li id="section-160">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-158">&#182;</a>
+                <a class="pilcrow" href="#section-160">&#182;</a>
               </div>
               <p>if paused or not playing, will not resume (by playing)</p>
 
@@ -4213,11 +4244,11 @@ position &gt;= 0 and &lt;= current available (loaded) duration</p>
         </li>
         
         
-        <li id="section-159">
+        <li id="section-161">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-159">&#182;</a>
+                <a class="pilcrow" href="#section-161">&#182;</a>
               </div>
               <p>Set the position in the canplay handler if the sound is not ready yet</p>
 
@@ -4241,11 +4272,11 @@ position &gt;= 0 and &lt;= current available (loaded) duration</p>
         </li>
         
         
-        <li id="section-160">
+        <li id="section-162">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-160">&#182;</a>
+                <a class="pilcrow" href="#section-162">&#182;</a>
               </div>
               <p>allow seek without auto-play/resume</p>
 
@@ -4264,11 +4295,11 @@ position &gt;= 0 and &lt;= current available (loaded) duration</p>
         </li>
         
         
-        <li id="section-161">
+        <li id="section-163">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-161">&#182;</a>
+                <a class="pilcrow" href="#section-163">&#182;</a>
               </div>
               <p>warn on non-zero seek attempts</p>
 
@@ -4284,11 +4315,11 @@ position &gt;= 0 and &lt;= current available (loaded) duration</p>
         </li>
         
         
-        <li id="section-162">
+        <li id="section-164">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-162">&#182;</a>
+                <a class="pilcrow" href="#section-164">&#182;</a>
               </div>
               <p>if paused, refresh UI right away
 force update</p>
@@ -4369,11 +4400,11 @@ force update</p>
         </li>
         
         
-        <li id="section-163">
+        <li id="section-165">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-163">&#182;</a>
+                <a class="pilcrow" href="#section-165">&#182;</a>
               </div>
               <p>Bizarre Webkit bug (Chrome reported via 8tracks.com dudes): AAC content paused for 30+ seconds(?) will not resume without a reposition.</p>
 
@@ -4385,11 +4416,11 @@ force update</p>
         </li>
         
         
-        <li id="section-164">
+        <li id="section-166">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-164">&#182;</a>
+                <a class="pilcrow" href="#section-166">&#182;</a>
               </div>
               <p>flash method is toggle-based (pause/resume)</p>
 
@@ -4497,16 +4528,20 @@ force update</p>
 
       <span class="keyword">if</span> (!s.isHTML5) {
         flash._setVolume(s.id, (sm2.muted &amp;&amp; !s.muted) || s.muted?<span class="number">0</span>:nVol);
-      } <span class="keyword">else</span> <span class="keyword">if</span> (s._a) {</pre></div></div>
+      } <span class="keyword">else</span> <span class="keyword">if</span> (s._a) {
+        <span class="keyword">if</span> (sm2.muted &amp;&amp; !s.muted) {
+          s.muted = <span class="literal">true</span>;
+          s._a.muted = <span class="literal">true</span>;
+        }</pre></div></div>
             
         </li>
         
         
-        <li id="section-165">
+        <li id="section-167">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-165">&#182;</a>
+                <a class="pilcrow" href="#section-167">&#182;</a>
               </div>
               <p>valid range: 0-1</p>
 
@@ -4593,11 +4628,11 @@ force update</p>
         </li>
         
         
-        <li id="section-166">
+        <li id="section-168">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-166">&#182;</a>
+                <a class="pilcrow" href="#section-168">&#182;</a>
               </div>
               <p>TODO: basic dupe checking?</p>
 
@@ -4618,11 +4653,11 @@ force update</p>
         </li>
         
         
-        <li id="section-167">
+        <li id="section-169">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-167">&#182;</a>
+                <a class="pilcrow" href="#section-169">&#182;</a>
               </div>
               <p>legacy/backwards-compability: lower-case method name</p>
 
@@ -4649,11 +4684,11 @@ force update</p>
         </li>
         
         
-        <li id="section-168">
+        <li id="section-170">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-168">&#182;</a>
+                <a class="pilcrow" href="#section-170">&#182;</a>
               </div>
               <p>safety check</p>
 
@@ -4669,11 +4704,11 @@ force update</p>
         </li>
         
         
-        <li id="section-169">
+        <li id="section-171">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-169">&#182;</a>
+                <a class="pilcrow" href="#section-171">&#182;</a>
               </div>
               <p>remove this item if no method was specified, or, if the method matches</p>
 
@@ -4685,11 +4720,11 @@ force update</p>
         </li>
         
         
-        <li id="section-170">
+        <li id="section-172">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-170">&#182;</a>
+                <a class="pilcrow" href="#section-172">&#182;</a>
               </div>
               <p>decrement &quot;fired&quot; counter, too</p>
 
@@ -4708,7 +4743,7 @@ force update</p>
     <span class="keyword">this</span>._processOnPosition = <span class="keyword">function</span>() {
 
       <span class="keyword">var</span> i, item, j = onPositionItems.length;
-
+		
       <span class="keyword">if</span> (!j || !s.playState || onPositionFired &gt;= j) {
         <span class="keyword">return</span> <span class="literal">false</span>;
       }
@@ -4719,9 +4754,10 @@ force update</p>
           item.fired = <span class="literal">true</span>;
           onPositionFired++;
           item.method.apply(item.scope, [item.position]);
+		  j = onPositionItems.length; <span class="comment">//  reset j -- onPositionItems.length can be changed in the item callback above... occasionally breaking the loop.</span>
         }
       }
-
+	
       <span class="keyword">return</span> <span class="literal">true</span>;
 
     };
@@ -4731,11 +4767,11 @@ force update</p>
         </li>
         
         
-        <li id="section-171">
+        <li id="section-173">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-171">&#182;</a>
+                <a class="pilcrow" href="#section-173">&#182;</a>
               </div>
               <p>reset &quot;fired&quot; for items interested in this position</p>
 
@@ -4776,11 +4812,11 @@ force update</p>
         </li>
         
         
-        <li id="section-172">
+        <li id="section-174">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-172">&#182;</a>
+                <a class="pilcrow" href="#section-174">&#182;</a>
               </div>
               <p>end has been reached.</p>
 
@@ -4791,11 +4827,11 @@ force update</p>
         </li>
         
         
-        <li id="section-173">
+        <li id="section-175">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-173">&#182;</a>
+                <a class="pilcrow" href="#section-175">&#182;</a>
               </div>
               <p>detach listener</p>
 
@@ -4806,11 +4842,11 @@ force update</p>
         </li>
         
         
-        <li id="section-174">
+        <li id="section-176">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-174">&#182;</a>
+                <a class="pilcrow" href="#section-176">&#182;</a>
               </div>
               <p>stop should clear this, too</p>
 
@@ -4827,11 +4863,11 @@ force update</p>
         </li>
         
         
-        <li id="section-175">
+        <li id="section-177">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-175">&#182;</a>
+                <a class="pilcrow" href="#section-177">&#182;</a>
               </div>
               <p>add listener for end</p>
 
@@ -4848,11 +4884,11 @@ force update</p>
         </li>
         
         
-        <li id="section-176">
+        <li id="section-178">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-176">&#182;</a>
+                <a class="pilcrow" href="#section-178">&#182;</a>
               </div>
               <p>apply to instance options, guaranteeing correct start position.</p>
 
@@ -4863,11 +4899,11 @@ force update</p>
         </li>
         
         
-        <li id="section-177">
+        <li id="section-179">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-177">&#182;</a>
+                <a class="pilcrow" href="#section-179">&#182;</a>
               </div>
               <p>multiShot timing can&#39;t be tracked, so prevent that.</p>
 
@@ -4882,11 +4918,11 @@ force update</p>
         </li>
         
         
-        <li id="section-178">
+        <li id="section-180">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-178">&#182;</a>
+                <a class="pilcrow" href="#section-180">&#182;</a>
               </div>
               <p>return updated instanceOptions including starting position</p>
 
@@ -4904,11 +4940,11 @@ force update</p>
         </li>
         
         
-        <li id="section-179">
+        <li id="section-181">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-179">&#182;</a>
+                <a class="pilcrow" href="#section-181">&#182;</a>
               </div>
               <p>attach onposition things, if any, now.</p>
 
@@ -4919,7 +4955,7 @@ force update</p>
 
         <span class="keyword">for</span> (item <span class="keyword">in</span> op) {
           <span class="keyword">if</span> (op.hasOwnProperty(item)) {
-            s.onPosition(parseInt(item, <span class="number">10</span>), op[item]); 
+            s.onPosition(parseInt(item, <span class="number">10</span>), op[item]);
           }
         }
 
@@ -4935,11 +4971,11 @@ force update</p>
         </li>
         
         
-        <li id="section-180">
+        <li id="section-182">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-180">&#182;</a>
+                <a class="pilcrow" href="#section-182">&#182;</a>
               </div>
               <p>detach any onposition()-style listeners.</p>
 
@@ -4995,11 +5031,11 @@ force update</p>
         </li>
         
         
-        <li id="section-181">
+        <li id="section-183">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-181">&#182;</a>
+                <a class="pilcrow" href="#section-183">&#182;</a>
               </div>
               <p>legacy: 1D array</p>
 
@@ -5020,11 +5056,11 @@ force update</p>
         </li>
         
         
-        <li id="section-182">
+        <li id="section-184">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-182">&#182;</a>
+                <a class="pilcrow" href="#section-184">&#182;</a>
               </div>
               <p>0 = uninitialised, 1 = loading, 2 = failed/error, 3 = loaded/success</p>
 
@@ -5074,11 +5110,11 @@ force update</p>
         </li>
         
         
-        <li id="section-183">
+        <li id="section-185">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-183">&#182;</a>
+                <a class="pilcrow" href="#section-185">&#182;</a>
               </div>
               <p>TODO: May not need to track readyState (1 = loading)</p>
 
@@ -5100,11 +5136,11 @@ force update</p>
         </li>
         
         
-        <li id="section-184">
+        <li id="section-186">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-184">&#182;</a>
+                <a class="pilcrow" href="#section-186">&#182;</a>
               </div>
               <p>TODO: investigate why this goes wack if not set/re-set each time.</p>
 
@@ -5132,11 +5168,11 @@ force update</p>
         </li>
         
         
-        <li id="section-185">
+        <li id="section-187">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-185">&#182;</a>
+                <a class="pilcrow" href="#section-187">&#182;</a>
               </div>
               <p>sm2._wD(&#39;_onTimer: Warn for &quot;&#39;+s.id+&#39;&quot;: &#39;+(!s._a?&#39;Could not find element. &#39;:&#39;&#39;)+(s.playState === 0?&#39;playState bad, 0?&#39;:&#39;playState = &#39;+s.playState+&#39;, OK&#39;));</p>
 
@@ -5160,11 +5196,11 @@ force update</p>
         </li>
         
         
-        <li id="section-186">
+        <li id="section-188">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-186">&#182;</a>
+                <a class="pilcrow" href="#section-188">&#182;</a>
               </div>
               <p>if audio object exists, use its duration - else, instance option duration (if provided - it&#39;s a hack, really, and should be retired) OR null</p>
 
@@ -5187,11 +5223,11 @@ force update</p>
         </li>
         
         
-        <li id="section-187">
+        <li id="section-189">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-187">&#182;</a>
+                <a class="pilcrow" href="#section-189">&#182;</a>
               </div>
               <d>
 
@@ -5204,11 +5240,11 @@ force update</p>
         </li>
         
         
-        <li id="section-188">
+        <li id="section-190">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-188">&#182;</a>
+                <a class="pilcrow" href="#section-190">&#182;</a>
               </div>
               <p></d></p>
 
@@ -5239,11 +5275,11 @@ force update</p>
         </li>
         
         
-        <li id="section-189">
+        <li id="section-191">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-189">&#182;</a>
+                <a class="pilcrow" href="#section-191">&#182;</a>
               </div>
               <p>global HTML5 audio: re-use of URL</p>
 
@@ -5257,11 +5293,11 @@ force update</p>
         </li>
         
         
-        <li id="section-190">
+        <li id="section-192">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-190">&#182;</a>
+                <a class="pilcrow" href="#section-192">&#182;</a>
               </div>
               <p>options URL is the same as the &quot;last&quot; URL, and we used (loaded) it</p>
 
@@ -5282,11 +5318,11 @@ force update</p>
         </li>
         
         
-        <li id="section-191">
+        <li id="section-193">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-191">&#182;</a>
+                <a class="pilcrow" href="#section-193">&#182;</a>
               </div>
               <p>global HTML5 audio case, and loading a new URL. stop the currently-playing one.</p>
 
@@ -5301,11 +5337,11 @@ force update</p>
         </li>
         
         
-        <li id="section-192">
+        <li id="section-194">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-192">&#182;</a>
+                <a class="pilcrow" href="#section-194">&#182;</a>
               </div>
               <p>non-global HTML5 reuse case: same url, ignore request</p>
 
@@ -5324,27 +5360,29 @@ force update</p>
         </li>
         
         
-        <li id="section-193">
+        <li id="section-195">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-193">&#182;</a>
+                <a class="pilcrow" href="#section-195">&#182;</a>
               </div>
-              <p>don&#39;t retain onPosition() stuff with new URL.</p>
+              <p>don&#39;t retain onPosition() stuff with new URLs.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>
-          resetProperties(<span class="literal">false</span>);</pre></div></div>
+          <span class="keyword">if</span> (lastURL) {
+            resetProperties(<span class="literal">false</span>);
+          }</pre></div></div>
             
         </li>
         
         
-        <li id="section-194">
+        <li id="section-196">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-194">&#182;</a>
+                <a class="pilcrow" href="#section-196">&#182;</a>
               </div>
               <p>assign new HTML5 URL</p>
 
@@ -5368,17 +5406,18 @@ force update</p>
         <span class="keyword">if</span> (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
           s._a = <span class="keyword">new</span> Audio(instanceOptions.url);
+          s._a.load();
 
         } <span class="keyword">else</span> {</pre></div></div>
             
         </li>
         
         
-        <li id="section-195">
+        <li id="section-197">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-195">&#182;</a>
+                <a class="pilcrow" href="#section-197">&#182;</a>
               </div>
               <p>null for stupid Opera 9.64 case</p>
 
@@ -5391,11 +5430,11 @@ force update</p>
         </li>
         
         
-        <li id="section-196">
+        <li id="section-198">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-196">&#182;</a>
+                <a class="pilcrow" href="#section-198">&#182;</a>
               </div>
               <p>assign local reference</p>
 
@@ -5418,11 +5457,11 @@ force update</p>
         </li>
         
         
-        <li id="section-197">
+        <li id="section-199">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-197">&#182;</a>
+                <a class="pilcrow" href="#section-199">&#182;</a>
               </div>
               <p>store a ref on the track</p>
 
@@ -5433,11 +5472,11 @@ force update</p>
         </li>
         
         
-        <li id="section-198">
+        <li id="section-200">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-198">&#182;</a>
+                <a class="pilcrow" href="#section-200">&#182;</a>
               </div>
               <p>store a ref on the audio</p>
 
@@ -5458,11 +5497,11 @@ force update</p>
         </li>
         
         
-        <li id="section-199">
+        <li id="section-201">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-199">&#182;</a>
+                <a class="pilcrow" href="#section-201">&#182;</a>
               </div>
               <p>early HTML5 implementation (non-standard)</p>
 
@@ -5473,11 +5512,11 @@ force update</p>
         </li>
         
         
-        <li id="section-200">
+        <li id="section-202">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-200">&#182;</a>
+                <a class="pilcrow" href="#section-202">&#182;</a>
               </div>
               <p>standard (&#39;none&#39; is also an option.)</p>
 
@@ -5520,11 +5559,11 @@ force update</p>
         </li>
         
         
-        <li id="section-201">
+        <li id="section-203">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-201">&#182;</a>
+                <a class="pilcrow" href="#section-203">&#182;</a>
               </div>
               <p>Remove event listeners</p>
 
@@ -5560,11 +5599,11 @@ force update</p>
         </li>
         
         
-        <li id="section-202">
+        <li id="section-204">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-202">&#182;</a>
+                <a class="pilcrow" href="#section-204">&#182;</a>
               </div>
               <p>check for duration to prevent false positives from flash 8 when loading from cache.</p>
 
@@ -5575,11 +5614,11 @@ force update</p>
         </li>
         
         
-        <li id="section-203">
+        <li id="section-205">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-203">&#182;</a>
+                <a class="pilcrow" href="#section-205">&#182;</a>
               </div>
               <d>
 
@@ -5599,11 +5638,11 @@ force update</p>
         </li>
         
         
-        <li id="section-204">
+        <li id="section-206">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-204">&#182;</a>
+                <a class="pilcrow" href="#section-206">&#182;</a>
               </div>
               <p></d></p>
 
@@ -5631,11 +5670,11 @@ force update</p>
         </li>
         
         
-        <li id="section-205">
+        <li id="section-207">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-205">&#182;</a>
+                <a class="pilcrow" href="#section-207">&#182;</a>
               </div>
               <p>ignore if not playing</p>
 
@@ -5697,11 +5736,11 @@ force update</p>
         </li>
         
         
-        <li id="section-206">
+        <li id="section-208">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-206">&#182;</a>
+                <a class="pilcrow" href="#section-208">&#182;</a>
               </div>
               <p>store local copy before it gets trashed...</p>
 
@@ -5715,11 +5754,11 @@ force update</p>
         </li>
         
         
-        <li id="section-207">
+        <li id="section-209">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-207">&#182;</a>
+                <a class="pilcrow" href="#section-209">&#182;</a>
               </div>
               <p>reset some state items</p>
 
@@ -5734,11 +5773,11 @@ force update</p>
         </li>
         
         
-        <li id="section-208">
+        <li id="section-210">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-208">&#182;</a>
+                <a class="pilcrow" href="#section-210">&#182;</a>
               </div>
               <p>remove onPosition listeners, if any</p>
 
@@ -5749,11 +5788,11 @@ force update</p>
         </li>
         
         
-        <li id="section-209">
+        <li id="section-211">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-209">&#182;</a>
+                <a class="pilcrow" href="#section-211">&#182;</a>
               </div>
               <p>reset instance options</p>
 
@@ -5769,11 +5808,11 @@ force update</p>
         </li>
         
         
-        <li id="section-210">
+        <li id="section-212">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-210">&#182;</a>
+                <a class="pilcrow" href="#section-212">&#182;</a>
               </div>
               <p>reset position, too</p>
 
@@ -5790,11 +5829,11 @@ force update</p>
         </li>
         
         
-        <li id="section-211">
+        <li id="section-213">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-211">&#182;</a>
+                <a class="pilcrow" href="#section-213">&#182;</a>
               </div>
               <p>fire onfinish for last, or every instance</p>
 
@@ -5828,11 +5867,11 @@ force update</p>
         </li>
         
         
-        <li id="section-212">
+        <li id="section-214">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-212">&#182;</a>
+                <a class="pilcrow" href="#section-214">&#182;</a>
               </div>
               <p>use duration from options, if specified and larger. nobody should be specifying duration in options, actually, and it should be retired.</p>
 
@@ -5852,11 +5891,11 @@ force update</p>
         </li>
         
         
-        <li id="section-213">
+        <li id="section-215">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-213">&#182;</a>
+                <a class="pilcrow" href="#section-215">&#182;</a>
               </div>
               <p>for flash, reflect sequential-load-style buffering</p>
 
@@ -5872,11 +5911,11 @@ force update</p>
         </li>
         
         
-        <li id="section-214">
+        <li id="section-216">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-214">&#182;</a>
+                <a class="pilcrow" href="#section-216">&#182;</a>
               </div>
               <p>allow whileloading to fire even if &quot;load&quot; fired under HTML5, due to HTTP range/partials</p>
 
@@ -5898,11 +5937,11 @@ force update</p>
         </li>
         
         
-        <li id="section-215">
+        <li id="section-217">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-215">&#182;</a>
+                <a class="pilcrow" href="#section-217">&#182;</a>
               </div>
               <p>flash safety net</p>
 
@@ -5914,11 +5953,11 @@ force update</p>
         </li>
         
         
-        <li id="section-216">
+        <li id="section-218">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-216">&#182;</a>
+                <a class="pilcrow" href="#section-218">&#182;</a>
               </div>
               <p>Safari HTML5 play() may return small -ve values when starting from position: 0, eg. -50.120396875. Unexpected/invalid per W3, I think. Normalize to 0.</p>
 
@@ -5962,11 +6001,11 @@ force update</p>
         </li>
         
         
-        <li id="section-217">
+        <li id="section-219">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-217">&#182;</a>
+                <a class="pilcrow" href="#section-219">&#182;</a>
               </div>
               <p>special case/hack: ensure buffering is false if loading from cache (and not yet started)</p>
 
@@ -5981,11 +6020,11 @@ force update</p>
         </li>
         
         
-        <li id="section-218">
+        <li id="section-220">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-218">&#182;</a>
+                <a class="pilcrow" href="#section-220">&#182;</a>
               </div>
               <p>flash may call after actual finish</p>
 
@@ -6004,7 +6043,7 @@ force update</p>
 
       <span class="comment">/**
        * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
-       * 
+       *
        * @param {object} oData
        */</span>
 
@@ -6023,7 +6062,7 @@ force update</p>
       <span class="comment">/**
        * internal: flash 9 + NetStream (MovieStar/RTMP-only) feature
        * RTMP may include song title, MovieStar content may include encoding info
-       * 
+       *
        * @param {array} oMDProps (names)
        * @param {array} oMDData (values)
        */</span>
@@ -6048,7 +6087,7 @@ force update</p>
       <span class="comment">/**
        * internal: flash 8 + flash 9 ID3 feature
        * may include artist, song title etc.
-       * 
+       *
        * @param {array} oID3Props (names)
        * @param {array} oID3Data (values)
        */</span>
@@ -6071,11 +6110,11 @@ force update</p>
         </li>
         
         
-        <li id="section-219">
+        <li id="section-221">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-219">&#182;</a>
+                <a class="pilcrow" href="#section-221">&#182;</a>
               </div>
               <p>flash/RTMP-only</p>
 
@@ -6098,11 +6137,11 @@ force update</p>
         </li>
         
         
-        <li id="section-220">
+        <li id="section-222">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-220">&#182;</a>
+                <a class="pilcrow" href="#section-222">&#182;</a>
               </div>
               <p>only update the play state if auto playing</p>
 
@@ -6127,11 +6166,11 @@ force update</p>
         </li>
         
         
-        <li id="section-221">
+        <li id="section-223">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-221">&#182;</a>
+                <a class="pilcrow" href="#section-223">&#182;</a>
               </div>
               <p>flash 9 wave/eq data handler
 hack: called at start, and end from flash at/after onfinish()</p>
@@ -6150,11 +6189,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-222">
+        <li id="section-224">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-222">&#182;</a>
+                <a class="pilcrow" href="#section-224">&#182;</a>
               </div>
               <d>
 
@@ -6165,11 +6204,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-223">
+        <li id="section-225">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-223">&#182;</a>
+                <a class="pilcrow" href="#section-225">&#182;</a>
               </div>
               <p></d></p>
 
@@ -6185,7 +6224,7 @@ hack: called at start, and end from flash at/after onfinish()</p>
 
   getDocument = <span class="keyword">function</span>() {
 
-    <span class="keyword">return</span> (doc.body || doc._docElement || doc.getElementsByTagName(<span class="string">'div'</span>)[<span class="number">0</span>]);
+    <span class="keyword">return</span> (doc.body || doc.getElementsByTagName(<span class="string">'div'</span>)[<span class="number">0</span>]);
 
   };
 
@@ -6200,11 +6239,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-224">
+        <li id="section-226">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-224">&#182;</a>
+                <a class="pilcrow" href="#section-226">&#182;</a>
               </div>
               <p>non-destructive merge</p>
 
@@ -6215,11 +6254,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-225">
+        <li id="section-227">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-225">&#182;</a>
+                <a class="pilcrow" href="#section-227">&#182;</a>
               </div>
               <p>if unspecified, o2 is the default options object</p>
 
@@ -6236,11 +6275,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-226">
+        <li id="section-228">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-226">&#182;</a>
+                <a class="pilcrow" href="#section-228">&#182;</a>
               </div>
               <p>assign directly</p>
 
@@ -6253,11 +6292,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-227">
+        <li id="section-229">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-227">&#182;</a>
+                <a class="pilcrow" href="#section-229">&#182;</a>
               </div>
               <p>recurse through o2</p>
 
@@ -6295,11 +6334,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-228">
+        <li id="section-230">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-228">&#182;</a>
+                <a class="pilcrow" href="#section-230">&#182;</a>
               </div>
               <p>additional soundManager properties that soundManager.setup() will accept</p>
 
@@ -6330,11 +6369,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-229">
+        <li id="section-231">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-229">&#182;</a>
+                <a class="pilcrow" href="#section-231">&#182;</a>
               </div>
               <d>
 
@@ -6343,11 +6382,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-230">
+        <li id="section-232">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-230">&#182;</a>
+                <a class="pilcrow" href="#section-232">&#182;</a>
               </div>
               <p>if soundManager.setup() called, show accepted parameters.</p>
 
@@ -6397,11 +6436,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-231">
+        <li id="section-233">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-231">&#182;</a>
+                <a class="pilcrow" href="#section-233">&#182;</a>
               </div>
               <p></d></p>
 
@@ -6415,11 +6454,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-232">
+        <li id="section-234">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-232">&#182;</a>
+                <a class="pilcrow" href="#section-234">&#182;</a>
               </div>
               <p>if not an {object} we want to recurse through...</p>
 
@@ -6431,11 +6470,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-233">
+        <li id="section-235">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-233">&#182;</a>
+                <a class="pilcrow" href="#section-235">&#182;</a>
               </div>
               <p>check &quot;allowed&quot; options</p>
 
@@ -6447,11 +6486,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-234">
+        <li id="section-236">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-234">&#182;</a>
+                <a class="pilcrow" href="#section-236">&#182;</a>
               </div>
               <p>valid recursive / nested object option, eg., { defaultOptions: { volume: 50 } }</p>
 
@@ -6464,11 +6503,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-235">
+        <li id="section-237">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-235">&#182;</a>
+                <a class="pilcrow" href="#section-237">&#182;</a>
               </div>
               <p>special case: assign to setupOptions object, which soundManager property references</p>
 
@@ -6479,11 +6518,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-236">
+        <li id="section-238">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-236">&#182;</a>
+                <a class="pilcrow" href="#section-238">&#182;</a>
               </div>
               <p>assign directly to soundManager, too</p>
 
@@ -6496,11 +6535,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-237">
+        <li id="section-239">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-237">&#182;</a>
+                <a class="pilcrow" href="#section-239">&#182;</a>
               </div>
               <p>invalid or disallowed parameter. complain.</p>
 
@@ -6527,11 +6566,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-238">
+        <li id="section-240">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-238">&#182;</a>
+                <a class="pilcrow" href="#section-240">&#182;</a>
               </div>
               <p>good old-fashioned direct assignment</p>
 
@@ -6548,11 +6587,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-239">
+        <li id="section-241">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-239">&#182;</a>
+                <a class="pilcrow" href="#section-241">&#182;</a>
               </div>
               <p>recursion case, eg., { defaultOptions: { ... } }</p>
 
@@ -6564,11 +6603,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-240">
+        <li id="section-242">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-240">&#182;</a>
+                <a class="pilcrow" href="#section-242">&#182;</a>
               </div>
               <p>invalid or disallowed parameter. complain.</p>
 
@@ -6583,11 +6622,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-241">
+        <li id="section-243">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-241">&#182;</a>
+                <a class="pilcrow" href="#section-243">&#182;</a>
               </div>
               <p>recurse through object</p>
 
@@ -6612,11 +6651,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-242">
+        <li id="section-244">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-242">&#182;</a>
+                <a class="pilcrow" href="#section-244">&#182;</a>
               </div>
               <p>whether flash should play a given type</p>
 
@@ -6636,11 +6675,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-243">
+        <li id="section-245">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-243">&#182;</a>
+                <a class="pilcrow" href="#section-245">&#182;</a>
               </div>
               <p>normalize event methods</p>
 
@@ -6655,11 +6694,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-244">
+        <li id="section-246">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-244">&#182;</a>
+                <a class="pilcrow" href="#section-246">&#182;</a>
               </div>
               <p>normalize &quot;on&quot; event prefix, optional capture argument</p>
 
@@ -6675,11 +6714,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-245">
+        <li id="section-247">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-245">&#182;</a>
+                <a class="pilcrow" href="#section-247">&#182;</a>
               </div>
               <p>prefix</p>
 
@@ -6691,11 +6730,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-246">
+        <li id="section-248">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-246">&#182;</a>
+                <a class="pilcrow" href="#section-248">&#182;</a>
               </div>
               <p>no capture</p>
 
@@ -6716,11 +6755,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-247">
+        <li id="section-249">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-247">&#182;</a>
+                <a class="pilcrow" href="#section-249">&#182;</a>
               </div>
               <p>normalize and call the event method, with the proper arguments</p>
 
@@ -6734,11 +6773,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-248">
+        <li id="section-250">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-248">&#182;</a>
+                <a class="pilcrow" href="#section-250">&#182;</a>
               </div>
               <p>old IE can&#39;t do apply().</p>
 
@@ -6780,11 +6819,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-249">
+        <li id="section-251">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-249">&#182;</a>
+                <a class="pilcrow" href="#section-251">&#182;</a>
               </div>
               <p>wrap html5 event handlers so we don&#39;t call them on destroyed and/or unloaded sounds</p>
 
@@ -6801,11 +6840,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-250">
+        <li id="section-252">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-250">&#182;</a>
+                <a class="pilcrow" href="#section-252">&#182;</a>
               </div>
               <d>
 
@@ -6820,11 +6859,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-251">
+        <li id="section-253">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-251">&#182;</a>
+                <a class="pilcrow" href="#section-253">&#182;</a>
               </div>
               <p></d></p>
 
@@ -6846,11 +6885,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-252">
+        <li id="section-254">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-252">&#182;</a>
+                <a class="pilcrow" href="#section-254">&#182;</a>
               </div>
               <p>HTML5 event-name-to-handler map</p>
 
@@ -6866,11 +6905,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-253">
+        <li id="section-255">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-253">&#182;</a>
+                <a class="pilcrow" href="#section-255">&#182;</a>
               </div>
               <p>enough has loaded to play</p>
 
@@ -6887,11 +6926,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-254">
+        <li id="section-256">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-254">&#182;</a>
+                <a class="pilcrow" href="#section-256">&#182;</a>
               </div>
               <p>this event has already fired. ignore.</p>
 
@@ -6907,11 +6946,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-255">
+        <li id="section-257">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-255">&#182;</a>
+                <a class="pilcrow" href="#section-257">&#182;</a>
               </div>
               <p>position according to instance options</p>
 
@@ -6922,11 +6961,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-256">
+        <li id="section-258">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-256">&#182;</a>
+                <a class="pilcrow" href="#section-258">&#182;</a>
               </div>
               <p>set the position if position was set before the sound loaded</p>
 
@@ -6944,11 +6983,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-257">
+        <li id="section-259">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-257">&#182;</a>
+                <a class="pilcrow" href="#section-259">&#182;</a>
               </div>
               <p>hack for HTML5 from/to case</p>
 
@@ -6975,11 +7014,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-258">
+        <li id="section-260">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-258">&#182;</a>
+                <a class="pilcrow" href="#section-260">&#182;</a>
               </div>
               <p>TODO: Reserved for potential use</p>
 
@@ -7018,11 +7057,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-259">
+        <li id="section-261">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-259">&#182;</a>
+                <a class="pilcrow" href="#section-261">&#182;</a>
               </div>
               <p>call load with error state?</p>
 
@@ -7041,11 +7080,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-260">
+        <li id="section-262">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-260">&#182;</a>
+                <a class="pilcrow" href="#section-262">&#182;</a>
               </div>
               <p>safari seems to nicely report progress events, eventually totalling 100%</p>
 
@@ -7070,11 +7109,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-261">
+        <li id="section-263">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-261">&#182;</a>
+                <a class="pilcrow" href="#section-263">&#182;</a>
               </div>
               <p>assume buffering at first</p>
 
@@ -7089,11 +7128,11 @@ hack: called at start, and end from flash at/after onfinish()</p>
         </li>
         
         
-        <li id="section-262">
+        <li id="section-264">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-262">&#182;</a>
+                <a class="pilcrow" href="#section-264">&#182;</a>
               </div>
               <p>sm2._wD(this._s.id + &#39;: play()&#39;);
 once play starts, no buffering</p>
@@ -7111,11 +7150,11 @@ once play starts, no buffering</p>
         </li>
         
         
-        <li id="section-263">
+        <li id="section-265">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-263">&#182;</a>
+                <a class="pilcrow" href="#section-265">&#182;</a>
               </div>
               <p>once play starts, no buffering</p>
 
@@ -7130,11 +7169,11 @@ once play starts, no buffering</p>
         </li>
         
         
-        <li id="section-264">
+        <li id="section-266">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-264">&#182;</a>
+                <a class="pilcrow" href="#section-266">&#182;</a>
               </div>
               <p>note: can fire repeatedly after &quot;loaded&quot; event, due to use of HTTP range/partials</p>
 
@@ -7142,18 +7181,18 @@ once play starts, no buffering</p>
             
             <div class="content"><div class='highlight'><pre>
       <span class="keyword">var</span> s = <span class="keyword">this</span>._s,
-          i, j, str, buffered = <span class="number">0</span>,
+          i, j, progStr, buffered = <span class="number">0</span>,
           isProgress = (e.type === <span class="string">'progress'</span>),
           ranges = e.target.buffered,</pre></div></div>
             
         </li>
         
         
-        <li id="section-265">
+        <li id="section-267">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-265">&#182;</a>
+                <a class="pilcrow" href="#section-267">&#182;</a>
               </div>
               <p>firefox 3.6 implements e.loaded/total (bytes)</p>
 
@@ -7165,11 +7204,11 @@ once play starts, no buffering</p>
         </li>
         
         
-        <li id="section-266">
+        <li id="section-268">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-266">&#182;</a>
+                <a class="pilcrow" href="#section-268">&#182;</a>
               </div>
               <p>reset the &quot;buffered&quot; (loaded byte ranges) array</p>
 
@@ -7182,11 +7221,11 @@ once play starts, no buffering</p>
         </li>
         
         
-        <li id="section-267">
+        <li id="section-269">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-267">&#182;</a>
+                <a class="pilcrow" href="#section-269">&#182;</a>
               </div>
               <p>if loaded is 0, try TimeRanges implementation as % of load
 <a href="https://developer.mozilla.org/en/DOM/TimeRanges">https://developer.mozilla.org/en/DOM/TimeRanges</a></p>
@@ -7196,11 +7235,11 @@ once play starts, no buffering</p>
         </li>
         
         
-        <li id="section-268">
+        <li id="section-270">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-268">&#182;</a>
+                <a class="pilcrow" href="#section-270">&#182;</a>
               </div>
               <p>re-build &quot;buffered&quot; array
 HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash or HTML5.</p>
@@ -7217,11 +7256,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-269">
+        <li id="section-271">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-269">&#182;</a>
+                <a class="pilcrow" href="#section-271">&#182;</a>
               </div>
               <p>use the last value locally</p>
 
@@ -7232,11 +7271,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-270">
+        <li id="section-272">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-270">&#182;</a>
+                <a class="pilcrow" href="#section-272">&#182;</a>
               </div>
               <p>linear case, buffer sum; does not account for seeking and HTTP partials / byte ranges</p>
 
@@ -7247,23 +7286,23 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-271">
+        <li id="section-273">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-271">&#182;</a>
+                <a class="pilcrow" href="#section-273">&#182;</a>
               </div>
               <d>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (isProgress &amp;&amp; ranges.length &gt; <span class="number">1</span>) {
-          str = [];
+          progStr = [];
           j = ranges.length;
           <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;j; i++) {
-            str.push(e.target.buffered.start(i)*msecScale +<span class="string">'-'</span>+ e.target.buffered.end(i)*msecScale);
+            progStr.push(e.target.buffered.start(i)*msecScale +<span class="string">'-'</span>+ e.target.buffered.end(i)*msecScale);
           }
-          sm2._wD(<span class="keyword">this</span>._s.id + <span class="string">': progress, timeRanges: '</span> + str.join(<span class="string">', '</span>));
+          sm2._wD(<span class="keyword">this</span>._s.id + <span class="string">': progress, timeRanges: '</span> + progStr.join(<span class="string">', '</span>));
         }
 
         <span class="keyword">if</span> (isProgress &amp;&amp; !isNaN(loaded)) {
@@ -7273,11 +7312,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-272">
+        <li id="section-274">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-272">&#182;</a>
+                <a class="pilcrow" href="#section-274">&#182;</a>
               </div>
               <p></d></p>
 
@@ -7291,11 +7330,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-273">
+        <li id="section-275">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-273">&#182;</a>
+                <a class="pilcrow" href="#section-275">&#182;</a>
               </div>
               <p>if progress, likely not buffering</p>
 
@@ -7306,11 +7345,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-274">
+        <li id="section-276">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-274">&#182;</a>
+                <a class="pilcrow" href="#section-276">&#182;</a>
               </div>
               <p>TODO: prevent calls with duplicate values.</p>
 
@@ -7322,11 +7361,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-275">
+        <li id="section-277">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-275">&#182;</a>
+                <a class="pilcrow" href="#section-277">&#182;</a>
               </div>
               <p>in case &quot;onload&quot; doesn&#39;t fire (eg. gecko 1.9.2)</p>
 
@@ -7350,11 +7389,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-276">
+        <li id="section-278">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-276">&#182;</a>
+                <a class="pilcrow" href="#section-278">&#182;</a>
               </div>
               <p>download paused/stopped, may have finished (eg. onload)</p>
 
@@ -7387,11 +7426,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-277">
+        <li id="section-279">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-277">&#182;</a>
+                <a class="pilcrow" href="#section-279">&#182;</a>
               </div>
               <p>see also: seeking</p>
 
@@ -7402,11 +7441,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-278">
+        <li id="section-280">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-278">&#182;</a>
+                <a class="pilcrow" href="#section-280">&#182;</a>
               </div>
               <p>playback faster than download rate, etc.</p>
 
@@ -7423,11 +7462,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-279">
+        <li id="section-281">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-279">&#182;</a>
+                <a class="pilcrow" href="#section-281">&#182;</a>
               </div>
               <p>playability test based on URL or MIME type</p>
 
@@ -7441,11 +7480,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-280">
+        <li id="section-282">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-280">&#182;</a>
+                <a class="pilcrow" href="#section-282">&#182;</a>
               </div>
               <p>nothing to check</p>
 
@@ -7458,11 +7497,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-281">
+        <li id="section-283">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-281">&#182;</a>
+                <a class="pilcrow" href="#section-283">&#182;</a>
               </div>
               <p>RTMP, or preferring flash</p>
 
@@ -7475,11 +7514,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-282">
+        <li id="section-284">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-282">&#182;</a>
+                <a class="pilcrow" href="#section-284">&#182;</a>
               </div>
               <p>Use type, if specified. Pass data: URIs to HTML5. If HTML5-only mode, no other options, so just give &#39;er</p>
 
@@ -7510,28 +7549,29 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-283">
+        <li id="section-285">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-283">&#182;</a>
+                <a class="pilcrow" href="#section-285">&#182;</a>
               </div>
-              <p>Firefox likes &#39;&#39; for unload (used to work, but no longer?) - however, may request hosting page URL (bad.) Most other UAs dislike &#39;&#39; and fail to unload.</p>
+              <p>Firefox and Chrome accept short WAVe data: URIs. Chome dislikes audio/wav, but accepts audio/wav for data: MIME.
+Desktop Safari complains / fails on data: URI, so it gets about:blank.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      url = (isSafari &amp;&amp; !is_iDevice ? <span class="literal">null</span> : (isFirefox ? emptyURL : <span class="literal">null</span>));
+            <div class="content"><div class='highlight'><pre>      url = (isSafari ? emptyURL : (sm2.html5.canPlayType(<span class="string">'audio/wav'</span>) ? emptyWAV : emptyURL));
 
       oAudio.src = url;</pre></div></div>
             
         </li>
         
         
-        <li id="section-284">
+        <li id="section-286">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-284">&#182;</a>
+                <a class="pilcrow" href="#section-286">&#182;</a>
               </div>
               <p>reset some state, too</p>
 
@@ -7548,11 +7588,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-285">
+        <li id="section-287">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-285">&#182;</a>
+                <a class="pilcrow" href="#section-287">&#182;</a>
               </div>
               <p>ensure URL state is trashed, also</p>
 
@@ -7591,11 +7631,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-286">
+        <li id="section-288">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-286">&#182;</a>
+                <a class="pilcrow" href="#section-288">&#182;</a>
               </div>
               <p>account for known cases like audio/mp3</p>
 
@@ -7622,11 +7662,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-287">
+        <li id="section-289">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-287">&#182;</a>
+                <a class="pilcrow" href="#section-289">&#182;</a>
               </div>
               <p>TODO: Strip URL queries, etc.</p>
 
@@ -7642,11 +7682,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-288">
+        <li id="section-290">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-288">&#182;</a>
+                <a class="pilcrow" href="#section-290">&#182;</a>
               </div>
               <p>audio/mp3 -&gt; mp3, result should be known</p>
 
@@ -7657,11 +7697,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-289">
+        <li id="section-291">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-289">&#182;</a>
+                <a class="pilcrow" href="#section-291">&#182;</a>
               </div>
               <p>strip &quot;audio/X; codecs...&quot;</p>
 
@@ -7674,11 +7714,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-290">
+        <li id="section-292">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-290">&#182;</a>
+                <a class="pilcrow" href="#section-292">&#182;</a>
               </div>
               <p>match the raw extension name - &quot;mp3&quot;, for example</p>
 
@@ -7692,11 +7732,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-291">
+        <li id="section-293">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-291">&#182;</a>
+                <a class="pilcrow" href="#section-293">&#182;</a>
               </div>
               <p>result known</p>
 
@@ -7711,11 +7751,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-292">
+        <li id="section-294">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-292">&#182;</a>
+                <a class="pilcrow" href="#section-294">&#182;</a>
               </div>
               <p>sm2._wD(&#39;canPlayType, found result: &#39; + result);</p>
 
@@ -7740,11 +7780,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-293">
+        <li id="section-295">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-293">&#182;</a>
+                <a class="pilcrow" href="#section-295">&#182;</a>
               </div>
               <p>without HTML5, we need Flash.</p>
 
@@ -7758,11 +7798,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-294">
+        <li id="section-296">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-294">&#182;</a>
+                <a class="pilcrow" href="#section-296">&#182;</a>
               </div>
               <p>double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load &quot;null&quot; as a URL. :/</p>
 
@@ -7773,7 +7813,7 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
 
     <span class="function"><span class="keyword">function</span> <span class="title">cp</span><span class="params">(m)</span> {</span>
 
-      <span class="keyword">var</span> canPlay, i, j,
+      <span class="keyword">var</span> canPlay, j,
           result = <span class="literal">false</span>,
           isOK = <span class="literal">false</span>;
 
@@ -7786,11 +7826,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-295">
+        <li id="section-297">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-295">&#182;</a>
+                <a class="pilcrow" href="#section-297">&#182;</a>
               </div>
               <p>iterate through all mime types, return any successes</p>
 
@@ -7804,11 +7844,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-296">
+        <li id="section-298">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-296">&#182;</a>
+                <a class="pilcrow" href="#section-298">&#182;</a>
               </div>
               <p>note flash support, too</p>
 
@@ -7830,11 +7870,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-297">
+        <li id="section-299">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-297">&#182;</a>
+                <a class="pilcrow" href="#section-299">&#182;</a>
               </div>
               <p>test all registered formats + codecs</p>
 
@@ -7854,11 +7894,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-298">
+        <li id="section-300">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-298">&#182;</a>
+                <a class="pilcrow" href="#section-300">&#182;</a>
               </div>
               <p>write back generic type too, eg. audio/mp3</p>
 
@@ -7869,11 +7909,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-299">
+        <li id="section-301">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-299">&#182;</a>
+                <a class="pilcrow" href="#section-301">&#182;</a>
               </div>
               <p>assign flash</p>
 
@@ -7894,11 +7934,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-300">
+        <li id="section-302">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-300">&#182;</a>
+                <a class="pilcrow" href="#section-302">&#182;</a>
               </div>
               <p>assign result to related formats, too</p>
 
@@ -7912,11 +7952,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-301">
+        <li id="section-303">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-301">&#182;</a>
+                <a class="pilcrow" href="#section-303">&#182;</a>
               </div>
               <p>eg. audio/m4a</p>
 
@@ -7949,11 +7989,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-302">
+        <li id="section-304">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-302">&#182;</a>
+                <a class="pilcrow" href="#section-304">&#182;</a>
               </div>
               <d>
 
@@ -8009,11 +8049,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-303">
+        <li id="section-305">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-303">&#182;</a>
+                <a class="pilcrow" href="#section-305">&#182;</a>
               </div>
               <p></d></p>
 
@@ -8027,11 +8067,11 @@ HTML5 returns seconds. SM2 API uses msec for setPosition() etc., whether Flash o
         </li>
         
         
-        <li id="section-304">
+        <li id="section-306">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-304">&#182;</a>
+                <a class="pilcrow" href="#section-306">&#182;</a>
               </div>
               <p>internal string replace helper.
 arguments: o [,items to replace]</p>
@@ -8039,44 +8079,10 @@ arguments: o [,items to replace]</p>
 
             </div>
             
-        </li>
-        
-        
-        <li id="section-305">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-305">&#182;</a>
-              </div>
-              <p>real array, please</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> args = slice.call(arguments),</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-306">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-306">&#182;</a>
-              </div>
-              <p>first arg</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    o = args.shift(),
-
-    str = (strings &amp;&amp; strings[o]?strings[o]:<span class="string">''</span>), i, j;
-    <span class="keyword">if</span> (str &amp;&amp; args &amp;&amp; args.length) {
-      <span class="keyword">for</span> (i = <span class="number">0</span>, j = args.length; i &lt; j; i++) {
-        str = str.replace(<span class="string">'%s'</span>, args[i]);
-      }
-    }
-
-    <span class="keyword">return</span> str;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>
+    <span class="keyword">var</span> args,
+        i, j, o,
+        sstr;</pre></div></div>
             
         </li>
         
@@ -8086,6 +8092,46 @@ arguments: o [,items to replace]</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-307">&#182;</a>
+              </div>
+              <p>real array, please</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    args = slice.call(arguments);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-308">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-308">&#182;</a>
+              </div>
+              <p>first argument</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    o = args.shift();
+
+    sstr = (strings &amp;&amp; strings[o] ? strings[o] : <span class="string">''</span>);
+
+    <span class="keyword">if</span> (sstr &amp;&amp; args &amp;&amp; args.length) {
+      <span class="keyword">for</span> (i = <span class="number">0</span>, j = args.length; i &lt; j; i++) {
+        sstr = sstr.replace(<span class="string">'%s'</span>, args[i]);
+      }
+    }
+
+    <span class="keyword">return</span> sstr;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-309">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-309">&#182;</a>
               </div>
               <p></d></p>
 
@@ -8099,11 +8145,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-308">
+        <li id="section-310">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-308">&#182;</a>
+                <a class="pilcrow" href="#section-310">&#182;</a>
               </div>
               <p>flash 8 requires stream = false for looping to work</p>
 
@@ -8134,11 +8180,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-309">
+        <li id="section-311">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-309">&#182;</a>
+                <a class="pilcrow" href="#section-311">&#182;</a>
               </div>
               <d>
 
@@ -8153,11 +8199,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-310">
+        <li id="section-312">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-310">&#182;</a>
+                <a class="pilcrow" href="#section-312">&#182;</a>
               </div>
               <p></d></p>
 
@@ -8191,11 +8237,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-311">
+        <li id="section-313">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-311">&#182;</a>
+                <a class="pilcrow" href="#section-313">&#182;</a>
               </div>
               <p>general failure exception handler</p>
 
@@ -8224,11 +8270,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-312">
+        <li id="section-314">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-312">&#182;</a>
+                <a class="pilcrow" href="#section-314">&#182;</a>
               </div>
               <p>assume user knows what they&#39;re doing</p>
 
@@ -8241,11 +8287,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-313">
+        <li id="section-315">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-313">&#182;</a>
+                <a class="pilcrow" href="#section-315">&#182;</a>
               </div>
               <p>append trailing slash, if needed</p>
 
@@ -8270,11 +8316,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-314">
+        <li id="section-316">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-314">&#182;</a>
+                <a class="pilcrow" href="#section-316">&#182;</a>
               </div>
               <p>short-hand for internal use</p>
 
@@ -8291,11 +8337,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-315">
+        <li id="section-317">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-315">&#182;</a>
+                <a class="pilcrow" href="#section-317">&#182;</a>
               </div>
               <p>debug flash movie, if applicable</p>
 
@@ -8314,11 +8360,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-316">
+        <li id="section-318">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-316">&#182;</a>
+                <a class="pilcrow" href="#section-318">&#182;</a>
               </div>
               <p>set up default options</p>
 
@@ -8329,11 +8375,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-317">
+        <li id="section-319">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-317">&#182;</a>
+                <a class="pilcrow" href="#section-319">&#182;</a>
               </div>
               <p>+flash 9 base options</p>
 
@@ -8345,11 +8391,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-318">
+        <li id="section-320">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-318">&#182;</a>
+                <a class="pilcrow" href="#section-320">&#182;</a>
               </div>
               <p>+moviestar support</p>
 
@@ -8365,11 +8411,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-319">
+        <li id="section-321">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-319">&#182;</a>
+                <a class="pilcrow" href="#section-321">&#182;</a>
               </div>
               <p>regExp for flash canPlay(), etc.</p>
 
@@ -8380,11 +8426,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-320">
+        <li id="section-322">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-320">&#182;</a>
+                <a class="pilcrow" href="#section-322">&#182;</a>
               </div>
               <p>if applicable, use _debug versions of SWFs</p>
 
@@ -8411,11 +8457,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-321">
+        <li id="section-323">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-321">&#182;</a>
+                <a class="pilcrow" href="#section-323">&#182;</a>
               </div>
               <p>starts debug mode, creating output <div> for UAs without console object</p>
 
@@ -8424,11 +8470,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-322">
+        <li id="section-324">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-322">&#182;</a>
+                <a class="pilcrow" href="#section-324">&#182;</a>
               </div>
               <p>allow force of debug mode via URL</p>
 <d>
@@ -8502,11 +8548,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-323">
+        <li id="section-325">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-323">&#182;</a>
+                <a class="pilcrow" href="#section-325">&#182;</a>
               </div>
               <p></d></p>
 
@@ -8520,11 +8566,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-324">
+        <li id="section-326">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-324">&#182;</a>
+                <a class="pilcrow" href="#section-326">&#182;</a>
               </div>
               <d>
 
@@ -8550,11 +8596,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-325">
+        <li id="section-327">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-325">&#182;</a>
+                <a class="pilcrow" href="#section-327">&#182;</a>
               </div>
               <p>minimize</p>
 
@@ -8576,11 +8622,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-326">
+        <li id="section-328">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-326">&#182;</a>
+                <a class="pilcrow" href="#section-328">&#182;</a>
               </div>
               <p>troubleshooter debug hooks</p>
 
@@ -8595,11 +8641,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-327">
+        <li id="section-329">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-327">&#182;</a>
+                <a class="pilcrow" href="#section-329">&#182;</a>
               </div>
               <p>oh well</p>
 
@@ -8616,11 +8662,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-328">
+        <li id="section-330">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-328">&#182;</a>
+                <a class="pilcrow" href="#section-330">&#182;</a>
               </div>
               <p></d></p>
 
@@ -8652,11 +8698,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-329">
+        <li id="section-331">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-329">&#182;</a>
+                <a class="pilcrow" href="#section-331">&#182;</a>
               </div>
               <p><em>possible</em> flash block situation.</p>
 
@@ -8673,11 +8719,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-330">
+        <li id="section-332">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-330">&#182;</a>
+                <a class="pilcrow" href="#section-332">&#182;</a>
               </div>
               <p>no flash, or unused</p>
 
@@ -8693,11 +8739,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-331">
+        <li id="section-333">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-331">&#182;</a>
+                <a class="pilcrow" href="#section-333">&#182;</a>
               </div>
               <p>make the movie more visible, so user can fix</p>
 
@@ -8712,11 +8758,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-332">
+        <li id="section-334">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-332">&#182;</a>
+                <a class="pilcrow" href="#section-334">&#182;</a>
               </div>
               <p>fire onready(), complain lightly</p>
 
@@ -8730,11 +8776,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-333">
+        <li id="section-335">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-333">&#182;</a>
+                <a class="pilcrow" href="#section-335">&#182;</a>
               </div>
               <p>SM2 loaded OK (or recovered)</p>
 
@@ -8743,11 +8789,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-334">
+        <li id="section-336">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-334">&#182;</a>
+                <a class="pilcrow" href="#section-336">&#182;</a>
               </div>
               <d>
 
@@ -8760,11 +8806,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-335">
+        <li id="section-337">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-335">&#182;</a>
+                <a class="pilcrow" href="#section-337">&#182;</a>
               </div>
               <p></d></p>
 
@@ -8798,11 +8844,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-336">
+        <li id="section-338">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-336">&#182;</a>
+                <a class="pilcrow" href="#section-338">&#182;</a>
               </div>
               <p>if unspecified, assume OK/error</p>
 
@@ -8820,11 +8866,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-337">
+        <li id="section-339">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-337">&#182;</a>
+                <a class="pilcrow" href="#section-339">&#182;</a>
               </div>
               <p>not ready yet.</p>
 
@@ -8838,11 +8884,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-338">
+        <li id="section-340">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-338">&#182;</a>
+                <a class="pilcrow" href="#section-340">&#182;</a>
               </div>
               <p>invalid case</p>
 
@@ -8858,11 +8904,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-339">
+        <li id="section-341">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-339">&#182;</a>
+                <a class="pilcrow" href="#section-341">&#182;</a>
               </div>
               <p>queue specified by type, or none</p>
 
@@ -8889,11 +8935,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-340">
+        <li id="section-342">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-340">&#182;</a>
+                <a class="pilcrow" href="#section-342">&#182;</a>
               </div>
               <p>sm2._wD(sm + &#39;: Firing &#39; + queue.length + &#39; &#39; + oOptions.type + &#39;() item&#39; + (queue.length === 1 ? &#39;&#39; : &#39;s&#39;));</p>
 
@@ -8910,11 +8956,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-341">
+        <li id="section-343">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-341">&#182;</a>
+                <a class="pilcrow" href="#section-343">&#182;</a>
               </div>
               <p>useFlashBlock and SWF timeout case doesn&#39;t count here.</p>
 
@@ -8942,11 +8988,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-342">
+        <li id="section-344">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-342">&#182;</a>
+                <a class="pilcrow" href="#section-344">&#182;</a>
               </div>
               <p>call user-defined &quot;onload&quot;, scoped to window</p>
 
@@ -8972,11 +9018,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-343">
+        <li id="section-345">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-343">&#182;</a>
+                <a class="pilcrow" href="#section-345">&#182;</a>
               </div>
               <p>hat tip: Flash Detect library (BSD, (C) 2007) by Carl &quot;DocYes&quot; S. Yestrau - <a href="http://featureblend.com/javascript-flash-detection-library.html">http://featureblend.com/javascript-flash-detection-library.html</a> / <a href="http://featureblend.com/license.txt">http://featureblend.com/license.txt</a></p>
 
@@ -8988,11 +9034,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-344">
+        <li id="section-346">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-344">&#182;</a>
+                <a class="pilcrow" href="#section-346">&#182;</a>
               </div>
               <p>this work has already been done.</p>
 
@@ -9014,11 +9060,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-345">
+        <li id="section-347">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-345">&#182;</a>
+                <a class="pilcrow" href="#section-347">&#182;</a>
               </div>
               <p>Windows 8 Store Apps (MSAppHost) are weird (compatibility?) and won&#39;t complain here, but will barf if Flash/ActiveX object is appended to the DOM.</p>
 
@@ -9031,11 +9077,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-346">
+        <li id="section-348">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-346">&#182;</a>
+                <a class="pilcrow" href="#section-348">&#182;</a>
               </div>
               <p>oh well</p>
 
@@ -9048,11 +9094,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-347">
+        <li id="section-349">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-347">&#182;</a>
+                <a class="pilcrow" href="#section-349">&#182;</a>
               </div>
               <p>cleanup, because it is ActiveX after all</p>
 
@@ -9076,11 +9122,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-348">
+        <li id="section-350">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-348">&#182;</a>
+                <a class="pilcrow" href="#section-350">&#182;</a>
               </div>
               <p>iPhone &lt;= 3.1 has broken HTML5 audio(), but firmware 3.2 (original iPad) + iOS4 works.</p>
 
@@ -9093,11 +9139,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-349">
+        <li id="section-351">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-349">&#182;</a>
+                <a class="pilcrow" href="#section-351">&#182;</a>
               </div>
               <p>has Audio(), but is broken; let it load links directly.</p>
 
@@ -9108,11 +9154,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-350">
+        <li id="section-352">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-350">&#182;</a>
+                <a class="pilcrow" href="#section-352">&#182;</a>
               </div>
               <p>ignore flash case, however</p>
 
@@ -9123,11 +9169,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-351">
+        <li id="section-353">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-351">&#182;</a>
+                <a class="pilcrow" href="#section-353">&#182;</a>
               </div>
               <p>hide the SWF, if present</p>
 
@@ -9149,11 +9195,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-352">
+        <li id="section-354">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-352">&#182;</a>
+                <a class="pilcrow" href="#section-354">&#182;</a>
               </div>
               <d>
 
@@ -9166,11 +9212,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-353">
+        <li id="section-355">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-353">&#182;</a>
+                <a class="pilcrow" href="#section-355">&#182;</a>
               </div>
               <p></d></p>
 
@@ -9186,11 +9232,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-354">
+        <li id="section-356">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-354">&#182;</a>
+                <a class="pilcrow" href="#section-356">&#182;</a>
               </div>
               <p>sort out whether flash is optional, required or can be ignored.</p>
 
@@ -9199,11 +9245,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-355">
+        <li id="section-357">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-355">&#182;</a>
+                <a class="pilcrow" href="#section-357">&#182;</a>
               </div>
               <p>innocent until proven guilty.</p>
 
@@ -9219,11 +9265,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-356">
+        <li id="section-358">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-356">&#182;</a>
+                <a class="pilcrow" href="#section-358">&#182;</a>
               </div>
               <p>100% HTML5 mode is not possible.</p>
 
@@ -9236,11 +9282,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-357">
+        <li id="section-359">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-357">&#182;</a>
+                <a class="pilcrow" href="#section-359">&#182;</a>
               </div>
               <p>flash may be required, or preferred for this format.</p>
 
@@ -9257,11 +9303,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-358">
+        <li id="section-360">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-358">&#182;</a>
+                <a class="pilcrow" href="#section-360">&#182;</a>
               </div>
               <p>sanity check...</p>
 
@@ -9292,11 +9338,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-359">
+        <li id="section-361">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-359">&#182;</a>
+                <a class="pilcrow" href="#section-361">&#182;</a>
               </div>
               <p>find the first good one</p>
 
@@ -9309,11 +9355,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-360">
+        <li id="section-362">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-360">&#182;</a>
+                <a class="pilcrow" href="#section-362">&#182;</a>
               </div>
               <p>MIME check</p>
 
@@ -9329,11 +9375,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-361">
+        <li id="section-363">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-361">&#182;</a>
+                <a class="pilcrow" href="#section-363">&#182;</a>
               </div>
               <p>URL string check</p>
 
@@ -9348,11 +9394,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-362">
+        <li id="section-364">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-362">&#182;</a>
+                <a class="pilcrow" href="#section-364">&#182;</a>
               </div>
               <p>normalize to string</p>
 
@@ -9369,11 +9415,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-363">
+        <li id="section-365">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-363">&#182;</a>
+                <a class="pilcrow" href="#section-365">&#182;</a>
               </div>
               <p>single URL case</p>
 
@@ -9403,7 +9449,7 @@ arguments: o [,items to replace]</p>
         <span class="keyword">if</span> (h5IntervalTimer === <span class="literal">null</span> &amp;&amp; h5TimerCount === <span class="number">0</span>) {
 
           h5IntervalTimer = setInterval(timerExecute, sm2.html5PollingInterval);
-   
+
         }
 
         h5TimerCount++;
@@ -9429,11 +9475,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-364">
+        <li id="section-366">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-364">&#182;</a>
+                <a class="pilcrow" href="#section-366">&#182;</a>
               </div>
               <p>interval will stop itself at next execution.</p>
 
@@ -9461,11 +9507,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-365">
+        <li id="section-367">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-365">&#182;</a>
+                <a class="pilcrow" href="#section-367">&#182;</a>
               </div>
               <p>no active timers, stop polling interval.</p>
 
@@ -9483,11 +9529,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-366">
+        <li id="section-368">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-366">&#182;</a>
+                <a class="pilcrow" href="#section-368">&#182;</a>
               </div>
               <p>check all HTML5 sounds with timers</p>
 
@@ -9525,11 +9571,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-367">
+        <li id="section-369">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-367">&#182;</a>
+                <a class="pilcrow" href="#section-369">&#182;</a>
               </div>
               <p>special case: &quot;bad&quot; Safari (OS X 10.3 - 10.7) must fall back to flash for MP3/MP4</p>
 
@@ -9540,11 +9586,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-368">
+        <li id="section-370">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-368">&#182;</a>
+                <a class="pilcrow" href="#section-370">&#182;</a>
               </div>
               <p>doesn&#39;t apply</p>
 
@@ -9564,11 +9610,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-369">
+        <li id="section-371">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-369">&#182;</a>
+                <a class="pilcrow" href="#section-371">&#182;</a>
               </div>
               <p>assign result to related formats, too</p>
 
@@ -9595,11 +9641,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-370">
+        <li id="section-372">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-370">&#182;</a>
+                <a class="pilcrow" href="#section-372">&#182;</a>
               </div>
               <d>
 
@@ -9631,11 +9677,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-371">
+        <li id="section-373">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-371">&#182;</a>
+                <a class="pilcrow" href="#section-373">&#182;</a>
               </div>
               <p></d></p>
 
@@ -9649,11 +9695,11 @@ arguments: o [,items to replace]</p>
         </li>
         
         
-        <li id="section-372">
+        <li id="section-374">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-372">&#182;</a>
+                <a class="pilcrow" href="#section-374">&#182;</a>
               </div>
               <p>flash callback confirming flash loaded, EI working etc.
 swfVersion: SWF build string</p>
@@ -9679,11 +9725,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-373">
+        <li id="section-375">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-373">&#182;</a>
+                <a class="pilcrow" href="#section-375">&#182;</a>
               </div>
               <p>complain if JS + SWF build/version strings don&#39;t match, excluding +DEV builds</p>
 <d>
@@ -9697,11 +9743,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-374">
+        <li id="section-376">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-374">&#182;</a>
+                <a class="pilcrow" href="#section-376">&#182;</a>
               </div>
               <p>escape flash -&gt; JS stack so this error fires in window.</p>
 
@@ -9714,11 +9760,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-375">
+        <li id="section-377">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-375">&#182;</a>
+                <a class="pilcrow" href="#section-377">&#182;</a>
               </div>
               <p>exit, init will fail with timeout</p>
 
@@ -9731,11 +9777,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-376">
+        <li id="section-378">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-376">&#182;</a>
+                <a class="pilcrow" href="#section-378">&#182;</a>
               </div>
               <p></d></p>
 
@@ -9744,11 +9790,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-377">
+        <li id="section-379">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-377">&#182;</a>
+                <a class="pilcrow" href="#section-379">&#182;</a>
               </div>
               <p>IE needs a larger timeout</p>
 
@@ -9770,11 +9816,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-378">
+        <li id="section-380">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-378">&#182;</a>
+                <a class="pilcrow" href="#section-380">&#182;</a>
               </div>
               <p>ignore if already succeeded</p>
 
@@ -9788,18 +9834,21 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-379">
+        <li id="section-381">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-379">&#182;</a>
+                <a class="pilcrow" href="#section-381">&#182;</a>
               </div>
               <d>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>
-      <span class="keyword">var</span> options = [], title, str = [], delimiter = <span class="string">' + '</span>;
+      <span class="keyword">var</span> options = [],
+          title,
+          msg = [],
+          delimiter = <span class="string">' + '</span>;
 
       title = <span class="string">'SoundManager '</span> + sm2.version + (!sm2.html5Only &amp;&amp; sm2.useHTML5Audio ? (sm2.hasHTML5 ? <span class="string">' + HTML5 audio'</span> : <span class="string">', no HTML5 audio support'</span>) : <span class="string">''</span>);
 
@@ -9842,21 +9891,21 @@ swfVersion: SWF build string</p>
       }
 
       <span class="keyword">if</span> (options.length) {
-        str = str.concat([options.join(delimiter)]);
+        msg = msg.concat([options.join(delimiter)]);
       }
 
-      sm2._wD(title + (str.length ? delimiter + str.join(<span class="string">', '</span>) : <span class="string">''</span>), <span class="number">1</span>);
+      sm2._wD(title + (msg.length ? delimiter + msg.join(<span class="string">', '</span>) : <span class="string">''</span>), <span class="number">1</span>);
 
       showSupport();</pre></div></div>
             
         </li>
         
         
-        <li id="section-380">
+        <li id="section-382">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-380">&#182;</a>
+                <a class="pilcrow" href="#section-382">&#182;</a>
               </div>
               <p></d></p>
 
@@ -9870,11 +9919,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-381">
+        <li id="section-383">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-381">&#182;</a>
+                <a class="pilcrow" href="#section-383">&#182;</a>
               </div>
               <p>100% HTML5 mode</p>
 
@@ -9889,11 +9938,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-382">
+        <li id="section-384">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-382">&#182;</a>
+                <a class="pilcrow" href="#section-384">&#182;</a>
               </div>
               <p>prevent multiple init attempts</p>
 
@@ -9910,11 +9959,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-383">
+        <li id="section-385">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-383">&#182;</a>
+                <a class="pilcrow" href="#section-385">&#182;</a>
               </div>
               <p>flash path</p>
 
@@ -9939,11 +9988,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-384">
+        <li id="section-386">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-384">&#182;</a>
+                <a class="pilcrow" href="#section-386">&#182;</a>
               </div>
               <p>safety check for legacy (change to Flash 9 URL)</p>
 
@@ -9980,11 +10029,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-385">
+        <li id="section-387">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-385">&#182;</a>
+                <a class="pilcrow" href="#section-387">&#182;</a>
               </div>
               <p><a href="http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html">http://help.adobe.com/en_US/as3/mobile/WS4bebcd66a74275c36cfb8137124318eebc6-7ffd.html</a></p>
 
@@ -10002,11 +10051,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-386">
+        <li id="section-388">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-386">&#182;</a>
+                <a class="pilcrow" href="#section-388">&#182;</a>
               </div>
               <p>don&#39;t write empty attribute</p>
 
@@ -10020,11 +10069,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-387">
+        <li id="section-389">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-387">&#182;</a>
+                <a class="pilcrow" href="#section-389">&#182;</a>
               </div>
               <p>IE is &quot;special&quot;.</p>
 
@@ -10075,11 +10124,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-388">
+        <li id="section-390">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-388">&#182;</a>
+                <a class="pilcrow" href="#section-390">&#182;</a>
               </div>
               <p>on-screen at all times</p>
 
@@ -10093,11 +10142,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-389">
+        <li id="section-391">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-389">&#182;</a>
+                <a class="pilcrow" href="#section-391">&#182;</a>
               </div>
               <blockquote>
 <p>= 6px for flash to run fast, &gt;= 8px to start up under Firefox/win32 in some cases. odd? yes.</p>
@@ -10114,11 +10163,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-390">
+        <li id="section-392">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-390">&#182;</a>
+                <a class="pilcrow" href="#section-392">&#182;</a>
               </div>
               <p>hide off-screen, lower priority</p>
 
@@ -10142,11 +10191,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-391">
+        <li id="section-393">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-391">&#182;</a>
+                <a class="pilcrow" href="#section-393">&#182;</a>
               </div>
               <p>soundcloud-reported render/crash fix, safari 5</p>
 
@@ -10183,11 +10232,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-392">
+        <li id="section-394">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-392">&#182;</a>
+                <a class="pilcrow" href="#section-394">&#182;</a>
               </div>
               <p>SM2 container is already in the document (eg. flashblock use case)</p>
 
@@ -10213,11 +10262,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-393">
+        <li id="section-395">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-393">&#182;</a>
+                <a class="pilcrow" href="#section-395">&#182;</a>
               </div>
               <p>sm2._wD(sm + &#39;: Trying to load &#39; + smURL + (!overHTTP &amp;&amp; sm2.altURL ? &#39; (alternate URL)&#39; : &#39;&#39;), 1);</p>
 
@@ -10238,11 +10287,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-394">
+        <li id="section-396">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-394">&#182;</a>
+                <a class="pilcrow" href="#section-396">&#182;</a>
               </div>
               <p>attempt to get, or create, movie (may already exist)</p>
 
@@ -10268,11 +10317,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-395">
+        <li id="section-397">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-395">&#182;</a>
+                <a class="pilcrow" href="#section-397">&#182;</a>
               </div>
               <p>inline markup case</p>
 
@@ -10286,11 +10335,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-396">
+        <li id="section-398">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-396">&#182;</a>
+                <a class="pilcrow" href="#section-398">&#182;</a>
               </div>
               <p>try to create</p>
 
@@ -10302,11 +10351,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-397">
+        <li id="section-399">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-397">&#182;</a>
+                <a class="pilcrow" href="#section-399">&#182;</a>
               </div>
               <p>try to re-append removed movie after reboot()</p>
 
@@ -10330,11 +10379,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-398">
+        <li id="section-400">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-398">&#182;</a>
+                <a class="pilcrow" href="#section-400">&#182;</a>
               </div>
               <d>
 
@@ -10345,11 +10394,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-399">
+        <li id="section-401">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-399">&#182;</a>
+                <a class="pilcrow" href="#section-401">&#182;</a>
               </div>
               <p></d></p>
 
@@ -10366,6 +10415,51 @@ swfVersion: SWF build string</p>
 
   };
 
+  rebootIntoHTML5 = <span class="keyword">function</span>() {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-402">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-402">&#182;</a>
+              </div>
+              <p>special case: try for a reboot with preferFlash: false, if 100% HTML5 mode is possible and useFlashBlock is not enabled.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+    window.setTimeout(<span class="keyword">function</span>() {
+
+      complain(smc + <span class="string">'useFlashBlock is false, 100% HTML5 mode is possible. Rebooting with preferFlash: false...'</span>);
+
+      sm2.setup({
+        preferFlash: <span class="literal">false</span>
+      }).reboot();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-403">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-403">&#182;</a>
+              </div>
+              <p>if for some reason you want to detect this case, use an ontimeout() callback and look for html5Only and didFlashBlock == true.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      sm2.didFlashBlock = <span class="literal">true</span>;
+
+      sm2.beginDelayedInit();
+
+    }, <span class="number">1</span>);
+
+  };
+
   waitForEI = <span class="keyword">function</span>() {
 
     <span class="keyword">var</span> p,
@@ -10376,11 +10470,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-400">
+        <li id="section-404">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-400">&#182;</a>
+                <a class="pilcrow" href="#section-404">&#182;</a>
               </div>
               <p>No SWF url to load (noURL case) - exit for now. Will be retried when url is set.</p>
 
@@ -10396,16 +10490,16 @@ swfVersion: SWF build string</p>
     waitingForEI = <span class="literal">true</span>;
     event.remove(window, <span class="string">'load'</span>, delayWaitForEI);
 
-    <span class="keyword">if</span> (tryInitOnFocus &amp;&amp; !isFocused) {</pre></div></div>
+    <span class="keyword">if</span> (hasFlash &amp;&amp; tryInitOnFocus &amp;&amp; !isFocused) {</pre></div></div>
             
         </li>
         
         
-        <li id="section-401">
+        <li id="section-405">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-401">&#182;</a>
+                <a class="pilcrow" href="#section-405">&#182;</a>
               </div>
               <p>Safari won&#39;t load flash in background tabs, only when focused.</p>
 
@@ -10431,11 +10525,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-402">
+        <li id="section-406">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-402">&#182;</a>
+                <a class="pilcrow" href="#section-406">&#182;</a>
               </div>
               <p>special case: if movie <em>partially</em> loaded, retry until it&#39;s 100% before assuming failure.</p>
 
@@ -10450,52 +10544,61 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-403">
+        <li id="section-407">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-403">&#182;</a>
+                <a class="pilcrow" href="#section-407">&#182;</a>
               </div>
               <d>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (!didInit) {
+
         sm2._wD(sm + <span class="string">': No Flash response within expected time. Likely causes: '</span> + (p === <span class="number">0</span> ? <span class="string">'SWF load failed, '</span>:<span class="string">''</span>) + <span class="string">'Flash blocked or JS-Flash security error.'</span> + (sm2.debugFlash?<span class="string">' '</span> + str(<span class="string">'checkSWF'</span>):<span class="string">''</span>), <span class="number">2</span>);
+
         <span class="keyword">if</span> (!overHTTP &amp;&amp; p) {
+
           _wDS(<span class="string">'localFail'</span>, <span class="number">2</span>);
+
           <span class="keyword">if</span> (!sm2.debugFlash) {
             _wDS(<span class="string">'tryDebug'</span>, <span class="number">2</span>);
           }
+
         }
+
         <span class="keyword">if</span> (p === <span class="number">0</span>) {</pre></div></div>
             
         </li>
         
         
-        <li id="section-404">
+        <li id="section-408">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-404">&#182;</a>
+                <a class="pilcrow" href="#section-408">&#182;</a>
               </div>
               <p>if 0 (not null), probably a 404.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>          sm2._wD(str(<span class="string">'swf404'</span>, sm2.url), <span class="number">1</span>);
+
         }
+
         debugTS(<span class="string">'flashtojs'</span>, <span class="literal">false</span>, <span class="string">': Timed out'</span> + overHTTP?<span class="string">' (Check flash security or flash blockers)'</span>:<span class="string">' (No plugin/missing SWF?)'</span>);
+
       }</pre></div></div>
             
         </li>
         
         
-        <li id="section-405">
+        <li id="section-409">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-405">&#182;</a>
+                <a class="pilcrow" href="#section-409">&#182;</a>
               </div>
               <p></d></p>
 
@@ -10504,11 +10607,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-406">
+        <li id="section-410">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-406">&#182;</a>
+                <a class="pilcrow" href="#section-410">&#182;</a>
               </div>
               <p>give up / time-out, depending</p>
 
@@ -10522,13 +10625,13 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-407">
+        <li id="section-411">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-407">&#182;</a>
+                <a class="pilcrow" href="#section-411">&#182;</a>
               </div>
-              <p>SWF failed. Maybe blocked.</p>
+              <p>SWF failed to report load progress. Possibly blocked.</p>
 
             </div>
             
@@ -10548,59 +10651,20 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-408">
+        <li id="section-412">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-408">&#182;</a>
+                <a class="pilcrow" href="#section-412">&#182;</a>
               </div>
               <p>no custom flash block handling, but SWF has timed out. Will recover if user unblocks / allows SWF load.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>
-            <span class="keyword">if</span> (!sm2.useFlashBlock &amp;&amp; canIgnoreFlash) {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-409">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-409">&#182;</a>
-              </div>
-              <p>special case: try for a reboot with preferFlash: false, if 100% HTML5 mode is possible and useFlashBlock is not enabled.</p>
+            <span class="keyword">if</span> (!sm2.useFlashBlock &amp;&amp; canIgnoreFlash) {
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>
-              window.setTimeout(<span class="keyword">function</span>() {
-
-                complain(smc + <span class="string">'useFlashBlock is false, 100% HTML5 mode is possible. Rebooting with preferFlash: false...'</span>);
-
-                sm2.setup({
-                  preferFlash: <span class="literal">false</span>
-                }).reboot();</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-410">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-410">&#182;</a>
-              </div>
-              <p>if for some reason you want to detect this case, use an ontimeout() callback and look for html5Only and didFlashBlock == true.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                sm2.didFlashBlock = <span class="literal">true</span>;
-  
-                sm2.beginDelayedInit();
-
-              }, <span class="number">1</span>);
+              rebootIntoHTML5();
 
             } <span class="keyword">else</span> {
 
@@ -10609,17 +10673,17 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-411">
+        <li id="section-413">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-411">&#182;</a>
+                <a class="pilcrow" href="#section-413">&#182;</a>
               </div>
               <p>fire any regular registered ontimeout() listeners.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>              processOnEvents({type:<span class="string">'ontimeout'</span>, ignoreInit: <span class="literal">true</span>});
+            <div class="content"><div class='highlight'><pre>              processOnEvents({type:<span class="string">'ontimeout'</span>, ignoreInit: <span class="literal">true</span>, error: {type: <span class="string">'INIT_FLASHBLOCK'</span>}});
 
             }
 
@@ -10630,13 +10694,13 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-412">
+        <li id="section-414">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-412">&#182;</a>
+                <a class="pilcrow" href="#section-414">&#182;</a>
               </div>
-              <p>flash loaded? Shouldn&#39;t be a blocking issue, then.</p>
+              <p>SWF loaded? Shouldn&#39;t be a blocking issue, then.</p>
 
             </div>
             
@@ -10647,11 +10711,20 @@ swfVersion: SWF build string</p>
 
           } <span class="keyword">else</span> {
 
-            failSafely(<span class="literal">true</span>);
+            <span class="keyword">if</span> (!sm2.useFlashBlock &amp;&amp; canIgnoreFlash) {
+
+              rebootIntoHTML5();
+
+            } <span class="keyword">else</span> {
+
+              failSafely(<span class="literal">true</span>);
+
+            }
 
           }
 
         }
+
       }
 
     }, sm2.flashLoadTimeout);
@@ -10669,11 +10742,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-413">
+        <li id="section-415">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-413">&#182;</a>
+                <a class="pilcrow" href="#section-415">&#182;</a>
               </div>
               <p>already focused, or not special Safari background tab case</p>
 
@@ -10690,11 +10763,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-414">
+        <li id="section-416">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-414">&#182;</a>
+                <a class="pilcrow" href="#section-416">&#182;</a>
               </div>
               <p>allow init to restart</p>
 
@@ -10705,11 +10778,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-415">
+        <li id="section-417">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-415">&#182;</a>
+                <a class="pilcrow" href="#section-417">&#182;</a>
               </div>
               <p>kick off ExternalInterface timeout, now that the SWF has started</p>
 
@@ -10727,11 +10800,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-416">
+        <li id="section-418">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-416">&#182;</a>
+                <a class="pilcrow" href="#section-418">&#182;</a>
               </div>
               <d>
 
@@ -10740,11 +10813,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-417">
+        <li id="section-419">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-417">&#182;</a>
+                <a class="pilcrow" href="#section-419">&#182;</a>
               </div>
               <p>SM2 pre-init debug messages</p>
 
@@ -10758,11 +10831,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-418">
+        <li id="section-420">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-418">&#182;</a>
+                <a class="pilcrow" href="#section-420">&#182;</a>
               </div>
               <p></d></p>
 
@@ -10776,11 +10849,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-419">
+        <li id="section-421">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-419">&#182;</a>
+                <a class="pilcrow" href="#section-421">&#182;</a>
               </div>
               <d>
 
@@ -10803,11 +10876,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-420">
+        <li id="section-422">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-420">&#182;</a>
+                <a class="pilcrow" href="#section-422">&#182;</a>
               </div>
               <p></d></p>
 
@@ -10827,11 +10900,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-421">
+        <li id="section-423">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-421">&#182;</a>
+                <a class="pilcrow" href="#section-423">&#182;</a>
               </div>
               <p>all good.</p>
 
@@ -10850,10 +10923,9 @@ swfVersion: SWF build string</p>
 
     <span class="keyword">if</span> (!wasTimeout) {
       didInit = <span class="literal">true</span>;
-      <span class="keyword">if</span> (disabled) {
-        error = {type: (!hasFlash &amp;&amp; needsFlash ? <span class="string">'NO_FLASH'</span> : <span class="string">'INIT_TIMEOUT'</span>)};
-      }
     }
+
+    error = {type: (!hasFlash &amp;&amp; needsFlash ? <span class="string">'NO_FLASH'</span> : <span class="string">'INIT_TIMEOUT'</span>)};
 
     sm2._wD(<span class="string">'SoundManager 2 '</span> + (disabled ? <span class="string">'failed to load'</span> : <span class="string">'loaded'</span>) + <span class="string">' ('</span> + (disabled ? <span class="string">'Flash security/load error'</span> : <span class="string">'OK'</span>) + <span class="string">')'</span>, disabled ? <span class="number">2</span>: <span class="number">1</span>);
 
@@ -10878,11 +10950,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-422">
+        <li id="section-424">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-422">&#182;</a>
+                <a class="pilcrow" href="#section-424">&#182;</a>
               </div>
               <d>
 
@@ -10895,11 +10967,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-423">
+        <li id="section-425">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-423">&#182;</a>
+                <a class="pilcrow" href="#section-425">&#182;</a>
               </div>
               <p></d></p>
 
@@ -10930,11 +11002,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-424">
+        <li id="section-426">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-424">&#182;</a>
+                <a class="pilcrow" href="#section-426">&#182;</a>
               </div>
               <p>assign local property if not already defined</p>
 
@@ -10950,11 +11022,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-425">
+        <li id="section-427">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-425">&#182;</a>
+                <a class="pilcrow" href="#section-427">&#182;</a>
               </div>
               <p>legacy support: write manually-assigned property (eg., soundManager.url) back to setupOptions to keep things in sync</p>
 
@@ -10976,11 +11048,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-426">
+        <li id="section-428">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-426">&#182;</a>
+                <a class="pilcrow" href="#section-428">&#182;</a>
               </div>
               <p>called after onload()</p>
 
@@ -11002,11 +11074,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-427">
+        <li id="section-429">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-427">&#182;</a>
+                <a class="pilcrow" href="#section-429">&#182;</a>
               </div>
               <p>we don&#39;t need no steenking flash!</p>
 
@@ -11022,11 +11094,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-428">
+        <li id="section-430">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-428">&#182;</a>
+                <a class="pilcrow" href="#section-430">&#182;</a>
               </div>
               <p>flash path</p>
 
@@ -11039,11 +11111,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-429">
+        <li id="section-431">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-429">&#182;</a>
+                <a class="pilcrow" href="#section-431">&#182;</a>
               </div>
               <p>attempt to talk to Flash</p>
 
@@ -11054,11 +11126,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-430">
+        <li id="section-432">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-430">&#182;</a>
+                <a class="pilcrow" href="#section-432">&#182;</a>
               </div>
               <p>apply user-specified polling interval, OR, if &quot;high performance&quot; set, faster vs. default polling
 (determines frequency of whileloading/whileplaying callbacks, effectively driving UI framerates)</p>
@@ -11072,11 +11144,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-431">
+        <li id="section-433">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-431">&#182;</a>
+                <a class="pilcrow" href="#section-433">&#182;</a>
               </div>
               <p>stop the SWF from making debug output calls to JS</p>
 
@@ -11093,11 +11165,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-432">
+        <li id="section-434">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-432">&#182;</a>
+                <a class="pilcrow" href="#section-434">&#182;</a>
               </div>
               <p>prevent browser from showing cached page state (or rather, restoring &quot;suspended&quot; page state) via back button, because flash may be dead
 <a href="http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/">http://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/</a></p>
@@ -11116,11 +11188,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-433">
+        <li id="section-435">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-433">&#182;</a>
+                <a class="pilcrow" href="#section-435">&#182;</a>
               </div>
               <p>don&#39;t disable, for reboot()</p>
 
@@ -11138,11 +11210,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-434">
+        <li id="section-436">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-434">&#182;</a>
+                <a class="pilcrow" href="#section-436">&#182;</a>
               </div>
               <p>disconnect events</p>
 
@@ -11165,11 +11237,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-435">
+        <li id="section-437">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-435">&#182;</a>
+                <a class="pilcrow" href="#section-437">&#182;</a>
               </div>
               <p>assign top-level soundManager properties eg. soundManager.url</p>
 
@@ -11187,11 +11259,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-436">
+        <li id="section-438">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-436">&#182;</a>
+                <a class="pilcrow" href="#section-438">&#182;</a>
               </div>
               <d>
 
@@ -11201,7 +11273,7 @@ swfVersion: SWF build string</p>
 
       <span class="keyword">var</span> a = <span class="string">'sm2-usehtml5audio='</span>,
           a2 = <span class="string">'sm2-preferflash='</span>,
-          b = <span class="literal">null</span>, 
+          b = <span class="literal">null</span>,
           b2 = <span class="literal">null</span>,
           l = wl.toLowerCase();
 
@@ -11230,11 +11302,11 @@ swfVersion: SWF build string</p>
         </li>
         
         
-        <li id="section-437">
+        <li id="section-439">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-437">&#182;</a>
+                <a class="pilcrow" href="#section-439">&#182;</a>
               </div>
               <p></d></p>
 
@@ -11242,18 +11314,18 @@ swfVersion: SWF build string</p>
             
             <div class="content"><div class='highlight'><pre>
     <span class="keyword">if</span> (!hasFlash &amp;&amp; sm2.hasHTML5) {
-      sm2._wD(<span class="string">'SoundManager: No Flash detected'</span> + (!sm2.useHTML5Audio ? <span class="string">', enabling HTML5.'</span> : <span class="string">'. Trying HTML5-only mode.'</span>), <span class="number">1</span>);
+      sm2._wD(<span class="string">'SoundManager 2: No Flash detected'</span> + (!sm2.useHTML5Audio ? <span class="string">', enabling HTML5.'</span> : <span class="string">'. Trying HTML5-only mode.'</span>), <span class="number">1</span>);
       sm2.setup({
         <span class="string">'useHTML5Audio'</span>: <span class="literal">true</span>,</pre></div></div>
             
         </li>
         
         
-        <li id="section-438">
+        <li id="section-440">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-438">&#182;</a>
+                <a class="pilcrow" href="#section-440">&#182;</a>
               </div>
               <p>make sure we aren&#39;t preferring flash, either
 TODO: preferFlash should not matter if flash is not installed. Currently, stuff breaks without the below tweak.</p>
@@ -11272,11 +11344,11 @@ TODO: preferFlash should not matter if flash is not installed. Currently, stuff 
         </li>
         
         
-        <li id="section-439">
+        <li id="section-441">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-439">&#182;</a>
+                <a class="pilcrow" href="#section-441">&#182;</a>
               </div>
               <p>TODO: Fatal here vs. timeout approach, etc.
 hack: fail sooner.</p>
@@ -11314,11 +11386,11 @@ hack: fail sooner.</p>
         </li>
         
         
-        <li id="section-440">
+        <li id="section-442">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-440">&#182;</a>
+                <a class="pilcrow" href="#section-442">&#182;</a>
               </div>
               <p>catch edge case of initComplete() firing after window.load()</p>
 
@@ -11340,11 +11412,11 @@ hack: fail sooner.</p>
         </li>
         
         
-        <li id="section-441">
+        <li id="section-443">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-441">&#182;</a>
+                <a class="pilcrow" href="#section-443">&#182;</a>
               </div>
               <p>prefer HTML5 for mobile + tablet-like devices, probably more reliable vs. flash at this point.</p>
 
@@ -11353,11 +11425,11 @@ hack: fail sooner.</p>
         </li>
         
         
-        <li id="section-442">
+        <li id="section-444">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-442">&#182;</a>
+                <a class="pilcrow" href="#section-444">&#182;</a>
               </div>
               <d>
 
@@ -11368,11 +11440,11 @@ hack: fail sooner.</p>
         </li>
         
         
-        <li id="section-443">
+        <li id="section-445">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-443">&#182;</a>
+                <a class="pilcrow" href="#section-445">&#182;</a>
               </div>
               <p>notify that defaults are being changed.</p>
 
@@ -11384,11 +11456,11 @@ hack: fail sooner.</p>
         </li>
         
         
-        <li id="section-444">
+        <li id="section-446">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-444">&#182;</a>
+                <a class="pilcrow" href="#section-446">&#182;</a>
               </div>
               <p></d></p>
 
@@ -11403,11 +11475,11 @@ hack: fail sooner.</p>
         </li>
         
         
-        <li id="section-445">
+        <li id="section-447">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-445">&#182;</a>
+                <a class="pilcrow" href="#section-447">&#182;</a>
               </div>
               <p>iOS and Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
 common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
@@ -11420,11 +11492,11 @@ common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
         </li>
         
         
-        <li id="section-446">
+        <li id="section-448">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-446">&#182;</a>
+                <a class="pilcrow" href="#section-448">&#182;</a>
               </div>
               <p></d></p>
 
@@ -11445,11 +11517,11 @@ common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
         </li>
         
         
-        <li id="section-447">
+        <li id="section-449">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-447">&#182;</a>
+                <a class="pilcrow" href="#section-449">&#182;</a>
               </div>
               <p>sniff up-front</p>
 
@@ -11460,11 +11532,11 @@ common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
         </li>
         
         
-        <li id="section-448">
+        <li id="section-450">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-448">&#182;</a>
+                <a class="pilcrow" href="#section-450">&#182;</a>
               </div>
               <p>focus and window load, init (primarily flash-driven)</p>
 
@@ -11487,11 +11559,11 @@ common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
         </li>
         
         
-        <li id="section-449">
+        <li id="section-451">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-449">&#182;</a>
+                <a class="pilcrow" href="#section-451">&#182;</a>
               </div>
               <p>no add/attachevent support - safe to assume no JS -&gt; Flash either</p>
 
@@ -11507,11 +11579,11 @@ common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
         </li>
         
         
-        <li id="section-450">
+        <li id="section-452">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-450">&#182;</a>
+                <a class="pilcrow" href="#section-452">&#182;</a>
               </div>
               <p>SM2_DEFER details: <a href="http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading">http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading</a></p>
 
