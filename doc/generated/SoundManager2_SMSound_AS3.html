@@ -87,6 +87,7 @@
   <span class="preprocessor"><span class="keyword">import</span> flash.utils.getTimer;</span>
   <span class="preprocessor"><span class="keyword">import</span> flash.net.NetConnection;</span>
   <span class="preprocessor"><span class="keyword">import</span> flash.net.NetStream;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.net.Responder;</span>
 
   <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SoundManager2_SMSound_AS3</span> <span class="keyword">extends</span> <span class="title">Sound</span> {</span>
 
@@ -254,6 +255,40 @@ this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);</p
 
     }
 
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">rtmpResponder</span><span class="params">(result:Object)</span><span class="type">:void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>callback from Flash Media Server (RTMP) for &#39;getStreamLength&#39; server-side method - result should be a floating-point.
+<a href="http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html">http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      writeDebug(<span class="string">'RTMP server getStreamLength() response: '</span> + result);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>we now know the duration. type cast to floating-point - this will update JS-land during whileloading() / whileplaying().</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">this</span>.duration = Number(result) * <span class="number">1000</span>;
+    }
+
     <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">netStatusHandler</span><span class="params">(event:NetStatusEvent)</span><span class="type">:void</span> {</span>
 
       <span class="keyword">if</span> (<span class="keyword">this</span>.useEvents) {
@@ -270,11 +305,11 @@ this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);</p
         </li>
         
         
-        <li id="section-6">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>bufferTime reference: <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime">http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime</a></p>
 
@@ -282,7 +317,7 @@ this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);</p
             
             <div class="content"><div class='highlight'><pre>            <span class="keyword">this</span>.ns.bufferTime = <span class="keyword">this</span>.bufferTime; <span class="comment">// set to 0.1 or higher. 0 is reported to cause playback issues with static files.</span>
             <span class="keyword">this</span>.st = <span class="keyword">new</span> SoundTransform();
-            <span class="keyword">this</span>.cc.onMetaData = <span class="keyword">this</span>.metaDataHandler;
+            <span class="keyword">this</span>.cc.onMetaData = <span class="keyword">this</span>.onMetaData;
             <span class="keyword">this</span>.cc.setCaption = <span class="keyword">this</span>.captionHandler;
             <span class="keyword">this</span>.ns.client = <span class="keyword">this</span>.cc;
             <span class="keyword">this</span>.ns.receiveAudio(<span class="literal">true</span>);
@@ -292,17 +327,35 @@ this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);</p
         </li>
         
         
-        <li id="section-7">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>RTMP-only</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="keyword">if</span> (<span class="keyword">this</span>.serverUrl &amp;&amp; <span class="keyword">this</span>.useEvents) {
+              <span class="keyword">var</span> responder:Responder = <span class="keyword">new</span> Responder(rtmpResponder);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>call a method on server to get the length of the stream (like onMetaData, but Flash Media Server-specific)
+Red5 and other RTMP servers appear to provide duration via onMetaData event(s) in the stream.
+<a href="http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html">http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              nc.call(<span class="string">'getStreamLength'</span>, responder, <span class="keyword">this</span>.sURL);
               writeDebug(<span class="string">'NetConnection: connected'</span>);
               writeDebug(<span class="string">'firing _onconnect for '</span>+<span class="keyword">this</span>.sID);
               ExternalInterface.call(<span class="keyword">this</span>.sm.baseJSObject + <span class="string">"['"</span> + <span class="keyword">this</span>.sID + <span class="string">"']._onconnect"</span>, <span class="number">1</span>);
@@ -323,11 +376,11 @@ this.nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, doSecurityError);</p
         </li>
         
         
-        <li id="section-8">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>This is triggered when the sound loses the connection with the server.
 In some cases one could just try to reconnect to the server and resume playback.
@@ -346,11 +399,11 @@ should this call the onFailure handler?</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Couldn&#39;t establish a connection with the server. Attempts to connect to the server
 can also fail if the permissible number of socket connections on either the client
@@ -368,11 +421,11 @@ connection is lost.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>A change has occurred to the network status. This could mean that the network
 connection is back, or it could mean that it has been lost...just try to resume
@@ -383,11 +436,11 @@ playback.</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>KJV: Can&#39;t use this yet because by the time you get your connection back the
 song has reached it&#39;s maximum retries, so it doesn&#39;t retry again.  We need
@@ -403,11 +456,11 @@ case &quot;NetConnection.Connect.NetworkChange&quot;:
         </li>
         
         
-        <li id="section-12">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Consider everything else a failure...</p>
 
@@ -426,7 +479,7 @@ case &quot;NetConnection.Connect.NetworkChange&quot;:
       <span class="keyword">return</span> <span class="keyword">this</span>.sm.writeDebug (s,logLevel); <span class="comment">// defined in main SM object</span>
     }
 
-    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">metaDataHandler</span><span class="params">(infoObject: Object)</span> <span class="type">: void</span> {</span>
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onMetaData</span><span class="params">(infoObject: Object)</span> <span class="type">: void</span> {</span>
       <span class="keyword">var</span> prop:String;
       <span class="keyword">if</span> (sm.debugEnabled) {
         <span class="keyword">var</span> data:String = <span class="keyword">new</span> String();
@@ -441,11 +494,11 @@ case &quot;NetConnection.Connect.NetworkChange&quot;:
         </li>
         
         
-        <li id="section-13">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>writeDebug(&#39;not loaded yet: &#39;+this.ns.bytesLoaded+&#39;, &#39;+this.ns.bytesTotal+&#39;, &#39;+infoObject.duration<em>1000);
 TODO: investigate loaded/total values
@@ -465,11 +518,11 @@ ExternalInterface.call(baseJSObject + &quot;[&#39;&quot; + this.sID + &quot;&#39
         </li>
         
         
-        <li id="section-14">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>pass infoObject to _onmetadata, too</p>
 
@@ -480,11 +533,11 @@ ExternalInterface.call(baseJSObject + &quot;[&#39;&quot; + this.sID + &quot;&#39
         </li>
         
         
-        <li id="section-15">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <p>this handler may fire multiple times, eg., when a song changes while playing an RTMP stream.</p>
 
@@ -495,11 +548,11 @@ ExternalInterface.call(baseJSObject + &quot;[&#39;&quot; + this.sID + &quot;&#39
         </li>
         
         
-        <li id="section-16">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>disconnect for non-RTMP cases, since multiple firings may mess up duration.</p>
 
@@ -522,11 +575,11 @@ ExternalInterface.call(baseJSObject + &quot;[&#39;&quot; + this.sID + &quot;&#39
         </li>
         
         
-        <li id="section-17">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>null this out for the duration of this object&#39;s existence.
 it may be called multiple times.
@@ -537,11 +590,11 @@ this.cc.setCaption = function(infoObject: Object) : void {}</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <p>writeDebug(&#39;Caption\n&#39;+infoObject[&#39;dynamicMetadata&#39;]);
 writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
@@ -558,11 +611,11 @@ writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p><a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum(">http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum(</a>)</p>
 
@@ -580,11 +633,11 @@ writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <p><a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum(">http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#computeSpectrum(</a>)</p>
 
@@ -608,11 +661,11 @@ writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <p>mark for later Netstream.Play.Stop / sound completion</p>
 
@@ -620,16 +673,16 @@ writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
             
             <div class="content"><div class='highlight'><pre>        <span class="keyword">this</span>.finished = <span class="literal">false</span>;
 
-        <span class="keyword">this</span>.cc.onMetaData = <span class="keyword">this</span>.metaDataHandler;</pre></div></div>
+        <span class="keyword">this</span>.cc.onMetaData = <span class="keyword">this</span>.onMetaData;</pre></div></div>
             
         </li>
         
         
-        <li id="section-22">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <p>Don&#39;t seek if we don&#39;t have to because it destroys the buffer</p>
 
@@ -642,11 +695,11 @@ writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <p>Minimize the buffer so playback starts ASAP</p>
 
@@ -673,11 +726,11 @@ writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <p>previously loaded, perhaps stopped/finished. play again?</p>
 
@@ -691,11 +744,11 @@ writeDebug(&#39;firing _oncaptiondata for &#39;+this.sID);</p>
         </li>
         
         
-        <li id="section-25">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-25">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <p>KJV seek after calling play otherwise some streams get a NetStream.Seek.Failed
 Should only apply to the !didLoad case, but do it for all for simplicity.
@@ -712,11 +765,11 @@ download.</p>
         </li>
         
         
-        <li id="section-26">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-26">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>this.ns.addEventListener(Event.SOUND_COMPLETE, _onfinish);</p>
 
@@ -729,11 +782,11 @@ download.</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
               <p>writeDebug(&#39;start: seeking to &#39;+nMsecOffset+&#39;, &#39;+nLoops+(nLoops==1?&#39; loop&#39;:&#39; loops&#39;));</p>
 
@@ -748,11 +801,11 @@ download.</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <p>writeDebug(&#39;start: was already playing, no-multishot case. Seeking to &#39;+nMsecOffset+&#39;, &#39;+nLoops+(nLoops==1?&#39; loop&#39;:&#39; loops&#39;));
 already playing and no multi-shot allowed, so re-start and set position</p>
@@ -771,11 +824,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <p>if soundChannel is null (and not a netStream), there is no sound card (or 32-channel ceiling has been hit.)
 <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29">http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29</a></p>
@@ -804,11 +857,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <p>this.addEventListener(Event.SOUND_COMPLETE, _onfinish);</p>
 
@@ -830,11 +883,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <p>Set the value of autoPlay</p>
 
@@ -873,11 +926,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <p>writeDebug(&#39;applyTransform(): Note: No active netStream&#39;);</p>
 
@@ -892,11 +945,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
               <p>Handle FMS bandwidth check callback.
 @see <a href="http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html">http://www.adobe.com/devnet/flashmediaserver/articles/dynamic_stream_switching_04.html</a>
@@ -909,11 +962,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <p>writeDebug(&#39;onBWDone: called and ignored&#39;);</p>
 
@@ -924,11 +977,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <p>NetStream client callback. Invoked when the song is complete.</p>
 
@@ -949,11 +1002,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-36">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>there was a connection drop, a loss of internet connection, or something else wrong. 404 error too.</p>
 
@@ -970,11 +1023,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <p>Handle failures</p>
 
@@ -996,11 +1049,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>When streaming, Stop is called when buffering stops, not when the stream is actually finished.
 @see <a href="http://www.actionscript.org/forums/archive/index.php3/t-159194.html">http://www.actionscript.org/forums/archive/index.php3/t-159194.html</a></p>
@@ -1014,11 +1067,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <p>finished playing, and not RTMP</p>
 
@@ -1029,11 +1082,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <p>reset the sound? Move back to position 0?</p>
 
@@ -1050,11 +1103,11 @@ already playing and no multi-shot allowed, so re-start and set position</p>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-41">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <p>RTMP case..
 We wait for the buffer to fill up before pausing the just-loaded song because only if the
@@ -1070,11 +1123,11 @@ buffer is full will the song continue to buffer until the user hits play.</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <p>Call pause in JS.  This will call back to us to pause again, but
 that should be harmless.</p>
@@ -1090,11 +1143,11 @@ that should be harmless.</p>
         </li>
         
         
-        <li id="section-43">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-46">&#182;</a>
               </div>
               <p>assume buffering when we start playing, eg. initial load.</p>
 
@@ -1108,11 +1161,11 @@ that should be harmless.</p>
         </li>
         
         
-        <li id="section-44">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <p>We can detect the end of the stream when Play.Stop is called followed by Buffer.Empty.
 However, if you pause and let the whole song buffer, Buffer.Flush is called followed by
@@ -1136,11 +1189,11 @@ Buffer.Empty, so handle that case too.</p>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <p>The buffer is empty.  Start from the smallest buffer again.</p>
 
@@ -1153,11 +1206,11 @@ Buffer.Empty, so handle that case too.</p>
         </li>
         
         
-        <li id="section-46">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-46">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>Remember the last NetStatus event</p>
 
@@ -1169,11 +1222,11 @@ Buffer.Empty, so handle that case too.</p>
         </li>
         
         
-        <li id="section-47">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <p>KJV The sound adds some of its own netstatus handlers so we don&#39;t need to do it here.</p>
 
@@ -1194,11 +1247,11 @@ Buffer.Empty, so handle that case too.</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <p>KJV Stop listening for NetConnection events on the sound</p>
 
@@ -1210,11 +1263,11 @@ Buffer.Empty, so handle that case too.</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
               <p>Prevents possible &#39;Unhandled NetStatusEvent&#39; condition if a sound is being
 destroyed and interacted with at the same time.</p>
@@ -1226,11 +1279,11 @@ destroyed and interacted with at the same time.</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-53">&#182;</a>
               </div>
               <p>Don&#39;t do anything</p>
 

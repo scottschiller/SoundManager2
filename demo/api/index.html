@@ -92,13 +92,10 @@ p {
 // flash version URL switch (for this demo page)
 var winLoc = window.location.toString();
 
-soundManager.setup({
-  preferFlash: (winLoc.match(/usehtml5audio=1/i) ? false : true)
-});
-
 if (winLoc.match(/flash9/i)) {
 
   soundManager.setup({
+    preferFlash: true,
     flashVersion: 9
   });
 
@@ -112,6 +109,7 @@ if (winLoc.match(/flash9/i)) {
 } else if (winLoc.match(/flash8/i)) {
 
   soundManager.setup({
+    preferFlash: true,
     flashVersion: 8
   });
 
@@ -119,7 +117,10 @@ if (winLoc.match(/flash9/i)) {
 
 soundManager.setup({
   useFlashBlock: true,
-  url: '../../swf/', // path to SoundManager2 SWF files (note trailing slash)
+  // path to SoundManager2 SWF files (note trailing slash)
+  url: '../../swf/',
+  // optional: HTML5 polling rate - for whileplaying() events, etc.
+  html5PollingInterval: (winLoc.match(/html5PollingInterval/i) ? 20 : null),
   debugMode: true,
   consoleOnly: false
 });
@@ -196,11 +197,17 @@ function getRandomMP3URL() {
 
  <h1 id="start"><a href="http://www.schillmania.com/projects/soundmanager2/" style="color:#000;text-decoration:none">SoundManager 2</a> / API Demo and Code Examples</h1>
 
- <p class="note">You can run the API demos with <a href="#sm2-usehtml5audio=1" onclick="window.location.replace(this.href);window.location.reload()">HTML5</a> enabled, <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> (API default), <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) or <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency).</p>
-
  <p>Wondering where to start? This page has inline executable code examples using the SoundManager 2 API.</p>
 
- <p>If you're wondering <em>"How to include SM2 in my page?"</em>, the <a href="../template/" title="SoundManager 2 bare-bones template" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">basic template</a> will get you started.</p>
+ <p>If you're wondering how to include SM2 in your page, the <a href="../template/" title="SoundManager 2 bare-bones template" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">basic template</a> will get you started.</p>
+
+ <h2>SoundManager 2 Configurations</h2>
+
+ <p>SM2's API features and behaviour can vary somewhat depending on client support, so it can be helpful to test under different configurations. The following are different configuration defaults for SoundManager 2. Clicking will change URL parameters and reload the page, causing SM2 to start up with the new options applied. Look at JS console output for details.</p>
+
+ <p><b>HTML5 options</b>: <a href="#sm2-usehtml5audio=1" onclick="window.location.replace(this.href);window.location.reload()">HTML5-only mode</a> (API default, where supported) | <a href="#sm2-html5PollingInterval=20" onclick="window.location.replace(this.href);window.location.reload()">HTML5 + fast polling</a> | <a href="#sm2-preferflash=1" onclick="window.location.replace(this.href);window.location.reload()">HTML5 + prefer flash</a> for MP3/MP4 formats | <a href="#sm2-usehtml5audio=0" onclick="window.location.replace(this.href);window.location.reload()">disable HTML5</a></p>
+	
+ <p><b>Flash options</b>: <a href="#flash8" onclick="window.location.replace(this.href);window.location.reload()">Flash 8</a> | <a href="#flash9" onclick="window.location.replace(this.href);window.location.reload()">Flash 9</a> (normal) | <a href="#flash9-highperformance" onclick="window.location.replace(this.href);window.location.reload()">Flash 9 + highPerformance + fastPolling</a> modes (higher JS callback frequency)</p>
 
  <div id="sm2-container">
    <!-- flash is appended here -->
@@ -215,15 +222,12 @@ function getRandomMP3URL() {
     <span><span>// where to find the SWF files, if needed</span></span>
     url: '<span>/path/to/swf-directory/</span>',
 
-    <span><span>// if you'd rather have 100% HTML5 mode (where supported)</span></span>
-    preferFlash: false,
-
     onready: function() {
       <span><span>// SM2 has loaded, API ready to use e.g., createSound() etc.</span></span>
     },
 
     ontimeout: function() {
-      <span><span>// Uh-oh. SWF missing, Flash blocked or other issue</span></span>
+      <span><span>// Uh-oh. No HTML5 support, SWF missing, Flash blocked or other issue</span></span>
     }
 
 });

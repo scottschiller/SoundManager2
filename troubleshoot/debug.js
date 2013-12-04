@@ -11,7 +11,8 @@ return obj;};var parseActiveXVersion=function(str){var versionArray=str.split(",
 var winLoc = window.location.toString();
 if (winLoc.match(/flash9/i)) {
   soundManager.setup({
-    flashVersion: 9
+    flashVersion: 9,
+    preferFlash: true
   });
   if (winLoc.match(/highperformance/i)) {
     soundManager.setup({
@@ -20,7 +21,8 @@ if (winLoc.match(/flash9/i)) {
   }
 } else if (winLoc.match(/flash8/i)) {
   soundManager.setup({
-    flashVersion: 8
+    flashVersion: 8,
+    preferFlash: true
   });
 }
 

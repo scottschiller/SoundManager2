@@ -509,7 +509,8 @@ if (window.is_home) {
         if (oldLI) {
           oldLI.parentNode.removeChild(oldLI);
         }
-	    var li = document.createElement('li');
+        // what lies. not an <li> at all. ;)
+	    var li = document.createElement('div');
         li.id = liID;
 	    li.className = 'html5support';
 	    var items = [];
@@ -522,12 +523,12 @@ if (window.is_home) {
 	    }
 
 	    li.innerHTML = [
-          '<b>This browser\'s <em class="true">&lt;HTML5&gt;</em> vs. <em class="partial">Flash</em> support (best guess):<p style="margin:0.5em 0px 0.5em 0px"></b>',
+          '<b>This browser\'s <em class="true">&lt;HTML5&gt;</em> vs. <em class="partial">Flash</em> support:<p style="margin:0.5em 0px 0.5em 0px"></b>',
           items.join(''),
           '<br />',
-          '<i>',
-          (soundManager.html5.mp3 || soundManager.html5.mp4 ? (_hasFlash && soundManager.preferFlash ? '(Preferring flash for MP3/MP4; try <a href="?sm2-preferFlash=0" title="Try using soundManager.preferFlash=false to have HTML5 actually play MP3/MP4 formats and depending on support, run SM2 entirely without flash.">preferFlash=false</a> for 100% HTML5 mode)' : (soundManager.html5Only ? '(SM2 is running in 100% HTML5 mode.)' : '&nbsp; (Some flash required; allowing HTML5 to play MP3/MP4, as supported.)' + '</p>')) : '(Flash is required for this browser to play MP3/MP4.)'),
-          '</i>'
+          '<b class="note">',
+          (soundManager.html5.mp3 || soundManager.html5.mp4 ? (_hasFlash && soundManager.preferFlash ? 'Preferring flash for MP3/MP4; try <a href="?sm2-preferFlash=0" title="Try using soundManager.preferFlash=false to have HTML5 actually play MP3/MP4 formats and depending on support, run SM2 entirely without flash." class="cta">preferFlash=false</a> for HTML5-only mode.' : (soundManager.html5Only ? 'HTML5-only mode.' + (!soundManager.canPlayMIME('audio/aac') ? ' Try <a href="?sm2-preferFlash=1,flash9" title="Try using soundManager.preferFlash=true to have Flash play MP3/MP4 formats." class="cta">preferFlash=true</a> for MP4 support as needed.' : '') : '&nbsp; Some flash required; allowing HTML5 to play MP3/MP4, as supported.' + '</p>')) : 'Flash is required for this browser to play MP3/MP4.'),
+          '</b>'
         ].join('');
 	    _id('html5-audio-notes').appendChild(li);
 	    _id('without-html5').style.display = 'inline';
@@ -541,11 +542,11 @@ if (window.is_home) {
 	  checkBadSafari();
 
 	  // check inline player / HTML 5 bits
-	  var items = utils.getElementsByClassName('muxtape-html5', 'a', _id('inline-playlist'));
+	  var items = utils.getElementsByClassName('button-exclude', 'a', _id('inline-playlist')).concat(utils.getElementsByClassName('exclude', 'a', _id('graphic-playlist')));
 	  for (var i = 0, j = items.length; i < j; i++) {
 	    if (!soundManager.canPlayLink(items[i])) {
 	      items[i].className += ' not-supported';
-	      items[i].title += '. \n\nNOTE: '+(soundManager.useHTML5Audio?'Format apparently not supported by this browser.':'SoundManager 2\'s HTML5 feature is not currently enabled. (Try turning it on, see +html5 link.)');
+	      items[i].title += '. \n\nNOTE: '+(soundManager.useHTML5Audio?'Format apparently not supported under this configuration or browser.':'SoundManager 2\'s HTML5 feature is not currently enabled. (Try turning it on, see +html5 link.)');
 	    }
 	  }
 

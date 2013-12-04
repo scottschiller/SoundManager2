@@ -135,9 +135,9 @@ soundManager.setup({
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> <code>multiShot</code> for polyphonic HTML5 clients, <code>createSound()</code> no longer requires <code>id</code>, auto-<code>reboot()</code> into 100% HTML5 mode and more. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> 100% HTML5 mode by default, where available. Duration fix for Adobe FMS/RTMP server-based streaming. HTML5 unload, <code>multiShot</code>, <code>autoPlay</code> tweaks and more. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20130512.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20130512</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20131201.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20131201</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 150 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -174,9 +174,129 @@ soundManager.setup({
 
 				<ul id="revision-list" class="standard">
 
+					<li id="sm2-20131201" class="in">
+
+						<h3><b>V2.97a.20131201</b> - 100% HTML5 mode by default. Duration fix for Adobe FMS/RTMP server-based streaming. HTML5 unload, <code>multiShot</code> and <code>autoPlay</code> tweaks. <a href="https://github.com/scottschiller/SoundManager2/compare/V2.97a.20130512...V2.97a.20131201">See GitHub commits</a>.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											  Adobe FMS (RTMP Server) fix: Invoke server-side <code>getStreamLength()</code> call to determine duration. (Red5 and other free RTMP servers use NetStream <code>onMetaData()</code> to pass duration.) 
+										</p>
+									</li>
+
+									<li>
+										<p>
+											 Fix <code>html5Unload()</code> by loading a tiny base64-encoded data: URI WAVe file where supported. Elsewhere, use <code>about:blank</code>. This fixes errors in Chrome where the browser attempts to load the url "null" (a string.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											 D'oh! Fix HTML5 sprite regression where <code>_oncanplay()</code> was not being picked up &amp; fired, sound would not play on first click.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											 HTML5: Fix double-play bug with <code>autoPlay: true</code>. Correct edge case where <code>onposition()</code> items would sometimes be cleared if called/assigned before <code>play()</code>.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											 <code>ontimeout: function(status) {}</code> callback parameter corrections. Fix missing error { <code>type: 'INIT_TIMEOUT'</code> } for missing/404 SWF case, and <code>INIT_FLASHBLOCK</code> for flashblock-specific case.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											HTML5: Apply volume to cloned sounds in HTML5 <code>multiShot</code> case.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											 Fixed issue in <code>_processOnPosition</code> where the item in <code>onPositionItems[i]</code> can be undefined mid-loop if the callback that is triggered changes the length of the <code>onPositionItems</code> array, where <code>onPositionItems.length</code> becomes zero and there's an uncaught <code>TypeError</code> when trying to access <code>item.fired</code> the next time around.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fixed mute in HTML5.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Fix <code>onload</code> in Firefox 3.6 with no flash (and yes, Firefox 25 is the current release. :D)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Correct event removal (cloned HTML5 nodes) - <code>onended</code> &rarr; <code>ended</code>
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											 Use 100% HTML5 mode by default, where available. <code>preferFlash: false</code> is now the default setting. Firefox does MP3 on Vista (and newer) via HTML5, and recently (via Firefox Aurora builds) on OS X - the last major hold-out. The vast majority of browsers now support MP3 via HTML5, thus reducing the reliance on Flash.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											 Reboot into 100% HTML5 mode where supported if flash fails after loading, i.e., local/offline/file:// or other edge case.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Fixed <code>canPlayMIME()</code> documentation example.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
+
+					<!-- previously ... -->
+
 					<li id="sm2-20130512" class="in">
 
-						<h3><b>V2.97a.20130512</b> - multiShot for polyphonic HTML5 clients. <code>createSound()</code> no longer requires an <code>id</code>. Auto-<code>reboot()</code> into 100% HTML5 mode where supported. HTML5 unload tweaks.</h3>
+						<h3><b>V2.97a.20130512</b> - multiShot for polyphonic HTML5 clients. <code>createSound()</code> no longer requires an <code>id</code>. Auto-<code>reboot()</code> into 100% HTML5 mode where supported. HTML5 unload tweaks. (<a href="../../download/soundmanagerv297a-20130512.zip" class="norewrite">Download archived version</a>)</h3>
 
 						<ul>
 

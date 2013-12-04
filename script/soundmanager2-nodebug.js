@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.2013xxxx+DEV+webkitAudioWrapper (EXPERIMENTAL BUILD)
+ * V2.97a.20131201+DEV+webkitAudioWrapper (EXPERIMENTAL BUILD)
  */
 
 /**
@@ -39,7 +39,7 @@ function SoundManager(smURL, smID) {
     'preferFlash': false,
     'noSWFCache': false,
     'idPrefix': 'sound',
-    'useWebkitAudioContext': true
+    'useAudioContext': true
   };
   this.defaultOptions = {
     'autoLoad': false,
@@ -108,7 +108,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20130512+DEV';
+  this.versionNumber = 'V2.97a.20131201';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -142,7 +142,7 @@ function SoundManager(smURL, smID) {
   var SMSound,
   sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, rebootIntoHTML5, setVersionInfo, handleFocus, strings, initMovie, preInit, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0,
-  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)), isFirefox = (ua.match(/firefox/i)),
+  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)),
   hasConsole = (window.console !== _undefined && console.log !== _undefined), isFocused = (doc.hasFocus !== _undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === _undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i, msecScale = 1000,
@@ -155,7 +155,7 @@ function SoundManager(smURL, smID) {
   netStreamPattern = new RegExp('\\.(' + netStreamTypes.join('|') + ')(\\?.*)?$', 'i'),
   WebkitAudioWrapper,
   audioContext,
-  AudioContext = (window.webkitAudioContext || window.AudioContext);
+  AudioContext = (!mobileHTML5 ? (window.webkitAudioContext || window.AudioContext) : null);
   this.mimePattern = /^\s*audio\/(?:x-)?(?:mp(?:eg|3))\s*(?:$|;)/i;
   this.useAltURL = !overHTTP;
   swfCSS = {
@@ -1363,7 +1363,7 @@ function SoundManager(smURL, smID) {
           add(f, html5_events[f]);
         }
       }
-      if (sm2.setupOptions.useWebkitAudioContext && !s.webkitAudioWrapper && WebkitAudioWrapper) {
+      if (sm2.setupOptions.useAudioContext && !s.webkitAudioWrapper && WebkitAudioWrapper) {
         s.webkitAudioWrapper = new WebkitAudioWrapper(s, s._a);
       }
       return true;
@@ -2656,8 +2656,8 @@ function SoundManager(smURL, smID) {
     event.remove(window, 'load', winOnLoad);
   };
   preInit = function() {
-    if (sm2.setupOptions.useWebkitAudioContext && sm2.setupOptions.useHTML5Audio && AudioContext) {
-      messages.push('webkitAudioContext supported - enabling experimental Webkit Audio API for waveform + spectrum visualizations');
+    if (sm2.setupOptions.useAudioContext && sm2.setupOptions.useHTML5Audio && AudioContext) {
+      messages.push('Web Audio API / AudioContext supported - enabling experimental Web Audio API for waveform + spectrum visualizations');
     }
     if (mobileHTML5) {
       sm2.setupOptions.useHTML5Audio = true;
@@ -2727,11 +2727,14 @@ function SoundManager(smURL, smID) {
       if (oAudio && oAudio._s && !oAudio._s._iO.useWaveformData && !oAudio._s._iO.useEQData) {
         return false;
       }
+try {
       source = audioContext.createMediaElementSource(oAudio);
       if (analyser) {
+        console.log('connecting source + analyser');
         source.connect(analyser);
         analyser.connect(audioContext.destination);
         connected = true;
+        console.log('connect OK');
       }
       if (addedEvent) {
         oAudio.removeEventListener('canplay', canplay);
@@ -2740,6 +2743,9 @@ function SoundManager(smURL, smID) {
       if (onconnect) {
         onconnect();
       }
+} catch(e) {
+  console.log('caught exception', e);
+}
     }
     function play() {
       function playReady() {
@@ -2764,7 +2770,6 @@ function SoundManager(smURL, smID) {
       analyser.smoothingTimeConstant = 0.5;
       try {
         analyser.fftSize = 512;
-        analyser.frequencyBinCount = 256;
       } catch(e) {
         console.warn('Exception trying to set analyser properties', e);
       }
