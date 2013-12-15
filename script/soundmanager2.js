@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20131201
+ * V2.97a.20131201+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -1635,6 +1635,11 @@ function SoundManager(smURL, smID) {
         try {
           s.isHTML5 = false;
           s._iO = policyFix(loopFix(instanceOptions));
+          // if we have "position", disable auto-play as we'll be seeking to that position at onload().
+          if (s._iO.autoPlay && (s._iO.position || s._iO.from)) {
+            sm2._wD(s.id + ': Disabling autoPlay because of non-zero offset case');
+            s._iO.autoPlay = false;
+          }
           // re-assign local shortcut
           instanceOptions = s._iO;
           if (fV === 8) {
@@ -1909,12 +1914,15 @@ function SoundManager(smURL, smID) {
 
         s._iO = mixin(oOptions, s._iO);
 
-        // apply from/to parameters, if they exist (and not using RTMP)
-        if (s._iO.from !== null && s._iO.to !== null && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
+        /**
+         * Preload in the event of play() with position under Flash,
+         * or from/to parameters and non-RTMP case
+         */
+        if (((!s.isHTML5 && s._iO.position !== null) || s._iO.from !== null || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
 
           onready = function() {
             // sound "canplay" or onload()
-            // re-apply from/to to instance options, and start playback
+            // re-apply position/from/to to instance options, and start playback
             s._iO = mixin(oOptions, s._iO);
             s.play(s._iO);
           };
@@ -1923,7 +1931,7 @@ function SoundManager(smURL, smID) {
           if (s.isHTML5 && !s._html5_canplay) {
 
             // this hasn't been loaded yet. load it first, and then do this again.
-            sm2._wD(fN + 'Beginning load for from/to case');
+            sm2._wD(fN + 'Beginning load for non-zero offset case');
 
             s.load({
               // note: custom HTML5-only event added for from/to implementation.
@@ -1936,7 +1944,7 @@ function SoundManager(smURL, smID) {
 
             // to be safe, preload the whole thing in Flash.
 
-            sm2._wD(fN + 'Preloading for from/to case');
+            sm2._wD(fN + 'Preloading for non-zero offset case');
 
             s.load({
               onload: onready
@@ -3323,8 +3331,10 @@ function SoundManager(smURL, smID) {
       }
       s.metadata = oData;
 
+console.log('updated metadata', s.metadata);
+
       if (s._iO.onmetadata) {
-        s._iO.onmetadata.apply(s);
+        s._iO.onmetadata.call(s, s.metadata);
       }
 
     };
@@ -3752,10 +3762,10 @@ function SoundManager(smURL, smID) {
       s._onbufferchange(0);
 
       // position according to instance options
-      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position)?s._iO.position/msecScale:null);
+      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position) ? s._iO.position/msecScale : null);
 
-      // set the position if position was set before the sound loaded
-      if (s.position && this.currentTime !== position1K) {
+      // set the position if position was provided before the sound loaded
+      if (this.currentTime !== position1K) {
         sm2._wD(s.id + ': canplay: Setting position to ' + position1K);
         try {
           this.currentTime = position1K;

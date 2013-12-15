@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20131201
+ * V2.97a.20131201+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
@@ -679,6 +679,9 @@ function SoundManager(smURL, smID) {
         try {
           s.isHTML5 = false;
           s._iO = policyFix(loopFix(instanceOptions));
+          if (s._iO.autoPlay && (s._iO.position || s._iO.from)) {
+            s._iO.autoPlay = false;
+          }
           instanceOptions = s._iO;
           if (fV === 8) {
             flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
@@ -804,7 +807,7 @@ function SoundManager(smURL, smID) {
         s.resume();
       } else {
         s._iO = mixin(oOptions, s._iO);
-        if (s._iO.from !== null && s._iO.to !== null && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
+        if (((!s.isHTML5 && s._iO.position !== null) || s._iO.from !== null || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
           onready = function() {
             s._iO = mixin(oOptions, s._iO);
             s.play(s._iO);
@@ -1508,8 +1511,9 @@ function SoundManager(smURL, smID) {
         oData[oMDProps[i]] = oMDData[i];
       }
       s.metadata = oData;
+console.log('updated metadata', s.metadata);
       if (s._iO.onmetadata) {
-        s._iO.onmetadata.apply(s);
+        s._iO.onmetadata.call(s, s.metadata);
       }
     };
     this._onid3 = function(oID3Props, oID3Data) {
@@ -1680,8 +1684,8 @@ function SoundManager(smURL, smID) {
       }
       s._html5_canplay = true;
       s._onbufferchange(0);
-      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position)?s._iO.position/msecScale:null);
-      if (s.position && this.currentTime !== position1K) {
+      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position) ? s._iO.position/msecScale : null);
+      if (this.currentTime !== position1K) {
         try {
           this.currentTime = position1K;
         } catch(ee) {

@@ -268,10 +268,11 @@ package {
       }
       // pass infoObject to _onmetadata, too
       ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onmetadata", metaData, metaDataProps);
+writeDebug('waiting for next call...');
       // this handler may fire multiple times, eg., when a song changes while playing an RTMP stream.
       if (!this.serverUrl) {
         // disconnect for non-RTMP cases, since multiple firings may mess up duration.
-        this.cc.onMetaData = function(infoObject: Object) : void {}
+        // this.cc.onMetaData = function(infoObject: Object) : void {}
       }
     }
 
