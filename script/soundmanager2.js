@@ -351,7 +351,7 @@ function SoundManager(smURL, smID) {
 
       // special case 2: If lazy-loading SM2 (DOMContentLoaded has already happened) and user calls setup() with url: parameter, try to init ASAP.
 
-      if (!didDCLoaded && options.url !== _undefined && doc.readyState === 'complete') {
+      if (!didDCLoaded && options.url !== _undefined && doc.readyState !== 'loading') {
         setTimeout(domContentLoaded, 1);
       }
 
