@@ -5914,6 +5914,10 @@ console.log('updated metadata', s.metadata);
 
     // catch edge case of initComplete() firing after window.load()
     windowLoaded = true;
+
+    // catch case where DOMContentLoaded has been sent, but we're still in doc.readyState = 'interactive'
+    domContentLoaded();
+
     event.remove(window, 'load', winOnLoad);
 
   };
