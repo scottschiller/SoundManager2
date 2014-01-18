@@ -3795,16 +3795,16 @@ console.log('updated metadata', s.metadata);
 
     durationchange: html5_event(function() {
 
-      // durationchange may fire at various times, probably the safest way to capture accurate/final duration
+      // durationchange may fire at various times, probably the safest way to capture accurate/final duration.
 
       var s = this._s,
           duration;
 
       duration = s._get_html5_duration();
 
-      if (!isNaN(duration)) {
+      if (!isNaN(duration) && duration !== s.duration) {
 
-        sm2._wD(this._s.id + ': durationchange (' + duration + ')');
+        sm2._wD(this._s.id + ': durationchange (' + duration + ')' + (s.duration ? ', previously ' + s.duration : ''));
 
         s.durationEstimate = s.duration = duration;
 
