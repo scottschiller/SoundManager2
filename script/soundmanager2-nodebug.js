@@ -1707,7 +1707,7 @@ console.log('updated metadata', s.metadata);
       var s = this._s,
           duration;
       duration = s._get_html5_duration();
-      if (!isNaN(duration)) {
+      if (!isNaN(duration) && duration !== s.duration) {
         s.durationEstimate = s.duration = duration;
       }
     }),
