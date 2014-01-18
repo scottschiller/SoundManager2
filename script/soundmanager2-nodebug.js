@@ -1703,6 +1703,14 @@ console.log('updated metadata', s.metadata);
         s._onload(true);
       }
     }),
+    durationchange: html5_event(function() {
+      var s = this._s,
+          duration;
+      duration = s._get_html5_duration();
+      if (!isNaN(duration)) {
+        s.durationEstimate = s.duration = duration;
+      }
+    }),
     ended: html5_event(function() {
       var s = this._s;
       s._onfinish();
@@ -2628,6 +2636,7 @@ console.log('updated metadata', s.metadata);
   };
   winOnLoad = function() {
     windowLoaded = true;
+    domContentLoaded();
     event.remove(window, 'load', winOnLoad);
   };
   preInit = function() {
