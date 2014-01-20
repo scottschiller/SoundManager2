@@ -12,5 +12,5 @@
 	"scripts": [
 		"script/soundmanager2.js"
 	],
-	"main": "scripts/soundmanager2.js"
+	"main": "script/soundmanager2.js"
 }
