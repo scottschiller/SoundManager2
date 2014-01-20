@@ -6,6 +6,6 @@
 	"keywords": ["audio", "soundmanager2", "soundmanager"],
 	"license": "BSD",
 	"scripts": [
-		"index.js", "script/soundmanager2.js"
+		"script/soundmanager2.js"
 	]
 }
