@@ -3,9 +3,14 @@
 	"repo": "scottschiller/soundmanager2",
 	"description": "Using HTML5 and Flash, SoundManager 2 provides reliable cross-platform audio under a single JavaScript API.",
 	"version": "2.97a.201312014",
-	"keywords": ["audio", "soundmanager2", "soundmanager"],
+	"keywords": [
+		"audio",
+		"soundmanager2",
+		"soundmanager"
+	],
 	"license": "BSD",
 	"scripts": [
 		"script/soundmanager2.js"
-	]
+	],
+	"main": "scripts/soundmanager2.js"
 }
