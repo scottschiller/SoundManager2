@@ -11,7 +11,7 @@
  * V2.97a.20131201+DEV
  */
 
-/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
+/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
 /*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true, todo: true */
 
 /**
@@ -6016,7 +6016,37 @@ if (window.SM2_DEFER === undefined || !SM2_DEFER) {
  * ------------------------------
  */
 
-window.SoundManager = SoundManager; // constructor
-window.soundManager = soundManager; // public API, flash callbacks etc.
+if (typeof module === 'object' && module && typeof module.exports === 'object') {
+
+  /**
+   * commonJS module
+   * note: SM2 requires a window global due to Flash, which makes calls to window.soundManager.
+   * flash may not always be needed, but this is not known until async init and SM2 may even "reboot" into Flash mode.
+   */
+
+  window.soundManager = soundManager;
+
+  module.exports.SoundManager = SoundManager;
+  module.exports.soundManager = soundManager;
+
+} else if (typeof define === 'function' && define.amd) {
+
+  // AMD - requireJS
+
+  define('SoundManager', [], function() {
+    return {
+      SoundManager: SoundManager,
+      soundManager: soundManager
+    };
+  });
+
+} else {
+
+  // standard browser case
+
+  window.SoundManager = SoundManager; // constructor
+  window.soundManager = soundManager; // public API, flash callbacks etc.
+
+}
 
 }(window));
