@@ -36,8 +36,8 @@
 
 if (!window || !window.document) {
 
-  // SM2 expects to be running in a browser, not under node.js etc.
-  // if a browser somehow has fails this test when it runs, as Egon said: "it would be bad."
+  // Don't cross the [environment] streams. SM2 expects to be running in a browser, not under node.js etc.
+  // Additionally, if a browser somehow manages to fail this test, as Egon said: "It would be bad."
 
   throw new Error('SoundManager requires a browser with window and document objects.');
 
