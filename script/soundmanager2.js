@@ -34,6 +34,15 @@
 
 "use strict";
 
+if (!window || !window.document) {
+
+  // SM2 expects to be running in a browser, not under node.js etc.
+  // if a browser somehow has fails this test when it runs, as Egon said: "it would be bad."
+
+  throw new Error('SoundManager requires a browser with window and document objects.');
+
+}
+
 var soundManager = null;
 
 /**

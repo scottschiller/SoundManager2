@@ -16,6 +16,9 @@
 
 (function(window, _undefined) {
 "use strict";
+if (!window || !window.document) {
+  throw new Error('SoundManager requires a browser with window and document objects.');
+}
 var soundManager = null;
 function SoundManager(smURL, smID) {
   this.setupOptions = {
