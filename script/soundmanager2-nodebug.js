@@ -11,7 +11,7 @@
  * V2.97a.20131201+DEV
  */
 
-/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
+/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
 /*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true, todo: true */
 
 (function(window, _undefined) {
@@ -2668,6 +2668,19 @@ console.log('updated metadata', s.metadata);
 if (window.SM2_DEFER === undefined || !SM2_DEFER) {
   soundManager = new SoundManager();
 }
-window.SoundManager = SoundManager;
-window.soundManager = soundManager;
+if (typeof module === 'object' && module && typeof module.exports === 'object') {
+  window.soundManager = soundManager;
+  module.exports.SoundManager = SoundManager;
+  module.exports.soundManager = soundManager;
+} else if (typeof define === 'function' && define.amd) {
+  define('SoundManager', [], function() {
+    return {
+      SoundManager: SoundManager,
+      soundManager: soundManager
+    };
+  });
+} else {
+  window.SoundManager = SoundManager;
+  window.soundManager = soundManager;
+}
 }(window));
