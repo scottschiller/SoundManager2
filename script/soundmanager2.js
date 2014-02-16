@@ -3114,7 +3114,7 @@ function SoundManager(smURL, smID) {
       s.isBuffering = (nIsBuffering === 1);
       if (s._iO.onbufferchange) {
         sm2._wD(s.id + ': Buffer state change: ' + nIsBuffering);
-        s._iO.onbufferchange.apply(s);
+        s._iO.onbufferchange.apply(s, [nIsBuffering]);
       }
 
       return true;
@@ -3953,8 +3953,6 @@ console.log('updated metadata', s.metadata);
 
       if (!isNaN(loaded)) {
 
-        // if progress, likely not buffering
-        s._onbufferchange(0);
         // TODO: prevent calls with duplicate values.
         s._whileloading(loaded, total, s._get_html5_duration());
         if (loaded && total && loaded === total) {
