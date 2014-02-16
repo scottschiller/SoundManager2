@@ -1391,7 +1391,7 @@ function SoundManager(smURL, smID) {
       }
       s.isBuffering = (nIsBuffering === 1);
       if (s._iO.onbufferchange) {
-        s._iO.onbufferchange.apply(s);
+        s._iO.onbufferchange.apply(s, [nIsBuffering]);
       }
       return true;
     };
@@ -1757,7 +1757,6 @@ console.log('updated metadata', s.metadata);
         loaded = Math.min(1, buffered/(e.target.duration*msecScale));
       }
       if (!isNaN(loaded)) {
-        s._onbufferchange(0);
         s._whileloading(loaded, total, s._get_html5_duration());
         if (loaded && total && loaded === total) {
           html5_events.canplaythrough.call(this, e);
