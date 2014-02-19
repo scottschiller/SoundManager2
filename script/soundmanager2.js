@@ -1927,7 +1927,7 @@ function SoundManager(smURL, smID) {
          * Preload in the event of play() with position under Flash,
          * or from/to parameters and non-RTMP case
          */
-        if (((!s.isHTML5 && s._iO.position !== null) || s._iO.from !== null || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
+        if (((!s.isHTML5 && s._iO.position !== null && s._iO.position > 0) || (s._iO.from !== null && s._iO.from > 0) || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
 
           onready = function() {
             // sound "canplay" or onload()

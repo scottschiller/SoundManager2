@@ -810,7 +810,7 @@ function SoundManager(smURL, smID) {
         s.resume();
       } else {
         s._iO = mixin(oOptions, s._iO);
-        if (((!s.isHTML5 && s._iO.position !== null) || s._iO.from !== null || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
+        if (((!s.isHTML5 && s._iO.position !== null && s._iO.position > 0) || (s._iO.from !== null && s._iO.from > 0) || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
           onready = function() {
             s._iO = mixin(oOptions, s._iO);
             s.play(s._iO);
