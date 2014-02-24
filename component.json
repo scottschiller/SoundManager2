@@ -2,7 +2,7 @@
 	"name": "soundmanager2",
 	"repo": "scottschiller/soundmanager2",
 	"description": "Using HTML5 and Flash, SoundManager 2 provides reliable cross-platform audio under a single JavaScript API.",
-	"version": "V2.97a.20131201",
+	"version": "V2.97a.20131201-nodebug-jsmin",
 	"keywords": [
 		"audio",
 		"soundmanager2",
@@ -14,7 +14,7 @@
 	],
 	"main": "script/soundmanager2.js",
 	"files":[
-		"swf/soundmanager2.swf",
+		"swf/soundmanager2-nodebug-jsmin.swf",
 		"swf/soundmanager2_flash9.swf"
 	]
 }
