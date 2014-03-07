@@ -331,7 +331,7 @@ function ThreeSixtyPlayer() {
     resume: function() {
       pl.removeClass(this._360data.oUIBox,this._360data.className);
       this._360data.className = pl.css.sPlaying;
-      pl.addClass(this._360data.oUIBox,this._360data.className);      
+      pl.addClass(this._360data.oUIBox,this._360data.className);
     },
 
     finish: function() {
@@ -772,7 +772,7 @@ function ThreeSixtyPlayer() {
   this.getArcEndpointCoords = function(radius, radians) {
 
     return {
-      x: radius * Math.cos(radians), 
+      x: radius * Math.cos(radians),
       y: radius * Math.sin(radians)
     };
 
@@ -835,14 +835,14 @@ function ThreeSixtyPlayer() {
     }
 
     // background ring
-    self.drawSolidArc(this._360data.oCanvas,self.config.backgroundRingColor,this._360data.width,this._360data.radius * ringScaleFactor,self.deg2rad(fullCircle),false);
+    self.drawSolidArc(this._360data.oCanvas, self.config.backgroundRingColor, this._360data.circleRadius, this._360data.circleRadius * ringScaleFactor, self.deg2rad(fullCircle), false);
 
     // loaded ring
-    self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.loadRingColorMetadata:self.config.loadRingColor),this._360data.width,this._360data.radius * ringScaleFactor,self.deg2rad(fullCircle*(this._360data.lastValues.bytesLoaded/this._360data.lastValues.bytesTotal)),0,true);
+    self.drawSolidArc(this._360data.oCanvas, (this._360data.metadata ? self.config.loadRingColorMetadata : self.config.loadRingColor), this._360data.circleRadius, this._360data.circleRadius * ringScaleFactor, this._360data.radius * ringScaleFactor, self.deg2rad(fullCircle * (this._360data.lastValues.bytesLoaded / this._360data.lastValues.bytesTotal)), 0, true);
 
     // don't draw if 0 (full black circle in Opera)
     if (this._360data.lastValues.position !== 0) {
-      self.drawSolidArc(this._360data.oCanvas,(this._360data.metadata?self.config.playRingColorMetadata:self.config.playRingColor),this._360data.width,this._360data.radius * ringScaleFactor,self.deg2rad((this._360data.didFinish===1?fullCircle:fullCircle*(this._360data.lastValues.position/this._360data.lastValues.durationEstimate))),0,true);
+      self.drawSolidArc(this._360data.oCanvas, (this._360data.metadata ? self.config.playRingColorMetadata : self.config.playRingColor), this._360data.circleRadius, this._360data.circleRadius * ringScaleFactor, self.deg2rad((this._360data.didFinish === 1 ? fullCircle : fullCircle * (this._360data.lastValues.position / this._360data.lastValues.durationEstimate))), 0, true);
     }
 
     // metadata goes here
@@ -1089,7 +1089,7 @@ function ThreeSixtyPlayer() {
            if (canvasElements.length > 1) {
              oCanvas = canvasElements[canvasElements.length-1];
            }
-        } else { 
+        } else {
           // add a handler for the button
           oCanvas = oLinks[i].parentNode.getElementsByTagName('canvas')[0];
         }
@@ -1220,7 +1220,7 @@ ThreeSixtyPlayer.prototype.VUMeter = function(oParent) {
         // for debugging VU images
         /*
         var o = document.createElement('img');
-        o.style.marginRight = '5px'; 
+        o.style.marginRight = '5px';
         o.src = vuMeterData[i][j];
         document.documentElement.appendChild(o);
         */
