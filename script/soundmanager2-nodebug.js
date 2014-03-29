@@ -2289,7 +2289,7 @@ console.log('updated metadata', s.metadata);
     smURL = sm2.url;
     sm2.wmode = (!sm2.wmode && sm2.useHighPerformance ? 'transparent' : sm2.wmode);
     if (sm2.wmode !== null && (ua.match(/msie 8/i) || (!isIE && !sm2.useHighPerformance)) && navigator.platform.match(/win32|win64/i)) {
-       messages.push(strings.spcWmode);
+      messages.push(strings.spcWmode);
       sm2.wmode = null;
     }
     oEmbed = {
