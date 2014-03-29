@@ -16,6 +16,9 @@
 
 (function(window, _undefined) {
 "use strict";
+if (!window || !window.document) {
+  throw new Error('SoundManager requires a browser with window and document objects.');
+}
 var soundManager = null;
 function SoundManager(smURL, smID) {
   this.setupOptions = {
@@ -687,6 +690,9 @@ function SoundManager(smURL, smID) {
         try {
           s.isHTML5 = false;
           s._iO = policyFix(loopFix(instanceOptions));
+          if (s._iO.autoPlay && (s._iO.position || s._iO.from)) {
+            s._iO.autoPlay = false;
+          }
           instanceOptions = s._iO;
           if (fV === 8) {
             flash._load(s.id, instanceOptions.url, instanceOptions.stream, instanceOptions.autoPlay, instanceOptions.usePolicyFile);
@@ -815,7 +821,7 @@ function SoundManager(smURL, smID) {
         s.resume();
       } else {
         s._iO = mixin(oOptions, s._iO);
-        if (s._iO.from !== null && s._iO.to !== null && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
+        if (((!s.isHTML5 && s._iO.position !== null && s._iO.position > 0) || (s._iO.from !== null && s._iO.from > 0) || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
           onready = function() {
             s._iO = mixin(oOptions, s._iO);
             s.play(s._iO);
@@ -1402,7 +1408,7 @@ function SoundManager(smURL, smID) {
       }
       s.isBuffering = (nIsBuffering === 1);
       if (s._iO.onbufferchange) {
-        s._iO.onbufferchange.apply(s);
+        s._iO.onbufferchange.apply(s, [nIsBuffering]);
       }
       return true;
     };
@@ -1534,8 +1540,9 @@ function SoundManager(smURL, smID) {
         oData[oMDProps[i]] = oMDData[i];
       }
       s.metadata = oData;
+console.log('updated metadata', s.metadata);
       if (s._iO.onmetadata) {
-        s._iO.onmetadata.apply(s);
+        s._iO.onmetadata.call(s, s.metadata);
       }
     };
     this._onid3 = function(oID3Props, oID3Data) {
@@ -1709,8 +1716,8 @@ function SoundManager(smURL, smID) {
       }
       s._html5_canplay = true;
       s._onbufferchange(0);
-      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position)?s._iO.position/msecScale:null);
-      if (s.position && this.currentTime !== position1K) {
+      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position) ? s._iO.position/msecScale : null);
+      if (this.currentTime !== position1K) {
         try {
           this.currentTime = position1K;
         } catch(ee) {
@@ -1726,6 +1733,14 @@ function SoundManager(smURL, smID) {
         s._onbufferchange(0);
         s._whileloading(s.bytesLoaded, s.bytesTotal, s._get_html5_duration());
         s._onload(true);
+      }
+    }),
+    durationchange: html5_event(function() {
+      var s = this._s,
+          duration;
+      duration = s._get_html5_duration();
+      if (!isNaN(duration) && duration !== s.duration) {
+        s.durationEstimate = s.duration = duration;
       }
     }),
     ended: html5_event(function() {
@@ -1771,7 +1786,6 @@ function SoundManager(smURL, smID) {
         loaded = Math.min(1, buffered/(e.target.duration*msecScale));
       }
       if (!isNaN(loaded)) {
-        s._onbufferchange(0);
         s._whileloading(loaded, total, s._get_html5_duration());
         if (loaded && total && loaded === total) {
           html5_events.canplaythrough.call(this, e);
@@ -2304,7 +2318,7 @@ function SoundManager(smURL, smID) {
     smURL = sm2.url;
     sm2.wmode = (!sm2.wmode && sm2.useHighPerformance ? 'transparent' : sm2.wmode);
     if (sm2.wmode !== null && (ua.match(/msie 8/i) || (!isIE && !sm2.useHighPerformance)) && navigator.platform.match(/win32|win64/i)) {
-       messages.push(strings.spcWmode);
+      messages.push(strings.spcWmode);
       sm2.wmode = null;
     }
     oEmbed = {
@@ -2653,6 +2667,7 @@ function SoundManager(smURL, smID) {
   };
   winOnLoad = function() {
     windowLoaded = true;
+    domContentLoaded();
     event.remove(window, 'load', winOnLoad);
   };
   preInit = function() {
@@ -2807,6 +2822,19 @@ try {
 if (window.SM2_DEFER === undefined || !SM2_DEFER) {
   soundManager = new SoundManager();
 }
-window.SoundManager = SoundManager;
-window.soundManager = soundManager;
+if (typeof module === 'object' && module && typeof module.exports === 'object') {
+  window.soundManager = soundManager;
+  module.exports.SoundManager = SoundManager;
+  module.exports.soundManager = soundManager;
+} else if (typeof define === 'function' && define.amd) {
+  define('SoundManager', [], function() {
+    return {
+      SoundManager: SoundManager,
+      soundManager: soundManager
+    };
+  });
+} else {
+  window.SoundManager = SoundManager;
+  window.soundManager = soundManager;
+}
 }(window));
