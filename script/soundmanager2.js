@@ -5251,7 +5251,7 @@ console.log('updated metadata', s.metadata);
        * does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
        * wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)
        */
-       messages.push(strings.spcWmode);
+      messages.push(strings.spcWmode);
       sm2.wmode = null;
     }
 
