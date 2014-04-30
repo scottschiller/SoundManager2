@@ -3145,12 +3145,25 @@ function SoundManager(smURL, smID) {
     this._onfailure = function(msg, level, code) {
 
       s.failures++;
-      sm2._wD(s.id + ': Failures = ' + s.failures);
+      sm2._wD(s.id + ': Failure (' + s.failures + '): ' + msg);
 
       if (s._iO.onfailure && s.failures === 1) {
-        s._iO.onfailure(s, msg, level, code);
+        s._iO.onfailure(msg, level, code);
       } else {
         sm2._wD(s.id + ': Ignoring failure');
+      }
+
+    };
+
+    /**
+     * flash 9/movieStar + RTMP-only method for unhandled warnings/exceptions from Flash
+     * e.g., RTMP "method missing" warning (non-fatal) for getStreamLength on server
+     */
+
+    this._onwarning = function(msg, level, code) {
+
+      if (s._iO.onwarning) {
+        s._iO.onwarning(msg, level, code);
       }
 
     };

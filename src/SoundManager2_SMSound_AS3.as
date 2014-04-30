@@ -230,11 +230,11 @@ package {
         //  ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Reconnecting...');
         //  break;
 
-        // Consider everything else a failure...
+        // Consider everything else a warning...
         default:
-          this.failed = true;
-          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'! Description: " + event.info.description);
-          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", '', event.info.level, event.info.code);
+          // this.failed = true;
+          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'. Description: " + event.info.description);
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onwarning", event.info.description, event.info.level, event.info.code);
           break;
       }
 

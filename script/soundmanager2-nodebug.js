@@ -1404,8 +1404,13 @@ function SoundManager(smURL, smID) {
     this._onfailure = function(msg, level, code) {
       s.failures++;
       if (s._iO.onfailure && s.failures === 1) {
-        s._iO.onfailure(s, msg, level, code);
+        s._iO.onfailure(msg, level, code);
       } else {
+      }
+    };
+    this._onwarning = function(msg, level, code) {
+      if (s._iO.onwarning) {
+        s._iO.onwarning(msg, level, code);
       }
     };
     this._onfinish = function() {
