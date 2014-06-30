@@ -137,7 +137,7 @@ soundManager.setup({
 
 				<p><b>Latest changes:</b> 100% HTML5 mode by default, where available. Duration fix for Adobe FMS/RTMP server-based streaming. HTML5 unload, <code>multiShot</code>, <code>autoPlay</code> tweaks and more. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20131201.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20131201</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20140630.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20140630</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 150 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -173,6 +173,83 @@ soundManager.setup({
 			  	<p>A changelog of sorts.</p>
 
 				<ul id="revision-list" class="standard">
+
+
+					<li id="sm2-20140630" class="in">
+
+						<h3><b>V2.97a.20140630</b> - <code>durationchange</code>, buffering, edge case tweaks for HTML5 and RTMP, and browser environment checks. <a href="https://github.com/scottschiller/SoundManager2/compare/V2.97a.20131201...V2.97a.20140630">See GitHub commits</a>.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											HTML5: Listen to <code>durationchange</code> event, catch-all for duration update events. May help on mobile if duration is determined late. (<a href="https://getsatisfaction.com/schillmania/topics/soundmanager2_playing_songs_from_a_different_start_point_on_mobile_not_working#reply_13672624">Related discussion</a>.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Explicitly provide buffering status to <code>onbufferchange()</code>. Don't set <code>buffering(0)</code> when loading, since playback may still be paused.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Flash: Fix edge case where <code>play({ url: xxx, position: 0 });</code> on existing sound with assigned URL. New URL wouldn't take effect.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											SMSound <code>onwarning</code> and <code>onfailure</code> options for NetStream / RTMP error/exception handling. Removed additional sound param on <code>onfailure()</code> callback. Apologies if this breaks anyone's implementation (disclaimer: these options are still experimental, and undocumented. :D) "Unhandled" exceptions are now considered non-fatal, using <code>onwarning</code> instead of presuming playback has failed etc.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											CommonJS + AMD (requireJS) <code>module.exports</code> / <code>define()</code> compatibility (see <a href="https://github.com/scottschiller/SoundManager2/commit/6e9b819ab9567492a9dab03261899a3002e04d60">commit</a> for details.)
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Check <code>window</code> &amp;&amp; <code>window.document</code>, barf if loaded in server-side node environment vs. in a browser. (Presumed correct behaviour unless Node.js, etc., start implementing <code>Audio()</code> or similar; open to suggestion.)
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
 
 					<li id="sm2-20131201" class="in">
 
