@@ -4826,7 +4826,7 @@ featureCheck = function() {
         item,
         formats = sm2.audioFormats,
         // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (original iPad) + iOS4 works.
-        isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)/i)));
+        isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)\s/i)));
 
     if (isSpecial) {
 
