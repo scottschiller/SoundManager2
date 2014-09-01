@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140630
+ * V2.97a.20140901
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -198,7 +198,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20140630';
+  this.versionNumber = 'V2.97a.20140901';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -3906,7 +3906,7 @@ console.log('updated metadata', s.metadata);
 
     playing: html5_event(function() {
 
-      sm2._wD(this._s.id + ': playing');
+      sm2._wD(this._s.id + ': playing ' + String.fromCharCode(9835));
       // once play starts, no buffering
       this._s._onbufferchange(0);
 
@@ -4308,7 +4308,7 @@ console.log('updated metadata', s.metadata);
     setupUndef: sm + '.setup(): Could not find option "%s"',
     setupLate: sm + '.setup(): url, flashVersion and html5Test property changes will not take effect until reboot().',
     noURL: smc + 'Flash URL required. Call soundManager.setup({url:...}) to get started.',
-    sm2Loaded: 'SoundManager 2: Ready.',
+    sm2Loaded: 'SoundManager 2: Ready. ' + String.fromCharCode(10003),
     reset: sm + '.reset(): Removing event callbacks',
     mobileUA: 'Mobile UA detected, preferring HTML5 by default.',
     globalHTML5: 'Using singleton HTML5 Audio() pattern for this device.'
@@ -4820,7 +4820,7 @@ console.log('updated metadata', s.metadata);
 
   };
 
-  featureCheck = function() {
+featureCheck = function() {
 
     var flashNeeded,
         item,
@@ -5704,7 +5704,7 @@ console.log('updated metadata', s.metadata);
 
     if (sm2.html5Only) {
       // all good.
-      _wDS('sm2Loaded');
+      _wDS('sm2Loaded', 1);
       didInit = true;
       initUserOnload();
       debugTS('onload', true);
@@ -5721,7 +5721,7 @@ console.log('updated metadata', s.metadata);
 
     error = {type: (!hasFlash && needsFlash ? 'NO_FLASH' : 'INIT_TIMEOUT')};
 
-    sm2._wD('SoundManager 2 ' + (disabled ? 'failed to load' : 'loaded') + ' (' + (disabled ? 'Flash security/load error' : 'OK') + ')', disabled ? 2: 1);
+    sm2._wD('SoundManager 2 ' + (disabled ? 'failed to load' : 'loaded') + ' (' + (disabled ? 'Flash security/load error' : 'OK') + ') ' + String.fromCharCode(disabled ? 10006 : 10003), disabled ? 2: 1);
 
     if (disabled || bNoDisable) {
       if (sm2.useFlashBlock && sm2.oMC) {
