@@ -41,6 +41,7 @@ soundManager.setup({
 	   <ul>
 		<li><a href="../../demo/template/">Basic Template</a></li>
 		<li><a href="../../demo/api/">API Examples</a></li>
+		<li><a href="../../demo/bar-ui/">Bar UI</a></li>
 	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 	    <li><a href="../../demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
 		<li><a href="../../demo/page-player/">Muxtape-style UI</a></li>
@@ -135,9 +136,9 @@ soundManager.setup({
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> 100% HTML5 mode by default, where available. Duration fix for Adobe FMS/RTMP server-based streaming. HTML5 unload, <code>multiShot</code>, <code>autoPlay</code> tweaks and more. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> iOS 8 compatibility fix, new "Bar UI" player demo, <code>durationchange</code>, buffering, edge case tweaks for HTML5 and RTMP, and browser environment checks. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20140630.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20140630</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20140901.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20140901</a> or see <a href="https://github.com/scottschiller/soundmanager2/" title="SoundManager 2 on GitHub">on GitHub</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 150 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -174,10 +175,9 @@ soundManager.setup({
 
 				<ul id="revision-list" class="standard">
 
+					<li id="sm2-20140901" class="in">
 
-					<li id="sm2-20140630" class="in">
-
-						<h3><b>V2.97a.20140630</b> - <code>durationchange</code>, buffering, edge case tweaks for HTML5 and RTMP, and browser environment checks. <a href="https://github.com/scottschiller/SoundManager2/compare/V2.97a.20131201...V2.97a.20140630">See GitHub commits</a>.</h3>
+						<h3><b>V2.97a.20140901</b> - iOS 8 compatibility fix, "Bar UI" player demo, <code>durationchange</code>, buffering, edge case tweaks for HTML5 and RTMP, and browser environment checks. <a href="https://github.com/scottschiller/SoundManager2/compare/V2.97a.20131201...V2.97a.20140901">See GitHub commits</a>.</h3>
 
 						<ul>
 
@@ -186,6 +186,26 @@ soundManager.setup({
 								<p class="compact">Bug fixes</p>
 
 								<ul class="nested compact flat">
+
+									<li>
+
+										<p>
+											Why UA sniffing is generally bad, real-world example #1048577: "That time a missing <code>/s</code> on <code>navigator.userAgent</code> (based on single-digit UA version assumptions) broke SM2 on iOS 8+ devices."
+										</p>
+
+										<p>
+											The upside: The fix is adding <code>\s</code> to a UA <code>regex</code> check targeting legacy iOS devices with broken <code>HTML5 Audio()</code> support, so that the <code>"OS 10 "</code> portion of the UA string does not match the pattern <code>"OS 1 "</code>.
+										</p>
+
+										<p>
+											This is a pre-emptive fix for the pending iOS 8 release, which reportedly includes the string <code>"iPhone OS 10_10 like Mac OS X"</code>. Due to SM2 checking for <code>/os ([12|3_0|3_1])/i</code> which had broken HTML5 Audio() support, and not considering the far future possibility of <code>"iOS 10"</code> being included in the userAgent string at the time, HTML5 audio is incorrectly disabled on iOS 8 beta 3 and is likely to apply to the final iOS 8 release.
+										</p>
+
+										<p>
+											This is a good example and reminder of why UA checks are generally bad, and dangerous; similar issues hit other libraries doing UA and plugin checks both client and server-side when IE hit 10, and Flash hit version 10, so this iOS pattern change may affect some other libraries targeting iOS as well.
+										</p>
+
+									</li>
 
 									<li>
 										<p>
@@ -233,13 +253,25 @@ soundManager.setup({
 
 									<li>
 										<p>
+											"Bar UI" player demo added. SVG-based iconography, degrades nicely down to IE 8. See <a href="../../demo/bar-ui">live demo</a>.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											Retina/hi-dpi updates for 360&deg; canvas, small 360&deg; player buttons and basic button player demo image assets.
+										</p>
+									</li>
+
+									<li>
+										<p>
 											CommonJS + AMD (requireJS) <code>module.exports</code> / <code>define()</code> compatibility (see <a href="https://github.com/scottschiller/SoundManager2/commit/6e9b819ab9567492a9dab03261899a3002e04d60">commit</a> for details.)
 										</p>
 									</li>
 
 									<li>
 										<p>
-											Check <code>window</code> &amp;&amp; <code>window.document</code>, barf if loaded in server-side node environment vs. in a browser. (Presumed correct behaviour unless Node.js, etc., start implementing <code>Audio()</code> or similar; open to suggestion.)
+											Check <code>window</code> &amp;&amp; <code>window.document</code>, barf if loaded in server-side node environment vs. in a browser. (Even if Node.js etc. support <code>Audio()</code> at some point, SM2 was designed for a browser; this check is probably A Good Thing&trade; to have in place.) If you feel you have a use case that makes sense here, feedback is appreciated.
 										</p>
 									</li>
 
