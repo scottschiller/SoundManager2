@@ -1,20 +1,23 @@
 body {
   background:#fff;
-  color: #444; /* scandalous. */
+  color: #333; /* scandalous. */
   margin:0px;
   padding:0px;
   font:76% "helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
   /* wacky IE 6 horizontal scrollbar hack */
   _width:99.5%;
-  /* a little fun: transition font size with @media shift. */
+  /* a little fun: transition font size with media shift. */
   -moz-transition: font-size 0.1s;
   -webkit-transition: font-size 0.1s;
+  /* font trickery */
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
 }
 
 @media all and (min-width: 1280px) {
   /* holy CSS3 media queries, Batman! (in this case, larger screen widths get this rule.) */
   body {
-    font-size: 80%;
+    font-size: 85%;
   }
 }
 
@@ -22,9 +25,6 @@ body {
   /* holy CSS3 media queries, Batman! (in this case, larger screen widths get this rule.) */
   body {
     font-size: 90%;
-  }
-  body.home .sm2-speaker {
-    max-width: 226px !important;
   }
   /* nav vertical align tweak */
   #nav > ul > li > strong > a {
@@ -36,11 +36,6 @@ body {
   /* holy CSS3 media queries, Batman! (in this case, larger screen widths get this rule.) */
   body {
     font-size: 105%;
-  }
-  body.home .sm2-speaker {
-    left: -2.5% !important;
-    margin-left: -15% !important;
-    margin-top: 20px !important;
   }
 }
 
@@ -112,7 +107,7 @@ h1, h2, h3, h4 {
   margin: 0px;
   padding: 0px;
   vertical-align: middle;
-  font-weight: 300;
+  font-weight: 500;
 }
 
 h4.new,
@@ -187,12 +182,35 @@ h2.special a {
 	top: -0.65em;
 }
 
+#turntable-video {
+  width: 100%;
+  max-width: 1920px;
+  /* Safari 7.0.5 rendering bug makes <video> go full viewport height before loading? */
+  max-height: 500px;
+  overflow: hidden;
+}
+
 body.home #about-header {
   /* speaker image, etc. */
   position: relative;
-  margin-left: 18%;
+  /* margin-left: 18%; */
+  background-size: contain;
+  padding-left: 18%;
+  margin-right: 19em; /* room for right support column */
   min-height: 175px;
   padding-top: 1.75em;
+}
+
+body.home .sm2-speaker {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 20%;
+  height: 120%; /* hackish, but works. */
+  background: transparent url(../demo/_image/soundmanager2-speaker.png) no-repeat 50% 50%;
+  max-width: 256px;
+  max-height: 250px;
+  background-size: contain;
 }
 
 body.home #about-header .feature {
@@ -200,24 +218,6 @@ body.home #about-header .feature {
  position: relative;
  vertical-align: middle;
  font-size: 1.2em;
-}
-
-body.home .sm2-speaker {
-  position: absolute;
-  left: -1.5%;
-  top: 0px;
-  margin-right: 2em;
-  margin-bottom: 8px;
-  max-width: 192px;
-  min-width: 64px;
-  width: 20%;
-  margin-left: -20%;
-}
-
-body.home .sm2-speaker img {
-  width:100%;
-  max-width:226px;
-  min-width:32px;
 }
 
 body.home #about-sm2 h2.special,
@@ -241,6 +241,11 @@ body.home #about-sm2 h3 {
 
 body.home #about-sm2 b {
  font-weight: 500;
+}
+
+body.home #about-sm2 ul b {
+ /* restore regular bold */
+ font-weight: 600;
 }
 
 body.home #about-sm2 strong {
@@ -333,7 +338,7 @@ body.home #about-sm2 h3 + h4 {
 body.home .demo-more,
 body.home .demo-more-abs {
   text-align:right;
-  font-size:85%;
+  font-size: 100%;
   margin-right:0.25em;
   white-space:nowrap;
 }
@@ -513,7 +518,7 @@ ul.code-block span,
 pre span span,
 code span span,
 dt span span {
-  color:#667788;
+  color:#556677;
 }
 
 pre.block,
@@ -886,7 +891,7 @@ ul li {
   font-size: 1.1em;
   line-height: 1.1em;
   color: #fff;
-  font-weight: 300;
+  font-weight: 400;
   color:rgba(255,255,255,0.9);
   border-bottom: 1px dotted rgba(0,0,0,0.2);
   border-top: 1px dotted rgba(255,255,255,0.2);
@@ -914,7 +919,7 @@ ul li {
   /* top-level links */
   color:#ddd;
   font-size: 1.25em;
-  font-weight: 300;
+  font-weight: 400;
   vertical-align: bottom;
 }
 
@@ -924,7 +929,7 @@ ul li {
 
 #nav > ul > li > strong > a {
   /* tweak for good browsers that respect larger font size */
-  padding-bottom: 8px;
+  padding-bottom: 9px;
 }
 
 #nav ul li a:hover,
@@ -940,10 +945,10 @@ ul li {
   float:right;
   display:inline;
   margin-left:1em;
-  font-size:85%;
+  font-size:90%;
   margin-bottom:0px;
-  bottom: -1em;
-  color:#999;
+  bottom: -0.9em;
+  color:#ccc;
 }
 
 div.clear {
@@ -1018,8 +1023,8 @@ ul.standard ul {
 .c3 ul li a,
 .c3 ul li a:hover,
 .c3 ul li a:focus {
-  color:#555;
-  _color:#555;
+  color:#333;
+  _color:#333;
   outline:none;
 }
 
@@ -1247,7 +1252,7 @@ ul.standard ul {
 }
 
 #get-satisfaction a {
-  color:#555;
+  color:#444;
 }
 
 #get-satisfaction a:hover {
@@ -1386,6 +1391,11 @@ dd.deprecation-note {
   box-shadow: 0px 0px 1px rgba(0,0,0,0.075);
 }
 
+body.home #support-wrapper {
+  position: absolute;
+  width: 100%;
+}
+
 #gsfn_content {
   position: relative;
   padding:0.5em 0px 0.5em 0px;
@@ -1521,14 +1531,18 @@ a.cta {
   *margin: 0px -2px 0px -2px;
   text-decoration:none;
   color:#3399cc;
+  font-weight: 500;
   border-radius:0.25em;
   zoom:1;
 }
 
 body.home .c2 a,
 body.home a.cta {
+/*
  text-shadow: 0px 1px 0px #fff;
+*/
 }
+
 
 body.home .c2 a:hover,
 body.home a.cta:hover {
@@ -1619,12 +1633,13 @@ div.html5support span {
   padding:0px 5px;
   display:inline-block;
   text-align:center;
-  font-weight:bold;
+  font-weight:400;
   background:#ccc;
   color:#fff;
-  border-radius:5px;
-  margin-left:0.5em;
   margin-bottom:0.25em;
+  border-right: 1px dotted #fff;
+  border-radius: 0px;
+  margin-right: none;
 }
 
 div.html5support em {
@@ -1848,18 +1863,25 @@ ul.inthewild a span {
   margin: -20px 0px 0px -32px;
 }
 
-#soundcloud {
-  background-position: 0 -424px;
-  width: 83px;
+#earbits {
+  background-position: 0 -471px;
+  width: 100px;
   height: 58px;
-  margin: -29px 0px 0px -42px;
+  margin: -29px 0px 0px -50px;
 }
 
-#turntable-dot-fm {
-  background-position: 0 -252px;
+#songza {
+  background-position: 0 -424px;
   width: 100px;
-  height: 20px;
-  margin: -10px 0px 0px -50px;
+  height: 58px;
+  margin: -29px 0px 0px -50px;
+}
+
+#beats-music {
+  background-position: 0 -230px;
+  width: 100px;
+  height: 64px;
+  margin: -34px 0px 0px -48px;
 }
 
 #baroque-me {
@@ -2016,29 +2038,6 @@ ul.inline-playlist li {
 
 body.home .sm2-inline-list .ui360-vis {
   margin-right:0px;
-}
-
-body.home #special-demo-left .ui360 {
-  margin-right: 4px;
-  /* homepage-specific demo UI: a slight inner shadow + BG color + border */
-  background-color: rgba(0,0,0,0.025);
-  box-shadow: inset 0px 0px 8px rgba(0,0,0,0.075);
-  /* a little radii, modern browsers only */
-  border: 1px solid rgba(0,0,0,0.075);
-  border-radius: 32px;
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  /* specifics */
-  -moz-transition-property: background, border, box-shadow;
-  -webkit-transition-property: background, border, box-shadow;
-  transition-property: background, border, box-shadow;
-}
-
-body.home #special-demo-left .ui360:hover {
-  background-color: rgba(0,0,0,0.045);
-  border-color: rgba(0,0,0,0.15);
-  box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
 }
 
 body.home #special-demo-left .ui360:last-child {
@@ -2517,14 +2516,6 @@ div.threeup {
   *zoom:1; /* god damn shite IE */
 }
 
-div.oneup,
-div.twoup,
-div.threeup,
-#about-sm2 h2.special,
-#about-sm2 p {
-  text-shadow: 0px 1px 0px #fff; /* eh, why not. */
-}
-
 div.oneup .column {
   position: relative;
   width: 100%;
@@ -2627,11 +2618,6 @@ body.home ul.playlist .sidenote {
   font-size: 85%;
 }
 
-body.home .demo-more,
-body.home .demo-more-abs {
-  font-size: 95%;
-}
-
 body.home ul.graphic {
   margin-top: 1em;
 }
@@ -2692,6 +2678,7 @@ body.home .demo-more a span,
 body.home .demo-more-abs a span {
   font-size: 1.5em;
   line-height: 1em;
+  vertical-align: bottom;
 }
 
 body.home #sm2-visualization {
@@ -2713,7 +2700,7 @@ body.home #sm2-visualization .ui360 .sm2-360ui {
 body.home #sm2-visualization .ui360 canvas,
 body.home #sm2-visualization .ui360 .sm2-360ui,
 body.home #sm2-visualization .ui360 a {
-  border-radius: 128px;
+  border-radius: 100%;
 }
 
 body.home #sm2-visualization .ui360 a {
@@ -2923,4 +2910,27 @@ div.icons ul li.package {
 
 #client-requests ul.flat li {
 	margin-bottom: 0px;
+}
+
+#inline-video {
+ position: relative;
+ margin-top: 4.25em;
+ margin-right: 0.5em;
+}
+
+#bar-ui-1 {
+ position: relative;
+ top: -45px;
+}
+
+#bar-ui-1 .bd,
+#bar-ui-1 .sm2-bar-ui .sm2-extra-controls,
+#bar-ui-1 .sm2-bar-ui .sm2-playlist-drawer {
+ background-color: #2299cc; /* non-RGBA fallback */
+ background-color: rgba(0,128,224,0.65);
+}
+
+#about-sm2 .sm2-bar-ui .sm2-playlist-drawer {
+ /* weird Chrome mac (retina display?) fix, otherwise BG color doesn't draw. */
+ transform: scale3d(1,1,1);
 }
