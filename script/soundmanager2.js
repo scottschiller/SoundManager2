@@ -3353,8 +3353,6 @@ function SoundManager(smURL, smID) {
       }
       s.metadata = oData;
 
-console.log('updated metadata', s.metadata);
-
       if (s._iO.onmetadata) {
         s._iO.onmetadata.call(s, s.metadata);
       }
