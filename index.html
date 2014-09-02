@@ -194,10 +194,11 @@
 					(function() {
 
 						/**
-						 * iphone doesn't play inline video, nor does iOS < 7 on iPad (IIRC.) This is a dirty hack to not show video in the iPhone case.
+						 * iPhone doesn't play inline video, nor does iOS < 7 on iPad (IIRC.)
+						 * This is a dirty hack to not show video in the general mobile / tablet / "you're not a desktop" case.
 						 * GIF made using the following...
 						 * gifsicle source.gif --colors 32 --optimize --dither=o3 > output.gif
-						 * APNG made with APNG Anime Maker (Windows)
+						 * APNG made with APNG Anime Maker (Windows.)
 						 */
 
 						var i, doesAPNG, replacements, ua, url, video;
@@ -209,12 +210,13 @@
 
 						ua = navigator.userAgent;
 
-						if (ua.match(/iphone|ipad|ios/i) || window.location.href.match(/ios/i)) {
+						// that oughta get enough of you guys. YOU get a .GIF, and *YOU* get a .GIF!
+						if (ua.match(/iphone|ipad|ios|mobile|windows phone|tablet/i) || window.location.href.match(/ios/i)) {
 							// if you're lying, you will probably pay the price now for this naieve detection.
 							video = document.getElementById('inline-video');
 							if (video) {
 								// dirty, evil tricks.
-								doesAPNG = (ua.match(/os (8|9|10)\s/i) || window.location.href.match(/apng/i)); // iOS 8+ as "OS 8|9|10" or whatever's eventually released.
+								doesAPNG = (ua.match(/os (8|9|10)\s/i) || window.location.href.match(/apng/i)); // iOS 8+ is presumed as "OS 8|9|10" or whatever's eventually released.
 								url = replacements[(doesAPNG ? 'apng' : 'gif')];
 								video.innerHTML = '<img src="demo/_image/turntable-loop-poster.jpg" alt="" style="width:100%;max-width:1920px" /><div style="position:absolute;left:0px;top:0px;width:100%;height:100%;background: transparent url(' + url + ');background-size:100% auto;background-repeat:no-repeat" onclick="this.style.display=\'none\'"></div>';
 							}
