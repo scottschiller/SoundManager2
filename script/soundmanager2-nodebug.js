@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140630
+ * V2.97a.20140901
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -110,7 +110,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20140630';
+  this.versionNumber = 'V2.97a.20140901';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -2125,11 +2125,11 @@ console.log('updated metadata', s.metadata);
     hasFlash = hasPlugin;
     return hasPlugin;
   };
-  featureCheck = function() {
+featureCheck = function() {
     var flashNeeded,
         item,
         formats = sm2.audioFormats,
-        isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)/i)));
+        isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)\s/i)));
     if (isSpecial) {
       sm2.hasHTML5 = false;
       sm2.html5Only = true;
