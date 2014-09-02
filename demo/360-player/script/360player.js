@@ -37,7 +37,9 @@ function ThreeSixtyPlayer() {
       isTouchDevice = (uA.match(/ipad|iphone/i)),
       hasRealCanvas = (typeof window.G_vmlCanvasManager === 'undefined' && typeof document.createElement('canvas').getContext('2d') !== 'undefined'),
       // I dunno what Opera doesn't like about this. I'm probably doing it wrong.
-      fullCircle = (isOpera||isChrome?359.9:360);
+      fullCircle = (isOpera||isChrome?359.9:360),
+      // exclude old IE from hi-DPI / "retina"-scale display size
+      hiDPIScale = (navigator.userAgent.match(/msie [678]/i)? 1 : 2);
 
   // CSS class for ignoring MP3 links
   this.excludeClass = 'threesixty-exclude';
@@ -463,7 +465,7 @@ function ThreeSixtyPlayer() {
 
       // tack on some custom data
 
-      diameter = parseInt(self.getElementsByClassName('sm2-360ui','div',oContainer)[0].offsetWidth, 10);
+      diameter = parseInt(self.getElementsByClassName('sm2-360ui','div',oContainer)[0].offsetWidth * hiDPIScale, 10);
 
       // see note re: IE <9 and excanvas when Modernizr is included, making weird things happen with <canvas>.
       canvasElements = self.getElementsByClassName('sm2-canvas','canvas',oContainer),
@@ -990,13 +992,13 @@ function ThreeSixtyPlayer() {
 
     oTemp = document.body.appendChild(oFakeUI);
 
-    fakeDiameter = oFakeUIBox.offsetWidth;
+    fakeDiameter = oFakeUIBox.offsetWidth * hiDPIScale;
 
     uiHTML = self.getUIHTML(fakeDiameter);
 
     oFakeUIBox.innerHTML = uiHTML[1]+uiHTML[2]+uiHTML[3];
 
-    circleDiameter = parseInt(oFakeUIBox.offsetWidth, 10);
+    circleDiameter = parseInt(fakeDiameter, 10);
     circleRadius = parseInt(circleDiameter/2, 10);
 
     oTiming = self.getElementsByClassName('sm2-timing','div',oTemp)[0];
@@ -1092,6 +1094,10 @@ function ThreeSixtyPlayer() {
         } else { 
           // add a handler for the button
           oCanvas = oLinks[i].parentNode.getElementsByTagName('canvas')[0];
+        }
+        // enable hi-DPI / retina features?
+        if (hiDPIScale > 1) {
+          self.addClass(oCanvas, 'hi-dpi');
         }
         oCover = self.getElementsByClassName('sm2-cover','div',oLinks[i].parentNode)[0];
         oBtn = oLinks[i].parentNode.getElementsByTagName('span')[0];
@@ -1385,8 +1391,8 @@ soundManager.setup({
   debugMode: (window.location.href.match(/debug=1/i)), // disable or enable debug output
   consoleOnly: true,
   flashVersion: 9,
-  useHighPerformance: true,
-  useFlashBlock: true
+  useHighPerformance: true/*,
+  useFlashBlock: true*/
 });
 
 // FPS data, testing/debug only
