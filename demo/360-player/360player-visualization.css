@@ -97,11 +97,6 @@
  background-color:transparent;
 }
 
-.sm2-inline-list .ui360-vis:hover a.sm2_link {
- background-color:#fafafa;
- *background-color:transparent; /* eh, screw IE. */
-}
-
 /* Use a bigger loading image for this layout */
 
 .ui360-vis .sm2-360btn,
