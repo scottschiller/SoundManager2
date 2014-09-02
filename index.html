@@ -1,13 +1,11 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+﻿<!doctype html>
+<html lang="en">
 <head>
 <title>SoundManager 2: JavaScript Sound For The Web</title>
 <meta name="description" content="Play sound from JavaScript including MP3, MPEG-4 and HTML5-supported audio formats with SoundManager 2, a cross-browser/platform sound API. BSD licensed."/>
 <meta name="keywords" content="javascript sound, html5 audio, html5 sound, javascript audio, javascript play mp3, javascript sound control, mp3, mp4, mpeg4, aac, Scott Schiller, Schill, Schillmania"/>
 <meta name="author" content="Scott Schiller"/>
-<meta name="copyright" content="Copyright (C) 1997 onwards Scott Schiller"/>
-<meta name="language" content="en-us"/>
+<meta name="dcterms.rights" content="Copyright (C) 1997 onwards Scott Schiller"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
 <!-- inline demo CSS (combined + minified for performance; see comments for raw source URLs) -->
@@ -24,12 +22,23 @@
 
 <!-- inline demo JS (combined + minified; see comments for raw source URLs) -->
 <script type="text/javascript" src="demo/index-rollup.js"></script>
+
+<!-- testing 2 -->
+<script src="demo/bar-ui/script/bar-ui.js"></script>
+
 <!-- IE CSS font hax -->
 <!--[if lte IE 8]>
 <style>
  h2.special {
   /* IE 6-8 font reset, doesn't like sort-of-defined @font-family */
   font-family:"helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
+ }
+ body.home #about-header {
+  padding-left: 0px;
+ }
+.sm2-speaker,
+ #inline-video {
+  display: none;
  }
 </style>
 <![endif]-->
@@ -56,6 +65,7 @@
 					<ul>
 						<li><a href="demo/template/">Basic Template</a></li>
 						<li><a href="demo/api/">API Examples</a></li>
+						<li><a href="demo/bar-ui/">Bar UI</a></li>
 						<li><a href="demo/play-mp3-links/">Playable MP3 links</a></li>
 						<li><a href="demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
 						<li><a href="demo/page-player/">Muxtape-style UI</a></li>
@@ -159,15 +169,155 @@
 
 				<div id="about-header">
 
-					<div class="sm2-speaker">
-						<img src="demo/_image/soundmanager2-speaker.png" alt="SoundManager 2 speaker logo" class="ie6sucks" />
-					</div>
+					<div class="sm2-speaker"></div>
 
 					<h2 class="special">SoundManager 2 makes it easier to play audio using JavaScript.</h2>
 
-					<p style="line-height:2em">
-						Using HTML5 and Flash, SoundManager 2 provides reliable cross-platform audio under a single JavaScript API.&nbsp; <a href="doc/download/" title="Download SoundManager 2" class="feature" style="font-family:helvetica;font-weight:bold;margin:0px;white-space:nowrap">Get SoundManager 2</a>
+					<p>
+						<a href="doc/download/" title="Download SoundManager 2" class="feature" style="float:right;font-family:helvetica;font-weight:500;margin:0px;white-space:nowrap">Get SoundManager 2</a>
+						<span style="line-height:1.75em;font-size:110%">SoundManager 2 provides simple, reliable cross-platform audio under a single JavaScript API.&nbsp;</span>
 					</p>
+
+				</div>
+
+	            <div id="inline-video">
+
+					<video id="turntable-video" loop autoplay onclick="if (!this.paused) { this.pause(); } else { this.play(); }">
+						<source src="demo/_image/turntable-loop-1920x500-h264-512kbps-h264.mp4">
+						<source src="demo/_image/turntable-loop-1920x500-h264-512kbps-bw.mov" type="video/mp4">
+						<source src="demo/_image/turntable-loop-1920x500-bw.webm" type="video/webm">
+						<img id="turntable-static-video" src="demo/_image/turntable-loop-poster.jpg" alt="" style="width:100%;max-width:1920px" />
+					</video>
+
+					<script>
+
+					(function() {
+
+						/**
+						 * iphone doesn't play inline video, nor does iOS < 7 on iPad (IIRC.) This is a dirty hack to not show video in the iPhone case.
+						 * GIF made using the following...
+						 * gifsicle source.gif --colors 32 --optimize --dither=o3 > output.gif
+						 * APNG made with APNG Anime Maker (Windows)
+						 */
+
+						var i, doesAPNG, replacements, ua, url, video;
+
+						replacements = {
+							'gif': 'demo/_image/turntable-loop-960-22f-32c-03.gif',  // framerate / quality / file size trade-off
+							'apng': 'demo/_image/turntable-loop-960-27f.apng'  // pretty good all-around
+						}
+
+						ua = navigator.userAgent;
+
+						if (ua.match(/iphone|ipad|ios/i) || window.location.href.match(/ios/i)) {
+							// if you're lying, you will probably pay the price now for this naieve detection.
+							video = document.getElementById('inline-video');
+							if (video) {
+								// dirty, evil tricks.
+								doesAPNG = (ua.match(/os (8|9|10)\s/i) || window.location.href.match(/apng/i)); // iOS 8+ as "OS 8|9|10" or whatever's eventually released.
+								url = replacements[(doesAPNG ? 'apng' : 'gif')];
+								video.innerHTML = '<img src="demo/_image/turntable-loop-poster.jpg" alt="" style="width:100%;max-width:1920px" /><div style="position:absolute;left:0px;top:0px;width:100%;height:100%;background: transparent url(' + url + ');background-size:100% auto;background-repeat:no-repeat" onclick="this.style.display=\'none\'"></div>';
+							}
+						}
+
+					}());
+
+					</script>
+
+					<div id="bar-ui-1" class="sm2-bar-ui full-width bottom">
+
+					 <div class="bd sm2-main-controls">
+
+					  <div class="sm2-inline-texture"></div>
+					  <div class="sm2-inline-gradient"></div>
+
+					  <div class="sm2-inline-element sm2-button-element">
+					   <div class="sm2-button-bd">
+					    <a href="#play" class="sm2-inline-button play-pause">Play / pause</a>
+					   </div>
+					  </div>
+
+					  <div class="sm2-inline-element sm2-inline-status">
+
+					   <div class="sm2-playlist">
+					    <div class="sm2-playlist-target">
+					     <!-- playlist <ul> + <li> markup will be injected here -->
+					     <!-- if you want default / non-JS content, you can put that here. -->
+					     <noscript><p>JavaScript is required.</p></noscript>
+					    </div>
+					   </div>
+
+					   <div class="sm2-progress">
+					    <div class="sm2-row">
+					    <div class="sm2-inline-time">0:00</div>
+					     <div class="sm2-progress-bd">
+					      <div class="sm2-progress-track">
+					       <div class="sm2-progress-bar"></div>
+					       <div class="sm2-progress-ball"><div class="icon-overlay"></div></div>
+					      </div>
+					     </div>
+					     <div class="sm2-inline-duration">0:00</div>
+					    </div>
+					   </div>
+
+					  </div>
+
+					  <div class="sm2-inline-element sm2-button-element sm2-volume">
+					   <div class="sm2-button-bd">
+					    <span class="sm2-inline-button sm2-volume-control volume-shade"></span>
+					    <a href="#volume" class="sm2-inline-button sm2-volume-control">volume</a>
+					   </div>
+					  </div>
+
+					  <div class="sm2-inline-element sm2-button-element">
+					   <div class="sm2-button-bd">
+					    <a href="#prev" title="Previous" class="sm2-inline-button previous">&lt; previous</a>
+					   </div>
+					  </div>
+
+					  <div class="sm2-inline-element sm2-button-element">
+					   <div class="sm2-button-bd">
+					    <a href="#next" title="Next" class="sm2-inline-button next">&gt; next</a>
+					   </div>
+					  </div>
+
+					  <div class="sm2-inline-element sm2-button-element sm2-menu">
+					   <div class="sm2-button-bd">
+					    <a href="#menu" class="sm2-inline-button menu">menu</a>
+					   </div>
+					  </div>
+
+					 </div>
+
+					 <div class="bd sm2-playlist-drawer sm2-element">
+
+					  <!-- playlist content is mirrored here -->
+
+					  <div class="sm2-playlist-wrapper">
+					    <ul class="sm2-playlist-bd">
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Let%20Me%20%28Prod%202oolman%29.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - Let Me <span class="label">Explicit</span></a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - LA (Prod. Chin Injetti)<span class="label">Explicit</span></a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20People%20Asking.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - People Asking <span class="label">Explicit</span></a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Already%20There%20Remix%20ft.%20Rich%20Kidd%2C%20Saukrates.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - Already There Remix ft. Rich Kidd, Saukrates <span class="label">Explicit</span></a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/The%20Fugitives%20-%20Graffiti%20Sex.mp3" class="exclude button-exclude inline-exclude"><b>The Fugitives</b> - Graffiti Sex</a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/Adrian%20Glynn%20-%20Seven%20Or%20Eight%20Days.mp3" class="exclude button-exclude inline-exclude"><b>Adrian Glynn</b> - Seven Or Eight Days</a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20I%20Tried.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - I Tried</a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="exclude button-exclude inline-exclude">Armstrong Beat</a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="exclude button-exclude inline-exclude">Untitled Groove</a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/birds-in-kauai-128kbps-aac-lc.mp4" class="exclude button-exclude inline-exclude">Birds In Kaua'i (AAC)</a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/20130320%20-%20Po%27ipu%20Beach%20Waves.ogg" class="exclude button-exclude inline-exclude">Po'ipu Beach Waves (OGG)</a></li>
+						     <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" class="exclude button-exclude inline-exclude">A corked beer bottle (WAV)</a></li>
+						     <li><a href="demo/_mp3/rain.mp3" class="norewrite exclude button-exclude inline-exclude">Rain</a></li>
+					    </ul>
+					  </div>
+
+					 </div>
+
+					</div>
+
+					<div class="demo-more" style="margin-top:-45px">
+						Featured demo: <a href="demo/bar-ui/" title="Demo" class="cta dark-cta">Bar UI <span>&raquo;</span></a>
+					</div>
 
 				</div>
 
@@ -299,10 +449,10 @@
 							<p>A richer playlist theme with optional time, seekable progress bar and a VU meter where supported:</p>
 
 							<ul id="inline-playlist" class="playlist">
-								<li><a href="http://freshly-ground.com/data/audio/mpc/20060826 - Armstrong.mp3" class="button-exclude inline-exclude threesixty-exclude">Armstrong Beat</a></li>
-								<li><a href="http://freshly-ground.com/data/audio/mpc/20090119 - Untitled Groove.mp3" class="button-exclude inline-exclude threesixty-exclude">Untitled Groove</a></li>
+								<li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="button-exclude inline-exclude threesixty-exclude">Armstrong Beat</a></li>
+								<li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="button-exclude inline-exclude threesixty-exclude">Untitled Groove</a></li>
 								<li><a href="http://freshly-ground.com/data/audio/sm2/birds-in-kauai-128kbps-aac-lc.mp4" title="128 kbps MPEG-4 AAC LC (Low Complexity) sound: Birds in Kaua'i" class="button-exclude inline-exclude threesixty-exclude">Birds In Kaua'i <span class="sidenote">(128 kbps AAC)</span></a></li>
-								<li><a href="http://freshly-ground.com/data/audio/sm2/20130320 - Po'ipu Beach Waves.ogg" title="Po'ipu Beach Waves: OGG sound format, requires HTML5 Audio() support to play" class="muxtape-html5 button-exclude inline-exclude threesixty-exclude">Po'ipu Beach Waves <span class="sidenote">(OGG)</span></a></li>
+								<li><a href="http://freshly-ground.com/data/audio/sm2/20130320%20-%20Po%27ipu%20Beach%20Waves.ogg" title="Po'ipu Beach Waves: OGG sound format, requires HTML5 Audio() support to play" class="muxtape-html5 button-exclude inline-exclude threesixty-exclude">Po'ipu Beach Waves <span class="sidenote">(OGG)</span></a></li>
 								<li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" title="WAV sound format, requires HTML5 Audio() support to play" class="muxtape-html5 button-exclude inline-exclude threesixty-exclude">A corked beer bottle <span class="sidenote">(WAV)</span></a></li>
 							</ul>
 							<div class="demo-more">
@@ -316,7 +466,122 @@
 						<div class="column-wrapper">
 
 							<h3>Shiny</h3>
-							<h4>Data <b>visualization features</b></h4>
+							<h4>Fancier UI, more features</h4>
+
+							<p>The <em>Bar UI</em> uses SVG for a resolution-independent UI, with HTML and CSS that makes customization easy.</p>
+
+							<div class="sm2-bar-ui" style="min-width:10em">
+
+							 <div class="bd sm2-main-controls">
+
+							  <div class="sm2-inline-texture"></div>
+							  <div class="sm2-inline-gradient"></div>
+
+							  <div class="sm2-inline-element sm2-button-element">
+							   <div class="sm2-button-bd">
+							    <a href="#play" class="sm2-inline-button play-pause">Play / pause</a>
+							   </div>
+							  </div>
+
+							  <div class="sm2-inline-element sm2-inline-status">
+
+							   <div class="sm2-playlist">
+							    <div class="sm2-playlist-target">
+							     <!-- playlist <ul> + <li> markup will be injected here -->
+							     <!-- if you want default / non-JS content, you can put that here. -->
+							     <noscript><p>JavaScript is required.</p></noscript>
+							    </div>
+							   </div>
+
+							   <div class="sm2-progress">
+							    <div class="sm2-row">
+							    <div class="sm2-inline-time">0:00</div>
+							     <div class="sm2-progress-bd">
+							      <div class="sm2-progress-track">
+							       <div class="sm2-progress-bar"></div>
+							       <div class="sm2-progress-ball"><div class="icon-overlay"></div></div>
+							      </div>
+							     </div>
+							     <div class="sm2-inline-duration">0:00</div>
+							    </div>
+							   </div>
+
+							  </div>
+
+							  <div class="sm2-inline-element sm2-button-element sm2-volume">
+							   <div class="sm2-button-bd">
+							    <span class="sm2-inline-button sm2-volume-control volume-shade"></span>
+							    <a href="#volume" class="sm2-inline-button sm2-volume-control">volume</a>
+							   </div>
+							  </div>
+
+							  <div class="sm2-inline-element sm2-button-element sm2-menu">
+							   <div class="sm2-button-bd">
+							    <a href="#menu" class="sm2-inline-button menu">menu</a>
+							   </div>
+							  </div>
+
+							 </div>
+
+							 <div class="bd sm2-playlist-drawer sm2-element">
+
+							  <div class="sm2-inline-texture">
+							   <div class="sm2-box-shadow"></div>
+							  </div>
+
+							  <!-- playlist content is mirrored here -->
+
+							  <div class="sm2-playlist-wrapper">
+							    <ul class="sm2-playlist-bd">
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20(Prod%20Chin%20Injetti).mp3" class="exclude button-exclude inline-exclude">SonReal - LA (Prod. Chin Injetti)<span class="label">Explicit</span></a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Let%20Me%20(Prod%202oolman).mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - Let Me <span class="label">Explicit</span></a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20People%20Asking.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - People Asking <span class="label">Explicit</span></a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Already%20There%20Remix%20ft.%20Rich%20Kidd,%20Saukrates.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - Already There Remix ft. Rich Kidd, Saukrates <span class="label">Explicit</span></a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/The%20Fugitives%20-%20Graffiti%20Sex.mp3" class="exclude button-exclude inline-exclude"><b>The Fugitives</b> - Graffiti Sex</a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/Adrian%20Glynn%20-%20Seven%20Or%20Eight%20Days.mp3" class="exclude button-exclude inline-exclude"><b>Adrian Glynn</b> - Seven Or Eight Days</a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20I%20Tried.mp3" class="exclude button-exclude inline-exclude"><b>SonReal</b> - I Tried</a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/mpc/20060826%20-%20Armstrong.mp3" class="exclude button-exclude inline-exclude">Armstrong Beat</a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" class="exclude button-exclude inline-exclude">Untitled Groove</a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/birds-in-kauai-128kbps-aac-lc.mp4" class="exclude button-exclude inline-exclude">Birds In Kaua'i (AAC)</a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/20130320%20-%20Po%27ipu%20Beach%20Waves.ogg" class="exclude button-exclude inline-exclude">Po'ipu Beach Waves (OGG)</a></li>
+							     <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav" class="exclude button-exclude inline-exclude">A corked beer bottle (WAV)</a></li>
+							     <li><a href="demo/_mp3/rain.mp3" class="norewrite exclude button-exclude inline-exclude">Rain</a></li>
+							    </ul>
+							  </div>
+
+							  <div class="sm2-extra-controls">
+
+							   <div class="bd">
+
+							    <div class="sm2-inline-element sm2-button-element">
+							     <a href="#prev" title="Previous" class="sm2-inline-button previous">&lt; previous</a>
+							    </div>
+
+							    <div class="sm2-inline-element sm2-button-element">
+							     <a href="#next" title="Next" class="sm2-inline-button next">&gt; next</a>
+							    </div>
+
+							    <div class="sm2-inline-element sm2-button-element disabled">
+							     <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+							    </div>
+
+							    <div class="sm2-inline-element sm2-button-element disabled">
+							     <a href="#shuffle" title="Shuffle" class="sm2-inline-button shuffle">shuffle</a>
+							    </div>
+
+							   </div>
+
+							  </div>
+
+							 </div>
+
+							</div>
+
+							<div class="demo-more">
+								<a href="demo/bar-ui/" title="Demo" class="cta">Bar UI <span>&raquo;</span></a>
+							</div>
+
+							<!-- 360 player -->
 
 							<p>The 360&deg; player UI demo uses &lt;canvas&gt; and includes options for waveform and spectrum analysis data via Flash 9, adding beautiful visual feedback to the interface.</p>
 
@@ -360,7 +625,7 @@
 								<a href="demo/cassette-tape/" title="Cassette Tape UI (Prototype Demo)"><img src="demo/_image/cassette-tape-ui-screenshot.jpg" alt="Cassette Tape UI Prototype Screenshot" style="max-width:506px;min-width:100%;width:100%;border-radius:12px" /></a>
 							</div>
 
-							<p style="margin:0.5em 0px 0px 0px;padding:0px;font-size:92%;text-align:left;color:#666;margin-bottom:0.5em;white-space:normal">Remember Type IV, Metal &amp; Chromium/CrO2? <a href="http://www.youtube.com/watch?v=1FDgUfeG8q4" title="Cassette Tape TV ads from Japan, 1979-1989 (YouTube)" class="cta">Those were the days</a>.</p>
+							<p style="margin:0.5em 0px 0px 0px;padding:0px;font-size:92%;text-align:left;color:#666;margin-bottom:0.5em;white-space:normal">Remember Type IV, Metal &amp; Chromium/CrO2? <a href="http://www.youtube.com/watch?v=uMUnaI_IdBU" title="TDK TV ad, 1980s" class="cta">Those were the days</a>.</p>
 
 							<p>The "Wheels Of Steel" started as a simple CSS prototype, and evolved to replicate most of the UI and functionality of a traditional DJ set-up. Pitch bending, scratch and EQ effects are present where supported.</p>
 							<p style="margin:0px 0px 0.5em 0px;padding:0px;text-align:center" class="bonus-demo"><a href="http://wheelsofsteel.net/" title="The Wheels Of Steel: Online turntable / browser-based DJ prototype" style="margin:0px;padding:0px;background:#fff"><img src="demo/_image/wheelsofsteel-full-ui.jpg" alt="wheelsofsteel.net: Online turntable demo (screenshot)" style="display:block;width:100%;min-width:100%;max-width:315px;margin-left:-4px;border:none" /></a></p>
@@ -496,7 +761,13 @@ mySound.play();
 
 								<ul class="inthewild">
 									<li>
-										<a id="soundcloud" href="http://thecloudplayer.com/" title="Soundcloud / The Cloud Player"><span>SoundCloud / The Cloud Player</span></a>
+										<a id="beats-music" href="http://beatsmusic.com/" title="Beats Music (web player)"><span>Beats Music</span></a>
+									</li>
+									<li>
+										<a id="songza" href="http://songza.com/" title="Songza"><span>Songza</span></a>
+									</li>
+									<li>
+										<a id="earbits" href="http://earbits.com/" title="Earbits"><span>Earbits</span></a>
 									</li>
 									<li>
 										<a id="lastfm" href="http://www.last.fm/" title="last.fm"><span>last.fm</span></a>
@@ -517,16 +788,13 @@ mySound.play();
 										<a id="nyancat" href="http://nyan.cat/" title="NON-STOP NYAN CAT!"><span>NON-STOP NYAN CAT!</span></a>
 									</li>
 									<li>
-										<a id="turntable-dot-fm" href="http://turntable.fm/" title="Turntable.fm"><span>Turntable.fm</span></a>
-									</li>
-									<li>
 										<a id="audiogalaxy" href="http://audiogalaxy.com/" title="Audiogalaxy"><span>Audiogalaxy</span></a>
 									</li>
 									<li>
 										<a id="freesound" href="http://freesound.org" title="Freesound.org"><span>freesound.org</span></a>
 									</li>
 									<li>
-										<a id="baroque-me" href="http://blog.chenalexander.com/2011/baroque-bach-cello/" title="Alexander Chen's &quot;baroque.me&quot;"><span>baroque.me</span></a>
+										<a id="baroque-me" href="http://baroque.me/" title="Alexander Chen's &quot;baroque.me&quot;"><span>baroque.me</span></a>
 									</li>
 								</ul>
 
@@ -547,7 +815,7 @@ mySound.play();
 
 							<ul class="standard">
 								<li>Icons: Desktop / mobile / iOS device iconography via <a href="http://glyphish.com/" class="cta">glyphish.com</a> (<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons Attribution 3.0 Unported" class="cta">CC</a>). Tile background: "<a href="http://subtlepatterns.com/tiny-grid/" class="cta">Tiny Grid</a>". Homepage header typeface: <a href="http://work.meredithmandel.com/#379252/Typeface-Chunk-Five" class="cta">Chunk (Five)</a> by Meredith Mandel (<a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&amp;id=OFL&amp;_sc=1" title="SIL Open Font License (OFL)" class="cta">OFL</a>).</li>
-								<li>Music: <em>Seven Or Eight Days</em> courtesy of <a href="http://www.adrianglynn.com/" title="Adrian Glynn, Vancouver-based Singer/Songwriter" class="cta">Adrian Glynn</a>. <em>Graffiti Sex</em> courtesy of <a href="http://www.fugitives.ca/" title="The Fugitives, multi-instrumentalists from Vancouver" class="cta">The Fugitives</a>, from the album <em>In Streetlight Communion</em>. <em>I Tried</em> and <em>People Asking</em> courtesy of <a href="http://sonreal.bandcamp.com/album/the-lightyear-mixtape" title="The Lightyear Mixtape from SonReal, Vancouver-based hip-hop artist" class="cta">SonReal</a>.</li>
+								<li>Music: <em>Seven Or Eight Days</em> courtesy of <a href="http://www.adrianglynn.com/" title="Adrian Glynn, Vancouver-based Singer/Songwriter" class="cta">Adrian Glynn</a>. <em>Graffiti Sex</em> courtesy of <a href="http://www.fugitives.ca/" title="The Fugitives, multi-instrumentalists from Vancouver" class="cta">The Fugitives</a>, from the album <em>In Streetlight Communion</em>. <em>Let Me</em>, <em>LA</em>, <em>I Tried</em> and <em>People Asking</em> courtesy of <a href="http://sonreal.ca/" title="SonReal, Vancouver-based hip-hop artist" class="cta">SonReal</a>.</li>
 							</ul>
 						
 						</div>
@@ -567,7 +835,6 @@ mySound.play();
 						</div>
 					</div>
 -->
-
 
 				</div>
 

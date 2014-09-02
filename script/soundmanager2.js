@@ -8,10 +8,10 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20131201
+ * V2.97a.20140901
  */
 
-/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera */
+/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
 /*jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true, todo: true */
 
 /**
@@ -33,6 +33,15 @@
 (function(window, _undefined) {
 
 "use strict";
+
+if (!window || !window.document) {
+
+  // Don't cross the [environment] streams. SM2 expects to be running in a browser, not under node.js etc.
+  // Additionally, if a browser somehow manages to fail this test, as Egon said: "It would be bad."
+
+  throw new Error('SoundManager requires a browser with window and document objects.');
+
+}
 
 var soundManager = null;
 
@@ -189,7 +198,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20131201';
+  this.versionNumber = 'V2.97a.20140901';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -1635,6 +1644,11 @@ function SoundManager(smURL, smID) {
         try {
           s.isHTML5 = false;
           s._iO = policyFix(loopFix(instanceOptions));
+          // if we have "position", disable auto-play as we'll be seeking to that position at onload().
+          if (s._iO.autoPlay && (s._iO.position || s._iO.from)) {
+            sm2._wD(s.id + ': Disabling autoPlay because of non-zero offset case');
+            s._iO.autoPlay = false;
+          }
           // re-assign local shortcut
           instanceOptions = s._iO;
           if (fV === 8) {
@@ -1909,12 +1923,15 @@ function SoundManager(smURL, smID) {
 
         s._iO = mixin(oOptions, s._iO);
 
-        // apply from/to parameters, if they exist (and not using RTMP)
-        if (s._iO.from !== null && s._iO.to !== null && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
+        /**
+         * Preload in the event of play() with position under Flash,
+         * or from/to parameters and non-RTMP case
+         */
+        if (((!s.isHTML5 && s._iO.position !== null && s._iO.position > 0) || (s._iO.from !== null && s._iO.from > 0) || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0 && !s._iO.serverURL) {
 
           onready = function() {
             // sound "canplay" or onload()
-            // re-apply from/to to instance options, and start playback
+            // re-apply position/from/to to instance options, and start playback
             s._iO = mixin(oOptions, s._iO);
             s.play(s._iO);
           };
@@ -1923,7 +1940,7 @@ function SoundManager(smURL, smID) {
           if (s.isHTML5 && !s._html5_canplay) {
 
             // this hasn't been loaded yet. load it first, and then do this again.
-            sm2._wD(fN + 'Beginning load for from/to case');
+            sm2._wD(fN + 'Beginning load for non-zero offset case');
 
             s.load({
               // note: custom HTML5-only event added for from/to implementation.
@@ -1936,7 +1953,7 @@ function SoundManager(smURL, smID) {
 
             // to be safe, preload the whole thing in Flash.
 
-            sm2._wD(fN + 'Preloading for from/to case');
+            sm2._wD(fN + 'Preloading for non-zero offset case');
 
             s.load({
               onload: onready
@@ -3097,7 +3114,7 @@ function SoundManager(smURL, smID) {
       s.isBuffering = (nIsBuffering === 1);
       if (s._iO.onbufferchange) {
         sm2._wD(s.id + ': Buffer state change: ' + nIsBuffering);
-        s._iO.onbufferchange.apply(s);
+        s._iO.onbufferchange.apply(s, [nIsBuffering]);
       }
 
       return true;
@@ -3128,12 +3145,25 @@ function SoundManager(smURL, smID) {
     this._onfailure = function(msg, level, code) {
 
       s.failures++;
-      sm2._wD(s.id + ': Failures = ' + s.failures);
+      sm2._wD(s.id + ': Failure (' + s.failures + '): ' + msg);
 
       if (s._iO.onfailure && s.failures === 1) {
-        s._iO.onfailure(s, msg, level, code);
+        s._iO.onfailure(msg, level, code);
       } else {
         sm2._wD(s.id + ': Ignoring failure');
+      }
+
+    };
+
+    /**
+     * flash 9/movieStar + RTMP-only method for unhandled warnings/exceptions from Flash
+     * e.g., RTMP "method missing" warning (non-fatal) for getStreamLength on server
+     */
+
+    this._onwarning = function(msg, level, code) {
+
+      if (s._iO.onwarning) {
+        s._iO.onwarning(msg, level, code);
       }
 
     };
@@ -3323,8 +3353,10 @@ function SoundManager(smURL, smID) {
       }
       s.metadata = oData;
 
+console.log('updated metadata', s.metadata);
+
       if (s._iO.onmetadata) {
-        s._iO.onmetadata.apply(s);
+        s._iO.onmetadata.call(s, s.metadata);
       }
 
     };
@@ -3752,10 +3784,10 @@ function SoundManager(smURL, smID) {
       s._onbufferchange(0);
 
       // position according to instance options
-      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position)?s._iO.position/msecScale:null);
+      position1K = (s._iO.position !== _undefined && !isNaN(s._iO.position) ? s._iO.position/msecScale : null);
 
-      // set the position if position was set before the sound loaded
-      if (s.position && this.currentTime !== position1K) {
+      // set the position if position was provided before the sound loaded
+      if (this.currentTime !== position1K) {
         sm2._wD(s.id + ': canplay: Setting position to ' + position1K);
         try {
           this.currentTime = position1K;
@@ -3779,6 +3811,25 @@ function SoundManager(smURL, smID) {
         s._onbufferchange(0);
         s._whileloading(s.bytesLoaded, s.bytesTotal, s._get_html5_duration());
         s._onload(true);
+      }
+
+    }),
+
+    durationchange: html5_event(function() {
+
+      // durationchange may fire at various times, probably the safest way to capture accurate/final duration.
+
+      var s = this._s,
+          duration;
+
+      duration = s._get_html5_duration();
+
+      if (!isNaN(duration) && duration !== s.duration) {
+
+        sm2._wD(this._s.id + ': durationchange (' + duration + ')' + (s.duration ? ', previously ' + s.duration : ''));
+
+        s.durationEstimate = s.duration = duration;
+
       }
 
     }),
@@ -3855,7 +3906,7 @@ function SoundManager(smURL, smID) {
 
     playing: html5_event(function() {
 
-      sm2._wD(this._s.id + ': playing');
+      sm2._wD(this._s.id + ': playing ' + String.fromCharCode(9835));
       // once play starts, no buffering
       this._s._onbufferchange(0);
 
@@ -3915,8 +3966,6 @@ function SoundManager(smURL, smID) {
 
       if (!isNaN(loaded)) {
 
-        // if progress, likely not buffering
-        s._onbufferchange(0);
         // TODO: prevent calls with duplicate values.
         s._whileloading(loaded, total, s._get_html5_duration());
         if (loaded && total && loaded === total) {
@@ -4259,7 +4308,7 @@ function SoundManager(smURL, smID) {
     setupUndef: sm + '.setup(): Could not find option "%s"',
     setupLate: sm + '.setup(): url, flashVersion and html5Test property changes will not take effect until reboot().',
     noURL: smc + 'Flash URL required. Call soundManager.setup({url:...}) to get started.',
-    sm2Loaded: 'SoundManager 2: Ready.',
+    sm2Loaded: 'SoundManager 2: Ready. ' + String.fromCharCode(10003),
     reset: sm + '.reset(): Removing event callbacks',
     mobileUA: 'Mobile UA detected, preferring HTML5 by default.',
     globalHTML5: 'Using singleton HTML5 Audio() pattern for this device.'
@@ -4771,13 +4820,13 @@ function SoundManager(smURL, smID) {
 
   };
 
-  featureCheck = function() {
+featureCheck = function() {
 
     var flashNeeded,
         item,
         formats = sm2.audioFormats,
         // iPhone <= 3.1 has broken HTML5 audio(), but firmware 3.2 (original iPad) + iOS4 works.
-        isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)/i)));
+        isSpecial = (is_iDevice && !!(ua.match(/os (1|2|3_0|3_1)\s/i)));
 
     if (isSpecial) {
 
@@ -5215,7 +5264,7 @@ function SoundManager(smURL, smID) {
        * does not apply when using high performance (position:fixed means on-screen), OR infinite flash load timeout
        * wmode breaks IE 8 on Vista + Win7 too in some cases, as of January 2011 (?)
        */
-       messages.push(strings.spcWmode);
+      messages.push(strings.spcWmode);
       sm2.wmode = null;
     }
 
@@ -5655,7 +5704,7 @@ function SoundManager(smURL, smID) {
 
     if (sm2.html5Only) {
       // all good.
-      _wDS('sm2Loaded');
+      _wDS('sm2Loaded', 1);
       didInit = true;
       initUserOnload();
       debugTS('onload', true);
@@ -5672,7 +5721,7 @@ function SoundManager(smURL, smID) {
 
     error = {type: (!hasFlash && needsFlash ? 'NO_FLASH' : 'INIT_TIMEOUT')};
 
-    sm2._wD('SoundManager 2 ' + (disabled ? 'failed to load' : 'loaded') + ' (' + (disabled ? 'Flash security/load error' : 'OK') + ')', disabled ? 2: 1);
+    sm2._wD('SoundManager 2 ' + (disabled ? 'failed to load' : 'loaded') + ' (' + (disabled ? 'Flash security/load error' : 'OK') + ') ' + String.fromCharCode(disabled ? 10006 : 10003), disabled ? 2: 1);
 
     if (disabled || bNoDisable) {
       if (sm2.useFlashBlock && sm2.oMC) {
@@ -5904,6 +5953,10 @@ function SoundManager(smURL, smID) {
 
     // catch edge case of initComplete() firing after window.load()
     windowLoaded = true;
+
+    // catch case where DOMContentLoaded has been sent, but we're still in doc.readyState = 'interactive'
+    domContentLoaded();
+
     event.remove(window, 'load', winOnLoad);
 
   };
@@ -5983,7 +6036,37 @@ if (window.SM2_DEFER === undefined || !SM2_DEFER) {
  * ------------------------------
  */
 
-window.SoundManager = SoundManager; // constructor
-window.soundManager = soundManager; // public API, flash callbacks etc.
+if (typeof module === 'object' && module && typeof module.exports === 'object') {
+
+  /**
+   * commonJS module
+   * note: SM2 requires a window global due to Flash, which makes calls to window.soundManager.
+   * flash may not always be needed, but this is not known until async init and SM2 may even "reboot" into Flash mode.
+   */
+
+  window.soundManager = soundManager;
+
+  module.exports.SoundManager = SoundManager;
+  module.exports.soundManager = soundManager;
+
+} else if (typeof define === 'function' && define.amd) {
+
+  // AMD - requireJS
+
+  define('SoundManager', [], function() {
+    return {
+      SoundManager: SoundManager,
+      soundManager: soundManager
+    };
+  });
+
+} else {
+
+  // standard browser case
+
+  window.SoundManager = SoundManager; // constructor
+  window.soundManager = soundManager; // public API, flash callbacks etc.
+
+}
 
 }(window));

@@ -8,6 +8,9 @@ body {
  font-size: 100%;
  font-family: "Helvetica Neue", Helvetica, verdana, arial, tahoma, sans-serif;
  color: #fff;
+ /* font trickery */
+ -moz-osx-font-smoothing: grayscale;
+ -webkit-font-smoothing: antialiased;
 }
 
 body#page-more {
@@ -81,7 +84,7 @@ body#page-more {
 }
 
 #demo-header h1 {
- font-size: 504%;
+ font-size: 533%;
 }
 
 #demo-header h2 {
@@ -89,11 +92,11 @@ body#page-more {
 }
 
 #demo-header p {
- background: rgba(0,0,0,0.2);
+ background: rgba(0,0,0,0.35);
  margin-bottom: 0.5em;
  vertical-align: middle;
  text-indent: 5px;
- font-weight: 300;
+ font-weight: 400;
 }
 
 #demo-header-wrapper.light,

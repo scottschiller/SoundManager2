@@ -68,7 +68,7 @@ a.sm2_button {
  overflow:hidden; /* don't draw inner link text */
  vertical-align:middle;
  /* and, a bit of round-ness for the cool browsers. */
- border-radius:6px;
+ border-radius:2px;
  margin-top:-1px; /* vertical align tweak */
  /* safari 3.1+ fun (/W3 working draft extension, TBD.) */
  -webkit-transition-property: hover;
@@ -92,6 +92,8 @@ a.sm2_button.sm2_paused:hover {
  background-image:url(../image/arrow-right-white.png);
  /* where possible, use data: and skip the HTTP request. Fancy-pants. Would use short-hand background: for above, but IE 8 doesn't override background-image. */
  background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAYAAABmBXS+AAAAbklEQVQY02NgQAL//v1jZMAF/v//vwuIs9HEUBUBTbj4HwIeA3EGVsVAxtn/qOAVUGM8uknIiv4hsV8A5ZKxKfoLVvnvHwifAzLtMKwDSQLBVSBti27dJajkcSD2RJODO3wtkOOMz/tMSJJYAxMA5dmsL0IfubQAAAAASUVORK5CYII=);
+ background-image: none, url(../image/arrow-right-white-2x.png);
+ background-size: 9px 10px;
  *background-image:url(../image/arrow-right-white.gif); /* IE 6+7 don't do DATA: URIs */
  background-repeat:no-repeat;
  background-position:5px 50%;

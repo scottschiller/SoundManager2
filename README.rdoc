@@ -37,14 +37,14 @@ By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reli
 
 A few nifty sites that have implemented SM2 for driving audio:
 
-    * SoundCloud / The Cloud Player
+    * Songza
+    * Earbits
+    * freesound.org
     * last.fm
-    * Opera (media player component)
     * 8tracks
     * Discogs
     * The Hype Machine
     * nyan.cat
-    * turntable.fm
     * AudioGalaxy
 
 == Project home, documentation, live demos etc.:
