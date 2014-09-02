@@ -37,8 +37,9 @@ ul.playlist li .comment {font-size:0.65em;opacity:0.5}
 // demo only, but you can use these settings too..
 soundManager.setup({
   flashVersion: 9,
-  preferFlash: true, // for visualization effects
+  // preferFlash: true, // for visualization effects
   useHighPerformance: true, // keep flash on screen, boost performance
+  html5PollingInterval: 50,
   wmode: 'transparent', // transparent SWF, if possible
   url: '../../swf/'
 });
