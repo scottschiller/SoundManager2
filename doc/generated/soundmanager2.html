@@ -71,7 +71,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140630
+ * V2.97a.20140901
  */</span>
 
 <span class="comment">/*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */</span>
@@ -297,7 +297,7 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
             </div>
             
             <div class="content"><div class='highlight'><pre>
-  <span class="keyword">this</span>.versionNumber = <span class="string">'V2.97a.20140630'</span>;
+  <span class="keyword">this</span>.versionNumber = <span class="string">'V2.97a.20140901'</span>;
   <span class="keyword">this</span>.version = <span class="literal">null</span>;
   <span class="keyword">this</span>.movieURL = <span class="literal">null</span>;
   <span class="keyword">this</span>.altURL = <span class="literal">null</span>;
@@ -7221,7 +7221,7 @@ once play starts, no buffering</p>
 
     playing: html5_event(<span class="keyword">function</span>() {
 
-      sm2._wD(<span class="keyword">this</span>._s.id + <span class="string">': playing'</span>);</pre></div></div>
+      sm2._wD(<span class="keyword">this</span>._s.id + <span class="string">': playing '</span> + String.fromCharCode(<span class="number">9835</span>));</pre></div></div>
             
         </li>
         
@@ -8102,7 +8102,7 @@ Desktop Safari complains / fails on data: URI, so it gets about:blank.</p>
     setupUndef: sm + <span class="string">'.setup(): Could not find option "%s"'</span>,
     setupLate: sm + <span class="string">'.setup(): url, flashVersion and html5Test property changes will not take effect until reboot().'</span>,
     noURL: smc + <span class="string">'Flash URL required. Call soundManager.setup({url:...}) to get started.'</span>,
-    sm2Loaded: <span class="string">'SoundManager 2: Ready.'</span>,
+    sm2Loaded: <span class="string">'SoundManager 2: Ready. '</span> + String.fromCharCode(<span class="number">10003</span>),
     reset: sm + <span class="string">'.reset(): Removing event callbacks'</span>,
     mobileUA: <span class="string">'Mobile UA detected, preferring HTML5 by default.'</span>,
     globalHTML5: <span class="string">'Using singleton HTML5 Audio() pattern for this device.'</span></pre></div></div>
@@ -9174,7 +9174,7 @@ arguments: o [,items to replace]</p>
 
   };
 
-  featureCheck = <span class="keyword">function</span>() {
+featureCheck = <span class="keyword">function</span>() {
 
     <span class="keyword">var</span> flashNeeded,
         item,
@@ -9193,7 +9193,7 @@ arguments: o [,items to replace]</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        isSpecial = (is_iDevice &amp;&amp; !!(ua.match(<span class="regexp">/os (1|2|3_0|3_1)/i</span>)));
+            <div class="content"><div class='highlight'><pre>        isSpecial = (is_iDevice &amp;&amp; !!(ua.match(<span class="regexp">/os (1|2|3_0|3_1)\s/i</span>)));
 
     <span class="keyword">if</span> (isSpecial) {</pre></div></div>
             
@@ -10971,7 +10971,7 @@ swfVersion: SWF build string</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      _wDS(<span class="string">'sm2Loaded'</span>);
+            <div class="content"><div class='highlight'><pre>      _wDS(<span class="string">'sm2Loaded'</span>, <span class="number">1</span>);
       didInit = <span class="literal">true</span>;
       initUserOnload();
       debugTS(<span class="string">'onload'</span>, <span class="literal">true</span>);
@@ -10988,7 +10988,7 @@ swfVersion: SWF build string</p>
 
     error = {type: (!hasFlash &amp;&amp; needsFlash ? <span class="string">'NO_FLASH'</span> : <span class="string">'INIT_TIMEOUT'</span>)};
 
-    sm2._wD(<span class="string">'SoundManager 2 '</span> + (disabled ? <span class="string">'failed to load'</span> : <span class="string">'loaded'</span>) + <span class="string">' ('</span> + (disabled ? <span class="string">'Flash security/load error'</span> : <span class="string">'OK'</span>) + <span class="string">')'</span>, disabled ? <span class="number">2</span>: <span class="number">1</span>);
+    sm2._wD(<span class="string">'SoundManager 2 '</span> + (disabled ? <span class="string">'failed to load'</span> : <span class="string">'loaded'</span>) + <span class="string">' ('</span> + (disabled ? <span class="string">'Flash security/load error'</span> : <span class="string">'OK'</span>) + <span class="string">') '</span> + String.fromCharCode(disabled ? <span class="number">10006</span> : <span class="number">10003</span>), disabled ? <span class="number">2</span>: <span class="number">1</span>);
 
     <span class="keyword">if</span> (disabled || bNoDisable) {
       <span class="keyword">if</span> (sm2.useFlashBlock &amp;&amp; sm2.oMC) {
