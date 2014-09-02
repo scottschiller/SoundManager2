@@ -195,7 +195,7 @@
 
 						/**
 						 * iPhone doesn't play inline video, nor does iOS < 7 on iPad (IIRC.)
-						 * This is a dirty hack to not show video in the general mobile / tablet / "you're not a desktop" case.
+						 * This is a dirty hack to not show video in the general mobile / tablet / "you're not a desktop (and not Windows XP)" case.
 						 * GIF made using the following...
 						 * gifsicle source.gif --colors 32 --optimize --dither=o3 > output.gif
 						 * APNG made with APNG Anime Maker (Windows.)
@@ -211,8 +211,8 @@
 						ua = navigator.userAgent;
 
 						// that oughta get enough of you guys. YOU get a .GIF, and *YOU* get a .GIF!
-						if (ua.match(/iphone|ipad|ios|mobile|windows phone|tablet/i) || window.location.href.match(/ios/i)) {
-							// if you're lying, you will probably pay the price now for this naieve detection.
+						if (ua.match(/iphone|ipad|ios|mobile|windows phone|tablet/i) || navigator.userAgent.match(/windows nt 5\.1/i) || window.location.href.match(/img/i)) {
+							// if your device lies about its capabilities, you will probably now pay the price for this naive detection.
 							video = document.getElementById('inline-video');
 							if (video) {
 								// dirty, evil tricks.
