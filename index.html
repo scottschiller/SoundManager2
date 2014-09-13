@@ -198,6 +198,8 @@
 						 * This is a dirty hack to not show video in the general mobile / tablet / "you're not a desktop (and not Windows XP)" case.
 						 * GIF made using the following...
 						 * gifsicle source.gif --colors 32 --optimize --dither=o3 > output.gif
+						 * from source GIF:
+						 * gifsicle turntable-loop-original.gif --delay 8 --colors 32 --dither=o3 `seq -f "#%g" 0 2 43` -O2 --gamma=3 -o turntable-loop-960-22f-32c-03.gif
 						 * APNG made with APNG Anime Maker (Windows.)
 						 */
 
@@ -218,7 +220,7 @@
 								// dirty, evil tricks.
 								doesAPNG = (ua.match(/os (8|9|10)\s/i) || window.location.href.match(/apng/i)); // iOS 8+ is presumed as "OS 8|9|10" or whatever's eventually released.
 								url = replacements[(doesAPNG ? 'apng' : 'gif')];
-								video.innerHTML = '<img src="demo/_image/turntable-loop-poster.jpg" alt="" style="width:100%;max-width:1920px" /><div style="position:absolute;left:0px;top:0px;width:100%;height:100%;background: transparent url(' + url + ');background-size:100% auto;background-repeat:no-repeat" onclick="this.style.display=\'none\'"></div>';
+								video.innerHTML = '<img src="demo/_image/turntable-loop-poster.jpg" alt="" style="width:100%;max-width:1920px" /><div style="position:absolute;left:0px;top:0px;width:100%;height:100%;background: transparent url(' + url + ');background-size:100% auto;background-repeat:no-repeat' + (!doesAPNG ? ';opacity:0.8' : '') + '" onclick="this.style.display=\'none\'"></div>';
 							}
 						}
 
