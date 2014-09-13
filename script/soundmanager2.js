@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140901
+ * V2.97a.20140901+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -198,7 +198,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20140901';
+  this.versionNumber = 'V2.97a.20140901+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -6049,13 +6049,23 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
 
 } else if (typeof define === 'function' && define.amd) {
 
-  // AMD - requireJS
+  /**
+   * AMD - requireJS
+   * example usage:
+   * require(["/path/to/soundmanager2.js"], function(soundManager) {
+   *   soundManager.setup({
+   *     url: '/swf/',
+   *     onready: function() { ... }
+   *   })
+   * });
+   */
 
-  define('SoundManager', [], function() {
-    return {
-      SoundManager: SoundManager,
-      soundManager: soundManager
-    };
+  define(function() {
+    // assign globals
+    window.SoundManager = SoundManager;
+    window.soundManager = soundManager;
+    // ... and return the soundManager instance
+    return soundManager;
   });
 
 } else {
