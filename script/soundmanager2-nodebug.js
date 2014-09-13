@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140901
+ * V2.97a.20140901+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -110,7 +110,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20140901';
+  this.versionNumber = 'V2.97a.20140901+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -1519,7 +1519,6 @@ function SoundManager(smURL, smID) {
         oData[oMDProps[i]] = oMDData[i];
       }
       s.metadata = oData;
-console.log('updated metadata', s.metadata);
       if (s._iO.onmetadata) {
         s._iO.onmetadata.call(s, s.metadata);
       }
@@ -2680,11 +2679,10 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
   module.exports.SoundManager = SoundManager;
   module.exports.soundManager = soundManager;
 } else if (typeof define === 'function' && define.amd) {
-  define('SoundManager', [], function() {
-    return {
-      SoundManager: SoundManager,
-      soundManager: soundManager
-    };
+  define(function() {
+    window.SoundManager = SoundManager;
+    window.soundManager = soundManager;
+    return soundManager;
   });
 } else {
   window.SoundManager = SoundManager;
