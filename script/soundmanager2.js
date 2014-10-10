@@ -81,6 +81,7 @@ function SoundManager(smURL, smID) {
     'allowScriptAccess': 'always',      // for scripting the SWF (object/embed property), 'always' or 'sameDomain'
     'useFlashBlock': false,             // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
     'useHTML5Audio': true,              // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (no MP3/MP4.) Ideally, transparent vs. Flash API where possible.
+    'useGlobalHTML5Audio': false,
     'html5Test': /^(probably|maybe)$/i, // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
     'preferFlash': false,               // overrides useHTML5audio, will use Flash for MP3/MP4/AAC if present. Potential option if HTML5 playback with these formats is quirky.
     'noSWFCache': false,                // if true, appends ?ts={date} to break aggressive SWF caching.
@@ -349,6 +350,12 @@ function SoundManager(smURL, smID) {
     // TODO: defer: true?
 
     assign(options);
+
+    if (sm2.setupOptions.useGlobalHTML5Audio) {
+      useGlobalHTML5Audio = sm2.setupOptions.useGlobalHTML5Audio;
+    } else {
+      sm2.setupOptions.useGlobalHTML5Audio = useGlobalHTML5Audio;
+    }
 
     // special case 1: "Late setup". SM2 loaded normally, but user didn't assign flash URL eg., setup({url:...}) before SM2 init. Treat as delayed init.
 
@@ -5988,7 +5995,7 @@ featureCheck = function() {
         if (is_iDevice) {
           sm2.ignoreFlash = true;
         }
-        useGlobalHTML5Audio = true;
+        useGlobalHTML5Audio = sm2.setupOptions.useGlobalHTML5Audio = true;
       }
 
     }
@@ -6005,7 +6012,10 @@ featureCheck = function() {
   event.add(window, 'load', delayWaitForEI);
   event.add(window, 'load', winOnLoad);
 
-  if (doc.addEventListener) {
+  if (window.$ && $(document).ready) {
+    // if jquery or zepto is loaded, use its ready api.
+    $(document).ready(domContentLoaded);
+  } else if (doc.addEventListener) {
 
     doc.addEventListener('DOMContentLoaded', domContentLoaded, false);
 

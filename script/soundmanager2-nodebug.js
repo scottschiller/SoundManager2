@@ -38,6 +38,7 @@ function SoundManager(smURL, smID) {
     'allowScriptAccess': 'always',
     'useFlashBlock': false,
     'useHTML5Audio': true,
+    'useGlobalHTML5Audio': false,
     'html5Test': /^(probably|maybe)$/i,
     'preferFlash': false,
     'noSWFCache': false,
@@ -180,6 +181,11 @@ function SoundManager(smURL, smID) {
     if (options !== _undefined && didInit && needsFlash && sm2.ok() && (options.flashVersion !== _undefined || options.url !== _undefined || options.html5Test !== _undefined)) {
     }
     assign(options);
+    if (sm2.setupOptions.useGlobalHTML5Audio) {
+      useGlobalHTML5Audio = sm2.setupOptions.useGlobalHTML5Audio;
+    } else {
+      sm2.setupOptions.useGlobalHTML5Audio = useGlobalHTML5Audio;
+    }
     if (options) {
       if (noURL && didDCLoaded && options.url !== _undefined) {
         sm2.beginDelayedInit();
@@ -1519,7 +1525,7 @@ function SoundManager(smURL, smID) {
         oData[oMDProps[i]] = oMDData[i];
       }
       s.metadata = oData;
-console.log('updated metadata', s.metadata);
+
       if (s._iO.onmetadata) {
         s._iO.onmetadata.call(s, s.metadata);
       }
@@ -2654,7 +2660,7 @@ featureCheck = function() {
         if (is_iDevice) {
           sm2.ignoreFlash = true;
         }
-        useGlobalHTML5Audio = true;
+        useGlobalHTML5Audio = sm2.setupOptions.useGlobalHTML5Audio = true;
       }
     }
   };
@@ -2663,7 +2669,10 @@ featureCheck = function() {
   event.add(window, 'focus', handleFocus);
   event.add(window, 'load', delayWaitForEI);
   event.add(window, 'load', winOnLoad);
-  if (doc.addEventListener) {
+  if (window.$ && $(document).ready) {
+    // if jquery or zepto is ok, then use its ready api.
+    $(document).ready(domContentLoaded);
+  } else if (doc.addEventListener) {
     doc.addEventListener('DOMContentLoaded', domContentLoaded, false);
   } else if (doc.attachEvent) {
     doc.attachEvent('onreadystatechange', domContentLoadedIE);
