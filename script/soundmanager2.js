@@ -530,10 +530,11 @@ function SoundManager(smURL, smID) {
 
     var oS = sm2.sounds[sID], i;
 
-    // Disable all callbacks while the sound is being destroyed
-    oS._iO = {};
-
     oS.stop();
+    
+    // Disable all callbacks after stop(), when the sound is being destroyed
+    oS._iO = {};
+    
     oS.unload();
 
     for (i = 0; i < sm2.soundIDs.length; i++) {
