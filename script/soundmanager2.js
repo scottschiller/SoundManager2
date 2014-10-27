@@ -6050,6 +6050,7 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
 } else if (typeof define === 'function' && define.amd) {
 
   // AMD - requireJS
+  window.soundManager = soundManager;
 
   define('SoundManager', [], function() {
     return {
