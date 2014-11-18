@@ -1407,6 +1407,12 @@ function SoundManager(smURL, smID) {
       }
       return true;
     };
+    this._onstalled = function() {
+      if (s._iO.onstalled) {
+        s._iO.onstalled.apply(s);
+      }
+      return true;
+    };
     this._onfailure = function(msg, level, code) {
       s.failures++;
       if (s._iO.onfailure && s.failures === 1) {
@@ -1782,6 +1788,7 @@ function SoundManager(smURL, smID) {
       s._onsuspend();
     }),
     stalled: html5_event(function() {
+      this._s._onstalled();
     }),
     timeupdate: html5_event(function() {
       this._s._onTimer();

@@ -3144,6 +3144,14 @@ function SoundManager(smURL, smID) {
 
     };
 
+    this._onstalled = function() {
+      if (s._iO.onstalled) {
+        sm2._wD(s.id + ': Playback onstalled');
+        s._iO.onstalled.apply(s);
+      }
+      return true;
+    };
+
     /**
      * flash 9/movieStar + RTMP-only method, should fire only once at most
      * at this point we just recreate failed sounds rather than trying to reconnect
@@ -4002,6 +4010,7 @@ function SoundManager(smURL, smID) {
     stalled: html5_event(function() {
 
       sm2._wD(this._s.id + ': stalled');
+      this._s._onstalled();
 
     }),
 
