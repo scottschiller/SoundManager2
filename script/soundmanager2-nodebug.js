@@ -264,8 +264,8 @@ function SoundManager(smURL, smID) {
       return false;
     }
     var oS = sm2.sounds[sID], i;
-    oS._iO = {};
     oS.stop();
+    oS._iO = {};
     oS.unload();
     for (i = 0; i < sm2.soundIDs.length; i++) {
       if (sm2.soundIDs[i] === sID) {
