@@ -392,6 +392,13 @@ function SoundManager(smURL, smID) {
     return sm2.sounds[sID].setPan(nPan);
   };
   this.setVolume = function(sID, nVol) {
+    var i, j;
+    if (sID !== _undefined && !isNaN(sID) && nVol === _undefined) {
+      for (i=0, j=sm2.soundIDs.length; i<j; i++) {
+        sm2.sounds[sm2.soundIDs[i]].setVolume(sID);
+      }
+      return;
+    }
     if (!idCheck(sID)) {
       return false;
     }

@@ -831,7 +831,8 @@ function SoundManager(smURL, smID) {
   };
 
   /**
-   * Calls the setVolume() method of a SMSound object by ID.
+   * Calls the setVolume() method of a SMSound object by ID
+   * Overloaded case: pass only volume argument eg., setVolume(50) to apply to all sounds.
    *
    * @param {string} sID The ID of the sound
    * @param {number} nVol The volume value (0 to 100)
@@ -840,9 +841,23 @@ function SoundManager(smURL, smID) {
 
   this.setVolume = function(sID, nVol) {
 
+    // setVolume(50) function overloading case - apply to all sounds
+
+    var i, j;
+
+    if (sID !== _undefined && !isNaN(sID) && nVol === _undefined) {
+      for (i=0, j=sm2.soundIDs.length; i<j; i++) {
+        sm2.sounds[sm2.soundIDs[i]].setVolume(sID);
+      }
+      return;
+    }
+
+    // setVolume('mySound', 50) case
+
     if (!idCheck(sID)) {
       return false;
     }
+
     return sm2.sounds[sID].setVolume(nVol);
 
   };
