@@ -241,12 +241,6 @@ function setFilter(e,sFilterPrefix) {
 
 function getLiveData() {
   getDynamicData();
-  // reinvigorate.net is a handy (and free!) stats tracking service thingy. you should check it out.
-  var is_live = (document.domain && document.domain.match(/schillmania.com/i) && typeof re_ != 'undefined');
-  loadScript('http://include.reinvigorate.net/re_.js');
-  setTimeout(function(){
-    if (typeof re_ != 'undefined') re_(is_live?'f6795-v062d0xv4u':'u8v2l-jvr8058c6n');
-  },3000);
 }
 
 function getDynamicData() {
