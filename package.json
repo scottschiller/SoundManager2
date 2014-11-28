@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/scottschiller/SoundManager2"
+    "url": "https://github.com/scottschiller/SoundManager2/"
   },
   "keywords": [
     "browser",
@@ -24,7 +24,7 @@
   "author": "Scott Schiller (http://schillmania.com/)",
   "license": "BSD",
   "bugs": {
-    "url": "https://github.com/scottschiller/SoundManager2/issues"
+    "url": "https://github.com/scottschiller/SoundManager2/issues/"
   },
-  "homepage": "https://github.com/scottschiller/SoundManager2"
+  "homepage": "http://www.schillmania.com/projects/soundmanager2/"
 }
