@@ -1,5 +1,7 @@
 .DS_Store
 build.sh
+make-docs.sh
+make-rollups.sh
 tmp
 .build.properties
 download
