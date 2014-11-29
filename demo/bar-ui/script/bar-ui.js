@@ -5,7 +5,10 @@
 
   /**
    * SoundManager 2: "Bar UI" player
+   * Copyright (c) 2007, Scott Schiller. All rights reserved.
    * http://www.schillmania.com/projects/soundmanager2/
+   * Code provided under BSD license.
+   * http://schillmania.com/projects/soundmanager2/license.txt
    */
 
   "use strict";
@@ -24,8 +27,7 @@
 
   soundManager.onready(function() {
 
-    var nodes,
-      i, j;
+    var nodes, i, j;
 
     nodes = utils.dom.getAll(playerSelector);
 
@@ -185,12 +187,13 @@
 
         var results = getAll.apply(this, arguments);
 
-        // hackish: if more than one match and no third argument, return the last.
+        // hackish: if an array, return the last item.
         if (results && results.length) {
-          results = results[results.length-1];
+          return results[results.length-1];
         }
 
-        return results;
+        // handle "not found" case
+        return results && results.length === 0 ? null : results;
 
       }
 
@@ -343,10 +346,10 @@
         testDiv = document.createElement('div');
 
       /**
-     * hat tip: paul irish
-     * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-     * https://gist.github.com/838785
-     */
+       * hat tip: paul irish
+       * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+       * https://gist.github.com/838785
+       */
 
       localAnimationFrame = (window.requestAnimationFrame
         || window.webkitRequestAnimationFrame
@@ -445,7 +448,7 @@
 
   Player = function(playerNode) {
 
-      var css, dom, extras, playlistController, soundObject, actions, actionData, defaultItem;
+    var css, dom, extras, playlistController, soundObject, actions, actionData, defaultItem, defaultVolume, exports;
 
     css = {
       disabled: 'disabled',
@@ -458,8 +461,8 @@
     dom = {
       o: null,
       playlist: null,
-        playlistTarget: null,
-        playlistContainer: null,
+      playlistTarget: null,
+      playlistContainer: null,
       time: null,
       player: null,
       progress: null,
@@ -469,10 +472,10 @@
       volume: null
     };
 
-      // prepended to tracks when a sound fails to load/play
-      extras = {
-        loadFailedCharacter: '<span title="Failed to load/play." class="load-error">✖</span>'
-      };
+    // prepended to tracks when a sound fails to load/play
+    extras = {
+      loadFailedCharacter: '<span title="Failed to load/play." class="load-error">✖</span>'
+    };
 
     function PlaylistController() {
 
@@ -492,7 +495,7 @@
 
         loopMode: false,
 
-          timer: null
+        timer: null
 
       };
 
@@ -557,37 +560,37 @@
 
       function getNext() {
 
-          // don't increment if null.
-          if (data.selectedIndex !== null) {
+        // don't increment if null.
+        if (data.selectedIndex !== null) {
           data.selectedIndex++;
         }
 
-          if (data.playlist.length > 1) {
+        if (data.playlist.length > 1) {
 
-           if (data.selectedIndex >= data.playlist.length) {
+          if (data.selectedIndex >= data.playlist.length) {
 
             if (data.loopMode) {
 
-                // loop to beginning
+              // loop to beginning
               data.selectedIndex = 0;
 
             } else {
 
-                // no change
-                data.selectedIndex--;
+              // no change
+              data.selectedIndex--;
 
-                // end playback
-                // data.selectedIndex = null;
+              // end playback
+              // data.selectedIndex = null;
 
             }
 
           }
-  
-          } else {
 
-            data.selectedIndex = null;
+        } else {
 
-          }
+          data.selectedIndex = null;
+
+        }
 
         return getItem();
 
@@ -641,9 +644,16 @@
 
         data.selectedIndex = offset;
 
+        /**
+         * TODO: consider scrolling the item into view
+         * bottom-align if below, top-align if above.
+         * item.scrollIntoView() scrolls window vs. container,
+         * so we can't use the native shiz.
+         */
+
       }
 
-/*
+      /*
       function selectOffset(offset) {
 
         var item;
@@ -678,7 +688,7 @@
 
       }
 
-*/
+      */
 
       function getURL() {
 
@@ -686,7 +696,6 @@
         var item, url;
 
         item = getItem();
-
       
         if (item) {
           url = item.getElementsByTagName('a')[0].href;
@@ -713,7 +722,7 @@
 
       function initDOM() {
 
-      dom.playlistTarget = utils.dom.get(dom.o, '.sm2-playlist-target');
+        dom.playlistTarget = utils.dom.get(dom.o, '.sm2-playlist-target');
         dom.playlistContainer = utils.dom.get(dom.o, '.sm2-playlist-drawer');
         dom.playlist = utils.dom.get(dom.o, '.sm2-playlist-bd');
 
@@ -721,8 +730,10 @@
 
       function init() {
 
-        initDOM();
+        // inherit the default SM2 volume
+        defaultVolume = soundManager.defaultOptions.volume;
 
+        initDOM();
         refreshDOM();
 
       }
@@ -767,7 +778,7 @@
         item = links[0];
       }
 
-        // remove any failed character sequence, also
+      // remove any failed character sequence, also
       dom.playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li>' + item.innerHTML.replace(extras.loadFailedCharacter, '') + '</li></ul>';
 
       if (dom.playlistTarget.getElementsByTagName('li')[0].scrollWidth > dom.playlistTarget.offsetWidth) {
@@ -783,7 +794,10 @@
 
         url: url,
 
+        volume: defaultVolume,
+
         whileplaying: function() {
+
           var progressMaxLeft = 100,
               left,
               width;
@@ -793,7 +807,7 @@
   
           if (this.duration) {
 
-              dom.progress.style.left = left;
+            dom.progress.style.left = left;
             dom.progressBar.style.width = width;
               
             // TODO: only write changes
@@ -804,11 +818,13 @@
         },
 
         onbufferchange: function(isBuffering) {
+
           if (isBuffering) {
             utils.css.add(dom.o, 'buffering');
           } else {
             utils.css.remove(dom.o, 'buffering');
           }
+
         },
 
         onplay: function() {
@@ -863,8 +879,8 @@
                 element = playlistController.data.playlist[playlistController.data.selectedIndex].getElementsByTagName('a')[0];
                 html = element.innerHTML;
                 if (html.indexOf(extras.loadFailedCharacter) === -1) {
-                    element.innerHTML = extras.loadFailedCharacter + ' ' + html;
-                  }
+                  element.innerHTML = extras.loadFailedCharacter + ' ' + html;
+                }
               }
             }
 
@@ -872,8 +888,8 @@
 
           // load next, possibly with delay.
             
-            if (navigator.userAgent.match(/mobile/i)) {
-              // mobile will likely block the next play() call if there is a setTimeout() - so don't use one here.
+          if (navigator.userAgent.match(/mobile/i)) {
+            // mobile will likely block the next play() call if there is a setTimeout() - so don't use one here.
             actions.next();
           } else {
             if (playlistController.data.timer) {
@@ -884,11 +900,11 @@
 
         },
 
-          onstop: function() {
+        onstop: function() {
 
-            utils.css.remove(dom.o, 'playing');
+          utils.css.remove(dom.o, 'playing');
 
-          },
+        },
 
         onfinish: function() {
 
@@ -903,7 +919,7 @@
           // next track?
           item = playlistController.getNext();
 
-            // don't play the same item over and over again, if at end of playlist etc.
+          // don't play the same item over and over again, if at end of playlist etc.
           if (item && playlistController.data.selectedIndex !== lastIndex) {
 
             playlistController.select(item);
@@ -930,13 +946,39 @@
 
     }
 
-      function isRightClick(e) {
-        // only pay attention to left clicks. old IE differs where there's no e.which, but e.button is 1 on left click.
-        if (e && ((e.which && e.which === 2) || (e.which === undefined && e.button !== 1))) {
-          // http://www.quirksmode.org/js/events_properties.html#button
-          return true;
-        }
+    function isRightClick(e) {
+
+      // only pay attention to left clicks. old IE differs where there's no e.which, but e.button is 1 on left click.
+      if (e && ((e.which && e.which === 2) || (e.which === undefined && e.button !== 1))) {
+        // http://www.quirksmode.org/js/events_properties.html#button
+        return true;
       }
+
+    }
+
+    function getActionData(target) {
+
+      // DOM measurements for volume slider
+
+      if (!target) {
+        return false;
+      }
+
+      actionData.volume.x = utils.position.getOffX(target);
+      actionData.volume.y = utils.position.getOffY(target);
+
+      actionData.volume.width = target.offsetWidth;
+      actionData.volume.height = target.offsetHeight;
+
+      // potentially dangerous: this should, but may not be a percentage-based value.
+      actionData.volume.backgroundSize = parseInt(utils.style.get(target, 'background-size'), 10);
+
+      // IE gives pixels even if background-size specified as % in CSS. Boourns.
+      if (window.navigator.userAgent.match(/msie|trident/i)) {
+        actionData.volume.backgroundSize = (actionData.volume.backgroundSize / actionData.volume.width) * 100;
+      }
+
+    }
 
     function handleMouseDown(e) {
 
@@ -945,35 +987,25 @@
 
       target = e.target || e.srcElement;
 
-        if (isRightClick(e)) {
-          return true;
-        }
+      if (isRightClick(e)) {
+        return true;
+      }
 
       // normalize to <a>, if applicable.
       if (target.nodeName.toLowerCase() !== 'a') {
+
         links = target.getElementsByTagName('a');
         if (links && links.length) {
           target = target.getElementsByTagName('a')[0];
         }
+
       }
 
       if (utils.css.has(target, 'sm2-volume-control')) {
 
         // drag case for volume
 
-        actionData.volume.x = utils.position.getOffX(target);
-        actionData.volume.y = utils.position.getOffY(target);
-
-        actionData.volume.width = target.offsetWidth;
-        actionData.volume.height = target.offsetHeight;
-
-        // potentially dangerous: this should, but may not be a percentage-based value.
-        actionData.volume.backgroundSize = parseInt(utils.style.get(target, 'background-size'), 10);
-
-        // IE gives pixels even if background-size specified as % in CSS. Boourns.
-        if (window.navigator.userAgent.match(/msie|trident/i)) {
-          actionData.volume.backgroundSize = (actionData.volume.backgroundSize / actionData.volume.width) * 100;
-        }
+        getActionData(target);
 
         utils.events.add(document, 'mousemove', actions.adjustVolume);
         utils.events.add(document, 'mouseup', actions.releaseVolume);
@@ -1017,7 +1049,7 @@
       var evt,
           target,
           offset,
-            targetNodeName,
+          targetNodeName,
           methodName,
           href,
           handled;
@@ -1026,30 +1058,29 @@
 
       target = evt.target || evt.srcElement;
 
-
       if (target && target.nodeName) {
 
-          targetNodeName = target.nodeName.toLowerCase();
+        targetNodeName = target.nodeName.toLowerCase();
 
-          if (targetNodeName !== 'a') {
+        if (targetNodeName !== 'a') {
 
-            // old IE (IE 8) might return nested elements inside the <a>, eg., <b> etc. Try to find the parent <a>.
+          // old IE (IE 8) might return nested elements inside the <a>, eg., <b> etc. Try to find the parent <a>.
 
-           if (target.parentNode) {
+          if (target.parentNode) {
 
-              do {
-                target = target.parentNode;
-                targetNodeName = target.nodeName.toLowerCase();
-              } while (targetNodeName !== 'a' && target.parentNode);
+            do {
+              target = target.parentNode;
+              targetNodeName = target.nodeName.toLowerCase();
+            } while (targetNodeName !== 'a' && target.parentNode);
 
-              if (!target) {
-                // something went wrong. bail.
-                return false;
-              }
-
+            if (!target) {
+              // something went wrong. bail.
+              return false;
             }
 
           }
+
+        }
 
         if (targetNodeName === 'a') {
 
@@ -1059,16 +1090,16 @@
 
           if (soundManager.canPlayURL(href)) {
 
-              // not excluded
-              if (!utils.css.has(target, 'sm2-exclude')) {
+            // not excluded
+            if (!utils.css.has(target, 'sm2-exclude')) {
 
               // find this in the playlist
 
               playLink(target);
 
-                handled = true;
+              handled = true;
 
-              }
+            }
 
           } else {
 
@@ -1076,21 +1107,24 @@
             offset = target.href.lastIndexOf('#');
 
             if (offset !== -1) {
+
               methodName = target.href.substr(offset+1);
+
               if (methodName && actions[methodName]) {
-                  handled = true;
+                handled = true;
                 actions[methodName](e);
               }
+
             }
 
           }
 
-            // fall-through case
+          // fall-through case
 
-            if (handled) {
+          if (handled) {
             // prevent browser fall-through
             return utils.events.preventDefault(evt);
-            }
+          }
 
         }
 
@@ -1100,7 +1134,7 @@
 
     function handleMouse(e) {
 
-        var target, barX, barWidth, x, newPosition, sound;
+      var target, barX, barWidth, x, newPosition, sound;
 
       target = dom.progressTrack;
 
@@ -1118,7 +1152,9 @@
         sound.setPosition(sound.duration * newPosition);
 
         // a little hackish: ensure UI updates immediately with current position, even if audio is buffering and hasn't moved there yet.
-        sound._iO.whileplaying.apply(sound);
+        if (sound._iO && sound._iO.whileplaying) {
+          sound._iO.whileplaying.apply(sound);
+        }
 
       }
 
@@ -1140,7 +1176,7 @@
         e.preventDefault();
       }
 
-        utils.events.remove(document, 'mouseup', releaseMouse);
+      utils.events.remove(document, 'mouseup', releaseMouse);
 
       return false;
 
@@ -1174,6 +1210,11 @@
 
       dom.volume = utils.dom.get(dom.o, 'a.sm2-volume-control');
 
+      // measure volume control dimensions
+      if (dom.volume) {
+        getActionData(dom.volume);
+      }
+
       dom.duration = utils.dom.get(dom.o, '.sm2-inline-duration');
 
       dom.time = utils.dom.get(dom.o, '.sm2-inline-time');
@@ -1192,9 +1233,9 @@
 
       utils.events.add(dom.progressTrack, 'mousedown', function(e) {
 
-          if (isRightClick(e)) {
-            return true;
-          }
+        if (isRightClick(e)) {
+          return true;
+        }
 
         utils.css.add(dom.o, 'grabbing');
         utils.events.add(document, 'mousemove', handleMouse);
@@ -1227,12 +1268,16 @@
         var target,
             href;
 
-        target = e.target || e.srcElement;
+        if (e && e.target) {
 
-        href = target.href;
+          target = e.target || e.srcElement;
 
-        // haaaack - if '#' due to play/pause link, get first link from playlist
-        if (href.indexOf('#') !== -1) {
+          href = target.href;
+
+        }
+
+        // haaaack - if null due to no event, OR '#' due to play/pause link, get first link from playlist
+        if (!href || href.indexOf('#') !== -1) {
           href = dom.playlist.getElementsByTagName('a')[0].href;
         }
 
@@ -1241,6 +1286,30 @@
         }
 
         soundObject.togglePause();
+
+      },
+
+      pause: function() {
+
+        if (soundObject && soundObject.readyState) {
+          soundObject.pause();
+        }
+
+      },
+
+      resume: function() {
+
+        if (soundObject && soundObject.readyState) {
+          soundObject.resume();
+        }
+
+      },
+
+      stop: function() {
+
+        // just an alias for pause, really.
+        // don't actually stop because that will mess up some UI state, i.e., dragging the slider.
+        return actions.pause();
 
       },
 
@@ -1256,12 +1325,12 @@
 
           lastIndex = playlistController.data.selectedIndex;
 
-        item = playlistController.getNext(true);
+          item = playlistController.getNext(true);
 
           // don't play the same item again
-        if (item && playlistController.data.selectedIndex !== lastIndex) {
-          playLink(item.getElementsByTagName('a')[0]);
-        }
+          if (item && playlistController.data.selectedIndex !== lastIndex) {
+            playLink(item.getElementsByTagName('a')[0]);
+          }
 
       },
 
@@ -1269,11 +1338,11 @@
 
         var item, lastIndex;
 
-          lastIndex = playlistController.data.selectedIndex;
+        lastIndex = playlistController.data.selectedIndex;
 
         item = playlistController.getPrevious();
 
-          // don't play the same item again
+        // don't play the same item again
         if (item && playlistController.data.selectedIndex !== lastIndex) {
           playLink(item.getElementsByTagName('a')[0]);
         }
@@ -1281,20 +1350,27 @@
       },
 
       shuffle: function(e) {
-        var target = e.target || e.srcElement;
-        if (!utils.css.has(target.parentNode, css.disabled)) {
-          // toggle
+
+        // NOTE: not implemented yet.
+
+        var target = (e ? e.target || e.srcElement : utils.dom.get(dom.o, '.shuffle'));
+
+        if (target && !utils.css.has(target, css.disabled)) {
           utils.css.toggle(target.parentNode, css.active);
           playlistController.data.shuffleMode = !playlistController.data.shuffleMode;
         }
+
       },
 
       repeat: function(e) {
-        var target = e.target || e.srcElement;
-        if (!utils.css.has(target, css.disabled)) {
+
+        var target = (e ? e.target || e.srcElement : utils.dom.get(dom.o, '.repeat'));
+
+        if (target && !utils.css.has(target, css.disabled)) {
           utils.css.toggle(target.parentNode, css.active);
           playlistController.data.loopMode = !playlistController.data.loopMode;
         }
+
       },
 
       menu: function(/* e */) {
@@ -1310,8 +1386,7 @@
 
       adjustVolume: function(e) {
 
-        var backgroundSize,
-            backgroundMargin,
+        var backgroundMargin,
             pixelMargin,
             target,
             value,
@@ -1322,13 +1397,9 @@
         target = dom.volume;
 
         // based on getStyle() result
-        backgroundSize = actionData.volume.backgroundSize;
-
         // figure out spacing around background image based on background size, eg. 60% background size.
-        backgroundSize = 100 - backgroundSize;
-
         // 60% wide means 20% margin on each side.
-        backgroundMargin = backgroundSize / 2;
+        backgroundMargin = (100 - actionData.volume.backgroundSize) / 2;
 
         // relative position of mouse over element
         value = Math.max(0, Math.min(1, (e.clientX - actionData.volume.x) / actionData.volume.width));
@@ -1338,12 +1409,14 @@
         // determine logical volume, including background margin
         pixelMargin = ((backgroundMargin/100) * actionData.volume.width);
 
-        volume = Math.max(0, Math.min(1, ((e.clientX - actionData.volume.x) - pixelMargin) / (actionData.volume.width - (pixelMargin*2))));
+        volume = Math.max(0, Math.min(1, ((e.clientX - actionData.volume.x) - pixelMargin) / (actionData.volume.width - (pixelMargin*2)))) * 100;
 
         // set volume
         if (soundObject) {
-          soundObject.setVolume(volume * 100);
+          soundObject.setVolume(volume);
         }
+
+        defaultVolume = volume;
 
         return utils.events.preventDefault(e);
 
@@ -1354,11 +1427,65 @@
         utils.events.remove(document, 'mousemove', actions.adjustVolume);
         utils.events.remove(document, 'mouseup', actions.releaseVolume);
 
+      },
+
+      setVolume: function(volume) {
+
+        // set volume (0-100) and update volume slider UI.
+
+        var backgroundSize,
+            backgroundMargin,
+            backgroundOffset,
+            pixelMargin,
+            target,
+            from,
+            to;
+
+        if (volume === undefined || isNaN(volume)) {
+          return;
+        }
+
+        if (dom.volume) {
+
+          target = dom.volume;
+
+          // based on getStyle() result
+          backgroundSize = actionData.volume.backgroundSize;
+
+          // figure out spacing around background image based on background size, eg. 60% background size.
+          // 60% wide means 20% margin on each side.
+          backgroundMargin = (100 - backgroundSize) / 2;
+
+          // margin as pixel value relative to width
+          backgroundOffset = actionData.volume.width * (backgroundMargin/100);
+
+          from = backgroundOffset;
+          to = from + ((actionData.volume.width - (backgroundOffset*2)) * (volume/100));
+
+          target.style.clip = 'rect(0px, ' + to + 'px, ' + actionData.volume.height + 'px, ' + from + 'px)';
+
+        }
+
+        // apply volume to sound, as applicable
+        if (soundObject) {
+          soundObject.setVolume(volume);
+        }
+
+        defaultVolume = volume;
+
       }
 
     };
 
     init();
+
+    exports = {
+      actions: actions,
+      dom: dom,
+      playlistController: playlistController
+    };
+
+    return exports;
 
   };
 
