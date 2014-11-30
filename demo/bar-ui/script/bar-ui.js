@@ -1404,6 +1404,11 @@
 
       adjustVolume: function(e) {
 
+        /**
+         * NOTE: this is the mousemove() event handler version.
+         * Use setVolume(50), etc., to assign volume directly.
+         */
+
         var backgroundMargin,
             pixelMargin,
             target,
@@ -1413,6 +1418,20 @@
         value = 0;
 
         target = dom.volume;
+
+        // safety net
+        if (e === undefined) {
+          return false;
+        }
+
+        if (e.clientX === undefined) {
+          // called directly or with a non-mouseEvent object, etc.
+          // proxy to the proper method.
+          if (arguments[0] !== undefined && window.console && window.console.warn) {
+            console.warn('Bar UI: call setVolume(' + arguments[0] + ') instead of adjustVolume(' + arguments[0] + ').');
+          }
+          return actions.setVolume.apply(this, arguments);
+        }
 
         // based on getStyle() result
         // figure out spacing around background image based on background size, eg. 60% background size.
