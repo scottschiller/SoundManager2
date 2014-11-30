@@ -455,7 +455,8 @@
       selected: 'selected',
       active: 'active',
       legacy: 'legacy',
-      noVolume: 'no-volume'
+      noVolume: 'no-volume',
+      playlistOpen: 'playlist-open'
     };
 
     dom = {
@@ -735,6 +736,11 @@
 
         initDOM();
         refreshDOM();
+
+        // animate playlist open, if HTML classname indicates so.
+        if (utils.css.has(dom.o, css.playlistOpen)) {
+          actions.menu(true);
+        }
 
       }
 
@@ -1373,11 +1379,23 @@
 
       },
 
-      menu: function(/* e */) {
+      menu: function(ignoreToggle) {
 
         var isOpen;
 
-        isOpen = utils.css.toggle(dom.o, 'playlist-open');
+        isOpen = utils.css.has(dom.o, css.playlistOpen);
+
+        // sniff out booleans from mouse events, as this is referenced directly by event handlers.
+        if (typeof ignoreToggle !== 'boolean' || !ignoreToggle) {
+
+          if (!isOpen) {
+            // explicitly set height:0, so the first closed -> open animation runs properly
+            dom.playlistContainer.style.height = '0px';
+          }
+
+          isOpen = utils.css.toggle(dom.o, css.playlistOpen);
+
+        }
 
         // playlist
         dom.playlistContainer.style.height = (isOpen ? dom.playlistContainer.scrollHeight : 0) + 'px';
