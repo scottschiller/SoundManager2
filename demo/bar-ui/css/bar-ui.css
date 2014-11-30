@@ -696,6 +696,7 @@
 */
 
 .sm2-bar-ui.playlist-open .bd.sm2-playlist-drawer {
+ height: auto;
  opacity: 1;
 }
 
