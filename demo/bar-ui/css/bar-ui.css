@@ -26,7 +26,8 @@
 
 .sm2-bar-ui .sm2-playlist li {
  text-align: center;
- font-size: 92.5%;
+ margin-top: -2px;
+ font-size: 95%;
  line-height: 1em;
 }
 
@@ -403,6 +404,10 @@
  overflow: hidden;
  text-overflow: ellipsis;
  text-align: center;
+}
+
+.sm2-bar-ui ul.sm2-playlist-bd {
+ margin-top: -1px;
 }
 
 .sm2-row {
