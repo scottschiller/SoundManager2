@@ -1178,11 +1178,9 @@
 
       utils.css.remove(dom.o, 'grabbing');
 
-      if (e.preventDefault) {
-        e.preventDefault();
-      }
-
       utils.events.remove(document, 'mouseup', releaseMouse);
+
+      utils.events.preventDefault(e);
 
       return false;
 
