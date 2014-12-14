@@ -480,7 +480,7 @@
         var className = utils.dom.getFirst(playerSelector).className;
 
         // remove dynamic state bits from the live demo
-        className = className.replace(/[ ]playlist\-open|[ ]playing|[ ]paused|[ ]buffering/ig, '');
+        className = className.replace(/[ ]playing|[ ]paused|[ ]buffering/ig, '');
 
         document.getElementById('player-code-example').innerHTML = className;
 
@@ -495,23 +495,31 @@
 
       utils.events.add(document.getElementById('textured'), 'click', function(e) {
         applyToNodes(null, function(node) {
-            utils.css.toggle(node, 'textured');
+          utils.css.toggle(node, 'textured');
           updateDemoCode();
         });
       });
 
       utils.events.add(document.getElementById('dark'), 'click', function(e) {
         applyToNodes(null, function(node) {
-            utils.css.toggle(node, 'dark-text');
+          utils.css.toggle(node, 'dark-text');
           updateDemoCode();
         });
       });
 
       utils.events.add(document.getElementById('flat'), 'click', function(e) {
         applyToNodes(null, function(node) {
-            utils.css.toggle(node, 'flat');
+          utils.css.toggle(node, 'flat');
           updateDemoCode();
         });
+      });
+
+      utils.events.add(document.getElementById('playlist-open'), 'click', function(e) {
+        var i, j;
+        for (i=0, j=players.length; i<j; i++) {
+          players[i].actions.menu();
+        }
+        updateDemoCode();
       });
 
   });
