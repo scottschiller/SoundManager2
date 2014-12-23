@@ -1236,11 +1236,18 @@
 	        href = dom.playlist.getElementsByTagName('a')[0].href;
 	      }
 
-	      if (!soundObject) {
-	        soundObject = makeSound(href);
-	      }
+		if (!soundObject) {
+	        	soundObject = makeSound(href);
+            		soundManager.pauseAll();
+            		soundObject.play();
+	      	} else {
+		if(soundObject.paused){
+			soundManager.pauseAll();
+			soundObject.play();
 
-	      soundObject.togglePause();
+            	} else {
+              		soundManager.pauseAll();
+            	}
 
 	    },
 
