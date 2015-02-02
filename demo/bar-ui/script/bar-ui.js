@@ -631,26 +631,40 @@
 
       function select(item) {
 
-        var offset;
+        var offset,
+            itemTop,
+            itemBottom,
+            containerHeight,
+            scrollTop,
+            itemPadding;
 
         // remove last selected, if any
         resetLastSelected();
 
         if (item) {
+
           utils.css.add(item, css.selected);
+
+          itemTop = item.offsetTop;
+          itemBottom = itemTop + item.offsetHeight;
+          containerHeight = dom.playlistContainer.offsetHeight;
+          scrollTop = dom.playlist.scrollTop;
+          itemPadding = 8;
+
+          if (itemBottom > containerHeight + scrollTop) {
+            // bottom-align
+            dom.playlist.scrollTop = itemBottom - containerHeight + itemPadding;
+          } else if (itemTop < scrollTop) {
+            // top-align
+            dom.playlist.scrollTop = item.offsetTop - itemPadding;
+          }
+
         }
 
         // update selected offset, too.
         offset = findOffsetFromItem(item);
 
         data.selectedIndex = offset;
-
-        /**
-         * TODO: consider scrolling the item into view
-         * bottom-align if below, top-align if above.
-         * item.scrollIntoView() scrolls window vs. container,
-         * so we can't use the native shiz.
-         */
 
       }
 
@@ -1029,6 +1043,13 @@
 
       if (soundManager.canPlayURL(link.href)) {
 
+        // if there's a timer due to failure to play one track, cancel it.
+        // catches case when user may use previous/next after an error.
+        if (playlistController.data.timer) {
+          window.clearTimeout(playlistController.data.timer);
+          playlistController.data.timer = null;
+        }
+
         if (!soundObject) {
           soundObject = makeSound(link.href);
         }
@@ -1321,20 +1342,20 @@
 
         var item, lastIndex;
 
-          // special case: clear "play next" timeout, if one exists.
-          if (playlistController.data.timer) {
-            window.clearTimeout(playlistController.data.timer);
-            playlistController.data.timer = null;
-          }
+        // special case: clear "play next" timeout, if one exists.
+        if (playlistController.data.timer) {
+          window.clearTimeout(playlistController.data.timer);
+          playlistController.data.timer = null;
+        }
 
-          lastIndex = playlistController.data.selectedIndex;
+        lastIndex = playlistController.data.selectedIndex;
 
-          item = playlistController.getNext(true);
+        item = playlistController.getNext(true);
 
-          // don't play the same item again
-          if (item && playlistController.data.selectedIndex !== lastIndex) {
-            playLink(item.getElementsByTagName('a')[0]);
-          }
+        // don't play the same item again
+        if (item && playlistController.data.selectedIndex !== lastIndex) {
+          playLink(item.getElementsByTagName('a')[0]);
+        }
 
       },
 
