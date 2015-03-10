@@ -1,0 +1,19 @@
+{
+  "name": "SoundManager2",
+  "version": "2.97",
+  "homepage": "https://github.com/scottschiller/SoundManager2",
+  "main": "script/soundmanager2.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "tasks",
+    "component.json",
+    "composer.json",
+    "CONTRIBUTING.md",
+    "package.js",
+    "package.json"
+  ]
+}
