@@ -294,25 +294,9 @@
 
       var dispatch, add, remove, preventDefault;
 
-      dispatch = function(evtName, custom) {
-	custom = typeof custom !== 'undefined' ? custom : null;
-
-	//how we can use dispatch inside bar-ui.js:
-	// utils.events.dispatch('sm2-bar-ui-select', { 'detail': 0 });
-	//
-	//how to listen for events in an external script:
-	// function evtHandler(e) {
-	//  log('The value is: ' + e.detail);
-	// }
-	// var evtName = 'sm2-bar-ui-setTitle';
-	// if (window.addEventListener) {
-	//  window.addEventListener(evtName, evtHandler, false);
-	// } else {
-	//  window.attachEvent('on' + evtName, evtHandler);
-	// }
-
-	// create new event with the name we give
-	var event = new CustomEvent(evtName, custom);
+      dispatch = function(evtName) {
+        // create new event with the name we give
+	var event = new Event(evtName);
 
 	// Dispatch the event.
 	return window.dispatchEvent(event);
@@ -783,7 +767,7 @@
       // if this is an <li> with an inner link, grab and use the text from that.
       var links = item.getElementsByTagName('a');
 
-      utils.events.dispatch('sm2-bar-ui-setTitle', {'item': item});
+	utils.events.dispatch('sm2-bar-ui-setTitle');
 
       if (links.length) {
         item = links[0];
@@ -796,7 +780,6 @@
         // this item can use <marquee>, in fact.
         dom.playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li><marquee>' + item.innerHTML + '</marquee></li></ul>';
       }
-
     }
 
     function makeSound(url) {
@@ -1390,6 +1373,8 @@
 
         // playlist
         dom.playlistContainer.style.height = (isOpen ? dom.playlistContainer.scrollHeight : 0) + 'px';
+
+	utils.events.dispatch('sm2-bar-ui-menu');
 
       },
 
