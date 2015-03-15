@@ -256,8 +256,8 @@
 
       utils.events.add(demoData.colorPicker, 'change', function(e) {
 
-	    var target = e.target || e.srcElement,
-	        color = target.value;
+        var target = e.target || e.srcElement,
+            color = target.value;
 
         if (color) {
           demoData.backgroundValue = color;
@@ -269,8 +269,8 @@
 
       utils.events.add(demoData.opacityPicker, 'change', function(e) {
 
-	    var target = e.target || e.srcElement,
-	        opacity = target.value;
+        var target = e.target || e.srcElement,
+            opacity = target.value;
 
         if (opacity !== undefined) {
           demoData.opacityValue = opacity;
@@ -282,8 +282,8 @@
 
       utils.events.add(demoData.sizePicker, 'change', function(e) {
 
-	    var target = e.target || e.srcElement,
-	        size = target.value;
+        var target = e.target || e.srcElement,
+            size = target.value;
 
         if (size !== undefined) {
           demoData.sizeValue = size;
@@ -297,11 +297,11 @@
 
       function changeBackground(e, isPage) {
 
-	    var target = e.target || e.srcElement,
+        var target = e.target || e.srcElement,
             styleTarget = document.documentElement,
-	        backgroundValue = target.value,
-	        isTransparent = target.value.match(/transparent/i),
-	        isDark = target.options[target.selectedIndex].getAttribute('data-dark');
+            backgroundValue = target.value,
+            isTransparent = target.value.match(/transparent/i),
+            isDark = target.options[target.selectedIndex].getAttribute('data-dark');
 
         // apply to <html>, or UI texture
         if (isPage) {
@@ -480,39 +480,47 @@
         var className = utils.dom.getFirst(playerSelector).className;
 
         // remove dynamic state bits from the live demo
-        className = className.replace(/[ ]playlist\-open|[ ]playing|[ ]paused|[ ]buffering/ig, '');
+        className = className.replace(/[ ]playing|[ ]paused|[ ]buffering/ig, '');
 
         document.getElementById('player-code-example').innerHTML = className;
 
       }
 
-	  utils.events.add(document.getElementById('fullwidth'), 'click', function(e) {
-	    applyToNodes(null, function(node) {
-		  utils.css.toggle(node, 'full-width');
-          updateDemoCode();
-		});
-	  });
-
-	  utils.events.add(document.getElementById('textured'), 'click', function(e) {
-	    applyToNodes(null, function(node) {
-  	      utils.css.toggle(node, 'textured');
+      utils.events.add(document.getElementById('fullwidth'), 'click', function(e) {
+        applyToNodes(null, function(node) {
+          utils.css.toggle(node, 'full-width');
           updateDemoCode();
         });
-	  });
+      });
 
-	  utils.events.add(document.getElementById('dark'), 'click', function(e) {
-	    applyToNodes(null, function(node) {
-  	      utils.css.toggle(node, 'dark-text');
+      utils.events.add(document.getElementById('textured'), 'click', function(e) {
+        applyToNodes(null, function(node) {
+          utils.css.toggle(node, 'textured');
           updateDemoCode();
         });
-	  });
+      });
 
-	  utils.events.add(document.getElementById('flat'), 'click', function(e) {
-	    applyToNodes(null, function(node) {
-  	      utils.css.toggle(node, 'flat');
+      utils.events.add(document.getElementById('dark'), 'click', function(e) {
+        applyToNodes(null, function(node) {
+          utils.css.toggle(node, 'dark-text');
           updateDemoCode();
         });
-	  });
+      });
+
+      utils.events.add(document.getElementById('flat'), 'click', function(e) {
+        applyToNodes(null, function(node) {
+          utils.css.toggle(node, 'flat');
+          updateDemoCode();
+        });
+      });
+
+      utils.events.add(document.getElementById('playlist-open'), 'click', function(e) {
+        var i, j;
+        for (i=0, j=players.length; i<j; i++) {
+          players[i].actions.menu();
+        }
+        updateDemoCode();
+      });
 
   });
 

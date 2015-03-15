@@ -118,14 +118,14 @@
      <a href="#next" title="Next" class="sm2-inline-button next">&gt; next</a>
     </div>
 
-    <!-- unimplemented -->
+    <!-- not implemented -->
     <!--
     <div class="sm2-inline-element sm2-button-element disabled">
      <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
     </div>
-  -->
+    -->
 
-    <!-- unimplemented -->
+    <!-- not implemented -->
     <!--
     <div class="sm2-inline-element sm2-button-element disabled">
      <a href="#shuffle" title="Shuffle" class="sm2-inline-button shuffle">shuffle</a>
@@ -142,9 +142,9 @@
 
 <!-- player #2 -->
 
-<h3>Extra controls inline</h3>
+<h3>Extra controls inline, playlist open by default</h3>
 
-<div class="sm2-bar-ui">
+<div class="sm2-bar-ui playlist-open">
 
  <div class="bd sm2-main-controls">
 
@@ -403,6 +403,10 @@
 
 </div>
 
+ <h3>JavaScript API</h3>
+
+ <p class="about">Once initialized, players will be added to the array <code>window.sm2BarPlayers</code>. You can access and control players in this fashion. For example, <code>window.sm2BarPlayers[0].actions.play()</code> will start the first player UI. You can also toggle the playlist "drawer" via <code>window.sm2BarPlayers[0].actions.menu()</code>.</p>
+
  <h3>Credits</h3>
 
  <p class="about">Thanks to <a href="http://iamsonreal.com/" title="SonReal, Vancouver-based hip-hop artist">SonReal</a> and <a href="http://www.adrianglynn.com/" title="Adrian Glynn, Vancouver-based Singer/Songwriter">Adrian Glynn</a> for making these demos sound notably better.</p>
@@ -488,6 +492,7 @@
   <button id="textured">texture</button>
   <button id="dark">dark/light text</button>
   <button id="flat">flat</button>
+  <button id="playlist-open">playlist open</button>
  </div>
 
  <div>
@@ -596,12 +601,14 @@
    </div>
   </div>
 
-  <!-- unimplemented -->
+  <div class="sm2-inline-element sm2-button-element">
+   <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+  </div>
+
+  <!-- not implemented -->
   <!--
   <div class="sm2-inline-element sm2-button-element disabled">
-   <div class="sm2-button-bd">
-    <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
-   </div>
+   <a href="#shuffle" title="Shuffle" class="sm2-inline-button shuffle">shuffle</a>
   </div>
   -->
 
