@@ -26,7 +26,8 @@
 
 .sm2-bar-ui .sm2-playlist li {
  text-align: center;
- font-size: 92.5%;
+ margin-top: -2px;
+ font-size: 95%;
  line-height: 1em;
 }
 
@@ -696,6 +697,7 @@
 */
 
 .sm2-bar-ui.playlist-open .bd.sm2-playlist-drawer {
+ height: auto;
  opacity: 1;
 }
 

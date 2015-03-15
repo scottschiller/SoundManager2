@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140901
+ * V2.97a.20140901+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -198,7 +198,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20140901';
+  this.versionNumber = 'V2.97a.20140901+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -530,10 +530,11 @@ function SoundManager(smURL, smID) {
 
     var oS = sm2.sounds[sID], i;
 
-    // Disable all callbacks while the sound is being destroyed
-    oS._iO = {};
-
     oS.stop();
+    
+    // Disable all callbacks after stop(), when the sound is being destroyed
+    oS._iO = {};
+    
     oS.unload();
 
     for (i = 0; i < sm2.soundIDs.length; i++) {
@@ -830,7 +831,8 @@ function SoundManager(smURL, smID) {
   };
 
   /**
-   * Calls the setVolume() method of a SMSound object by ID.
+   * Calls the setVolume() method of a SMSound object by ID
+   * Overloaded case: pass only volume argument eg., setVolume(50) to apply to all sounds.
    *
    * @param {string} sID The ID of the sound
    * @param {number} nVol The volume value (0 to 100)
@@ -839,9 +841,23 @@ function SoundManager(smURL, smID) {
 
   this.setVolume = function(sID, nVol) {
 
+    // setVolume(50) function overloading case - apply to all sounds
+
+    var i, j;
+
+    if (sID !== _undefined && !isNaN(sID) && nVol === _undefined) {
+      for (i=0, j=sm2.soundIDs.length; i<j; i++) {
+        sm2.sounds[sm2.soundIDs[i]].setVolume(sID);
+      }
+      return;
+    }
+
+    // setVolume('mySound', 50) case
+
     if (!idCheck(sID)) {
       return false;
     }
+
     return sm2.sounds[sID].setVolume(nVol);
 
   };
@@ -6049,13 +6065,23 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
 
 } else if (typeof define === 'function' && define.amd) {
 
-  // AMD - requireJS
+  /**
+   * AMD - requireJS
+   * example usage:
+   * require(["/path/to/soundmanager2.js"], function(soundManager) {
+   *   soundManager.setup({
+   *     url: '/swf/',
+   *     onready: function() { ... }
+   *   })
+   * });
+   */
 
-  define('SoundManager', [], function() {
-    return {
-      SoundManager: SoundManager,
-      soundManager: soundManager
-    };
+  define(function() {
+    // assign globals
+    window.SoundManager = SoundManager;
+    window.soundManager = soundManager;
+    // ... and return the soundManager instance
+    return soundManager;
   });
 
 } else {
