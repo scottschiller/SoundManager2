@@ -705,6 +705,20 @@
 
       */
 
+      function playItemByOffset(offset) {
+
+        var item;
+
+        offset = (offset || 0);
+
+        item = getItem(offset);
+        
+        if (item) {
+          playLink(item.getElementsByTagName('a')[0]);
+        }
+
+      }
+
       function getURL() {
 
         // return URL of currently-selected item
@@ -767,6 +781,7 @@
         getPrevious: getPrevious,
         getItem: getItem,
         getURL: getURL,
+        playItemByOffset: playItemByOffset,
         select: select
       };
 
@@ -915,7 +930,7 @@
             if (playlistController.data.timer) {
               window.clearTimeout(playlistController.data.timer);
             }
-            playlistController.data.timer = window.setTimeout(actions.next, 1000);
+            playlistController.data.timer = window.setTimeout(actions.next, 2000);
           }
 
         },
@@ -1061,6 +1076,11 @@
 
         // TODO: ancestor('li')
         setTitle(link.parentNode);
+
+        // reset the UI
+        // TODO: function that also resets/hides timing info.
+        dom.progress.style.left = '0px';
+        dom.progressBar.style.width = '0px';
 
         soundObject.play({
           url: link.href,
@@ -1288,10 +1308,25 @@
 
     actions = {
 
-      play: function(e) {
+      play: function(eventOrOffset) {
+
+        /**
+         * This is an overloaded function that takes mouse/touch events or offset-based item indices.
+         * Remember, "auto-play" will not work on mobile devices unless this function is called immediately from a touch or click event.
+         * If you have the link but not the offset, you can also pass a fake event object with a target of an <a> inside the playlist - e.g. { target: someMP3Link }         
+         */
 
         var target,
-            href;
+            href,
+            e;
+
+        if (eventOrOffset !== undefined && !isNaN(eventOrOffset)) {
+          // smells like a number.
+          return playlistController.playItemByOffset(eventOrOffset);
+        }
+
+        // DRY things a bit
+        e = eventOrOffset;
 
         if (e && e.target) {
 
@@ -1310,7 +1345,15 @@
           soundObject = makeSound(href);
         }
 
+        // TODO: if user pauses + unpauses a sound that had an error, try to play next?
         soundObject.togglePause();
+
+        // special case: clear "play next" timeout, if one exists.
+        // edge case: user pauses after a song failed to load.
+        if (soundObject.paused && playlistController.data.timer) {
+          window.clearTimeout(playlistController.data.timer);
+          playlistController.data.timer = null;
+        }
 
       },
 
@@ -1534,6 +1577,8 @@
     };
 
     init();
+
+    // TODO: mixin actions -> exports
 
     exports = {
       actions: actions,
