@@ -1476,7 +1476,8 @@
     exports = {
       actions: actions,
       dom: dom,
-      playlistController: playlistController
+      playlistController: playlistController,
+      setTitle: setTitle
     };
 
     return exports;
