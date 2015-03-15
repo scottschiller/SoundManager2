@@ -108,6 +108,8 @@ p {
 .about {
  color: #333;
  font-size: small;
+ line-height: 1.5em;
+ margin-bottom: 0.5em;
 }
 
 .about a {
