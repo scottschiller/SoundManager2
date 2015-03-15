@@ -17,7 +17,13 @@
       players = [],
       // CSS selector that will get us the top-level DOM node for the player UI.
       playerSelector = '.sm2-bar-ui',
+      playerOptions,
       utils;
+
+  playerOptions = {
+    // useful when multiple players are in use, or other SM2 sounds are active etc.
+    stopOtherSounds: true
+  };
 
   soundManager.setup({
     // trade-off: higher UI responsiveness (play/progress bar), but may use more CPU.
@@ -38,6 +44,8 @@
     }
   
   });
+
+  // barebones utilities for logic, CSS, DOM, events etc.
 
   utils = {
 
@@ -477,6 +485,14 @@
     extras = {
       loadFailedCharacter: '<span title="Failed to load/play." class="load-error">✖</span>'
     };
+
+    function stopOtherSounds() {
+
+      if (playerOptions.stopOtherSounds) {
+        soundManager.stopAll();
+      }
+
+    }
 
     function PlaylistController() {
 
@@ -961,6 +977,8 @@
 
             setTitle(item);
 
+            stopOtherSounds();
+
             // play next
             this.play({
               url: playlistController.getURL()
@@ -1081,6 +1099,8 @@
         // TODO: function that also resets/hides timing info.
         dom.progress.style.left = '0px';
         dom.progressBar.style.width = '0px';
+
+        stopOtherSounds();
 
         soundObject.play({
           url: link.href,
@@ -1345,6 +1365,11 @@
           soundObject = makeSound(href);
         }
 
+        // edge case: if the current sound is not playing, stop all others.
+        if (!soundObject.playState) {
+          stopOtherSounds();
+        }
+
         // TODO: if user pauses + unpauses a sound that had an error, try to play next?
         soundObject.togglePause();
 
@@ -1594,6 +1619,7 @@
 
   // expose to global
   window.sm2BarPlayers = players;
+  window.sm2BarPlayerOptions = playerOptions;
   window.SM2BarPlayer = Player;
 
 }(window));
