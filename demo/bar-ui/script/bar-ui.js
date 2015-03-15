@@ -292,7 +292,31 @@
 
     events: (function() {
 
-      var add, remove, preventDefault;
+      var dispatch, add, remove, preventDefault;
+
+      dispatch = function(evtName, custom) {
+	custom = typeof custom !== 'undefined' ? custom : null;
+
+	//how we can use dispatch inside bar-ui.js:
+	// utils.events.dispatch('sm2-bar-ui-select', { 'detail': 0 });
+	//
+	//how to listen for events in an external script:
+	// function evtHandler(e) {
+	//  log('The value is: ' + e.detail);
+	// }
+	// var evtName = 'sm2-bar-ui-setTitle';
+	// if (window.addEventListener) {
+	//  window.addEventListener(evtName, evtHandler, false);
+	// } else {
+	//  window.attachEvent('on' + evtName, evtHandler);
+	// }
+
+	// create new event with the name we give
+	var event = new CustomEvent(evtName, custom);
+
+	// Dispatch the event.
+	return window.dispatchEvent(event);
+      };
 
       add = function(o, evtName, evtHandler) {
         // return an object with a convenient detach method.
@@ -326,6 +350,7 @@
       };
 
       return {
+	dispatch: dispatch,
         add: add,
         preventDefault: preventDefault,
         remove: remove
@@ -757,6 +782,8 @@
 
       // if this is an <li> with an inner link, grab and use the text from that.
       var links = item.getElementsByTagName('a');
+
+      utils.events.dispatch('sm2-bar-ui-setTitle', {'item': item});
 
       if (links.length) {
         item = links[0];
