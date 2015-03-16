@@ -549,25 +549,25 @@
  background-image: none, url(../image/icomoon/entypo-25px-000000/SVG/volume.svg);
 }
 
-.menu {
+.sm2-menu-button {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/list2.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/list2.svg);
  background-size: 58%;
  background-position: 54% 51%;
 }
 
-.previous {
+.sm2-previous {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/first.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/first.svg);
 }
 
-.next {
+.sm2-next {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/last.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/last.svg);
 }
 
-.previous,
-.next {
+.sm2-previous,
+.sm2-next {
  background-size: 49.5%;
  background-position: 50% 50%;
 }
