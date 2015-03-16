@@ -292,7 +292,15 @@
 
     events: (function() {
 
-      var add, remove, preventDefault;
+      var dispatch, add, remove, preventDefault;
+
+      dispatch = function(evtName) {
+	 // create new event with the name we give
+	var event = new Event(evtName);
+
+	 // Dispatch the event.
+	return window.dispatchEvent(event);
+      };
 
       add = function(o, evtName, evtHandler) {
         // return an object with a convenient detach method.
@@ -326,6 +334,7 @@
       };
 
       return {
+	dispatch: dispatch,
         add: add,
         preventDefault: preventDefault,
         remove: remove
@@ -808,6 +817,8 @@
 
       // if this is an <li> with an inner link, grab and use the text from that.
       var links = item.getElementsByTagName('a');
+
+      utils.events.dispatch('sm2-bar-ui-setTitle');
 
       if (links.length) {
         item = links[0];
@@ -1461,6 +1472,8 @@
 
         // playlist
         dom.playlistContainer.style.height = (isOpen ? dom.playlistContainer.scrollHeight : 0) + 'px';
+
+	utils.events.dispatch('sm2-bar-ui-menu');
 
       },
 
