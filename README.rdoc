@@ -20,7 +20,7 @@ By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reli
 
 == Shiny Flash 9 Features
 
-    * RTMP / Flash Media Server streaming support (new, experimental)
+    * RTMP / Flash Media Server streaming support
     * MPEG-4 (AAC, HE-AAC, H.264) audio support
     * "MultiShot" play (layered/chorusing effects)
     * Waveform/frequency spectrum data
