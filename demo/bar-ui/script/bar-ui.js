@@ -22,7 +22,9 @@
 
   playerOptions = {
     // useful when multiple players are in use, or other SM2 sounds are active etc.
-    stopOtherSounds: true
+    stopOtherSounds: true,
+    // CSS class to let the browser load the URL directly e.g., <a href="foo.mp3" class="sm2-exclude">download foo.mp3</a>
+    excludeClass: 'sm2-exclude'
   };
 
   soundManager.setup({
@@ -1158,7 +1160,7 @@
           if (soundManager.canPlayURL(href)) {
 
             // not excluded
-            if (!utils.css.has(target, 'sm2-exclude')) {
+            if (!utils.css.has(target, playerOptions.excludeClass)) {
 
               // find this in the playlist
 
