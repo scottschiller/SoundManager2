@@ -47,411 +47,6 @@
   
   });
 
-  // barebones utilities for logic, CSS, DOM, events etc.
-
-  utils = {
-
-    array: (function() {
-
-      function compare(property) {
-
-        var result;
-
-        return function(a, b) {
-
-          if (a[property] < b[property]) {
-            result = -1;
-          } else if (a[property] > b[property]) {
-            result = 1;
-          } else {
-            result = 0;
-          }
-          return result;
-        };
-
-      }
-
-      function shuffle(array) {
-
-        // Fisher-Yates shuffle algo
-
-        var i, j, temp;
-
-        for (i = array.length - 1; i > 0; i--) {
-          j = Math.floor(Math.random() * (i+1));
-          temp = array[i];
-          array[i] = array[j];
-          array[j] = temp;
-        }
-
-        return array;
-
-      }
-
-      return {
-        compare: compare,
-        shuffle: shuffle
-      };
-
-    }()),
-
-    css: (function() {
-
-      function hasClass(o, cStr) {
-
-        return (o.className !== undefined ? new RegExp('(^|\\s)' + cStr + '(\\s|$)').test(o.className) : false);
-
-      }
-
-      function addClass(o, cStr) {
-
-        if (!o || !cStr || hasClass(o, cStr)) {
-          return false; // safety net
-        }
-        o.className = (o.className ? o.className + ' ' : '') + cStr;
-
-      }
-
-      function removeClass(o, cStr) {
-
-        if (!o || !cStr || !hasClass(o, cStr)) {
-          return false;
-        }
-        o.className = o.className.replace(new RegExp('( ' + cStr + ')|(' + cStr + ')', 'g'), '');
-
-      }
-
-      function swapClass(o, cStr1, cStr2) {
-
-        var tmpClass = {
-          className: o.className
-        };
-
-        removeClass(tmpClass, cStr1);
-        addClass(tmpClass, cStr2);
-
-        o.className = tmpClass.className;
-
-      }
-
-      function toggleClass(o, cStr) {
-
-        var found,
-            method;
-
-        found = hasClass(o, cStr);
-
-        method = (found ? removeClass : addClass);
-
-        method(o, cStr);
-
-        // indicate the new state...
-        return !found;
-
-      }
-
-      return {
-        has: hasClass,
-        add: addClass,
-        remove: removeClass,
-        swap: swapClass,
-        toggle: toggleClass
-      };
-
-    }()),
-
-    dom: (function() {
-
-      function getAll(/* parentNode, selector */) {
-
-        var node,
-            selector,
-            results;
-
-        if (arguments.length === 1) {
-
-          // .selector case
-          node = document.documentElement;
-          selector = arguments[0];
-
-        } else {
-
-          // node, .selector
-          node = arguments[0];
-          selector = arguments[1];
-
-        }
-
-        // sorry, IE 7 users; IE 8+ required.
-        if (node && node.querySelectorAll) {
-
-          results = node.querySelectorAll(selector);
-
-        }
-
-        return results;
-
-      }
-
-      function get(/* parentNode, selector */) {
-
-        var results = getAll.apply(this, arguments);
-
-        // hackish: if an array, return the last item.
-        if (results && results.length) {
-          return results[results.length-1];
-        }
-
-        // handle "not found" case
-        return results && results.length === 0 ? null : results;
-
-      }
-
-      return {
-        get: get,
-        getAll: getAll
-      };
-
-    }()),
-
-    position: (function() {
-
-      function getOffX(o) {
-
-        // http://www.xs4all.nl/~ppk/js/findpos.html
-        var curleft = 0;
-
-        if (o.offsetParent) {
-
-          while (o.offsetParent) {
-
-            curleft += o.offsetLeft;
-
-            o = o.offsetParent;
-
-          }
-
-        } else if (o.x) {
-
-            curleft += o.x;
-
-        }
-
-        return curleft;
-
-      }
-
-      function getOffY(o) {
-
-        // http://www.xs4all.nl/~ppk/js/findpos.html
-        var curtop = 0;
-
-        if (o.offsetParent) {
-
-          while (o.offsetParent) {
-
-            curtop += o.offsetTop;
-
-            o = o.offsetParent;
-
-          }
-
-        } else if (o.y) {
-
-            curtop += o.y;
-
-        }
-
-        return curtop;
-
-      }
-
-      return {
-        getOffX: getOffX,
-        getOffY: getOffY
-      };
-
-    }()),
-
-    style: (function() {
-
-      function get(node, styleProp) {
-
-        // http://www.quirksmode.org/dom/getstyles.html
-        var value;
-
-        if (node.currentStyle) {
-
-          value = node.currentStyle[styleProp];
-
-        } else if (window.getComputedStyle) {
-
-          value = document.defaultView.getComputedStyle(node, null).getPropertyValue(styleProp);
-
-        }
-
-        return value;
-
-      }
-
-      return {
-        get: get
-      };
-
-    }()),
-
-    events: (function() {
-
-      var add, remove, preventDefault;
-
-      add = function(o, evtName, evtHandler) {
-        // return an object with a convenient detach method.
-        var eventObject = {
-          detach: function() {
-            return remove(o, evtName, evtHandler);
-          }
-        };
-        if (window.addEventListener) {
-          o.addEventListener(evtName, evtHandler, false);
-        } else {
-          o.attachEvent('on' + evtName, evtHandler);
-        }
-        return eventObject;
-      };
-
-      remove = (window.removeEventListener !== undefined ? function(o, evtName, evtHandler) {
-        return o.removeEventListener(evtName, evtHandler, false);
-      } : function(o, evtName, evtHandler) {
-        return o.detachEvent('on' + evtName, evtHandler);
-      });
-
-      preventDefault = function(e) {
-        if (e.preventDefault) {
-          e.preventDefault();
-        } else {
-          e.returnValue = false;
-          e.cancelBubble = true;
-        }
-        return false;
-      };
-
-      return {
-        add: add,
-        preventDefault: preventDefault,
-        remove: remove
-      };
-
-    }()),
-
-    features: (function() {
-
-      var getAnimationFrame,
-          localAnimationFrame,
-            localFeatures,
-            prop,
-            styles,
-          testDiv,
-          transform;
-
-        testDiv = document.createElement('div');
-
-      /**
-       * hat tip: paul irish
-       * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-       * https://gist.github.com/838785
-       */
-
-      localAnimationFrame = (window.requestAnimationFrame
-        || window.webkitRequestAnimationFrame
-        || window.mozRequestAnimationFrame
-        || window.oRequestAnimationFrame
-        || window.msRequestAnimationFrame
-        || null);
-
-      // apply to window, avoid "illegal invocation" errors in Chrome
-      getAnimationFrame = localAnimationFrame ? function() {
-        return localAnimationFrame.apply(window, arguments);
-      } : null;
-
-      function has(prop) {
-
-        // test for feature support
-        var result = testDiv.style[prop];
-
-        return (result !== undefined ? prop : null);
-
-      }
-
-      // note local scope.
-      localFeatures = {
-
-        transform: {
-          ie: has('-ms-transform'),
-          moz: has('MozTransform'),
-          opera: has('OTransform'),
-          webkit: has('webkitTransform'),
-          w3: has('transform'),
-          prop: null // the normalized property value
-        },
-
-        rotate: {
-          has3D: false,
-          prop: null
-        },
-
-        getAnimationFrame: getAnimationFrame
-
-      };
-
-      localFeatures.transform.prop = (
-        localFeatures.transform.w3 ||
-        localFeatures.transform.moz ||
-        localFeatures.transform.webkit ||
-        localFeatures.transform.ie ||
-        localFeatures.transform.opera
-      );
-
-      function attempt(style) {
-
-        try {
-          testDiv.style[transform] = style;
-        } catch(e) {
-          // that *definitely* didn't work.
-          return false;
-        }
-        // if we can read back the style, it should be cool.
-        return !!testDiv.style[transform];
-
-      }
-
-      if (localFeatures.transform.prop) {
-
-        // try to derive the rotate/3D support.
-        transform = localFeatures.transform.prop;
-        styles = {
-          css_2d: 'rotate(0deg)',
-          css_3d: 'rotate3d(0,0,0,0deg)'
-        };
-
-        if (attempt(styles.css_3d)) {
-          localFeatures.rotate.has3D = true;
-          prop = 'rotate3d';
-        } else if (attempt(styles.css_2d)) {
-          prop = 'rotate';
-        }
-
-        localFeatures.rotate.prop = prop;
-
-      }
-
-      testDiv = null;
-
-      return localFeatures;
-
-    }())
-
-  };
-
   /**
    * player bits
    */
@@ -685,43 +280,6 @@
         data.selectedIndex = offset;
 
       }
-
-      /*
-      function selectOffset(offset) {
-
-        var item;
-
-        item = getItem(offset);
-
-        if (item) {
-          select(item);
-        }
-
-      }
-
-      function playItem(item) {
-
-        // given an item (<li> or <a>), find it in the playlist array, select and play it.
-
-        var list, offset;
-
-        list = getPlaylist();
-
-        if (list) {
-
-          offset = findOffsetFromItem(item);
-
-          if (offset !== -1) {
-
-            select(offset);
-
-          }
-
-        }
-
-      }
-
-      */
 
       function playItemByOffset(offset) {
 
@@ -1614,6 +1172,411 @@
     };
 
     return exports;
+
+  };
+
+  // barebones utilities for logic, CSS, DOM, events etc.
+
+  utils = {
+
+    array: (function() {
+
+      function compare(property) {
+
+        var result;
+
+        return function(a, b) {
+
+          if (a[property] < b[property]) {
+            result = -1;
+          } else if (a[property] > b[property]) {
+            result = 1;
+          } else {
+            result = 0;
+          }
+          return result;
+        };
+
+      }
+
+      function shuffle(array) {
+
+        // Fisher-Yates shuffle algo
+
+        var i, j, temp;
+
+        for (i = array.length - 1; i > 0; i--) {
+          j = Math.floor(Math.random() * (i+1));
+          temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+
+        return array;
+
+      }
+
+      return {
+        compare: compare,
+        shuffle: shuffle
+      };
+
+    }()),
+
+    css: (function() {
+
+      function hasClass(o, cStr) {
+
+        return (o.className !== undefined ? new RegExp('(^|\\s)' + cStr + '(\\s|$)').test(o.className) : false);
+
+      }
+
+      function addClass(o, cStr) {
+
+        if (!o || !cStr || hasClass(o, cStr)) {
+          return false; // safety net
+        }
+        o.className = (o.className ? o.className + ' ' : '') + cStr;
+
+      }
+
+      function removeClass(o, cStr) {
+
+        if (!o || !cStr || !hasClass(o, cStr)) {
+          return false;
+        }
+        o.className = o.className.replace(new RegExp('( ' + cStr + ')|(' + cStr + ')', 'g'), '');
+
+      }
+
+      function swapClass(o, cStr1, cStr2) {
+
+        var tmpClass = {
+          className: o.className
+        };
+
+        removeClass(tmpClass, cStr1);
+        addClass(tmpClass, cStr2);
+
+        o.className = tmpClass.className;
+
+      }
+
+      function toggleClass(o, cStr) {
+
+        var found,
+            method;
+
+        found = hasClass(o, cStr);
+
+        method = (found ? removeClass : addClass);
+
+        method(o, cStr);
+
+        // indicate the new state...
+        return !found;
+
+      }
+
+      return {
+        has: hasClass,
+        add: addClass,
+        remove: removeClass,
+        swap: swapClass,
+        toggle: toggleClass
+      };
+
+    }()),
+
+    dom: (function() {
+
+      function getAll(/* parentNode, selector */) {
+
+        var node,
+            selector,
+            results;
+
+        if (arguments.length === 1) {
+
+          // .selector case
+          node = document.documentElement;
+          selector = arguments[0];
+
+        } else {
+
+          // node, .selector
+          node = arguments[0];
+          selector = arguments[1];
+
+        }
+
+        // sorry, IE 7 users; IE 8+ required.
+        if (node && node.querySelectorAll) {
+
+          results = node.querySelectorAll(selector);
+
+        }
+
+        return results;
+
+      }
+
+      function get(/* parentNode, selector */) {
+
+        var results = getAll.apply(this, arguments);
+
+        // hackish: if an array, return the last item.
+        if (results && results.length) {
+          return results[results.length-1];
+        }
+
+        // handle "not found" case
+        return results && results.length === 0 ? null : results;
+
+      }
+
+      return {
+        get: get,
+        getAll: getAll
+      };
+
+    }()),
+
+    position: (function() {
+
+      function getOffX(o) {
+
+        // http://www.xs4all.nl/~ppk/js/findpos.html
+        var curleft = 0;
+
+        if (o.offsetParent) {
+
+          while (o.offsetParent) {
+
+            curleft += o.offsetLeft;
+
+            o = o.offsetParent;
+
+          }
+
+        } else if (o.x) {
+
+            curleft += o.x;
+
+        }
+
+        return curleft;
+
+      }
+
+      function getOffY(o) {
+
+        // http://www.xs4all.nl/~ppk/js/findpos.html
+        var curtop = 0;
+
+        if (o.offsetParent) {
+
+          while (o.offsetParent) {
+
+            curtop += o.offsetTop;
+
+            o = o.offsetParent;
+
+          }
+
+        } else if (o.y) {
+
+            curtop += o.y;
+
+        }
+
+        return curtop;
+
+      }
+
+      return {
+        getOffX: getOffX,
+        getOffY: getOffY
+      };
+
+    }()),
+
+    style: (function() {
+
+      function get(node, styleProp) {
+
+        // http://www.quirksmode.org/dom/getstyles.html
+        var value;
+
+        if (node.currentStyle) {
+
+          value = node.currentStyle[styleProp];
+
+        } else if (window.getComputedStyle) {
+
+          value = document.defaultView.getComputedStyle(node, null).getPropertyValue(styleProp);
+
+        }
+
+        return value;
+
+      }
+
+      return {
+        get: get
+      };
+
+    }()),
+
+    events: (function() {
+
+      var add, remove, preventDefault;
+
+      add = function(o, evtName, evtHandler) {
+        // return an object with a convenient detach method.
+        var eventObject = {
+          detach: function() {
+            return remove(o, evtName, evtHandler);
+          }
+        };
+        if (window.addEventListener) {
+          o.addEventListener(evtName, evtHandler, false);
+        } else {
+          o.attachEvent('on' + evtName, evtHandler);
+        }
+        return eventObject;
+      };
+
+      remove = (window.removeEventListener !== undefined ? function(o, evtName, evtHandler) {
+        return o.removeEventListener(evtName, evtHandler, false);
+      } : function(o, evtName, evtHandler) {
+        return o.detachEvent('on' + evtName, evtHandler);
+      });
+
+      preventDefault = function(e) {
+        if (e.preventDefault) {
+          e.preventDefault();
+        } else {
+          e.returnValue = false;
+          e.cancelBubble = true;
+        }
+        return false;
+      };
+
+      return {
+        add: add,
+        preventDefault: preventDefault,
+        remove: remove
+      };
+
+    }()),
+
+    features: (function() {
+
+      var getAnimationFrame,
+          localAnimationFrame,
+            localFeatures,
+            prop,
+            styles,
+          testDiv,
+          transform;
+
+        testDiv = document.createElement('div');
+
+      /**
+       * hat tip: paul irish
+       * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+       * https://gist.github.com/838785
+       */
+
+      localAnimationFrame = (window.requestAnimationFrame
+        || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame
+        || window.oRequestAnimationFrame
+        || window.msRequestAnimationFrame
+        || null);
+
+      // apply to window, avoid "illegal invocation" errors in Chrome
+      getAnimationFrame = localAnimationFrame ? function() {
+        return localAnimationFrame.apply(window, arguments);
+      } : null;
+
+      function has(prop) {
+
+        // test for feature support
+        var result = testDiv.style[prop];
+
+        return (result !== undefined ? prop : null);
+
+      }
+
+      // note local scope.
+      localFeatures = {
+
+        transform: {
+          ie: has('-ms-transform'),
+          moz: has('MozTransform'),
+          opera: has('OTransform'),
+          webkit: has('webkitTransform'),
+          w3: has('transform'),
+          prop: null // the normalized property value
+        },
+
+        rotate: {
+          has3D: false,
+          prop: null
+        },
+
+        getAnimationFrame: getAnimationFrame
+
+      };
+
+      localFeatures.transform.prop = (
+        localFeatures.transform.w3 ||
+        localFeatures.transform.moz ||
+        localFeatures.transform.webkit ||
+        localFeatures.transform.ie ||
+        localFeatures.transform.opera
+      );
+
+      function attempt(style) {
+
+        try {
+          testDiv.style[transform] = style;
+        } catch(e) {
+          // that *definitely* didn't work.
+          return false;
+        }
+        // if we can read back the style, it should be cool.
+        return !!testDiv.style[transform];
+
+      }
+
+      if (localFeatures.transform.prop) {
+
+        // try to derive the rotate/3D support.
+        transform = localFeatures.transform.prop;
+        styles = {
+          css_2d: 'rotate(0deg)',
+          css_3d: 'rotate3d(0,0,0,0deg)'
+        };
+
+        if (attempt(styles.css_3d)) {
+          localFeatures.rotate.has3D = true;
+          prop = 'rotate3d';
+        } else if (attempt(styles.css_2d)) {
+          prop = 'rotate';
+        }
+
+        localFeatures.rotate.prop = prop;
+
+      }
+
+      testDiv = null;
+
+      return localFeatures;
+
+    }())
 
   };
 
