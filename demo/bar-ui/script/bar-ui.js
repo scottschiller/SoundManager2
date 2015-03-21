@@ -1330,7 +1330,7 @@
 
     actions = {
 
-      play: function(eventOrOffset) {
+      play: function(offsetOrEvent) {
 
         /**
          * This is an overloaded function that takes mouse/touch events or offset-based item indices.
@@ -1342,13 +1342,13 @@
             href,
             e;
 
-        if (eventOrOffset !== undefined && !isNaN(eventOrOffset)) {
+        if (offsetOrEvent !== undefined && !isNaN(offsetOrEvent)) {
           // smells like a number.
-          return playlistController.playItemByOffset(eventOrOffset);
+          return playlistController.playItemByOffset(offsetOrEvent);
         }
 
         // DRY things a bit
-        e = eventOrOffset;
+        e = offsetOrEvent;
 
         if (e && e.target) {
 
