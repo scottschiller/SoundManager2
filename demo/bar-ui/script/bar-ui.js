@@ -20,6 +20,27 @@
       playerOptions,
       utils;
 
+  /**
+   * Slightly hackish: event callbacks.
+   * Override globally by setting window.sm2BarPlayers.on = {}, or individually by window.sm2BarPlayers[0].on = {} etc.
+   */
+  players.on = {
+    /*
+    play: function(player) {
+      console.log('playing', player);
+    },
+    pause: function(player) {
+      console.log('pause', player);
+    },
+    error: function(player) {
+      console.log('error', player);
+    },
+    stop: function(player) {
+      console.log('stop', player);
+    }
+    */
+  };
+  
   playerOptions = {
     // useful when multiple players are in use, or other SM2 sounds are active etc.
     stopOtherSounds: true,
@@ -89,6 +110,17 @@
         soundManager.stopAll();
       }
 
+    }
+
+    function callback(method) {
+      if (method) {
+        // fire callback, passing current turntable object
+        if (exports.on && exports.on[method]) {
+          exports.on[method](exports);
+        } else if (players.on[method]) {
+          players.on[method](exports);
+        }
+      }
     }
 
     function PlaylistController() {
@@ -440,10 +472,12 @@
 
         onplay: function() {
           utils.css.swap(dom.o, 'paused', 'playing');
+          callback('play');
         },
 
         onpause: function() {
           utils.css.swap(dom.o, 'playing', 'paused');
+          callback('pause');
         },
 
         onresume: function() {
@@ -497,6 +531,8 @@
 
           }
 
+          callback('error');
+
           // load next, possibly with delay.
             
           if (navigator.userAgent.match(/mobile/i)) {
@@ -514,6 +550,7 @@
         onstop: function() {
 
           utils.css.remove(dom.o, 'playing');
+          callback('stop');
 
         },
 
@@ -1166,6 +1203,8 @@
     // TODO: mixin actions -> exports
 
     exports = {
+      // Per-instance events: window.sm2BarPlayers[0].on = { ... } etc. See global players.on example above for reference.
+      on: null,
       actions: actions,
       dom: dom,
       playlistController: playlistController
