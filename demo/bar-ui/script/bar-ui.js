@@ -1,5 +1,5 @@
 ﻿/*jslint plusplus: true, white: true, nomen: true */
-/* global soundManager, document, console, window */
+/*global console, document, navigator, soundManager, window */
 
 (function(window) {
 
@@ -121,6 +121,248 @@
           players.on[method](exports);
         }
       }
+    }
+
+    function getTime(msec, useString) {
+
+      // convert milliseconds to hh:mm:ss, return as object literal or string
+
+      var nSec = Math.floor(msec/1000),
+          hh = Math.floor(nSec/3600),
+          min = Math.floor(nSec/60) - Math.floor(hh * 60),
+          sec = Math.floor(nSec -(hh*3600) -(min*60));
+
+      // if (min === 0 && sec === 0) return null; // return 0:00 as null
+
+      return (useString ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + ( sec < 10 ? '0' + sec : sec ) ) : { 'min': min, 'sec': sec });
+
+    }
+
+    function setTitle(item) {
+
+      // given a link, update the "now playing" UI.
+
+      // if this is an <li> with an inner link, grab and use the text from that.
+      var links = item.getElementsByTagName('a');
+
+      if (links.length) {
+        item = links[0];
+      }
+
+      // remove any failed character sequence, also
+      dom.playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li>' + item.innerHTML.replace(extras.loadFailedCharacter, '') + '</li></ul>';
+
+      if (dom.playlistTarget.getElementsByTagName('li')[0].scrollWidth > dom.playlistTarget.offsetWidth) {
+        // this item can use <marquee>, in fact.
+        dom.playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li><marquee>' + item.innerHTML + '</marquee></li></ul>';
+      }
+
+    }
+
+    function makeSound(url) {
+
+      var sound = soundManager.createSound({
+
+        url: url,
+
+        volume: defaultVolume,
+
+        whileplaying: function() {
+
+          var progressMaxLeft = 100,
+              left,
+              width;
+  
+          left = Math.min(progressMaxLeft, Math.max(0, (progressMaxLeft * (this.position / this.durationEstimate)))) + '%';
+          width = Math.min(100, Math.max(0, (100 * this.position / this.durationEstimate))) + '%';
+  
+          if (this.duration) {
+
+            dom.progress.style.left = left;
+            dom.progressBar.style.width = width;
+              
+            // TODO: only write changes
+            dom.time.innerHTML = getTime(this.position, true);
+
+          }
+
+        },
+
+        onbufferchange: function(isBuffering) {
+
+          if (isBuffering) {
+            utils.css.add(dom.o, 'buffering');
+          } else {
+            utils.css.remove(dom.o, 'buffering');
+          }
+
+        },
+
+        onplay: function() {
+          utils.css.swap(dom.o, 'paused', 'playing');
+          callback('play');
+        },
+
+        onpause: function() {
+          utils.css.swap(dom.o, 'playing', 'paused');
+          callback('pause');
+        },
+
+        onresume: function() {
+          utils.css.swap(dom.o, 'paused', 'playing');
+        },
+
+        whileloading: function() {
+
+          if (!this.isHTML5) {
+            dom.duration.innerHTML = getTime(this.durationEstimate, true);
+          }
+
+        },
+
+        onload: function(ok) {
+
+          if (ok) {
+
+            dom.duration.innerHTML = getTime(this.duration, true);
+
+          } else if (this._iO && this._iO.onerror) {
+
+            this._iO.onerror();
+
+          }
+
+        },
+
+        onerror: function() {
+
+          // sound failed to load.
+          var item, element, html;
+
+          item = playlistController.getItem();
+
+          if (item) {
+
+            // note error, delay 2 seconds and advance?
+            // playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li>' + item.innerHTML + '</li></ul>';
+
+            if (extras.loadFailedCharacter) {
+              dom.playlistTarget.innerHTML = dom.playlistTarget.innerHTML.replace('<li>' ,'<li>' + extras.loadFailedCharacter + ' ');
+              if (playlistController.data.playlist && playlistController.data.playlist[playlistController.data.selectedIndex]) {
+                element = playlistController.data.playlist[playlistController.data.selectedIndex].getElementsByTagName('a')[0];
+                html = element.innerHTML;
+                if (html.indexOf(extras.loadFailedCharacter) === -1) {
+                  element.innerHTML = extras.loadFailedCharacter + ' ' + html;
+                }
+              }
+            }
+
+          }
+
+          callback('error');
+
+          // load next, possibly with delay.
+            
+          if (navigator.userAgent.match(/mobile/i)) {
+            // mobile will likely block the next play() call if there is a setTimeout() - so don't use one here.
+            actions.next();
+          } else {
+            if (playlistController.data.timer) {
+              window.clearTimeout(playlistController.data.timer);
+            }
+            playlistController.data.timer = window.setTimeout(actions.next, 2000);
+          }
+
+        },
+
+        onstop: function() {
+
+          utils.css.remove(dom.o, 'playing');
+          callback('stop');
+
+        },
+
+        onfinish: function() {
+
+          var lastIndex, item;
+
+          utils.css.remove(dom.o, 'playing');
+
+          dom.progress.style.left = '0%';
+
+          lastIndex = playlistController.data.selectedIndex;
+
+          // next track?
+          item = playlistController.getNext();
+
+          // don't play the same item over and over again, if at end of playlist etc.
+          if (item && playlistController.data.selectedIndex !== lastIndex) {
+
+            playlistController.select(item);
+
+            setTitle(item);
+
+            stopOtherSounds();
+
+            // play next
+            this.play({
+              url: playlistController.getURL()
+            });
+
+          }/* else {
+
+            // explicitly stop?
+            // this.stop();
+
+          }*/
+
+        }
+
+      });
+
+      return sound;
+
+    }
+
+    function playLink(link) {
+
+      // if a link is OK, play it.
+
+      if (soundManager.canPlayURL(link.href)) {
+
+        // if there's a timer due to failure to play one track, cancel it.
+        // catches case when user may use previous/next after an error.
+        if (playlistController.data.timer) {
+          window.clearTimeout(playlistController.data.timer);
+          playlistController.data.timer = null;
+        }
+
+        if (!soundObject) {
+          soundObject = makeSound(link.href);
+        }
+
+        // required to reset pause/play state on iOS so whileplaying() works? odd.
+        soundObject.stop();
+
+        playlistController.select(link.parentNode);
+
+        // TODO: ancestor('li')
+        setTitle(link.parentNode);
+
+        // reset the UI
+        // TODO: function that also resets/hides timing info.
+        dom.progress.style.left = '0px';
+        dom.progressBar.style.width = '0px';
+
+        stopOtherSounds();
+
+        soundObject.play({
+          url: link.href,
+          position: 0
+        });
+
+      }
+
     }
 
     function PlaylistController() {
@@ -395,207 +637,6 @@
 
     }
 
-    function getTime(msec, useString) {
-
-      // convert milliseconds to hh:mm:ss, return as object literal or string
-
-      var nSec = Math.floor(msec/1000),
-          hh = Math.floor(nSec/3600),
-          min = Math.floor(nSec/60) - Math.floor(hh * 60),
-          sec = Math.floor(nSec -(hh*3600) -(min*60));
-
-      // if (min === 0 && sec === 0) return null; // return 0:00 as null
-
-      return (useString ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + ( sec < 10 ? '0' + sec : sec ) ) : { 'min': min, 'sec': sec });
-
-    }
-
-    function setTitle(item) {
-
-      // given a link, update the "now playing" UI.
-
-      // if this is an <li> with an inner link, grab and use the text from that.
-      var links = item.getElementsByTagName('a');
-
-      if (links.length) {
-        item = links[0];
-      }
-
-      // remove any failed character sequence, also
-      dom.playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li>' + item.innerHTML.replace(extras.loadFailedCharacter, '') + '</li></ul>';
-
-      if (dom.playlistTarget.getElementsByTagName('li')[0].scrollWidth > dom.playlistTarget.offsetWidth) {
-        // this item can use <marquee>, in fact.
-        dom.playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li><marquee>' + item.innerHTML + '</marquee></li></ul>';
-      }
-
-    }
-
-    function makeSound(url) {
-
-      var sound = soundManager.createSound({
-
-        url: url,
-
-        volume: defaultVolume,
-
-        whileplaying: function() {
-
-          var progressMaxLeft = 100,
-              left,
-              width;
-  
-          left = Math.min(progressMaxLeft, Math.max(0, (progressMaxLeft * (this.position / this.durationEstimate)))) + '%';
-          width = Math.min(100, Math.max(0, (100 * this.position / this.durationEstimate))) + '%';
-  
-          if (this.duration) {
-
-            dom.progress.style.left = left;
-            dom.progressBar.style.width = width;
-              
-            // TODO: only write changes
-            dom.time.innerHTML = getTime(this.position, true);
-
-          }
-
-        },
-
-        onbufferchange: function(isBuffering) {
-
-          if (isBuffering) {
-            utils.css.add(dom.o, 'buffering');
-          } else {
-            utils.css.remove(dom.o, 'buffering');
-          }
-
-        },
-
-        onplay: function() {
-          utils.css.swap(dom.o, 'paused', 'playing');
-          callback('play');
-        },
-
-        onpause: function() {
-          utils.css.swap(dom.o, 'playing', 'paused');
-          callback('pause');
-        },
-
-        onresume: function() {
-          utils.css.swap(dom.o, 'paused', 'playing');
-        },
-
-        whileloading: function() {
-
-          if (!this.isHTML5) {
-            dom.duration.innerHTML = getTime(this.durationEstimate, true);
-          }
-
-        },
-
-        onload: function(ok) {
-
-          if (ok) {
-
-            dom.duration.innerHTML = getTime(this.duration, true);
-
-          } else if (this._iO && this._iO.onerror) {
-
-            this._iO.onerror();
-
-          }
-
-        },
-
-        onerror: function() {
-
-          // sound failed to load.
-          var item, element, html;
-
-          item = playlistController.getItem();
-
-          if (item) {
-
-            // note error, delay 2 seconds and advance?
-            // playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li>' + item.innerHTML + '</li></ul>';
-
-            if (extras.loadFailedCharacter) {
-              dom.playlistTarget.innerHTML = dom.playlistTarget.innerHTML.replace('<li>' ,'<li>' + extras.loadFailedCharacter + ' ');
-              if (playlistController.data.playlist && playlistController.data.playlist[playlistController.data.selectedIndex]) {
-                element = playlistController.data.playlist[playlistController.data.selectedIndex].getElementsByTagName('a')[0];
-                html = element.innerHTML;
-                if (html.indexOf(extras.loadFailedCharacter) === -1) {
-                  element.innerHTML = extras.loadFailedCharacter + ' ' + html;
-                }
-              }
-            }
-
-          }
-
-          callback('error');
-
-          // load next, possibly with delay.
-            
-          if (navigator.userAgent.match(/mobile/i)) {
-            // mobile will likely block the next play() call if there is a setTimeout() - so don't use one here.
-            actions.next();
-          } else {
-            if (playlistController.data.timer) {
-              window.clearTimeout(playlistController.data.timer);
-            }
-            playlistController.data.timer = window.setTimeout(actions.next, 2000);
-          }
-
-        },
-
-        onstop: function() {
-
-          utils.css.remove(dom.o, 'playing');
-          callback('stop');
-
-        },
-
-        onfinish: function() {
-
-          var lastIndex, item;
-
-          utils.css.remove(dom.o, 'playing');
-
-          dom.progress.style.left = '0%';
-
-          lastIndex = playlistController.data.selectedIndex;
-
-          // next track?
-          item = playlistController.getNext();
-
-          // don't play the same item over and over again, if at end of playlist etc.
-          if (item && playlistController.data.selectedIndex !== lastIndex) {
-
-            playlistController.select(item);
-
-            setTitle(item);
-
-            stopOtherSounds();
-
-            // play next
-            this.play({
-              url: playlistController.getURL()
-            });
-
-          }/* else {
-
-            // explicitly stop?
-            // this.stop();
-
-          }*/
-
-        }
-
-      });
-
-      return sound;
-
-    }
-
     function isRightClick(e) {
 
       // only pay attention to left clicks. old IE differs where there's no e.which, but e.button is 1 on left click.
@@ -662,47 +703,6 @@
 
         // and apply right away
         return actions.adjustVolume(e);
-
-      }
-
-    }
-
-    function playLink(link) {
-
-      // if a link is OK, play it.
-
-      if (soundManager.canPlayURL(link.href)) {
-
-        // if there's a timer due to failure to play one track, cancel it.
-        // catches case when user may use previous/next after an error.
-        if (playlistController.data.timer) {
-          window.clearTimeout(playlistController.data.timer);
-          playlistController.data.timer = null;
-        }
-
-        if (!soundObject) {
-          soundObject = makeSound(link.href);
-        }
-
-        // required to reset pause/play state on iOS so whileplaying() works? odd.
-        soundObject.stop();
-
-        playlistController.select(link.parentNode);
-
-        // TODO: ancestor('li')
-        setTitle(link.parentNode);
-
-        // reset the UI
-        // TODO: function that also resets/hides timing info.
-        dom.progress.style.left = '0px';
-        dom.progressBar.style.width = '0px';
-
-        stopOtherSounds();
-
-        soundObject.play({
-          url: link.href,
-          position: 0
-        });
 
       }
 
@@ -1108,11 +1108,11 @@
           return false;
         }
 
-        if (e.clientX === undefined) {
+        if (!e || e.clientX === undefined) {
           // called directly or with a non-mouseEvent object, etc.
           // proxy to the proper method.
-          if (arguments[0] !== undefined && window.console && window.console.warn) {
-            console.warn('Bar UI: call setVolume(' + arguments[0] + ') instead of adjustVolume(' + arguments[0] + ').');
+          if (arguments.length && window.console && window.console.warn) {
+            console.warn('Bar UI: call setVolume(' + e + ') instead of adjustVolume(' + e + ').');
           }
           return actions.setVolume.apply(this, arguments);
         }
@@ -1157,7 +1157,6 @@
         var backgroundSize,
             backgroundMargin,
             backgroundOffset,
-            pixelMargin,
             target,
             from,
             to;
@@ -1329,7 +1328,7 @@
 
     dom: (function() {
 
-      function getAll(/* parentNode, selector */) {
+      function getAll(param1, param2) {
 
         var node,
             selector,
@@ -1339,13 +1338,14 @@
 
           // .selector case
           node = document.documentElement;
-          selector = arguments[0];
+          // first param is actually the selector
+          selector = param1;
 
         } else {
 
           // node, .selector
-          node = arguments[0];
-          selector = arguments[1];
+          node = param1;
+          selector = param2;
 
         }
 
