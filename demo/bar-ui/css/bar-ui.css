@@ -1,4 +1,12 @@
-﻿.sm2-bar-ui {
+﻿/**
+ * SoundManager 2: "Bar UI" player - CSS
+ * Copyright (c) 2014, Scott Schiller. All rights reserved.
+ * http://www.schillmania.com/projects/soundmanager2/
+ * Code provided under BSD license.
+ * http://schillmania.com/projects/soundmanager2/license.txt
+ */
+
+.sm2-bar-ui {
  position: relative;
  display: inline-block;
  width: 100%;
@@ -10,8 +18,6 @@
  /* because indeed, fonts do look pretty "fat" otherwise in this case. */
  -moz-osx-font-smoothing: grayscale;
  -webkit-font-smoothing: antialiased;
- /* http://files.christophzillgens.com/webkit-font-smoothing.html */
- /* font-smoothing: subpixel-antialiased; */
  /* general font niceness? */
  font-smoothing: antialiased;
  text-rendering: optimizeLegibility;
