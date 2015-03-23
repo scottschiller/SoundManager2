@@ -5,7 +5,7 @@
 
   /**
    * SoundManager 2: "Bar UI" player
-   * Copyright (c) 2007, Scott Schiller. All rights reserved.
+   * Copyright (c) 2014, Scott Schiller. All rights reserved.
    * http://www.schillmania.com/projects/soundmanager2/
    * Code provided under BSD license.
    * http://schillmania.com/projects/soundmanager2/license.txt
