@@ -29,6 +29,7 @@
 <!-- IE CSS font hax -->
 <!--[if lte IE 8]>
 <style>
+ #tidal { display: none; /* this uses SVG, so, meh. */ }
  h2.special {
   /* IE 6-8 font reset, doesn't like sort-of-defined @font-family */
   font-family:"helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
@@ -320,7 +321,7 @@
 					</div>
 
 					<div class="demo-more" style="margin-top:-45px">
-						Featured demo: <a href="demo/bar-ui/" title="Demo" class="cta dark-cta">Bar UI <span>&raquo;</span></a>
+						Featured demo: <a href="demo/bar-ui/" title="Bar UI: Demo" class="cta dark-cta">Bar UI <span>&raquo;</span></a>
 					</div>
 
 				</div>
@@ -582,7 +583,7 @@
 							</div>
 
 							<div class="demo-more">
-								<a href="demo/bar-ui/" title="Demo" class="cta">Bar UI <span>&raquo;</span></a>
+								<a href="demo/bar-ui/" title="Bar UI: Demo" class="cta">Bar UI <span>&raquo;</span></a>
 							</div>
 
 							<!-- 360 player -->
@@ -622,6 +623,88 @@
 
 							<h3>Experimental</h3>
 							<h4>Advanced <b>prototypes</b></h4>
+
+							<div style="clear:both;position:relative;text-align:center;margin-top:-7.5%">
+
+							    <!-- note: inline-block is just for centering -->
+
+							    <div id="turntable-large" class="turntable has-slipmat" style="display:inline-block">
+
+							       <div class="frame"></div>
+
+							       <div class="table-bg"></div>
+
+							       <!-- image that sets the base dimensions-->
+							       <img src="demo/turntable/image/tt_case_and_lighting.png" alt="" class="stub" />
+
+							       <div class="bd">
+
+							        <div class="platter"></div>
+							        
+							        <div class="slipmat-holder">
+							         <div class="slipmat"></div>
+							        </div>
+
+							        <div class="record-holder">
+							         <div class="record"></div>
+							         <div class="record-grooves"></div>
+							         <div class="label"></div>
+							        </div>
+
+							        <div class="spindle"></div>
+							        <div class="power-light"></div>
+							        <a href="#" class="power-dial" data-method="powerToggle"></a>
+							        <a href="#" class="button start-stop" data-method="toggle"></a>
+							        <a href="#" class="button speed-33 on"></a>
+							        <a href="#" class="button speed-45"></a>
+							        <div class="light light-on"></div>
+							        <a href="#" class="button light"></a>
+							        <div class="tonearm-holder">
+							         <div class="tonearm"></div>
+							        </div>
+							       </div>
+
+							    </div>
+
+							</div>
+
+							<div class="demo-more" style="position:relative;z-index:2;margin-right:7%;margin-top:-5.25%">
+								<a href="demo/turntable/" title="Turntable UI Demo" class="cta dark-cta">Turntable UI <span>&raquo;</span></a>
+							</div>
+
+							<!-- end turntable -->
+
+							<ul class="tt-playlist">
+								<li>
+									<a href="http://freshly-ground.com/data/audio/sm2/Beckyoncé%20-%20Single%20Loser.mp3" data-turntable="turntable-large" data-artwork="http://freshly-ground.com/data/image/sm2/beckyonce.jpg" class="norewrite exclude button-exclude inline-exclude sm2-exclude cta turntable-include">Beckyoncé - Single Loser (Put A Beck On It)</a> (<a href="https://soundcloud.com/beckyonce/single-loser-put-a-beck-on-it" target="_blank" class="cta">via</a>)
+								</li>
+								<li>
+									<a href="http://freshly-ground.com/data/audio/sm2/Chill With Schill (Summer 2012 Session Excerpt).mp3" data-turntable="turntable-large" class="norewrite exclude button-exclude inline-exclude sm2-exclude cta turntable-include">Chill With Schill (Summer 2012 Session Excerpt)</a>
+								</li>
+								<li>
+									<a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" data-turntable="turntable-large" data-artwork="http://freshly-ground.com/data/image/sm2/sonreal-onelongday-65.jpg" class="norewrite exclude button-exclude inline-exclude cta turntable-include">SonReal - L.A. (Prod. Injetti)</a>
+								</li>
+							</ul>
+
+							<style>
+								/* quick hack for playlist above */
+								ul.tt-playlist {
+									position: relative;
+									color: #999;
+									padding-left: 2.75em;
+									font-size: 92%;
+								}
+								ul.tt-playlist li {
+									margin: 0px;
+									padding: 0px;
+								}
+								/*
+								.turntable .frame {
+									background: url(demo/turntable/image/pinstriped_suit_vertical.png);
+									background-size: 142px 76px;
+								}
+								*/
+							</style>
 
 							<p>The Cassette Tape UI is a skinnable player based on the TDK MA-R90 cassette tape, a classic design from 1982.</p>
 
@@ -765,6 +848,9 @@ mySound.play();
 
 								<ul class="inthewild">
 									<li>
+										<a id="tidal" href="http://tidal.com/" title="TIDAL (web player, non-FLAC streaming)"><span>TIDAL</span></a>
+									</li>
+									<li>
 										<a id="beats-music" href="http://beatsmusic.com/" title="Beats Music (web player)"><span>Beats Music</span></a>
 									</li>
 									<li>
@@ -798,7 +884,7 @@ mySound.play();
 										<a id="freesound" href="http://freesound.org" title="Freesound.org"><span>freesound.org</span></a>
 									</li>
 									<li>
-										<a id="baroque-me" href="http://baroque.me/" title="Alexander Chen's &quot;baroque.me&quot;"><span>baroque.me</span></a>
+										<a id="baroque-me" href="http://www.chenalexander.com/Bach" title="Alexander Chen's &quot;baroque.me&quot;"><span>Baroque</span></a>
 									</li>
 								</ul>
 
