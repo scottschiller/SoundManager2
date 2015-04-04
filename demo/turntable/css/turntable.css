@@ -102,9 +102,9 @@
 .turntable.power-on.motor-on .record-grooves,
 .turntable.power-on.motor-on.has-artwork .record,
 .turntable.power-on.motor-on .slipmat {
- -webkit-transition-property: all;
+ -webkit-transition-property: -webkit-transform;
  -webkit-transform-origin: 50% 50%;
- transition-property: all;
+ transition-property: transform;
  transform-origin: 50% 50%;
  -webkit-animation: spin 2.33s linear infinite;
  animation: spin 2.33s linear infinite;
