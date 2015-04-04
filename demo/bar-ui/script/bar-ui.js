@@ -74,7 +74,7 @@
 
   Player = function(playerNode) {
 
-    var css, dom, extras, playlistController, soundObject, actions, actionData, defaultItem, defaultVolume, exports;
+    var css, dom, extras, playlistController, soundObject, actions, actionData, defaultItem, defaultVolume, firstOpen, exports;
 
     css = {
       disabled: 'disabled',
@@ -617,7 +617,10 @@
 
         // animate playlist open, if HTML classname indicates so.
         if (utils.css.has(dom.o, css.playlistOpen)) {
-          actions.menu(true);
+          // hackish: run this after API has returned
+          window.setTimeout(function() {
+            actions.menu(true);
+          }, 1);
         }
 
       }
@@ -1068,6 +1071,12 @@
         var isOpen;
 
         isOpen = utils.css.has(dom.o, css.playlistOpen);
+
+        // hackish: reset scrollTop in default first open case. odd, but some browsers have a non-zero scroll offset the first time the playlist opens.
+        if (playlistController && !playlistController.data.selectedIndex && !firstOpen) {
+          dom.playlist.scrollTop = 0;
+          firstOpen = true;
+        }
 
         // sniff out booleans from mouse events, as this is referenced directly by event handlers.
         if (typeof ignoreToggle !== 'boolean' || !ignoreToggle) {
