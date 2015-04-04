@@ -177,10 +177,10 @@
   }
 
   events = {
-  	
-  	mouse: {
 
-	  	click: function(e) {
+    mouse: {
+
+      click: function(e) {
         
         // look for and play links to sounds.
 
@@ -188,9 +188,9 @@
             ttID,
             turntable;
 
-	  		target = findTheDamnLink(e.target);
+        target = findTheDamnLink(e.target);
 
-	  		if (canPlayLink(target)) {
+        if (canPlayLink(target)) {
 
           // should this play on a particular turntable? (by HTML ID)
           ttID = target.getAttribute('data-turntable');
@@ -201,31 +201,31 @@
           // track this link for later.
           state.lastLink = target;
 
-	  			playSound(turntable, target.href);
+          playSound(turntable, target.href);
 
           // artwork URL?
           turntable.methods.setArtwork(target.getAttribute('data-artwork') || '');
 
-	  			return utils.events.preventDefault(e);
+          return utils.events.preventDefault(e);
 
-	  		}
+        }
 
-	  	}
+      }
 
-	  },
-  	
-  	sound: {
+    },
+    
+    sound: {
   
-  		whileplaying: function() {
+      whileplaying: function() {
 
-  			var progress = (this.position / this.durationEstimate);
+        var progress = (this.position / this.durationEstimate);
 
-  			if (progress >= 0 && this._turntable) {
-  				// base "tonearm over record" angle, plus additional angle to move across the record.
+        if (progress >= 0 && this._turntable) {
+          // base "tonearm over record" angle, plus additional angle to move across the record.
           this._turntable.methods.setTonearmAngle(config.turntable.tonearm.angleToRecord + (config.turntable.tonearm.recordAngleSpan * progress));
-  			}
+        }
 
-  		},
+      },
   
       error: function() {
 
@@ -238,14 +238,14 @@
 
       },
 
-  		finish: function() {
+      finish: function() {
 
         var nextLink;
 
         state.finished = true;
 
-  			if (config.playNext) {
-  				
+        if (config.playNext) {
+          
           nextLink = findNextLink(state.lastLink);
 
           // click handler again
@@ -255,7 +255,7 @@
             });
           }
 
-  			}
+        }
 
         // nothing else to play?
         if (!nextLink && this._turntable) {
@@ -274,16 +274,16 @@
           
           } else {
 
-  			    // no more to do?
-  			    this._turntable.methods.stop();
+            // no more to do?
+            this._turntable.methods.stop();
 
           }
 
         }
 
-  		}
+      }
   
-  	}
+    }
   
   };
 
@@ -312,14 +312,14 @@
     }
 
     // first play?
-  	if (!sound) {
+    if (!sound) {
 
-  		sound = soundManager.createSound({
+      sound = soundManager.createSound({
         id: tt.id,
-  			url: url
-  		});
+        url: url
+      });
 
-  	} else {
+    } else {
 
       // loading a new URL?
       if (sound.url !== url) {
@@ -334,7 +334,7 @@
     // TODO: handle one sound object per table.
     sound._turntable = turntable;
 
-  	config.soundOptions.url = url;
+    config.soundOptions.url = url;
 
     // stop any previous record noise
     if (state.endOfRecordNoise) {
@@ -347,9 +347,9 @@
       sound.play(config.soundOptions);
     }
 
-  	// start the turntable, add a slipmat and record if there isn't one already.
-  	tt.methods.addSlipmat();
-  	tt.methods.addRecord();
+    // start the turntable, add a slipmat and record if there isn't one already.
+    tt.methods.addSlipmat();
+    tt.methods.addRecord();
 
     if (!load_only) {
 
@@ -423,8 +423,8 @@
     // local references
     utils = turntables.utils;
 
-  	// watch clicks, load and play MP3s etc. on the turntable UI.
-  	utils.events.add(document, 'click', events.mouse.click);
+    // watch clicks, load and play MP3s etc. on the turntable UI.
+    utils.events.add(document, 'click', events.mouse.click);
 
   }
 
