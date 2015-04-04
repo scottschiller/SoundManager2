@@ -374,12 +374,12 @@
         // list of nodes?
         playlist: [],
 
+        // NOTE: not implemented yet.
         // shuffledIndex: [],
+        // shuffleMode: false,
 
         // selection
         selectedIndex: 0,
-
-        // shuffleMode: false,
 
         loopMode: false,
 
