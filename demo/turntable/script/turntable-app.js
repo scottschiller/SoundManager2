@@ -1,5 +1,5 @@
-/*jslint plusplus: true, white: true, nomen: true */
-/* global soundManager, document, console, window */
+/*jslint vars: true, plusplus: true, white: true, nomen: true */
+/*global soundManager, console, document, navigator, turntables, turntablesById, window */
 
 (function(window) {
 
@@ -21,6 +21,7 @@
   var state;
   var isMonophonic;
   var localMethods;
+  var playSound;
 
   // Default behaviours.
   config = {
@@ -287,18 +288,7 @@
   
   };
 
-  // will be mixed into global turntable API. runs within scope of turntable instance.
-  localMethods = {
-      // convenience method for scripting, i.e., if you want to load a sound (and optionally, with associated artwork URL), without playing it.
-      load: function(soundURL, artworkURL) {
-        playSound(this, soundURL, true);
-        if (artworkURL) {
-          this.methods.setArtwork(artworkURL);
-        }
-      }
-  };
-
-  function playSound(turntable, url, load_only) {
+  playSound = function(turntable, url, load_only) {
 
     var tt,
         sound;
@@ -360,7 +350,7 @@
 
     }
 
-  }
+  };
 
   function applyDefaults() {
 
@@ -391,7 +381,7 @@
 
     turntables.on.start = function(tt) {
       soundManager.play(tt.id, config.soundOptions);
-    }
+    };
 
     turntables.on.stop = function(tt) {
       soundManager.pause(tt.id);
@@ -411,6 +401,17 @@
     turntables.config = config;
 
   }
+
+  // will be mixed into global turntable API. runs within scope of turntable instance.
+  localMethods = {
+      // convenience method for scripting, i.e., if you want to load a sound (and optionally, with associated artwork URL), without playing it.
+      load: function(soundURL, artworkURL) {
+        playSound(this, soundURL, true);
+        if (artworkURL) {
+          this.methods.setArtwork(artworkURL);
+        }
+      }
+  };
 
   function init() {
 
