@@ -606,6 +606,12 @@ function startStuff() {
   fixLinks();
   getLiveData();
   doAltShortcuts();
+  soundManager.onready(function() {
+    if (window.turntables) {
+      // require this for links to play on the turntable UI demo.
+      turntables.config.requireCSS = 'turntable-include';
+    }
+  });
 }
 
 if (document.addEventListener) {
