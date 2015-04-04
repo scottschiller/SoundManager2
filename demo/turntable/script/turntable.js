@@ -173,7 +173,11 @@
         if (!isNaN(angle)) {
           data.tonearm.angle = Math.max(data.tonearm.minAngle, Math.min(data.tonearm.maxAngle, angle));
           if (utils.features.transform.prop) {
-            utils.features.getAnimationFrame ? utils.features.getAnimationFrame(applyTonearmAngle) : applyTonearmAngle();
+            if (utils.features.getAnimationFrame) {
+              utils.features.getAnimationFrame(applyTonearmAngle);
+            } else {
+              applyTonearmAngle();
+            }
           }
         }
       },
