@@ -280,6 +280,12 @@
 
         },
 
+        onstop: function() {
+
+          utils.css.remove(dom.o, 'playing');
+
+        },
+
         onfinish: function() {
 
           var lastIndex, item;
