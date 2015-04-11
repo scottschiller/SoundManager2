@@ -29,18 +29,23 @@
     play: function(player) {
       console.log('playing', player);
     },
+    finish: function(player) {
+      // each sound
+      console.log('finish', player);
+    },
     pause: function(player) {
       console.log('pause', player);
     },
     error: function(player) {
       console.log('error', player);
-    },
-    stop: function(player) {
-      console.log('stop', player);
+    }
+    end: function(player) {
+      // end of playlist
+      console.log('end', player);
     }
     */
   };
-  
+
   playerOptions = {
     // useful when multiple players are in use, or other SM2 sounds are active etc.
     stopOtherSounds: true,
@@ -275,13 +280,6 @@
 
         },
 
-        onstop: function() {
-
-          utils.css.remove(dom.o, 'playing');
-          callback('stop');
-
-        },
-
         onfinish: function() {
 
           var lastIndex, item;
@@ -291,6 +289,8 @@
           dom.progress.style.left = '0%';
 
           lastIndex = playlistController.data.selectedIndex;
+
+          callback('finish');
 
           // next track?
           item = playlistController.getNext();
@@ -309,12 +309,16 @@
               url: playlistController.getURL()
             });
 
-          }/* else {
+          } else {
+
+            // end of playlist case
 
             // explicitly stop?
             // this.stop();
 
-          }*/
+            callback('end');
+
+          }
 
         }
 
