@@ -29,6 +29,10 @@
 <!-- IE CSS font hax -->
 <!--[if lte IE 8]>
 <style>
+ #turntable-demo {
+  /* nope. */
+  display: none;
+ }
  #tidal-link { display: none; /* this uses SVG, so, meh. */ }
  h2.special {
   /* IE 6-8 font reset, doesn't like sort-of-defined @font-family */
@@ -625,7 +629,9 @@
 							<h3>Experimental</h3>
 							<h4>Advanced <b>prototypes</b></h4>
 
-							<div style="clear:both;position:relative;text-align:center;margin-top:-7.5%">
+                            <div id="turntable-demo">
+
+							  <div style="clear:both;position:relative;text-align:center;margin-top:-7.5%">
 
 							    <!-- note: inline-block is just for centering -->
 
@@ -667,15 +673,15 @@
 
 							    </div>
 
-							</div>
+							  </div>
 
-							<div class="demo-more" style="position:relative;z-index:2;margin-right:7%;margin-top:-5.25%">
+							  <div class="demo-more" style="position:relative;z-index:2;margin-right:7%;margin-top:-5.25%">
 								<a href="demo/turntable/" title="Turntable UI Demo" class="cta dark-cta">Turntable UI <span>&raquo;</span></a>
-							</div>
+							  </div>
 
-							<!-- end turntable -->
+							  <!-- end turntable -->
 
-							<ul class="tt-playlist">
+							  <ul class="tt-playlist">
 								<li>
 									<a href="http://freshly-ground.com/data/audio/sm2/Beckyoncé%20-%20Single%20Loser.mp3" data-turntable="turntable-large" data-artwork="http://freshly-ground.com/data/image/sm2/beckyonce.jpg" class="norewrite exclude button-exclude inline-exclude sm2-exclude cta turntable-include">Beckyoncé - Single Loser (Put A Beck On It)</a> (<a href="https://soundcloud.com/beckyonce/single-loser-put-a-beck-on-it" target="_blank" class="cta">via</a>)
 								</li>
@@ -685,7 +691,9 @@
 								<li>
 									<a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" data-turntable="turntable-large" data-artwork="http://freshly-ground.com/data/image/sm2/sonreal-onelongday-65.jpg" class="norewrite exclude button-exclude inline-exclude cta turntable-include">SonReal - L.A. (Prod. Injetti)</a>
 								</li>
-							</ul>
+							  </ul>
+
+							</div>
 
 							<style>
 								/* quick hack for playlist above */
