@@ -492,9 +492,11 @@ function SoundManager(smURL, smID) {
     if (html5OK(options)) {
 
       oSound = make();
+      // <d>
       if (!sm2.html5Only) {
         sm2._wD(options.id + ': Using HTML5');
       }
+      // </d>
       oSound._setup_html5(options);
 
     } else {
