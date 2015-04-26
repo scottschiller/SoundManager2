@@ -393,8 +393,10 @@
     // tack on localMethods to turntable object
     // TODO: use proper mixin
     // note use of Function.bind (IE 9, Chrome 7, Firefox 4, Opera 11.60, Safari 5.1.4) to correct scope ('this') within handler.
-    for (i=0, j=turntables.length; i<j; i++) {
-      turntables[i].methods.load = localMethods.load.bind(turntables[i]);
+    if (localMethods.load.bind) {
+      for (i=0, j=turntables.length; i<j; i++) {
+        turntables[i].methods.load = localMethods.load.bind(turntables[i]);
+      }
     }
 
     // a little hackish: global for now
