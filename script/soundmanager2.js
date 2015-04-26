@@ -214,28 +214,23 @@ function SoundManager(smURL, smID) {
   this.filePattern = null;
 
   this.filePatterns = {
-
     'flash8': /\.mp3(\?.*)?$/i,
     'flash9': /\.mp3(\?.*)?$/i
-
   };
 
   // support indicators, set at init
 
   this.features = {
-
     'buffering': false,
     'peakData': false,
     'waveformData': false,
     'eqData': false,
     'movieStar': false
-
   };
 
   // flash sandbox info, used primarily in troubleshooting
 
   this.sandbox = {
-
     // <d>
     'type': null,
     'types': {
@@ -248,7 +243,6 @@ function SoundManager(smURL, smID) {
     'noRemote': null,
     'noLocal': null
     // </d>
-
   };
 
   /**
@@ -277,14 +271,21 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, rebootIntoHTML5, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
-  canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0, didSetup,
-  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i), isWebkit = ua.match(/webkit/i), isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)), isOpera = (ua.match(/opera/i)),
+  canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0, didSetup, msecScale = 1000,
+  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i),
+  isWebkit = ua.match(/webkit/i),
+  isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)),
+  isOpera = (ua.match(/opera/i)),
   mobileHTML5 = (ua.match(/(mobile|pre\/|xoom)/i) || is_iDevice || isAndroid),
   isBadSafari = (!wl.match(/usehtml5audio/i) && !wl.match(/sm2\-ignorebadua/i) && isSafari && !ua.match(/silk/i) && ua.match(/OS X 10_6_([3-7])/i)), // Safari 4 and 5 (excluding Kindle Fire, "Silk") occasionally fail to load/play HTML5 audio on Snow Leopard 10.6.3 through 10.6.7 due to bug(s) in QuickTime X and/or other underlying frameworks. :/ Confirmed bug. https://bugs.webkit.org/show_bug.cgi?id=32159
-  hasConsole = (window.console !== _undefined && console.log !== _undefined), isFocused = (doc.hasFocus !== _undefined?doc.hasFocus():null), tryInitOnFocus = (isSafari && (doc.hasFocus === _undefined || !doc.hasFocus())), okToDisable = !tryInitOnFocus, flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i, msecScale = 1000,
+  hasConsole = (window.console !== _undefined && console.log !== _undefined),
+  isFocused = (doc.hasFocus !== _undefined ? doc.hasFocus() : null),
+  tryInitOnFocus = (isSafari && (doc.hasFocus === _undefined || !doc.hasFocus())),
+  okToDisable = !tryInitOnFocus,
+  flashMIME = /(mp3|mp4|mpa|m4a|m4b)/i,
   emptyURL = 'about:blank', // safe URL to unload, or load nothing from (flash 8 + most HTML5 UAs)
   emptyWAV = 'data:audio/wave;base64,/UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAD//w==', // tiny WAV for HTML5 unloading
-  overHTTP = (doc.location?doc.location.protocol.match(/http/i):null),
+  overHTTP = (doc.location ? doc.location.protocol.match(/http/i) : null),
   http = (!overHTTP ? 'http:/'+'/' : ''),
   // mp3, mp4, aac etc.
   netStreamMimeTypes = /^\s*audio\/(?:x-)?(?:mpeg4|aac|flv|mov|mp4||m4v|m4a|m4b|mp4v|3gp|3g2)\s*(?:$|;)/i,
@@ -298,7 +299,6 @@ function SoundManager(smURL, smID) {
   this.useAltURL = !overHTTP;
 
   swfCSS = {
-
     'swfBox': 'sm2-object-box',
     'swfDefault': 'movieContainer',
     'swfError': 'swf_error', // SWF loaded, but SM2 couldn't start (other error)
@@ -308,7 +308,6 @@ function SoundManager(smURL, smID) {
     'sm2Debug': 'sm2_debug',
     'highPerf': 'high_performance',
     'flashDebug': 'flash_debug'
-
   };
 
   /**
