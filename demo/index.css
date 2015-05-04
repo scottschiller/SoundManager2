@@ -1518,6 +1518,7 @@ div#gsfn_list_widget div#gsfn_content p.gsfn_summary {
 .smaller {
  margin-top: 0px !important;
  margin-bottom: 0.25em !important;
+ line-height: 1.2em !important;
 }
 
 .c2 a,
