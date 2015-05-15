@@ -6245,7 +6245,7 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
    *   })
    * });
    *
-   * SM2_DEFER usage examples:
+   * SM2_DEFER usage:
    * window.SM2_DEFER = true;
    * require(["/path/to/soundmanager2.js"], function(SoundManager) {
    *   SoundManager.getInstance(function() {
@@ -6288,13 +6288,13 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
 
 // standard browser case
 
+// constructor
+window.SoundManager = SoundManager;
+
 /**
  * note: SM2 requires a window global due to Flash, which makes calls to window.soundManager.
  * Flash may not always be needed, but this is not known until async init and SM2 may even "reboot" into Flash mode.
  */
-
-// constructor
-window.SoundManager = SoundManager;
 
 // public API, flash callbacks etc.
 window.soundManager = soundManager;
