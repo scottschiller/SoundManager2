@@ -1,6 +1,6 @@
 {
   "name": "SoundManager2",
-  "version": "2.97",
+  "version": "2.97.20140901",
   "homepage": "https://github.com/scottschiller/SoundManager2",
   "main": "script/soundmanager2.js",
   "ignore": [
