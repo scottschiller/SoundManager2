@@ -5,3 +5,5 @@ make-rollups.sh
 tmp
 .build.properties
 download
+
+*.swp
