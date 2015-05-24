@@ -6228,11 +6228,7 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
 
   /**
    * commonJS module
-   * note: SM2 requires a window global due to Flash, which makes calls to window.soundManager.
-   * flash may not always be needed, but this is not known until async init and SM2 may even "reboot" into Flash mode.
    */
-
-  window.soundManager = soundManager;
 
   module.exports.SoundManager = SoundManager;
   module.exports.soundManager = soundManager;
@@ -6241,33 +6237,66 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
 
   /**
    * AMD - requireJS
-   * example usage:
-   * require(["/path/to/soundmanager2.js"], function(soundManager) {
-   *   soundManager.setup({
+   * basic usage:
+   * require(["/path/to/soundmanager2.js"], function(SoundManager) {
+   *   SoundManager.getInstance().setup({
    *     url: '/swf/',
    *     onready: function() { ... }
    *   })
    * });
+   *
+   * SM2_DEFER usage:
+   * window.SM2_DEFER = true;
+   * require(["/path/to/soundmanager2.js"], function(SoundManager) {
+   *   SoundManager.getInstance(function() {
+   *     var soundManager = new SoundManager.constructor();
+   *     soundManager.setup({
+   *       url: '/swf/',
+   *       ...
+   *     });
+   *     ...
+   *     soundManager.beginDelayedInit();
+   *     return soundManager;
+   *   })
+   * }); 
    */
 
   define(function() {
-    // assign globals
-    window.SoundManager = SoundManager;
-    window.soundManager = soundManager;
-    // ... and return the soundManager instance
-    return soundManager;
+    /**
+     * Retrieve the global instance of SoundManager.
+     * If a global instance does not exist it can be created using a callback.
+     *
+     * @param {Function} smBuilder Optional: Callback used to create a new SoundManager instance
+     * @return {SoundManager} The global SoundManager instance
+     */
+    function getInstance(smBuilder) {
+      if (!window.soundManager && smBuilder instanceof Function) {
+        var instance = smBuilder(SoundManager);
+        if (instance instanceof SoundManager) {
+          window.soundManager = instance;
+        }
+      }
+      return window.soundManager;
+    }
+    return {
+      constructor: SoundManager,
+      getInstance: getInstance
+    }
   });
 
-} else {
-
-  // standard browser case
-
-  // constructor
-  window.SoundManager = SoundManager;
-
-  // public API, flash callbacks etc.
-  window.soundManager = soundManager;
-
 }
+
+// standard browser case
+
+// constructor
+window.SoundManager = SoundManager;
+
+/**
+ * note: SM2 requires a window global due to Flash, which makes calls to window.soundManager.
+ * Flash may not always be needed, but this is not known until async init and SM2 may even "reboot" into Flash mode.
+ */
+
+// public API, flash callbacks etc.
+window.soundManager = soundManager;
 
 }(window));
