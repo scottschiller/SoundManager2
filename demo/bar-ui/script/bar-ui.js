@@ -900,7 +900,9 @@
 
       playlistController.select(defaultItem);
 
-      setTitle(defaultItem);
+      if (defaultItem) {
+        setTitle(defaultItem);
+      }
 
       utils.events.add(dom.o, 'mousedown', handleMouseDown);
 
