@@ -1776,6 +1776,8 @@ ul.inthewild li {
   *float: left;
   *display: inline;
   width: 128px;
+  width: 24%;
+  min-width: 64px;
   height: 64px;
   vertical-align: middle;
   text-align: center;
