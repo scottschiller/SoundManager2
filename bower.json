@@ -7,6 +7,8 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "demo",
+    "doc",
     "test",
     "tests",
     "tasks",
