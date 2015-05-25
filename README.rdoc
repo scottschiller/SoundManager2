@@ -37,6 +37,8 @@ By wrapping and extending HTML5 and Flash Audio APIs, SoundManager 2 brings reli
 
 A few nifty sites that have implemented SM2 for driving audio:
 
+    * Tidal
+    * Beats
     * Songza
     * Earbits
     * freesound.org
@@ -45,7 +47,6 @@ A few nifty sites that have implemented SM2 for driving audio:
     * Discogs
     * The Hype Machine
     * nyan.cat
-    * AudioGalaxy
 
 == Project home, documentation, live demos etc.:
 
