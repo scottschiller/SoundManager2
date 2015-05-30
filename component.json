@@ -1,8 +1,8 @@
 {
 	"name": "soundmanager2",
 	"repo": "scottschiller/soundmanager2",
-	"description": "Using HTML5 and Flash, SoundManager 2 provides reliable cross-platform audio under a single JavaScript API.",
-	"version": "V2.97a.20140901-nodebug-jsmin",
+	"description": "A JavaScript Sound API supporting MP3, MPEG4 and HTML5 audio + RTMP, providing reliable cross-browser/platform audio control in as little as 11 KB.",
+	"version": "V2.97a.20150601-nodebug-jsmin",
 	"keywords": [
 		"audio",
 		"soundmanager2",
