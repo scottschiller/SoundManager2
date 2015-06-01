@@ -356,7 +356,6 @@
 
         playlistController.select(link.parentNode);
 
-        // TODO: ancestor('li')
         setTitle(link.parentNode);
 
         // reset the UI
@@ -533,14 +532,17 @@
             itemBottom,
             containerHeight,
             scrollTop,
-            itemPadding;
+            itemPadding,
+            liElement;
 
         // remove last selected, if any
         resetLastSelected();
 
         if (item) {
 
-          utils.css.add(item, css.selected);
+          liElement = utils.dom.ancestor('li', item);
+
+          utils.css.add(liElement, css.selected);
 
           itemTop = item.offsetTop;
           itemBottom = itemTop + item.offsetHeight;
@@ -1395,7 +1397,31 @@
 
       }
 
+      function ancestor(nodeName, element, checkCurrent) {
+
+        var result;
+
+        if (!element || !nodeName) {
+          return element;
+        }
+
+        nodeName = nodeName.toUpperCase();
+
+        // return if current node matches.
+        if (checkCurrent && element && element.nodeName === nodeName) {
+          return element;
+        }
+
+        while (element && element.nodeName !== nodeName && element.parentNode) {
+          element = element.parentNode;
+        }
+
+        return (element && element.nodeName === nodeName ? element : null);
+
+      }
+
       return {
+        ancestor: ancestor,
         get: get,
         getAll: getAll
       };
