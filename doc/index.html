@@ -416,6 +416,11 @@ soundManager.setup({
 			<span>// msec affecting whileplaying/loading callback frequency. If null, default of 50 msec is used.</span>
 		</li>
 
+        <li>
+            <div>forceUseGlobalHTML5Audio: <em>false</em>,</div>
+            <span>// if true, a single Audio() object is used for all sounds - and only one can play at a time.</span>
+        </li>
+
 		<li>
 			<div>html5PollingInterval: <em>null</em>,</div>
 			<span>// msec affecting whileplaying/loading callback frequency. If null, native HTML5 update events are used.</span>
@@ -436,7 +441,11 @@ soundManager.setup({
 			<span>// if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.</span>
 		</li>
 
-
+        <li>
+            <div>ignoreMobileRestrictions: <em>false</em>,</div>
+            <span>// if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS WebViews purportedly allow multiple Audio() objects, auto-play etc.</span>
+        </li>
+        
 		<li>
 			<div>noSWFCache: <em>false</em>,</div>
 			<span>// if true, appends ?ts={date} to break aggressive SWF caching.</span>
