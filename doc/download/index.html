@@ -140,7 +140,7 @@ soundManager.setup({
 				
 				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20150601.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20150601</a> or see <a href="https://github.com/scottschiller/SoundManager2/" title="SoundManager 2 on GitHub">on GitHub</a>, or <a href="https://www.npmjs.com/package/soundmanager2" title="SoundManager 2 on npm">on npm</a></p>
 
-				<p><b>Performance tip:</b> SM2's code size varies from over 150 KB (commented, debug-enabled) down to 11 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
+				<p><b>Performance tip:</b> SM2's code size varies from over 150 KB (commented, debug-enabled) down to 12 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
 				<p><b>Side reading + video talks, slides etc.</b></p>
 
@@ -186,6 +186,14 @@ soundManager.setup({
 								<p class="compact">Bug fixes</p>
 
 								<ul class="nested compact flat">
+
+									<li>
+
+										<p>
+											At some point (perhaps iOS 7.1?), iOS devices began allowing multiple HTML5 <code>Audio()</code> instances to exist and play simultaneously. By default, SM2 will still apply the singleton pattern via <code>useGlobalHTML5Audio</code> for iOS because playlist-style behaviour may not work without it. If you aren't concerned with playlist-style behaviour and want to use multiple audio instances, see <code>ignoreMobileRestrictions</code>.
+										</p>
+
+									</li>
 
 									<li>
 
