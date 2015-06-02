@@ -157,7 +157,7 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
     <span class="string">'useFlashBlock'</span>: <span class="literal">false</span>,             <span class="comment">// *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.</span>
     <span class="string">'useHTML5Audio'</span>: <span class="literal">true</span>,              <span class="comment">// use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (MP3/MP4 support varies.) Ideally, transparent vs. Flash API where possible.</span>
     <span class="string">'forceUseGlobalHTML5Audio'</span>: <span class="literal">false</span>,  <span class="comment">// if true, a single Audio() object is used for all sounds - and only one can play at a time.</span>
-    <span class="string">'ignoreMobileRestrictions'</span>: <span class="literal">false</span>,  <span class="comment">// if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS WebViews purportedly allow multiple Audio() objects, auto-play etc.</span>
+    <span class="string">'ignoreMobileRestrictions'</span>: <span class="literal">false</span>,  <span class="comment">// if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS &gt; 7 and WebViews may allow multiple Audio() instances.</span>
     <span class="string">'html5Test'</span>: <span class="regexp">/^(probably|maybe)$/i</span>, <span class="comment">// HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.</span>
     <span class="string">'preferFlash'</span>: <span class="literal">false</span>,               <span class="comment">// overrides useHTML5audio, will use Flash for MP3/MP4/AAC if present. Potential option if HTML5 playback with these formats is quirky.</span>
     <span class="string">'noSWFCache'</span>: <span class="literal">false</span>,                <span class="comment">// if true, appends ?ts={date} to break aggressive SWF caching.</span>
@@ -609,7 +609,11 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
             </div>
             
             <div class="content"><div class='highlight'><pre>
-    assign(options);</pre></div></div>
+    assign(options);
+
+    <span class="keyword">if</span> (!useGlobalHTML5Audio) {
+
+      <span class="keyword">if</span> (mobileHTML5) {</pre></div></div>
             
         </li>
         
@@ -620,14 +624,16 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
-              <p>force the singleton HTML5 pattern?</p>
+              <p>force the singleton HTML5 pattern on mobile, by default.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (sm2.setupOptions.useHTML5Audio &amp;&amp; !useGlobalHTML5Audio &amp;&amp; sm2.setupOptions.forceUseGlobalHTML5Audio) {
-      messages.push(strings.globalHTML5);
-      useGlobalHTML5Audio = <span class="literal">true</span>;
-    }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (!sm2.setupOptions.ignoreMobileRestrictions || sm2.setupOptions.forceUseGlobalHTML5Audio) {
+          messages.push(strings.globalHTML5);
+          useGlobalHTML5Audio = <span class="literal">true</span>;
+        }
+
+      } <span class="keyword">else</span> {</pre></div></div>
             
         </li>
         
@@ -638,15 +644,26 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
-              <p>don&#39;t apply </p>
+              <p>only apply singleton HTML5 on desktop if forced.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (!didSetup &amp;&amp; mobileHTML5) {
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (sm2.setupOptions.forceUseGlobalHTML5Audio) {
+          messages.push(strings.globalHTML5);
+          useGlobalHTML5Audio = <span class="literal">true</span>;
+        }
+
+      }
+
+    }
+
+    <span class="keyword">if</span> (!didSetup &amp;&amp; mobileHTML5) {
 
       <span class="keyword">if</span> (sm2.setupOptions.ignoreMobileRestrictions) {
+        
         messages.push(strings.ignoreMobile);
-      }</pre></div></div>
+      
+      } <span class="keyword">else</span> {</pre></div></div>
             
         </li>
         
@@ -674,7 +691,7 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (!sm2.setupOptions.useHTML5Audio || sm2.setupOptions.preferFlash) {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (!sm2.setupOptions.useHTML5Audio || sm2.setupOptions.preferFlash) {</pre></div></div>
             
         </li>
         
@@ -689,8 +706,8 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        sm2._wD(strings.mobileUA);
-      }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>          sm2._wD(strings.mobileUA);
+        }</pre></div></div>
             
         </li>
         
@@ -706,10 +723,10 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
             </div>
             
             <div class="content"><div class='highlight'><pre>
-      sm2.setupOptions.useHTML5Audio = <span class="literal">true</span>;
-      sm2.setupOptions.preferFlash = <span class="literal">false</span>;
+        sm2.setupOptions.useHTML5Audio = <span class="literal">true</span>;
+        sm2.setupOptions.preferFlash = <span class="literal">false</span>;
 
-      <span class="keyword">if</span> ((isAndroid &amp;&amp; !ua.match(<span class="regexp">/android\s2\.3/i</span>))) {</pre></div></div>
+        <span class="keyword">if</span> (is_iDevice) {</pre></div></div>
             
         </li>
         
@@ -720,10 +737,19 @@ Additionally, if a browser somehow manages to fail this test, as Egon said: &quo
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
-              <p>iOS and Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
-common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
+              <p>no flash here.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>          sm2.ignoreFlash = <span class="literal">true</span>;
+
+        } <span class="keyword">else</span> <span class="keyword">if</span> ((isAndroid &amp;&amp; !ua.match(<span class="regexp">/android\s2\.3/i</span>)) || !isAndroid) {
+        
+          <span class="comment">/**
+           * Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
+           * Common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()
+           * Presuming similar restrictions for other mobile, non-Android, non-iOS devices.
+           */</span></pre></div></div>
             
         </li>
         
@@ -738,7 +764,7 @@ common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        sm2._wD(strings.globalHTML5);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>          sm2._wD(strings.globalHTML5);</pre></div></div>
             
         </li>
         
@@ -754,11 +780,9 @@ common use case: exiting sound onfinish() -&gt; createSound() -&gt; play()</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>
-        <span class="keyword">if</span> (is_iDevice) {
-          sm2.ignoreFlash = <span class="literal">true</span>;
-        }
+          useGlobalHTML5Audio = <span class="literal">true</span>;
 
-        useGlobalHTML5Audio = <span class="literal">true</span>;
+        }
 
       }
 
