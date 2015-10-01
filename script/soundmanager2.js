@@ -350,7 +350,9 @@ function SoundManager(smURL, smID) {
     // TODO: defer: true?
 
     assign(options);
-
+    if (options.onerror){
+      sm2.setupOptions.onerror = options.onerror;
+    }
     if (!useGlobalHTML5Audio) {
 
       if (mobileHTML5) {
@@ -3019,6 +3021,12 @@ function SoundManager(smURL, smID) {
 
     };
 
+    function onHTML5AudioLoadError(e){
+      if (sm2.setupOptions.onerror){
+        sm2.setupOptions.onerror();
+      }
+    }
+
     this._setup_html5 = function(oOptions) {
 
       var instanceOptions = mixin(s._iO, oOptions),
@@ -3047,7 +3055,7 @@ function SoundManager(smURL, smID) {
       }
 
       if (a) {
-
+        a.onerror = onHTML5AudioLoadError;
         if (a._s) {
 
           if (useGlobalHTML5Audio) {
@@ -3097,12 +3105,14 @@ function SoundManager(smURL, smID) {
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
           s._a = new Audio(instanceOptions.url);
+          s._a.onerror = onHTML5AudioLoadError;
           s._a.load();
 
         } else {
 
           // null for stupid Opera 9.64 case
           s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
+          s._a.onerror = onHTML5AudioLoadError;
 
         }
 

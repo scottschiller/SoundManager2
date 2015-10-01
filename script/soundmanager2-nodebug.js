@@ -189,6 +189,9 @@ function SoundManager(smURL, smID) {
     if (options !== _undefined && didInit && needsFlash && sm2.ok() && (options.flashVersion !== _undefined || options.url !== _undefined || options.html5Test !== _undefined)) {
     }
     assign(options);
+    if (options.onerror){
+      sm2.setupOptions.onerror = options.onerror;
+    }
     if (!useGlobalHTML5Audio) {
       if (mobileHTML5) {
         if (!sm2.setupOptions.ignoreMobileRestrictions || sm2.setupOptions.forceUseGlobalHTML5Audio) {
@@ -1332,6 +1335,11 @@ function SoundManager(smURL, smID) {
     this._apply_loop = function(a, nLoops) {
       a.loop = (nLoops > 1 ? 'loop' : '');
     };
+    function onHTML5AudioLoadError(e){
+      if (sm2.setupOptions.onerror){
+        sm2.setupOptions.onerror();
+      }
+    }
     this._setup_html5 = function(oOptions) {
       var instanceOptions = mixin(s._iO, oOptions),
           a = useGlobalHTML5Audio ? globalHTML5Audio : s._a,
@@ -1345,6 +1353,7 @@ function SoundManager(smURL, smID) {
         sameURL = true;
       }
       if (a) {
+        a.onerror = onHTML5AudioLoadError;
         if (a._s) {
           if (useGlobalHTML5Audio) {
             if (a._s && a._s.playState && !sameURL) {
@@ -1368,9 +1377,11 @@ function SoundManager(smURL, smID) {
       } else {
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
           s._a = new Audio(instanceOptions.url);
+          s._a.onerror = onHTML5AudioLoadError;
           s._a.load();
         } else {
           s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
+          s._a.onerror = onHTML5AudioLoadError;
         }
         a = s._a;
         a._called_load = false;
