@@ -1077,19 +1077,24 @@ function SoundManager(smURL, smID) {
       bNoDisable = false;
     }
 
+    // already disabled?
     if (disabled) {
       return false;
     }
 
     disabled = true;
+    
     _wDS('shutdown', 1);
 
     for (i = sm2.soundIDs.length - 1; i >= 0; i--) {
       disableObject(sm2.sounds[sm2.soundIDs[i]]);
     }
 
+    disableObject(sm2);
+
     // fire "complete", despite fail
     initComplete(bNoDisable);
+   
     event.remove(window, 'load', initUserOnload);
 
     return true;
