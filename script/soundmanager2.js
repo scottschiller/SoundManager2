@@ -271,7 +271,7 @@ function SoundManager(smURL, smID) {
 
   var SMSound,
   sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, rebootIntoHTML5, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
-  canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0, didSetup, msecScale = 1000,
+  canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5ErrorCodes, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0, didSetup, msecScale = 1000,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i),
   isWebkit = ua.match(/webkit/i),
   isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)),
@@ -309,6 +309,22 @@ function SoundManager(smURL, smID) {
     'highPerf': 'high_performance',
     'flashDebug': 'flash_debug'
   };
+
+  /**
+   * HTML5 error codes, per W3C
+   * Error code 1, MEDIA_ERR_ABORTED: Client aborted download at user's request.
+   * Error code 2, MEDIA_ERR_NETWORK: A network error of some description caused the user agent to stop fetching the media resource, after the resource was established to be usable.
+   * Error code 3, MEDIA_ERR_DECODE: An error of some description occurred while decoding the media resource, after the resource was established to be usable.
+   * Error code 4, MEDIA_ERR_SRC_NOT_SUPPORTED: Media (audio file) not supported ("not usable.")
+   * Reference: http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
+   */
+  html5ErrorCodes = [
+    null,
+    'MEDIA_ERR_ABORTED',
+    'MEDIA_ERR_NETWORK',
+    'MEDIA_ERR_DECODE',
+    'MEDIA_ERR_SRC_NOT_SUPPORTED'   
+  ];
 
   /**
    * basic HTML5 Audio() support test
@@ -3243,12 +3259,12 @@ function SoundManager(smURL, smID) {
 
     };
 
-    this._onerror = function(errorCode) {
+    this._onerror = function(errorCode, description) {
 
       // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
       if (s._iO.onerror) {
         wrapCallback(s, function() {
-          s._iO.onerror.apply(s, [errorCode]);
+          s._iO.onerror.apply(s, [errorCode, description]);
         });
       }
 
@@ -4000,17 +4016,10 @@ function SoundManager(smURL, smID) {
 
     error: html5_event(function() {
 
-      sm2._wD(this._s.id + ': HTML5 error, code ' + this.error.code);
-      /**
-       * HTML5 error codes, per W3C
-       * Error 1: Client aborted download at user's request.
-       * Error 2: Network error after load started.
-       * Error 3: Decoding issue.
-       * Error 4: Media (audio file) not supported.
-       * Reference: http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
-       */
+      var description = (html5ErrorCodes[this.error.code] || null);
+      sm2._wD(this._s.id + ': HTML5 error, code ' + this.error.code + (description ? ' (' + description + ')' : ''));
       this._s._onload(false);
-      this._s._onerror(this.error.code);
+      this._s._onerror(this.error.code, description);
 
     }),
 
