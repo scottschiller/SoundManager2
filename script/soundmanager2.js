@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20150601
+ * V2.97a.20150601+DEV
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -200,7 +200,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20150601';
+  this.versionNumber = 'V2.97a.20150601+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -3228,6 +3228,11 @@ function SoundManager(smURL, smID) {
       s.readyState = (loadOK ? 3 : 2);
       s._onbufferchange(0);
 
+      if (!loadOK && !s.isHTML5) {
+        // note: no error code from Flash.
+        s._onerror();
+      }
+
       if (s._iO.onload) {
         wrapCallback(s, function() {
           s._iO.onload.apply(s, [loadOK]);
@@ -3235,6 +3240,17 @@ function SoundManager(smURL, smID) {
       }
 
       return true;
+
+    };
+
+    this._onerror = function(errorCode) {
+
+      // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
+      if (s._iO.onerror) {
+        wrapCallback(s, function() {
+          s._iO.onerror.apply(s, [errorCode]);
+        });
+      }
 
     };
 
@@ -3993,8 +4009,8 @@ function SoundManager(smURL, smID) {
        * Error 4: Media (audio file) not supported.
        * Reference: http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
        */
-      // call load with error state?
       this._s._onload(false);
+      this._s._onerror(this.error.code);
 
     }),
 
@@ -6309,7 +6325,7 @@ if (typeof module === 'object' && module && typeof module.exports === 'object') 
     return {
       constructor: SoundManager,
       getInstance: getInstance
-    }
+    };
   });
 
 }
