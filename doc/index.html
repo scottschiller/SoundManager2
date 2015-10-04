@@ -182,10 +182,10 @@ soundManager.setup({
      <li><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
 	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-flashpollinginterval">flashPollingInterval</a></li>
      <li><a href="#soundmanager-flashversion">flashVersion</a></li>
-     <li><a href="#soundmanager-forceuseglobalhtml5audio" class="new" title="New for V2.97a.20150601">forceUseGlobalHTML5Audio</a></li>
+     <li class="recent"><a href="#soundmanager-forceuseglobalhtml5audio" title="Added in V2.97a.20150601">forceUseGlobalHTML5Audio</a></li>
 	 <li><a href="#soundmanager-html5only">html5Only</a></li>
 	 <li><a href="#soundmanager-html5pollinginterval">html5PollingInterval</a></li>
-     <li class="new" title="New for V2.97a.20150601"><a href="#soundmanager-ignoremobilerestrictions">ignoreMobileRestrictions</a></li>
+     <li class="recent"><a href="#soundmanager-ignoremobilerestrictions" title="Added in V2.97a.20150601">ignoreMobileRestrictions</a></li>
      <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
      <li><a href="#soundmanager-preferflash">preferFlash</a></li>
 	 <li><a href="#soundmanager-url">url</a></li>
@@ -216,10 +216,10 @@ soundManager.setup({
      <li><a href="#soundmanager-pauseall">pauseAll()</a></li>
      <li><a href="#soundmanager-play">play()</a></li>
      <li><a href="#soundmanager-reboot">reboot()</a></li>
-     <li class="new"><a href="#soundmanager-reset" title="New feature">reset()</a></li>
+     <li><a href="#soundmanager-reset">reset()</a></li>
      <li><a href="#soundmanager-resume">resume()</a></li>
      <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
-     <li class="recent"><a href="#soundmanager-setup" title="Recently-added feature">setup()</a></li>
+     <li><a href="#soundmanager-setup">setup()</a></li>
      <li><a href="#soundmanager-setpan" title="Flash-only feature">setPan()</a></li>
      <li><a href="#soundmanager-setposition">setPosition()</a></li>
      <li><a href="#soundmanager-setvolume">setVolume()</a></li>
@@ -292,6 +292,7 @@ soundManager.setup({
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-onbufferchange">onbufferchange</a></li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-onconnect">onconnect</a></li>
      <li title="Flash 9.0.r115+" class="flash9"><a href="#smsound-ondataerror">ondataerror</a></li>
+     <li class="new"><a href="#smsound-onerror" title="New feature">onerror</a></li>
      <li><a href="#smsound-onfinish">onfinish</a></li>
      <li><a href="#smsound-onload">onload</a></li>
      <li><a href="#smsound-onpause">onpause</a></li>
@@ -1253,7 +1254,7 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 
 				  <p class="in">Like native javascript objects, each SoundManager <code>SMSound</code> (sound instance) object can fire a number of <code>onload</code>-like events. Handlers cannot be "directly" assigned (eg. someSound.onload), but can be passed as option parameters to several sound methods.</p>
 				  <div>
-<pre class="block"><code>soundManager.play('<span>mySound</span>',{
+<pre class="block"><code>soundManager.play('<span>mySound</span>', {
   onfinish: function() {
     alert('<span>The sound </span>'+this.id+' <span>finished playing.</span>');
   }
@@ -1308,6 +1309,40 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 </span>}).play();<span><span> // will result in connection being made</span></span></code></pre>
                    </dd>
 				   </dl>
+
+                   <dl id="smsound-error" class="f-block s-onerror">
+                    <dt>onerror(<span>number:errorCode</span>, <span>string:description</span>)</dt>
+                    <dd>Fires when a sound fails to load (HTML5/flash), or fails during load or playback (HTML5-only.)</dd>
+                    <dd>In the case of HTML5, an error code and matching description is provided when known.</dd>
+                    <dd>
+                     <p>This event is useful for explicit failure handling, particularly when tracking HTML5 errors. Note that HTML5 clients may fire errors after playback (or the first network request) has been initiated, so you should check the sound's <code>loaded</code> attribute before taking action.</p>
+                     <p>Under HTML5, the <code>loaded</code> attribute is assigned once the HTML5 <code>canplay</code> event has fired - meaning that the user agent has downloaded enough of the sound to start playback.</p>
+                     <p>In the case where <code>onerror</code> fires and <code>loaded</code> is true, sound playback <i>may</i> be resumable if the user is shown a play button and initiates playback via tap/touch/click - particularly on mobile. In this case, calling <code>stop()</code> within the error handler may help ensure that the sound's internal state is properly reset.</p>
+                     </dd>
+<dd>Example: <pre class="block"><code>soundManager.createSound({
+  url: '<span>/404.mp3</span>',
+  onerror: function(code, description) {
+    console.log(this.id + '<span> failed?</span>', code, description);
+    <span><span>// Did the sound fail to load entirely, or failed during playback / loading partially?</span></span>
+    if (this.loaded) {
+      <span><span>// HTML5 case: network error, or client aborted download etc.?</span></span>
+      this.stop(); // <span><span>Reset sound state, to be safe</span></span>
+      // <span><span>Show play / retry button to user in UI?</span></span>
+    } else {
+      <span><span>// Load failed entirely. 404, bad sound format, etc.</span></span>
+    }
+  }
+}).play();</pre></code></dd>
+                    <dd>HTML5 error codes and descriptions are as follows, from <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes" title="WhatWG: video elment error codes" target="_blank">whatwg.org</a>:</dd>
+                    <dd>
+                     <ul>
+                      <li>Error code 1, MEDIA_ERR_ABORTED: Client aborted download at user's request.</li>
+                      <li>Error code 2, MEDIA_ERR_NETWORK: A network error of some description caused the user agent to stop fetching the media resource, after the resource was established to be usable.</li>
+                      <li>Error code 3, MEDIA_ERR_DECODE: An error of some description occurred while decoding the media resource, after the resource was established to be usable.</li>
+                      <li>Error code 4, MEDIA_ERR_SRC_NOT_SUPPORTED: Media (audio file) not supported ("not usable.")</li>
+                     </ul>
+                    </dd>
+                   </dl>
 
 				   <dl id="smsound-onfinish" class="f-block s-onfinish">
 				   <dt>onfinish()</dt>
