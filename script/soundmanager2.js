@@ -102,6 +102,7 @@ function SoundManager(smURL, smID) {
     'from': null,             // position to start playback within a sound (msec), default = beginning
     'loops': 1,               // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >0)
     'onid3': null,            // callback function for "ID3 data is added/available"
+    'onerror': null,          // callback function for "load failed" (or, playback/network/decode error under HTML5.)
     'onload': null,           // callback function for "load finished"
     'whileloading': null,     // callback function for "download progress update" (X of Y bytes received)
     'onplay': null,           // callback for "play" start
@@ -110,12 +111,12 @@ function SoundManager(smURL, smID) {
     'whileplaying': null,     // callback during play (position update)
     'onposition': null,       // object containing times and function callbacks for positions of interest
     'onstop': null,           // callback for "user stop"
-    'onfailure': null,        // callback function for when playing fails
     'onfinish': null,         // callback function for "sound finished playing"
     'multiShot': true,        // let sounds "restart" or layer on top of each other when played multiple times, rather than one-shot/one at a time
     'multiShotEvents': false, // fire multiple sound events (currently onfinish() only) when multiShot is enabled
     'position': null,         // offset (milliseconds) to seek to within loaded sound data.
     'pan': 0,                 // "pan" settings, left-to-right, -100 to 100
+    'playbackRate': 1,        // rate at which to play the sound (HTML5-only)
     'stream': true,           // allows playing before entire file has loaded (recommended)
     'to': null,               // position to end playback within a sound (msec), default = end
     'type': null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
@@ -131,6 +132,7 @@ function SoundManager(smURL, smID) {
      * merged into defaultOptions if flash 9 is being used
      */
 
+    'onfailure': null,        // callback function for when playing fails (Flash 9, MovieStar + RTMP-only)
     'isMovieStar': null,      // "MovieStar" MPEG4 audio mode. Null (default) = auto detect MP4, AAC etc. based on URL. true = force on, ignore URL
     'usePeakData': false,     // enable left/right channel peak (level) data
     'useWaveformData': false, // enable sound spectrum (raw waveform data) - NOTE: May increase CPU load.
@@ -776,6 +778,22 @@ function SoundManager(smURL, smID) {
 
   // just for convenience
   this.start = this.play;
+
+  /**
+   * Calls the setPlaybackRate() method of a SMSound object by ID.
+   *
+   * @param {string} sID The ID of the sound
+   * @return {SMSound} The SMSound object
+   */
+
+  this.setPlaybackRate = function(sID, rate, allowOverride) {
+
+    if (!idCheck(sID)) {
+      return false;
+    }
+    return sm2.sounds[sID].setPlaybackRate(rate, allowOverride);
+
+  };
 
   /**
    * Calls the setPosition() method of a SMSound object by ID.
@@ -2127,6 +2145,10 @@ function SoundManager(smURL, smID) {
         s.setVolume(s._iO.volume, true);
         s.setPan(s._iO.pan, true);
 
+        if (s._iO.playbackRate !== 1) {
+          s.setPlaybackRate(s._iO.playbackRate);
+        }
+
         if (!s.isHTML5) {
 
           startOK = flash._start(s.id, s._iO.loops || 1, (fV === 9 ? s.position : s.position / msecScale), s._iO.multiShot || false);
@@ -2330,6 +2352,38 @@ function SoundManager(smURL, smID) {
     this.getAutoPlay = function() {
 
       return s._iO.autoPlay;
+
+    };
+
+    /**
+     * Sets the playback rate of a sound (HTML5-only.)
+     *
+     * @param {number} playbackRate (+/-)
+     * @return {SMSound} The SMSound object
+     */
+
+    this.setPlaybackRate = function(playbackRate) {
+
+      // Per Mozilla, limit acceptable values to prevent playback from stopping (unless allowOverride is truthy.)
+      // https://developer.mozilla.org/en-US/Apps/Build/Audio_and_video_delivery/WebAudio_playbackRate_explained
+      var normalizedRate = Math.max(0.5, Math.min(4, playbackRate));
+
+      // <d>
+      if (normalizedRate !== playbackRate) {
+        sm2._wD(s.id + ': setPlaybackRate(' + playbackRate + '): limiting rate to ' + normalizedRate, 2);
+      }
+      // </d>
+
+      if (s.isHTML5) {
+        try {
+          s._iO.playbackRate = normalizedRate;
+          s._a.playbackRate = normalizedRate;
+        } catch(e) {
+          sm2._wD(s.id + ': setPlaybackRate(' + normalizedRate + ') failed: ' + e.message, 2);
+        }
+      }
+
+      return s;
 
     };
 
