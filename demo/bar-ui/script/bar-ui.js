@@ -301,8 +301,8 @@
           // next track?
           item = playlistController.getNext();
 
-          // don't play the same item over and over again, if at end of playlist etc.
-          if (item && playlistController.data.selectedIndex !== lastIndex) {
+          // don't play the same item over and over again, if at end of playlist (excluding single item case.)
+          if (item && (playlistController.data.selectedIndex !== lastIndex || (playlistController.data.playlist.length == 1 && playlistController.data.loopMode))) {
 
             playlistController.select(item);
 
