@@ -561,7 +561,7 @@
         }
 
         // update selected offset, too.
-        offset = findOffsetFromItem(item);
+        offset = findOffsetFromItem(liElement);
 
         data.selectedIndex = offset;
 
