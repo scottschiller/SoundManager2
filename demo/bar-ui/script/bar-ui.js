@@ -21,25 +21,29 @@
       utils;
 
   /**
-   * Slightly hackish: event callbacks.
+   * The following are player object event callback examples.
    * Override globally by setting window.sm2BarPlayers.on = {}, or individually by window.sm2BarPlayers[0].on = {} etc.
+   * soundObject is provided for whileplaying() etc., but playback control should be done via the player object.
    */
   players.on = {
     /*
-    play: function(player) {
+    play: function(player, soundObject) {
       console.log('playing', player);
     },
-    finish: function(player) {
+    whileplaying: function(player, soundObject) {
+      console.log('whileplaying', player, soundObject);
+    },
+    finish: function(player, soundObject) {
       // each sound
       console.log('finish', player);
     },
-    pause: function(player) {
+    pause: function(player, soundObject) {
       console.log('pause', player);
     },
-    error: function(player) {
+    error: function(player, soundObject) {
       console.log('error', player);
     }
-    end: function(player) {
+    end: function(player, soundObject) {
       // end of playlist
       console.log('end', player);
     }
@@ -117,13 +121,13 @@
 
     }
 
-    function callback(method) {
+    function callback(method, soundObject) {
       if (method) {
-        // fire callback, passing current turntable object
+        // fire callback, passing current player and sound objects
         if (exports.on && exports.on[method]) {
-          exports.on[method](exports);
+          exports.on[method](exports, soundObject);
         } else if (players.on[method]) {
-          players.on[method](exports);
+          players.on[method](exports, soundObject);
         }
       }
     }
@@ -191,6 +195,8 @@
 
           }
 
+          callback('whileplaying', this);
+
         },
 
         onbufferchange: function(isBuffering) {
@@ -205,12 +211,12 @@
 
         onplay: function() {
           utils.css.swap(dom.o, 'paused', 'playing');
-          callback('play');
+          callback('play', this);
         },
 
         onpause: function() {
           utils.css.swap(dom.o, 'playing', 'paused');
-          callback('pause');
+          callback('pause', this);
         },
 
         onresume: function() {
@@ -264,7 +270,7 @@
 
           }
 
-          callback('error');
+          callback('error', this);
 
           // load next, possibly with delay.
             
@@ -296,7 +302,7 @@
 
           lastIndex = playlistController.data.selectedIndex;
 
-          callback('finish');
+          callback('finish', this);
 
           // next track?
           item = playlistController.getNext();
@@ -322,7 +328,7 @@
             // explicitly stop?
             // this.stop();
 
-            callback('end');
+            callback('end', this);
 
           }
 
