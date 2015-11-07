@@ -42,7 +42,7 @@
     },
     error: function(player, soundObject) {
       console.log('error', player);
-    }
+    },
     end: function(player, soundObject) {
       // end of playlist
       console.log('end', player);
