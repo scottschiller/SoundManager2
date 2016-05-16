@@ -182,8 +182,10 @@ soundManager.setup({
      <li><a href="#soundmanager-flashloadtimeout">flashLoadTimeout</a></li>
 	 <li class="flash9" title="Flash 9+ only"><a href="#soundmanager-flashpollinginterval">flashPollingInterval</a></li>
      <li><a href="#soundmanager-flashversion">flashVersion</a></li>
+     <li><a href="#soundmanager-forceuseglobalhtml5audio" class="new" title="New for V2.97a.20150601">forceUseGlobalHTML5Audio</a></li>
 	 <li><a href="#soundmanager-html5only">html5Only</a></li>
-	 <li ><a href="#soundmanager-html5pollinginterval">html5PollingInterval</a></li>
+	 <li><a href="#soundmanager-html5pollinginterval">html5PollingInterval</a></li>
+     <li class="new" title="New for V2.97a.20150601"><a href="#soundmanager-ignoremobilerestrictions">ignoreMobileRestrictions</a></li>
      <li class="flash9" title="Flash 9.0r115+ only"><a href="#sound-properties-flash9">movieStarOptions</a></li>
      <li><a href="#soundmanager-preferflash">preferFlash</a></li>
 	 <li><a href="#soundmanager-url">url</a></li>
@@ -416,6 +418,11 @@ soundManager.setup({
 			<span>// msec affecting whileplaying/loading callback frequency. If null, default of 50 msec is used.</span>
 		</li>
 
+        <li>
+            <div>forceUseGlobalHTML5Audio: <em>false</em>,</div>
+            <span>// if true, a single Audio() object is used for all sounds - and only one can play at a time.</span>
+        </li>
+
 		<li>
 			<div>html5PollingInterval: <em>null</em>,</div>
 			<span>// msec affecting whileplaying/loading callback frequency. If null, native HTML5 update events are used.</span>
@@ -436,7 +443,11 @@ soundManager.setup({
 			<span>// if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.</span>
 		</li>
 
-
+        <li>
+            <div>ignoreMobileRestrictions: <em>false</em>,</div>
+            <span>// if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS > 7 and WebViews may allow multiple Audio() instances.</span>
+        </li>
+        
 		<li>
 			<div>noSWFCache: <em>false</em>,</div>
 			<span>// if true, appends ?ts={date} to break aggressive SWF caching.</span>
@@ -444,7 +455,7 @@ soundManager.setup({
 
 		<li>
 			<div>preferFlash: <em>true</em>,</div>
-			<span>// overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed since HTML5 audio support is still quirky in browsers.</span>
+			<span>// overrides useHTML5audio. if true and flash support present, will try to use flash for MP3/MP4 as needed. Useful if HTML5 audio support is quirky.</span>
 		</li>
 
 		<li>
@@ -545,15 +556,15 @@ soundManager.setup({
 
 			<div class="f-block f-flashversion">
 
-		    <p>Flash 9-only features:</p>
+		     <p>Flash 9-only features:</p>
 
-		    <ul>
-		     <li class="in">MPEG-4 (HE-AAC/H.264) audio support</li>
-		     <li class="in">True "multi-shot" sound behaviour. <code>play()</code> can be called multiple times, giving a layered, "chorus" effect. Sound will also fire <code>onfinish()</code> multiple times. (Previous behaviour did not layer sounds, but would re-play a single instance.)</li>
-		     <li class="in"><code>waveformData</code> array: 256 waveform data values available while playing sound</li>
-		     <li class="in"><code>eqData</code> array: 256 EQ spectrum data values available while playing sound</li>
-		     <li class="in"><code>peakData</code> object: Left and right channel peak/volume data available while playing sound</li>
-		    </ul>
+		     <ul>
+		      <li class="in">MPEG-4 (HE-AAC/H.264) audio support</li>
+		      <li class="in">True "multi-shot" sound behaviour. <code>play()</code> can be called multiple times, giving a layered, "chorus" effect. Sound will also fire <code>onfinish()</code> multiple times. (Previous behaviour did not layer sounds, but would re-play a single instance.)</li>
+		      <li class="in"><code>waveformData</code> array: 256 waveform data values available while playing sound</li>
+		      <li class="in"><code>eqData</code> array: 256 EQ spectrum data values available while playing sound</li>
+		      <li class="in"><code>peakData</code> object: Left and right channel peak/volume data available while playing sound</li>
+		     </ul>
 		
 		    </div>
 
@@ -570,11 +581,24 @@ soundManager.setup({
 			<p>Setting this will override <code>useFastPolling</code>, and defines the interval of the internal flash timer used for callbacks to sound events like <code>whileloading()</code> and <code>whileplaying()</code>. For example, set this to 200 to have 200ms intervals. This is useful in the case where your callbacks are CPU intensive, or you simply wish to throttle your calls to be more CPU-conservative.</p>
 		  </div>
 
+          <div class="f-block f-forceuseglobalhtml5audio">
+           <h4 id="soundmanager-forceuseglobalhtml5audio">forceUseGlobalHTML5Audio</h4>
+           <p class="in">By default, SoundManager 2 only applies the "singleton"-style, single HTML5 <code>Audio()</code> object for mobile devices like iOS, Android and the like. If you want to force it for desktop browsers, you can set <code>forceUseGlobalHTML5Audio</code> to <code>true</code>.</p>
+           <p class="in">Example: <code>soundManager.setup({ <span>forceUseGlobalHTML5Audio: true</span> });</code></p>
+          </div>
+
 		  <div class="f-block f-html5pollinginterval">
 			<h4 id="soundmanager-html5pollinginterval">html5PollingInterval</h4>
 			<p>Setting this will enable a single interval that will affect the frequency of event callbacks such <code>whileplaying()</code> for HTML5 sounds, with the exclusion of mobile devices. If null, native HTML5 update events are used. The frequency of native events may vary widely across browsers, and may exceed 500 msec on mobile and other resource-limited devices.</p>
 			<p>By default, Flash uses a 50-msec timer interval and this is a reasonable value to apply to <code>html5PollingInterval</code> for desktop use cases.</p>
 		  </div>
+
+          <div class="f-block f-ignoremobilerestrictions">
+           <h4 id="soundmanager-ignoremobilerestrictions">ignoreMobileRestrictions</h4>
+           <p class="in">By default, SoundManager 2 only applies the "singleton"-style, single HTML5 <code>Audio()</code> object for mobile devices like iOS, Android and the like. This is because <i>most</i> iOS devices only like playing a single <code>Audio()</code> audio object at a time.</p>
+           <p>If you want to avoid applying this to it for desktop browsers, you can set <code>ignoreMobileRestrictions</code> to <code>true</code>.</p>
+           <p class="in">Example: <code>soundManager.setup({ <span>ignoreMobileRestrictions: true</span> });</code></p>
+          </div>
 
 		  <div class="f-block f-preferflash">
 			<h4 id="soundmanager-preferflash">preferFlash</h4>

@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140901+DEV
+ * V2.97a.20150601
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -82,7 +82,7 @@ function SoundManager(smURL, smID) {
     'useFlashBlock': false,             // *requires flashblock.css, see demos* - allow recovery from flash blockers. Wait indefinitely and apply timeout CSS to SWF, if applicable.
     'useHTML5Audio': true,              // use HTML5 Audio() where API is supported (most Safari, Chrome versions), Firefox (MP3/MP4 support varies.) Ideally, transparent vs. Flash API where possible.
     'forceUseGlobalHTML5Audio': false,  // if true, a single Audio() object is used for all sounds - and only one can play at a time.
-    'ignoreMobileRestrictions': false,  // if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS WebViews purportedly allow multiple Audio() objects, auto-play etc.
+    'ignoreMobileRestrictions': false,  // if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS > 7 and WebViews may allow multiple Audio() instances.
     'html5Test': /^(probably|maybe)$/i, // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
     'preferFlash': false,               // overrides useHTML5audio, will use Flash for MP3/MP4/AAC if present. Potential option if HTML5 playback with these formats is quirky.
     'noSWFCache': false,                // if true, appends ?ts={date} to break aggressive SWF caching.
@@ -200,7 +200,7 @@ function SoundManager(smURL, smID) {
 
   // dynamic attributes
 
-  this.versionNumber = 'V2.97a.20140901+DEV';
+  this.versionNumber = 'V2.97a.20150601';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -351,45 +351,68 @@ function SoundManager(smURL, smID) {
 
     assign(options);
 
-    // force the singleton HTML5 pattern?
-    if (sm2.setupOptions.useHTML5Audio && !useGlobalHTML5Audio && sm2.setupOptions.forceUseGlobalHTML5Audio) {
-      messages.push(strings.globalHTML5);
-      useGlobalHTML5Audio = true;
+    if (!useGlobalHTML5Audio) {
+
+      if (mobileHTML5) {
+
+        // force the singleton HTML5 pattern on mobile, by default.
+        if (!sm2.setupOptions.ignoreMobileRestrictions || sm2.setupOptions.forceUseGlobalHTML5Audio) {
+          messages.push(strings.globalHTML5);
+          useGlobalHTML5Audio = true;
+        }
+
+      } else {
+
+        // only apply singleton HTML5 on desktop if forced.
+        if (sm2.setupOptions.forceUseGlobalHTML5Audio) {
+          messages.push(strings.globalHTML5);
+          useGlobalHTML5Audio = true;
+        }
+
+      }
+
     }
 
-    // don't apply 
     if (!didSetup && mobileHTML5) {
 
       if (sm2.setupOptions.ignoreMobileRestrictions) {
-        messages.push(strings.ignoreMobile);
-      }
-
-      // prefer HTML5 for mobile + tablet-like devices, probably more reliable vs. flash at this point.
-
-      // <d>
-      if (!sm2.setupOptions.useHTML5Audio || sm2.setupOptions.preferFlash) {
-        // notify that defaults are being changed.
-        sm2._wD(strings.mobileUA);
-      }
-      // </d>
-
-      sm2.setupOptions.useHTML5Audio = true;
-      sm2.setupOptions.preferFlash = false;
-
-      if ((isAndroid && !ua.match(/android\s2\.3/i))) {
         
-        // iOS and Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
-        // common use case: exiting sound onfinish() -> createSound() -> play()
+        messages.push(strings.ignoreMobile);
+      
+      } else {
+
+        // prefer HTML5 for mobile + tablet-like devices, probably more reliable vs. flash at this point.
 
         // <d>
-        sm2._wD(strings.globalHTML5);
+        if (!sm2.setupOptions.useHTML5Audio || sm2.setupOptions.preferFlash) {
+          // notify that defaults are being changed.
+          sm2._wD(strings.mobileUA);
+        }
         // </d>
 
-        if (is_iDevice) {
-          sm2.ignoreFlash = true;
-        }
+        sm2.setupOptions.useHTML5Audio = true;
+        sm2.setupOptions.preferFlash = false;
 
-        useGlobalHTML5Audio = true;
+        if (is_iDevice) {
+
+          // no flash here.
+          sm2.ignoreFlash = true;
+
+        } else if ((isAndroid && !ua.match(/android\s2\.3/i)) || !isAndroid) {
+        
+          /**
+           * Android devices tend to work better with a single audio instance, specifically for chained playback of sounds in sequence.
+           * Common use case: exiting sound onfinish() -> createSound() -> play()
+           * Presuming similar restrictions for other mobile, non-Android, non-iOS devices.
+           */
+
+          // <d>
+          sm2._wD(strings.globalHTML5);
+          // </d>
+
+          useGlobalHTML5Audio = true;
+
+        }
 
       }
 

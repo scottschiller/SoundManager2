@@ -78,6 +78,7 @@ soundManager.setup({
   debugMode: false,
   preferFlash: false,
   html5PollingInterval: 50,
+  ignoreMobileRestrictions: true,
   onready: function() {
 
     soundManager.setup({

@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20140901+DEV
+ * V2.97a.20150601
  */
 
 /*global window, SM2_DEFER, sm2Debugger, console, document, navigator, setTimeout, setInterval, clearInterval, Audio, opera, module, define */
@@ -112,7 +112,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20140901+DEV';
+  this.versionNumber = 'V2.97a.20150601';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -189,21 +189,30 @@ function SoundManager(smURL, smID) {
     if (options !== _undefined && didInit && needsFlash && sm2.ok() && (options.flashVersion !== _undefined || options.url !== _undefined || options.html5Test !== _undefined)) {
     }
     assign(options);
-    if (sm2.setupOptions.useHTML5Audio && !useGlobalHTML5Audio && sm2.setupOptions.forceUseGlobalHTML5Audio) {
-      messages.push(strings.globalHTML5);
-      useGlobalHTML5Audio = true;
+    if (!useGlobalHTML5Audio) {
+      if (mobileHTML5) {
+        if (!sm2.setupOptions.ignoreMobileRestrictions || sm2.setupOptions.forceUseGlobalHTML5Audio) {
+          messages.push(strings.globalHTML5);
+          useGlobalHTML5Audio = true;
+        }
+      } else {
+        if (sm2.setupOptions.forceUseGlobalHTML5Audio) {
+          messages.push(strings.globalHTML5);
+          useGlobalHTML5Audio = true;
+        }
+      }
     }
     if (!didSetup && mobileHTML5) {
       if (sm2.setupOptions.ignoreMobileRestrictions) {
         messages.push(strings.ignoreMobile);
-      }
-      sm2.setupOptions.useHTML5Audio = true;
-      sm2.setupOptions.preferFlash = false;
-      if ((isAndroid && !ua.match(/android\s2\.3/i))) {
+      } else {
+        sm2.setupOptions.useHTML5Audio = true;
+        sm2.setupOptions.preferFlash = false;
         if (is_iDevice) {
           sm2.ignoreFlash = true;
+        } else if ((isAndroid && !ua.match(/android\s2\.3/i)) || !isAndroid) {
+          useGlobalHTML5Audio = true;
         }
-        useGlobalHTML5Audio = true;
       }
     }
     if (options) {

@@ -15,7 +15,7 @@
 
 <body>
 
-<h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Bar UI <span class="note">("first draft" version)</span></h1>
+<h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Bar UI <span class="note">("second draft" version)</span></h1>
 
 <p class="about">A configurable, resolution-independent HTML + SVG-based UI for playing collections of sounds.</p>
 
@@ -89,8 +89,37 @@
   <!-- playlist content is mirrored here -->
 
   <div class="sm2-playlist-wrapper">
+    
     <ul class="sm2-playlist-bd">
-     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Let%20Me%20%28Prod%202oolman%29.mp3"><b>SonReal</b> - Let Me <span class="label">Explicit</span></a></li>
+
+     <!-- example: playable link, "buy" link, "download" link -->
+     <li>
+      <div class="sm2-row">
+       <div class="sm2-col sm2-wide">
+        <a href="http://freshly-ground.com/data/audio/sm2/Figub%20Brazlevi%C4%8D%20-%20Bosnian%20Syndicate.mp3" class="exclude button-exclude inline-exclude"><b>Figub Brazlevič</b> - Bosnian Syndicate <span title="Published under a Creative Commons BY-NC-ND license" class="label">(BY-CC-ND license)</span></a>
+       </div>
+       <div class="sm2-col">
+        <a href="http://figubbrazlevic.bandcamp.com/track/bosnian-syndicate" target="_blank" title="Buy &quot;Bosnian Syndicate&quot;" class="sm2-icon sm2-cart">Buy this track</a>
+       </div>
+       <div class="sm2-col">
+        <a href="http://freshly-ground.com/data/audio/sm2/Figub%20Brazlevi%C4%8D%20-%20Bosnian%20Syndicate.mp3" target="_blank" title="Download &quot;Bosnian Syndicate&quot;" class="sm2-icon sm2-music sm2-exclude">Download this track</a>
+       </div>
+      </div>
+     </li>
+
+     <!-- example: playable link, "download" link -->
+     <li>
+      <div class="sm2-row">
+       <div class="sm2-col sm2-wide">
+        <a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Let%20Me%20%28Prod%202oolman%29.mp3"><b>SonReal</b> - Let Me <span class="label">Explicit</span></a>
+       </div>
+       <div class="sm2-col">
+        <a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Let%20Me%20%28Prod%202oolman%29.mp3" target="_blank" title="Download &quot;Let Me&quot;" class="sm2-icon sm2-music sm2-exclude">Download this track</a>
+       </div>
+      </div>
+     </li>
+
+     <!-- standard one-line items, no extra links -->
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3"><b>SonReal</b> - LA (Prod. Chin Injetti)<span class="label">Explicit</span></a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20People%20Asking.mp3"><b>SonReal</b> - People Asking <span class="label">Explicit</span></a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Already%20There%20Remix%20ft.%20Rich%20Kidd,%20Saukrates.mp3"><b>SonReal</b> - Already There Remix ft. Rich Kidd, Saukrates <span class="label">Explicit</span></a></li>
@@ -104,7 +133,9 @@
      <li><a href="http://freshly-ground.com/data/audio/sm2/20130320%20-%20Po%27ipu%20Beach%20Waves.ogg">Po'ipu Beach Waves (OGG)</a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav">A corked beer bottle (WAV)</a></li>
      <li><a href="../../demo/_mp3/rain.mp3">Rain</a></li>
+    
     </ul>
+  
   </div>
 
   <div class="sm2-extra-controls">
@@ -122,7 +153,9 @@
     <!-- not implemented -->
     <!--
     <div class="sm2-inline-element sm2-button-element disabled">
-     <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+     <div class="sm2-button-bd">
+      <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+     </div>
     </div>
     -->
 
@@ -219,8 +252,22 @@
   <!-- playlist content is mirrored here -->
 
   <div class="sm2-playlist-wrapper">
+    
     <ul class="sm2-playlist-bd">
-     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3"><b>SonReal</b> - LA<span class="label">Explicit</span></a></li>
+     
+     <!-- item with "download" link -->
+     <li>
+      <div class="sm2-row">
+       <div class="sm2-col sm2-wide">
+        <a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3"><b>SonReal</b> - LA<span class="label">Explicit</span></a>
+       </div>
+       <div class="sm2-col">
+        <a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" target="_blank" title="Download &quot;LA&quot;" class="sm2-icon sm2-music sm2-exclude">Download this track</a>
+       </div>
+      </div>
+     </li>
+     
+     <!-- standard one-line items -->
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20People%20Asking.mp3"><b>SonReal</b> - People Asking <span class="label">Explicit</span></a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Already%20There%20Remix%20ft.%20Rich%20Kidd%2C%20Saukrates.mp3"><b>SonReal</b> - Already There Remix ft. Rich Kidd, Saukrates <span class="label">Explicit</span></a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/The%20Fugitives%20-%20Graffiti%20Sex.mp3"><b>The Fugitives</b> - Graffiti Sex</a></li>
@@ -233,7 +280,9 @@
      <li><a href="http://freshly-ground.com/data/audio/sm2/20130320%20-%20Po%27ipu%20Beach%20Waves.ogg">Po'ipu Beach Waves (OGG)</a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav">A corked beer bottle (WAV)</a></li>
      <li><a href="../../demo/_mp3/rain.mp3">Rain</a></li>
+    
     </ul>
+  
   </div>
 
   <div class="sm2-extra-controls">
@@ -248,10 +297,12 @@
      <a href="#next" title="Next" class="sm2-inline-button next">&gt; next</a>
     </div>
 
-    <!-- unimplemented -->
+    <!-- not implemented -->
     <!--
     <div class="sm2-inline-element sm2-button-element disabled">
-     <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+     <div class="sm2-button-bd">
+      <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+     </div>
     </div>
 
     <div class="sm2-inline-element sm2-button-element disabled">
@@ -604,13 +655,17 @@
   </div>
 
   <div class="sm2-inline-element sm2-button-element">
-   <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+   <div class="sm2-button-bd">
+    <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+   </div>
   </div>
 
   <!-- not implemented -->
   <!--
   <div class="sm2-inline-element sm2-button-element disabled">
-   <a href="#shuffle" title="Shuffle" class="sm2-inline-button shuffle">shuffle</a>
+   <div class="sm2-button-bd">
+    <a href="#shuffle" title="Shuffle" class="sm2-inline-button shuffle">shuffle</a>
+   </div>
   </div>
   -->
 
@@ -631,8 +686,22 @@
   <!-- playlist content is mirrored here -->
 
   <div class="sm2-playlist-wrapper">
+
     <ul class="sm2-playlist-bd">
-     <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3"><b>SonReal</b> - LA (Prod. Chin Injetti)<span class="label">Explicit</span></a></li>
+
+     <!-- item with "download" link -->
+     <li>
+      <div class="sm2-row">
+       <div class="sm2-col sm2-wide">
+        <a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3"><b>SonReal</b> - LA<span class="label">Explicit</span></a>
+       </div>
+       <div class="sm2-col">
+        <a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" target="_blank" title="Download &quot;LA&quot;" class="sm2-icon sm2-music sm2-exclude">Download this track</a>
+       </div>
+      </div>
+     </li>
+
+     <!-- standard one-line items -->
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Let%20Me%20%28Prod%202oolman%29.mp3"><b>SonReal</b> - Let Me <span class="label">Explicit</span></a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20People%20Asking.mp3"><b>SonReal</b> - People Asking <span class="label">Explicit</span></a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Already%20There%20Remix%20ft.%20Rich%20Kidd%2C%20Saukrates.mp3"><b>SonReal</b> - Already There Remix ft. Rich Kidd, Saukrates <span class="label">Explicit</span></a></li>
@@ -645,7 +714,9 @@
      <li><a href="http://freshly-ground.com/data/audio/sm2/20130320%20-%20Po%27ipu%20Beach%20Waves.ogg">Po'ipu Beach Waves (OGG)</a></li>
      <li><a href="http://freshly-ground.com/data/audio/sm2/bottle-pop.wav">A corked beer bottle (WAV)</a></li>
      <li><a href="../../demo/_mp3/rain.mp3">Rain</a></li>
+    
     </ul>
+  
   </div>
 
  </div>
