@@ -66,6 +66,7 @@ function SoundManager(smURL, smID) {
   this.setupOptions = {
 
     'url': (smURL || null),             // path (directory) where SoundManager 2 SWFs exist, eg., /path/to/swfs/
+    'customSwfUrl': null,               // custom path (filename) where the SWF exists, e.g. /path/to/soundmanager.swf
     'flashVersion': 8,                  // flash build to use (8 or 9.) Some API features require 9.
     'debugMode': true,                  // enable debugging output (console.log() with HTML fallback)
     'debugFlash': false,                // enable debugging output inside SWF, troubleshoot Flash/browser issues
@@ -5556,7 +5557,7 @@ featureCheck = function() {
 
     // safety check for legacy (change to Flash 9 URL)
     setVersionInfo();
-    sm2.url = normalizeMovieURL(overHTTP ? remoteURL : localURL);
+    sm2.url = sm2.setupOptions.customSwfUrl ? sm2.setupOptions.customSwfUrl : normalizeMovieURL(overHTTP ? remoteURL : localURL);
     smURL = sm2.url;
 
     sm2.wmode = (!sm2.wmode && sm2.useHighPerformance ? 'transparent' : sm2.wmode);
