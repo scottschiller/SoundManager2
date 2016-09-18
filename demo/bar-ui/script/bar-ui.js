@@ -720,12 +720,31 @@
         getActionData(target);
 
         utils.events.add(document, 'mousemove', actions.adjustVolume);
+        utils.events.add(document, 'touchmove', actions.adjustVolume);
         utils.events.add(document, 'mouseup', actions.releaseVolume);
+        utils.events.add(document, 'touchend', actions.releaseVolume);
 
         // and apply right away
         return actions.adjustVolume(e);
 
       }
+
+    }
+
+    function handleProgressMouseDown(e) {
+
+      if (isRightClick(e)) {
+        return true;
+      }
+
+      utils.css.add(dom.o, 'grabbing');
+
+      utils.events.add(document, 'mousemove', handleMouse);
+      utils.events.add(document, 'touchmove', handleMouse);
+      utils.events.add(document, 'mouseup', releaseMouse);
+      utils.events.add(document, 'touchend', releaseMouse);
+
+      return handleMouse(e);
 
     }
 
@@ -819,14 +838,15 @@
 
     function handleMouse(e) {
 
-      var target, barX, barWidth, x, newPosition, sound;
+      var target, barX, barWidth, x, clientX, newPosition, sound;
 
       target = dom.progressTrack;
 
       barX = utils.position.getOffX(target);
       barWidth = target.offsetWidth;
+      clientX = utils.events.getClientX(e);
 
-      x = (e.clientX - barX);
+      x = (clientX - barX);
 
       newPosition = (x / barWidth);
 
@@ -854,10 +874,12 @@
     function releaseMouse(e) {
 
       utils.events.remove(document, 'mousemove', handleMouse);
+      utils.events.remove(document, 'touchmove', handleMouse);
 
       utils.css.remove(dom.o, 'grabbing');
 
       utils.events.remove(document, 'mouseup', releaseMouse);
+      utils.events.remove(document, 'touchend', releaseMouse);
 
       utils.events.preventDefault(e);
 
@@ -869,7 +891,7 @@
 
       // init DOM?
 
-      if (!playerNode) {
+      if (!playerNode && window.console && console.warn) {
         console.warn('init(): No playerNode element?');
       }
 
@@ -913,22 +935,10 @@
       }
 
       utils.events.add(dom.o, 'mousedown', handleMouseDown);
-
+      utils.events.add(dom.o, 'touchstart', handleMouseDown);
       utils.events.add(dom.o, 'click', handleClick);
-
-      utils.events.add(dom.progressTrack, 'mousedown', function(e) {
-
-        if (isRightClick(e)) {
-          return true;
-        }
-
-        utils.css.add(dom.o, 'grabbing');
-        utils.events.add(document, 'mousemove', handleMouse);
-        utils.events.add(document, 'mouseup', releaseMouse);
-
-        return handleMouse(e);
-
-      });
+      utils.events.add(dom.progressTrack, 'mousedown', handleProgressMouseDown);
+      utils.events.add(dom.progressTrack, 'touchstart', handleProgressMouseDown);
 
     }
 
@@ -1137,7 +1147,10 @@
           return false;
         }
 
-        if (!e || e.clientX === undefined) {
+        // normalize between mouse and touch events
+        var clientX = utils.events.getClientX(e);
+
+        if (!e || clientX === undefined) {
           // called directly or with a non-mouseEvent object, etc.
           // proxy to the proper method.
           if (arguments.length && window.console && window.console.warn) {
@@ -1152,14 +1165,14 @@
         backgroundMargin = (100 - actionData.volume.backgroundSize) / 2;
 
         // relative position of mouse over element
-        value = Math.max(0, Math.min(1, (e.clientX - actionData.volume.x) / actionData.volume.width));
+        value = Math.max(0, Math.min(1, (clientX - actionData.volume.x) / actionData.volume.width));
 
         target.style.clip = 'rect(0px, ' + (actionData.volume.width * value) + 'px, ' + actionData.volume.height + 'px, ' + (actionData.volume.width * (backgroundMargin/100)) + 'px)';
 
         // determine logical volume, including background margin
         pixelMargin = ((backgroundMargin/100) * actionData.volume.width);
 
-        volume = Math.max(0, Math.min(1, ((e.clientX - actionData.volume.x) - pixelMargin) / (actionData.volume.width - (pixelMargin*2)))) * 100;
+        volume = Math.max(0, Math.min(1, ((clientX - actionData.volume.x) - pixelMargin) / (actionData.volume.width - (pixelMargin*2)))) * 100;
 
         // set volume
         if (soundObject) {
@@ -1175,7 +1188,9 @@
       releaseVolume: function(/* e */) {
 
         utils.events.remove(document, 'mousemove', actions.adjustVolume);
+        utils.events.remove(document, 'touchmove', actions.adjustVolume);
         utils.events.remove(document, 'mouseup', actions.releaseVolume);
+        utils.events.remove(document, 'touchend', actions.releaseVolume);
 
       },
 
@@ -1522,7 +1537,7 @@
 
     events: (function() {
 
-      var add, remove, preventDefault;
+      var add, remove, preventDefault, getClientX;
 
       add = function(o, evtName, evtHandler) {
         // return an object with a convenient detach method.
@@ -1555,10 +1570,17 @@
         return false;
       };
 
+      getClientX = function(e) {
+        // normalize between desktop (mouse) and touch (mobile/tablet/?) events.
+        // note pageX for touch, which normalizes zoom/scroll/pan vs. clientX.
+        return (e && (e.clientX || (e.touches && e.touches[0] && e.touches[0].pageX)));
+      };
+
       return {
         add: add,
         preventDefault: preventDefault,
-        remove: remove
+        remove: remove,
+        getClientX: getClientX
       };
 
     }()),
@@ -1567,9 +1589,9 @@
 
       var getAnimationFrame,
           localAnimationFrame,
-            localFeatures,
-            prop,
-            styles,
+          localFeatures,
+          prop,
+          styles,
           testDiv,
           transform;
 
