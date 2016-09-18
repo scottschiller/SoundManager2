@@ -2424,7 +2424,7 @@ function SoundManager(smURL, smID) {
         // Set the position in the canplay handler if the sound is not ready yet
         if (s._html5_canplay) {
 
-          if (s._a.currentTime !== position1K) {
+          if (s._a.currentTime.toFixed(3) !== position1K.toFixed(3)) {
 
             /**
              * DOM/JS errors/exceptions to watch out for:
