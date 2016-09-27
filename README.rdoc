@@ -40,6 +40,7 @@ A few nifty sites that have implemented SM2 for driving audio:
     * Tidal
     * Beats
     * Songza
+    * Mixcrate
     * Earbits
     * freesound.org
     * last.fm
