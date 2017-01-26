@@ -654,16 +654,14 @@ function SoundManager(smURL, smID) {
   this.createAudioElement = function () {
 
     try {
-      var d = doc.createElement('div');
-      var a = doc.createElement('audio');
+      var d = doc.createElement('div'),
+          a = doc.createElement('audio');
       d.id = 'sm2-html5Audio-wrapper';
-      a.id = 'sm2-html5Audio-tag';
-      d.appendChild(a);
-      doc.body.appendChild(d);
+      a.id = 'sm2-html5Audio';
     } catch (e) {} finally {
       return a;
     }
-    
+
   }
 
   /**
