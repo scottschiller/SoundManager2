@@ -658,6 +658,7 @@ function SoundManager(smURL, smID) {
           a = doc.createElement('audio');
       d.id = 'sm2-html5Audio-wrapper';
       a.id = 'sm2-html5Audio';
+      doc.body.appendChild(d).appendChild(a);
     } catch (e) {} finally {
       return a;
     }
