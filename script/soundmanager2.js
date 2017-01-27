@@ -651,18 +651,19 @@ function SoundManager(smURL, smID) {
    *
    * @return {HTMLAudioElement} The audio element created in the dom
    */
-  this.createAudioElement = function () {
+  this.createAudioElement = function (src) {
 
     try {
       var d = doc.createElement('div'),
           a = doc.createElement('audio');
       d.id = 'sm2-html5Audio-wrapper';
       a.id = 'sm2-html5Audio';
+      a.src = (src) ? src : '';
       doc.body.appendChild(d).appendChild(a);
     } catch (e) {} finally {
       return a;
     }
-
+    
   }
 
   /**
@@ -2160,7 +2161,7 @@ function SoundManager(smURL, smID) {
 
             sm2._wD(s.id + ': Cloning Audio() for instance #' + s.instanceCount + '...');
 
-            audioClone = (mobileHTML5) ? this.createAudioElement() : new Audio(s._iO.url);
+            audioClone = (mobileHTML5) ? this.createAudioElement(s._iO.url) : new Audio(s._iO.url);
 
             onended = function() {
               event.remove(audioClone, 'ended', onended);
@@ -3115,7 +3116,7 @@ function SoundManager(smURL, smID) {
 
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
-          s._a = (mobileHTML5) ? this.createAudioElement() : new Audio(instanceOptions.url);
+          s._a = (mobileHTML5) ? this.createAudioElement(instanceOptions.url) : new Audio(instanceOptions.url);
 
           s._a.load();
 
