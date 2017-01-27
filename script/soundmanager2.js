@@ -2161,7 +2161,7 @@ function SoundManager(smURL, smID) {
 
             sm2._wD(s.id + ': Cloning Audio() for instance #' + s.instanceCount + '...');
 
-            audioClone = (mobileHTML5) ? this.createAudioElement(s._iO.url) : new Audio(s._iO.url);
+            audioClone = (mobileHTML5) ? sm2.createAudioElement(s._iO.url) : new Audio(s._iO.url);
 
             onended = function() {
               event.remove(audioClone, 'ended', onended);
@@ -3116,14 +3116,14 @@ function SoundManager(smURL, smID) {
 
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
-          s._a = (mobileHTML5) ? this.createAudioElement(instanceOptions.url) : new Audio(instanceOptions.url);
+          s._a = (mobileHTML5) ? sm2.createAudioElement(instanceOptions.url) : new Audio(instanceOptions.url);
 
           s._a.load();
 
         } else {
 
           // null for stupid Opera 9.64 case
-          s._a = (mobileHTML5) ? this.createAudioElement() : (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
+          s._a = (mobileHTML5) ? sm2.createAudioElement() : (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
 
         }
 
