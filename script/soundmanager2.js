@@ -647,17 +647,24 @@ function SoundManager(smURL, smID) {
   };
 
   /**
-   * Gets the <audio> element that already exists in the DOM
+   * Create the <audio> element in the DOM
    *
    * @return {HTMLAudioElement} The audio element created in the dom
    */
-   this.getAudioTagElement = function(src) {
+   this.createAudioElement = function (src) {
 
-    var a = doc.getElementById('sm2-html5Audio');
-    a.src = (src) ? src : '';
-    return a;
+    try {
+      var d = doc.createElement('div'),
+          a = doc.createElement('audio');
+      d.id = 'sm2-html5Audio-wrapper';
+      a.id = 'sm2-html5Audio';
+      a.src = (src) ? src : '';
+      doc.body.appendChild(d).appendChild(a);
+    } catch (e) {} finally {
+      return a;
+    }
 
-   };
+  };
 
   /**
    * Calls the unload() method of a SMSound object by ID.
@@ -2154,7 +2161,7 @@ function SoundManager(smURL, smID) {
 
             sm2._wD(s.id + ': Cloning Audio() for instance #' + s.instanceCount + '...');
 
-            audioClone = (mobileHTML5) ? sm2.getAudioTagElement(s._iO.url) : new Audio(s._iO.url);
+            audioClone = (mobileHTML5) ? sm2.createAudioElement(s._iO.url) : new Audio(s._iO.url);
 
             onended = function() {
               event.remove(audioClone, 'ended', onended);
@@ -3109,14 +3116,14 @@ function SoundManager(smURL, smID) {
 
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
-          s._a = (mobileHTML5) ? sm2.getAudioTagElement(instanceOptions.url) : new Audio(instanceOptions.url);
+          s._a = (mobileHTML5) ? sm2.createAudioElement(instanceOptions.url) : new Audio(instanceOptions.url);
 
           s._a.load();
 
         } else {
 
           // null for stupid Opera 9.64 case
-          s._a = (mobileHTML5) ? sm2.getAudioTagElement() : (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
+          s._a = (mobileHTML5) ? sm2.createAudioElement() : (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
 
         }
 
@@ -4337,7 +4344,7 @@ function SoundManager(smURL, smID) {
     }
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
-    var a = (mobileHTML5) ? sm2.getAudioTagElement() : (Audio !== _undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
+    var a = (mobileHTML5) ? sm2.createAudioElement() : (Audio !== _undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
 
     function cp(m) {
