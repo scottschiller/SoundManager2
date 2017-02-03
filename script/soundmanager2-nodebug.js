@@ -2161,7 +2161,12 @@ function SoundManager(smURL, smID) {
     if (hasFlash !== _undefined) {
       return hasFlash;
     }
-    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = window.ActiveXObject;
+    var hasPlugin = false, n = navigator, obj, type, types, AX = window.ActiveXObject;
+    try {
+      var nP = n.plugins;
+    } catch (e) {
+      var nP = undefined;
+    }
     if (nP && nP.length) {
       type = 'application/x-shockwave-flash';
       types = n.mimeTypes;
