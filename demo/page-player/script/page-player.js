@@ -664,7 +664,7 @@ function PagePlayer() {
           oPeak: self.select('peak',oLI),
           oGraph: self.select('spectrum-box',oLI),
           className: self.css.sPlaying,
-          originalTitle: o.innerHTML,
+          originalTitle: o.title || o.textContent,
           metadata: null
         };
 
