@@ -4986,14 +4986,12 @@ function SoundManager(smURL, smID) {
     var hasPlugin = false, n = navigator, obj, type, types, AX = window.ActiveXObject;
 
     // MS Edge 14 throws an "Unspecified Error" because n.plugins is inaccessible due to permissions
+    var nP;
+    
     try {
-
-      var nP = n.plugins;
-
+      nP = n.plugins;
     } catch (e) {
-
-      var nP = undefined;
-
+      nP = undefined;
     }
 
     if (nP && nP.length) {
