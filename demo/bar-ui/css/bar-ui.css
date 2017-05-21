@@ -521,16 +521,16 @@
  -ms-interpolation-mode: bicubic;
 }
 
-.play-pause,
-.play-pause:hover,
-.paused .play-pause:hover {
+.sm2-icon-play-pause,
+.sm2-icon-play-pause:hover,
+.paused .sm2-icon-play-pause:hover {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/play.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/play.svg);
  background-size: 67.5%;
  background-position: 40% 53%;
 }
 
-.playing .play-pause {
+.playing .sm2-icon-play-pause {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/pause.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/pause.svg);
  background-size: 57.6%;
@@ -556,50 +556,50 @@
  background-image: none, url(../image/icomoon/entypo-25px-000000/SVG/volume.svg);
 }
 
-.menu {
+.sm2-icon-menu {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/list2.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/list2.svg);
  background-size: 58%;
  background-position: 54% 51%;
 }
 
-.previous {
+.sm2-icon-previous {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/first.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/first.svg);
 }
 
-.next {
+.sm2-icon-next {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/last.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/last.svg);
 }
 
-.previous,
-.next {
+.sm2-icon-previous,
+.sm2-icon-next {
  background-size: 49.5%;
  background-position: 50% 50%;
 }
 
 
-.sm2-extra-controls .previous,
-.sm2-extra-controls .next {
+.sm2-extra-controls .sm2-icon-previous,
+.sm2-extra-controls .sm2-icon-next {
  backgound-size: 53%;
 }
 
-.shuffle {
+.sm2-icon-shuffle {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/shuffle.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/shuffle.svg);
  background-size: 45%;
  background-position: 50% 50%;
 }
 
-.repeat {
+.sm2-icon-repeat {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/loop.png);
  background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/loop.svg);
  background-position: 50% 43%;
  background-size: 54%;
 }
 
-.sm2-extra-controls .repeat {
+.sm2-extra-controls .sm2-icon-repeat {
  background-position: 50% 45%;
 }
 
@@ -710,7 +710,7 @@
  background-size: 72%;
  background-position: 50%;
  background-repeat: no-repeat;
- display: none; 
+ display: none;
 }
 
 .playing.buffering .sm2-progress-ball .icon-overlay {
@@ -898,7 +898,7 @@
 .sm2-bar-ui.dark-text ul li.selected a {
  background-color: rgba(255,255,255,0.1);
  background-image: url(../image/black-10.png);
- background-image: none, none; 
+ background-image: none, none;
 }
 
 .sm2-bar-ui .disabled {
@@ -940,7 +940,7 @@
  background: rgba(0,0,0,0.33);
  border-radius: 10px;
 }
- 
+
 .sm2-playlist-wrapper ul::-webkit-scrollbar-thumb {
  border-radius: 10px;
  background: #fff;

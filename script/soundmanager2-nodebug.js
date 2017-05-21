@@ -148,7 +148,7 @@ function SoundManager(smURL, smID) {
   var SMSound,
   sm2 = this, globalHTML5Audio = null, flash = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', id, ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, fV, on_queue = [], debugOpen = true, debugTS, didAppend = false, appendSuccess = false, didInit = false, disabled = false, windowLoaded = false, _wDS, wdCount = 0, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, delayWaitForEI, waitForEI, rebootIntoHTML5, setVersionInfo, handleFocus, strings, initMovie, domContentLoaded, winOnLoad, didDCLoaded, getDocument, createMovie, catchError, setPolling, initDebug, debugLevels = ['log', 'info', 'warn', 'error'], defaultFlashVersion = 8, disableObject, failSafely, normalizeMovieURL, oRemoved = null, oRemovedHTML = null, str, flashBlockHandler, getSWFCSS, swfCSS, toggleDebug, loopFix, policyFix, complain, idCheck, waitingForEI = false, initPending = false, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   canIgnoreFlash, needsFlash = null, featureCheck, html5OK, html5CanPlay, html5ErrorCodes, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, hasFlash, detectFlash, badSafariFix, html5_events, showSupport, flushMessages, wrapCallback, idCounter = 0, didSetup, msecScale = 1000,
-  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie/i),
+  is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i), isIE = ua.match(/msie|trident/i),
   isWebkit = ua.match(/webkit/i),
   isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)),
   isOpera = (ua.match(/opera/i)),
@@ -1045,7 +1045,7 @@ function SoundManager(smURL, smID) {
         }
       } else if (s._a) {
         if (s._html5_canplay) {
-          if (s._a.currentTime !== position1K) {
+          if (s._a.currentTime.toFixed(3) !== position1K.toFixed(3)) {
             try {
               s._a.currentTime = position1K;
               if (s.playState === 0 || s.paused) {
@@ -2094,6 +2094,8 @@ function SoundManager(smURL, smID) {
   initDebug = function() {
   };
   idCheck = this.getSoundById;
+  _wDS = function(o, errorLevel) {
+  };
   getSWFCSS = function() {
     var css = [];
     if (sm2.debugMode) {
@@ -2203,7 +2205,13 @@ function SoundManager(smURL, smID) {
     if (hasFlash !== _undefined) {
       return hasFlash;
     }
-    var hasPlugin = false, n = navigator, nP = n.plugins, obj, type, types, AX = window.ActiveXObject;
+    var hasPlugin = false, n = navigator, obj, type, types, AX = window.ActiveXObject;
+    var nP;
+    try {
+      nP = n.plugins;
+    } catch (e) {
+      nP = undefined;
+    }
     if (nP && nP.length) {
       type = 'application/x-shockwave-flash';
       types = n.mimeTypes;
