@@ -318,7 +318,7 @@ function SoundManager(smURL, smID) {
    * Error code 2, MEDIA_ERR_NETWORK: A network error of some description caused the user agent to stop fetching the media resource, after the resource was established to be usable.
    * Error code 3, MEDIA_ERR_DECODE: An error of some description occurred while decoding the media resource, after the resource was established to be usable.
    * Error code 4, MEDIA_ERR_SRC_NOT_SUPPORTED: Media (audio file) not supported ("not usable.")
-   * Reference: http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
+   * Reference: https://html.spec.whatwg.org/multipage/embedded-content.html#error-codes
    */
   html5ErrorCodes = [
     null,
@@ -3315,7 +3315,7 @@ function SoundManager(smURL, smID) {
 
     this._onerror = function(errorCode, description) {
 
-      // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes
+      // https://html.spec.whatwg.org/multipage/embedded-content.html#error-codes
       if (s._iO.onerror) {
         wrapCallback(s, function() {
           s._iO.onerror.apply(s, [errorCode, description]);
