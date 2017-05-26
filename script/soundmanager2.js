@@ -4724,7 +4724,7 @@ function SoundManager(smURL, smID) {
   setPolling = function(bPolling, bHighPerformance) {
 
     if (!flash) {
-      return false;
+      return;
     }
 
     flash._setPolling(bPolling, bHighPerformance);
@@ -4742,7 +4742,7 @@ function SoundManager(smURL, smID) {
     }
 
     if (id(sm2.debugID)) {
-      return false;
+      return;
     }
 
     var oD, oDebug, oTarget, oToggle, tmp;
@@ -4819,7 +4819,7 @@ function SoundManager(smURL, smID) {
     oT = id(sm2.debugID + '-toggle');
 
     if (!o) {
-      return false;
+      return;
     }
 
     if (debugOpen) {
@@ -4886,7 +4886,7 @@ function SoundManager(smURL, smID) {
 
     if (sm2.html5Only) {
       // no flash, or unused
-      return false;
+      return;
     }
 
     if (!sm2.ok()) {
@@ -5285,7 +5285,7 @@ function SoundManager(smURL, smID) {
 
       h5IntervalTimer = null;
 
-      return false;
+      return;
 
     }
 
@@ -5322,7 +5322,7 @@ function SoundManager(smURL, smID) {
     // special case: "bad" Safari (OS X 10.3 - 10.7) must fall back to flash for MP3/MP4
     if (!isBadSafari || !detectFlash()) {
       // doesn't apply
-      return false;
+      return;
     }
 
     var aF = sm2.audioFormats, i, item;
@@ -5392,7 +5392,7 @@ function SoundManager(smURL, smID) {
     // swfVersion: SWF build string
 
     if (sm2.swfLoaded) {
-      return false;
+      return;
     }
 
     var e;
@@ -5418,7 +5418,7 @@ function SoundManager(smURL, smID) {
       }, 0);
 
       // exit, init will fail with timeout
-      return false;
+      return;
 
     }
     // </d>
@@ -5805,11 +5805,11 @@ function SoundManager(smURL, smID) {
 
     if (!sm2.url) {
       // No SWF url to load (noURL case) - exit for now. Will be retried when url is set.
-      return false;
+      return;
     }
 
     if (waitingForEI) {
-      return false;
+      return;
     }
 
     waitingForEI = true;
@@ -5818,7 +5818,7 @@ function SoundManager(smURL, smID) {
     if (hasFlash && tryInitOnFocus && !isFocused) {
       // Safari won't load flash in background tabs, only when focused.
       _wDS('waitFocus');
-      return false;
+      return;
     }
 
     if (!didInit) {
@@ -5837,7 +5837,7 @@ function SoundManager(smURL, smID) {
         waitingForEI = false;
         sm2._wD(str('waitSWF'));
         window.setTimeout(delayWaitForEI, 1);
-        return false;
+        return;
       }
 
       // <d>
