@@ -936,7 +936,7 @@ function PagePlayer() {
     // apply some items to SM2
     sm.useFlashBlock = true;
 
-    if (sm.flashVersion >= 9) {
+    if (!sm.html5Only && sm.flashVersion >= 9) {
 
       sm.defaultOptions.usePeakData = this.config.usePeakData;
       sm.defaultOptions.useWaveformData = this.config.useWaveformData;
