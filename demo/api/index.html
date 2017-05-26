@@ -769,7 +769,7 @@ foo.options.onfinish = function() { soundManager._writeDebug(this.id + '<span> s
 <button onclick="return doEval(document.getElementById('demo11').innerHTML)">Do this</button>
 
 <h2>Demo 12: 48 KHz MP3 sampling rate playback issue workaround</h2>
-<p>To work around a known "chipmunk" <a href="http://bugs.adobe.com/jira/browse/FP-862">sampling rate issue with 48 KHz MP3s</a> in Flash, one can apparently load a sound using Flash 9 with stream = false, and then call play() once the sound has fully-loaded. Exactly why this works is not known.</p>
+<p>To work around a known "chipmunk" <a href="http://web.archive.org/web/20090202095835/http://bugs.adobe.com/jira/browse/FP-862">sampling rate issue with 48 KHz MP3s</a> (bugs.adobe.com via Internet Archive) in Flash, one can apparently load a sound using Flash 9 with stream = false, and then call play() once the sound has fully-loaded. Exactly why this works is not known.</p>
 <pre id="demo12" class="block"><code>var fortyeight = soundManager.createSound({
   url: '<span>http://freshly-ground.com/data/audio/48khz-test.mp3</span>'
 });
@@ -829,7 +829,7 @@ if (!fortyeight.loaded) {
 
 <h2>Demo 15: <code>onstop()</code> -&gt; <code>unload()</code> testcase</h2>
 <p>Bug testcase: unload() from onstop() does not work</p>
-<pre id="demo15" class="block"><code>var sound16 = soundManager.createSound({
+<pre id="demo15" class="block"><code>var sound15 = soundManager.createSound({
  id: '<span>demo15</span>',
  url: getRandomMP3URL(),
  onstop: function() {
