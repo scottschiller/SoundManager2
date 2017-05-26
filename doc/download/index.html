@@ -97,7 +97,7 @@ soundManager.setup({
 	   <ul>
 		<li><a href="../resources/#licensing">Licensing</a></li>
 		<li><a href="../resources/#related">Related Projects</a></li>
-		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
+		<li><a href="https://github.com/scottschiller/soundmanager2/issues/">SM2 support / discussion</a></li>
 		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
@@ -397,7 +397,7 @@ soundManager.setup({
 
 									<li>
 										<p>
-											HTML5: Listen to <code>durationchange</code> event, catch-all for duration update events. May help on mobile if duration is determined late. (<a href="https://getsatisfaction.com/schillmania/topics/soundmanager2_playing_songs_from_a_different_start_point_on_mobile_not_working#reply_13672624">Related discussion</a>.)
+											HTML5: Listen to <code>durationchange</code> event, catch-all for duration update events. May help on mobile if duration is determined late. (<a href="http://web.archive.org/web/20140413093702/https://getsatisfaction.com/schillmania/topics/soundmanager2_playing_songs_from_a_different_start_point_on_mobile_not_working">Related discussion</a> [Internet Archive].)
 										</p>
 									</li>
 
@@ -791,7 +791,7 @@ soundManager.setup({
 
 									<li>
 										<p>
-											Flash Player 11.6.602.171, released by Adobe on 02/26/2013, introduced an issue with SM2's default Flash 8 (<code>flashVersion: 8</code>) API-based JS/Flash interaction, where SM2 methods called from callbacks such as <code>onfinish()</code> would not work. This primarily broke methods used for playing sounds in sequence, serially loading a series of sounds and so on. (See <a href="https://getsatisfaction.com/schillmania/topics/recent_chrome_update_seems_to_have_broken_my_sm2_audio_player">discussion</a> for more.)
+											Flash Player 11.6.602.171, released by Adobe on 02/26/2013, introduced an issue with SM2's default Flash 8 (<code>flashVersion: 8</code>) API-based JS/Flash interaction, where SM2 methods called from callbacks such as <code>onfinish()</code> would not work. This primarily broke methods used for playing sounds in sequence, serially loading a series of sounds and so on. (See <a href="http://web.archive.org/web/20151103180508/https://getsatisfaction.com/schillmania/topics/recent_chrome_update_seems_to_have_broken_my_sm2_audio_player">discussion</a> (Internet Archive) for more.)
 										</p>
 
 										<p>
@@ -817,7 +817,7 @@ soundManager.setup({
 
 									<li>
 										<p>
-											HTML5: Fix for iOS <code>load()</code> case when using an auto-load and looping pattern (related <a href="https://getsatisfaction.com/schillmania/topics/autoload_on_ipad_loop_error">discussion</a>).
+											HTML5: Fix for iOS <code>load()</code> case when using an auto-load and looping pattern (related <a href="https://web-beta.archive.org/web/*/https://getsatisfaction.com/schillmania/topics/autoload_on_ipad_loop_error/*">discussion</a> [Internet Archive, may not work, sorry.])
 										</p>
 									</li>
 
@@ -1316,7 +1316,7 @@ soundManager.setup({
 
 									<li>
 										<p>
-											Correct empty options JS error on internal <code>_setup_html5()</code> when reusing HTML5 audio object per <a href="https://getsatisfaction.com/schillmania/topics/possible_bug_when_html5_audio_tag_is_reused_20120527_release">V2.97a.20120527 bug report</a>
+											Correct empty options JS error on internal <code>_setup_html5()</code> when reusing HTML5 audio object per <a href="http://web.archive.org/web/20160428065547/https://getsatisfaction.com/schillmania/topics/possible_bug_when_html5_audio_tag_is_reused_20120527_release">V2.97a.20120527 bug report</a> (Internet Archive)
 										</p>
 									</li>
 
@@ -1502,7 +1502,7 @@ soundManager.setup({
 
 									<li>
 										<p>
-											Fix for Flash 9 <a href="https://getsatisfaction.com/schillmania/topics/sound_playing_double">double-play edge case</a> found with <code>pause()</code> + <code>setPosition()</code> calls.
+											Fix for Flash 9 <a href="http://web.archive.org/web/20160428065515/https://getsatisfaction.com/schillmania/topics/sound_playing_double">double-play edge case</a> (Internet Archive) found with <code>pause()</code> + <code>setPosition()</code> calls.
 										</p>
 									</li>
 
@@ -1593,7 +1593,7 @@ soundManager.setup({
 
 									<li>
 										<p>
-											<code>soundManager.sounds = {}</code> instead of <code>[]</code> on reboot (per <a href="http://getsatisfaction.com/schillmania/topics/possible_bug_in_reboot">bug report</a>)
+											<code>soundManager.sounds = {}</code> instead of <code>[]</code> on reboot (per <a href="http://web.archive.org/web/20160428065540/https://getsatisfaction.com/schillmania/topics/possible_bug_in_reboot">bug report</a> [Internet Archive])
 										</p>
 									</li>
 
@@ -1623,7 +1623,7 @@ soundManager.setup({
 
 									<li>
 										<p>
-											Fix <code>play()</code> "<code>from</code>" + "<code>to</code>" sound sprite playback issue: In some cases, previously-fired "to" events were re-firing due to not being removed, because an equality check was comparing against a potential "to" value of a string rather than a number. (eg., 0-700 followed by 1500-2000; playback would stop in second case, saying 700 had been reached. (Related <a href="https://getsatisfaction.com/schillmania/topics/_from_to_problem_argument_for_to_is_not_updated">bug report</a>.)
+											Fix <code>play()</code> "<code>from</code>" + "<code>to</code>" sound sprite playback issue: In some cases, previously-fired "to" events were re-firing due to not being removed, because an equality check was comparing against a potential "to" value of a string rather than a number. (eg., 0-700 followed by 1500-2000; playback would stop in second case, saying 700 had been reached. (Related <a href="http://web.archive.org/web/20160428065514/https://getsatisfaction.com/schillmania/topics/_from_to_problem_argument_for_to_is_not_updated">bug report</a> [Internet Archive].)
 										</p>
 									</li>
 
@@ -1687,9 +1687,10 @@ soundManager.setup({
 	  <div id="support-wrapper">
 		  <div id="get-satisfaction" class="box">
 		   <div id="gsfn_list_widget">
-		    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
-		    <div id="gsfn_content"></div>
-		    <div class="powered_by"><a href="http://getsatisfaction.com/" rel="nofollow">Get Satisfaction support network</a></div>
+		    <h2>Discussion / Support<span class="l"></span><span class="r"></span></h2>
+			<div id="gsfn_content">
+				<p style="line-height:1rem;margin-bottom:0px">For bug reports and technical support, see <a href="https://github.com/scottschiller/soundmanager2/issues" class="cta">GitHub Issues</a>.</p>
+			</div>
 		   </div>
 		  <!-- /.box -->
 	  </div>

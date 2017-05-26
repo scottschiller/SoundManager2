@@ -97,7 +97,7 @@ soundManager.setup({
 	   <ul>
 		<li><a href="../resources/#licensing">Licensing</a></li>
 		<li><a href="../resources/#related">Related Projects</a></li>
-		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
+		<li><a href="https://github.com/scottschiller/soundmanager2/issues/">SM2 support / discussion</a></li>
 		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
@@ -369,7 +369,7 @@ soundManager.setup({
 
 									<li>
 
-										<p>HTML5 audio playback fix for Android 2.3 (Honeycomb), which doesn't seem to like <code>new Audio('foo.mp3')</code> followed by <code>load()</code> -> <code>play()</code>; first request/attempt stalls and eventually fires <code>ended</code> event. Rather odd. (<a href="http://getsatisfaction.com/schillmania/topics/soundmanager2_on_android">Related discussion</a>.)</p>
+										<p>HTML5 audio playback fix for Android 2.3 (Honeycomb), which doesn't seem to like <code>new Audio('foo.mp3')</code> followed by <code>load()</code> -> <code>play()</code>; first request/attempt stalls and eventually fires <code>ended</code> event. Rather odd. (<a href="http://web.archive.org/web/20160428065603/https://getsatisfaction.com/schillmania/topics/soundmanager2_on_android">Related discussion</a>, Web Archive)</p>
 
 									</li>
 
@@ -690,7 +690,7 @@ soundManager.defaultOptions.onjustbeforefinishtime: 200;</code></pre>
 
 			   			<h3><b>V2.97a.20110706</b> - improved HTML5/flash "mixed mode" via <code>preferFlash</code>, Safari + Snow Leopard HTML5 audio bug update, better ClickToFlash compatibility, minor demo tweaks (<a href="../../download/soundmanagerv297a-20110706.zip" class="norewrite">Download archived version</a>)</h3>
 			
-						<p class="note">Special note: This <i>was</i> <b>V2.97a.20110705</b>, but the latest Flex SDK (4.5.1.21328) was downloaded and used for this build, and it compiled a Flash 9 SWF that wouldn't fully-start on <i>some</i> Windows machines running Firefox and IE 7, possibly others - thus, SM2 would fail to start up. The Flash 9 SWFs are now compiled with an older, working SDK version 4.1.0.16076, used in previous working releases. See <a href="http://getsatisfaction.com/schillmania/topics/flashversion_9_fails_to_initialize_but_only_on_windows">discussion</a> for more details.</p>
+						<p class="note">Special note: This <i>was</i> <b>V2.97a.20110705</b>, but the latest Flex SDK (4.5.1.21328) was downloaded and used for this build, and it compiled a Flash 9 SWF that wouldn't fully-start on <i>some</i> Windows machines running Firefox and IE 7, possibly others - thus, SM2 would fail to start up. The Flash 9 SWFs are now compiled with an older, working SDK version 4.1.0.16076, used in previous working releases. See <a href="http://web.archive.org/web/20160428065615/https://getsatisfaction.com/schillmania/topics/flashversion_9_fails_to_initialize_but_only_on_windows">discussion</a> for more details (Web Archive.)</p>
 
 						<p>Improved "mixed mode" HTML5/flash handling via new (experimental) <code>preferFlash</code> option, enabled by default. (If present, MP3/MP4 get flash for stability; HTML5 is used for other formats.) OS X 10.6.8 (finally?) fixes HTML5 audio in Safari. SoundManager 2 SWF adjusted to fall under ClickToFlash's "invisible" rules, may lower chance of blocking.</p>
 
@@ -826,7 +826,7 @@ closure-compiler.jar=${user.home}/compiler.jar</code></pre>
                    <li>Improved _iO vs. old _iO URL comparison, rather than .src which gets translated from local paths to file:// etc.</li>
 				   <li>Correctly trash instanceOptions (and _iO) before calling onfinish(), but maintain local copy of onfinish() so it still works. Fix play({onfinish:this.play}) bug where _iO was being incorrectly remembered.</li>
                    <li>Flash 9/movieStar: <code>setPosition()</code> unpause hack for everyone, not just Webkit (via 8tracks dudes, reported now in Firefox? Should not cause regressions.)</li>
-                   <li>Special wmode tweak for <a href="http://getsatisfaction.com/schillmania/topics/internet_explorer_security_error_preventing_soundmanager2_from_running">reports</a> of SM2 start-up failures, may be admin/non-admin account related, IE 8-only on Windows 7 (possibly Vista, too?) as of late January, 2011.</li>
+                   <li>Special wmode tweak for <a href="http://web.archive.org/web/20160428065550/https://getsatisfaction.com/schillmania/topics/internet_explorer_security_error_preventing_soundmanager2_from_running">reports</a> (Internet Archive) of SM2 start-up failures, may be admin/non-admin account related, IE 8-only on Windows 7 (possibly Vista, too?) as of late January, 2011.</li>
                    <li>Apply <code>hasPriority</code> to object/embed, not its style. D'oh. :P</li>
                    <li>HTML5: use new Audio(null) vs new Audio(), Opera 9.64 expects URL argument; throws WRONG_ARGUMENTS_ERR otherwise. Doesn't implement canPlayType() either, but both are fixed in future releases.</li>
 				  </ul>
@@ -957,7 +957,7 @@ soundManager.ontimeout(function(){
 				  <ul class="nested compact flat">
                    <li>Double <code>onready()</code>-firing bug (HTML5 and non-flashblock case) fixed.</li>
 				   <li>HTML5: Don't request null/about:blank URL with <code>unload()</code>, may hang/JS error in Chrome and IE 9 preview 7.</li>
-				   <li>RTMP: Ensure <code>onplay()</code> is called for auto-loading streams when resumed. Don't call <code>play()</code> until connected. <code>play()</code> sets flash pauseOnBufferFull = false (fix for reported "<a href="http://getsatisfaction.com/schillmania/topics/rtmp_not_playing_audio#reply_3956421">RTMP not playing audio</a>" issue.)</li>
+				   <li>RTMP: Ensure <code>onplay()</code> is called for auto-loading streams when resumed. Don't call <code>play()</code> until connected. <code>play()</code> sets flash pauseOnBufferFull = false (fix for reported "<a href="http://web.archive.org/web/20160428065524/https://getsatisfaction.com/schillmania/topics/rtmp_not_playing_audio">RTMP not playing audio</a>" [Internet Archive] issue.)</li>
                    <li>overHTTP was likely returning incorrect values previously - now fixed.</li>
                    <li><code>unload()</code> tweak: Ensure <code>position</code> is reset to 0 if <code>unload()</code> fails</li>
                    <li>Flash audio: Log metaDataHandler info if debug enabled, possible <code>duration</code> metaData fix</li>
@@ -968,7 +968,7 @@ soundManager.ontimeout(function(){
 			     <li class="in">
 				  <p class="compact">API Updates</p>
 				  <ul class="nested compact flat">
-				   <li>Revised HTML5 <code>Audio()</code> events, improved <code>whileloading()</code> / <code>whileplaying()</code> / <code>onload()</code> for Webkit and Firefox 4. Progress/onload are still a bit quirky as HTML5 audio is more about "non-linear" loading including range and partial requests, where supported. See <a href="http://getsatisfaction.com/schillmania/topics/html5_chrome_ogg_problems">related discussion</a>.</li>
+				   <li>Revised HTML5 <code>Audio()</code> events, improved <code>whileloading()</code> / <code>whileplaying()</code> / <code>onload()</code> for Webkit and Firefox 4. Progress/onload are still a bit quirky as HTML5 audio is more about "non-linear" loading including range and partial requests, where supported. See <a href="http://web.archive.org/web/20160428065623/https://getsatisfaction.com/schillmania/topics/html5_chrome_ogg_problems">related discussion</a> (Internet Archive.)</li>
                    <li>New <code>soundManager.ok()</code> method, nicer alias for <code>soundManager.supported()</code>.</li>
                    <li>Took <code>soundmanager.loadFromXML()</code> (SM1 legacy method) out back and shot it. Last tweak was in 2008, nobody uses it.</li>
 				  </ul>
@@ -1978,9 +1978,10 @@ soundManager.ontimeout(function(){
 	  <div id="support-wrapper">
 		  <div id="get-satisfaction" class="box">
 		   <div id="gsfn_list_widget">
-		    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
-		    <div id="gsfn_content"></div>
-		    <div class="powered_by"><a href="http://getsatisfaction.com/" rel="nofollow">Get Satisfaction support network</a></div>
+		    <h2>Discussion / Support<span class="l"></span><span class="r"></span></h2>
+			<div id="gsfn_content">
+				<p style="line-height:1rem;margin-bottom:0px">For bug reports and technical support, see <a href="https://github.com/scottschiller/soundmanager2/issues" class="cta">GitHub Issues</a>.</p>
+			</div>
 		   </div>
 		  <!-- /.box -->
 	  </div>
