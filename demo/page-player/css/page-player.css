@@ -196,7 +196,7 @@ ul.playlist li.sm2_paused .controls .statusbar .position {
 
 ul.playlist li .controls .statusbar .loading {
  background-color:#eee;
- transition: width 0.15s ease-out;
+ transition: width 0.15s ease-in-out;
 }
 
 ul.playlist li .controls .statusbar .position,
