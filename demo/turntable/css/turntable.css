@@ -164,7 +164,6 @@
  border-radius: 100%;
  border: 1px solid rgba(0,0,0,0.15);
  background-image: -webkit-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(128,128,128,0) 100%); /* Chrome10+,Safari5.1+ */
- background-image: -o-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(128,128,128,0) 100%); /* Opera 12+ */
  background-image: -ms-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(128,128,128,0) 100%); /* IE10+ */
  background-image: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%,rgba(128,128,128,0) 100%); /* W3C */
  /* fix border bleed */

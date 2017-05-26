@@ -113,12 +113,7 @@ ul.graphic li a.sm2_link {
 }
 
 ul.graphic li a.sm2_link {
- /* safari 3.1+ fun (or, proprietary crap. TBD.) */
- -webkit-transition-property: hover;
- -webkit-transition: background-color 0.15s linear;
- -moz-transition: background-color 0.15s linear 0s; /* firefox 4 */
-  -o-transition-property: background-color; /* opera 10.5 */
-  -o-transition-duration: 0.15s;
+ transition: background-color 0.1s linear;
 }
 
 ul.graphic li a, /* use a.sm2_link {} if you want play icons showing only if SM2 is supported */

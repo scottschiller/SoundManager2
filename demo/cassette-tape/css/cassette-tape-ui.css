@@ -155,7 +155,6 @@
  /*
  -moz-transform: rotate(-0.25deg);
  -webkit-transform: rotate(-0.25deg);
- -o-transform: rotate(-0.25deg);
  transform: rotate(-0.25deg);
  */
  white-space: nowrap;
@@ -184,10 +183,6 @@
  -ms-animation-name: spin;
  -ms-animation-iteration-count: infinite;
  -ms-animation-timing-function: linear;
- -o-animation-duration: 5s;
- -o-animation-name: spin;
- -o-animation-iteration-count: infinite;
- -o-animation-timing-function: linear;
  animation-duration: 5s;
  animation-name: spin;
  animation-iteration-count: infinite;
@@ -198,7 +193,6 @@
  -moz-animation-duration: 4.5s;
  -webkit-animation-duration: 4.5s;
  -ms-animation-duration: 4.5s;
- -o-animation-duration: 4.5s;
  animation-duration: 4.5s;
  z-index: 2;
 }
@@ -208,7 +202,6 @@
  -moz-animation: none;
  -webkit-animation: none;
  -ms-animation: none;
- -o-animation: none;
  animation: none;
 }
 
@@ -217,7 +210,6 @@
  -moz-animation-duration: 3.5s;
  -webkit-animation-duration: 3.5s;
  -ms-animation-duration: 3.5s;
- -o-animation-duration: 3.5s;
  animation-duration: 3.5s;
 }
 
@@ -289,15 +281,6 @@
  }
  to {
   -ms-transform: rotate(0deg);
- }
-}
-
-@-o-keyframes spin {
- from {
-  -o-transform: rotate(360deg);
- }
- to {
-  -o-transform: rotate(0deg);
  }
 }
 
@@ -699,12 +682,6 @@
 .tape .controls ul {
  position: relative;
  margin-top: 21px;
- -moz-transition: all 0.2s ease-out;
- -moz-transition-property: height, margin;
- -ms-transition: all 0.2s ease-out;
- -ms-transition-property: height, margin;
- -o-transition: all 0.2s ease-out;
- -o-transition-property: height, margin;
  -webkit-transition: all 0.2s ease-out;
  -webkit-transition-property: height, margin;
  transition: all 0.2s ease-out;
@@ -730,9 +707,7 @@
  /* http://www.colorzilla.com/gradient-editor/ */
  background: rgb(255,255,255); /* Old browsers */
  background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(241,241,241,1) 50%, rgba(225,225,225,1) 51%, rgba(246,246,246,1) 100%); /* FF3.6+ */
- background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(241,241,241,1)), color-stop(51%,rgba(225,225,225,1)), color-stop(100%,rgba(246,246,246,1))); /* Chrome,Safari4+ */
  background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Opera 11.10+ */
  background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* IE10+ */
  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* W3C */
  box-shadow: 0px 0px 2px rgba(0,0,0,0.1);
@@ -742,9 +717,7 @@
  /* http://www.colorzilla.com/gradient-editor/ */
  background: rgb(255,255,255); /* Old browsers */
  background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(241,241,241,1) 50%, rgba(225,225,225,1) 51%, rgba(246,246,246,1) 100%); /* FF3.6+ */
- background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(241,241,241,1)), color-stop(51%,rgba(225,225,225,1)), color-stop(100%,rgba(246,246,246,1))); /* Chrome,Safari4+ */
  background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Opera 11.10+ */
  background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* IE10+ */
  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* W3C */
  box-shadow: 0px 1px 2px rgba(0,0,0,0.1);
@@ -810,9 +783,7 @@
  background-color: rgba(0,0,0,0.1);
  background: rgb(184,225,252); /* Old browsers */
  background: -moz-linear-gradient(top, rgba(184,225,252,1) 0%, rgba(169,210,243,1) 10%, rgba(144,186,228,1) 25%, rgba(144,188,234,1) 37%, rgba(144,191,240,1) 50%, rgba(107,168,229,1) 51%, rgba(162,218,245,1) 83%, rgba(189,243,253,1) 100%); /* FF3.6+ */
- background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(184,225,252,1)), color-stop(10%,rgba(169,210,243,1)), color-stop(25%,rgba(144,186,228,1)), color-stop(37%,rgba(144,188,234,1)), color-stop(50%,rgba(144,191,240,1)), color-stop(51%,rgba(107,168,229,1)), color-stop(83%,rgba(162,218,245,1)), color-stop(100%,rgba(189,243,253,1))); /* Chrome,Safari4+ */
  background: -webkit-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -o-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* Opera 11.10+ */
  background: -ms-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* IE10+ */
  background: linear-gradient(to bottom, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* W3C */
  color: #fff;

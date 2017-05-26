@@ -547,7 +547,6 @@ pre.block code,
   font-size: 100%;
   line-height:1.75em;
   background-image: -webkit-linear-gradient(#fcfcfc 50%, #fff 50%);
-  background-image: -o-linear-gradient(#fcfcfc 50%, #fff 50%);
   background-image: linear-gradient(#fcfcfc 50%, #fff 50%);
   background-size: 100% 3.5em;
   background-origin: content-box;
@@ -857,9 +856,7 @@ ul li {
   max-width:21em;
   background:#3399cc;
   background: -moz-linear-gradient(top, rgba(51,153,204,0.99) 0%, rgba(35,96,127,0.96) 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,153,204,0.99)), color-stop(100%,rgba(35,96,127,0.96))); /* Chrome,Safari4+ */
   background: -webkit-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* Opera 11.10+ */
   background: -ms-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* IE10+ */
   background: linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* W3C */
   text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
@@ -2029,6 +2026,7 @@ ul.graphic li a.sm2_link {
   /* Doesn't work on this page. */
   -webkit-transition-property: none;
   -webkit-transition: none;
+  transition: none;
 }
 
 .c2 ul.playlist li a {

@@ -151,7 +151,6 @@ pre.block code,
   font-size: 100%;
   line-height:1.75em;
   background-image: -webkit-linear-gradient(#fcfcfc 50%, #fff 50%);
-  background-image: -o-linear-gradient(#fcfcfc 50%, #fff 50%);
   background-image: linear-gradient(#fcfcfc 50%, #fff 50%);
   background-size: 100% 3.5em;
   background-origin: content-box;

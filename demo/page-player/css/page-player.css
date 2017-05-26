@@ -64,12 +64,6 @@ ul.playlist li {
  border:none;
  letter-spacing:-1px; /* ZOMG WEB X.0. ;) */
  background-color:#f9f9f9;
- -webkit-transition-property: hover;
- -webkit-transition: background-color 0.15s ease-in-out;
- -moz-transition: background-color 0.15s linear 0s; /* firefox 4 */
-  -o-transition-property: background-color; /* opera 10.5 */
-  -o-transition-duration: 0.15s;
-
 }
 
 ul.playlist li a {
@@ -202,6 +196,7 @@ ul.playlist li.sm2_paused .controls .statusbar .position {
 
 ul.playlist li .controls .statusbar .loading {
  background-color:#eee;
+ transition: width 0.15s ease-out;
 }
 
 ul.playlist li .controls .statusbar .position,

@@ -44,7 +44,6 @@ body#page-more {
 #demo-header-wrapper.visible {
  -moz-transition: opacity 0.2s ease-in-out;
  -ms-transition: opacity 0.2s ease-in-out;
- -o-transition: opacity 0.2s ease-in-out;
  -webkit-transition: opacity 0.2s ease-in-out;
  transition: opacity 0.2s ease-in-out;
 }
@@ -198,10 +197,6 @@ body#page-more {
  -ms-animation-name: spin;
  -ms-animation-iteration-count: infinite;
  -ms-animation-timing-function: linear;
- -o-animation-duration: 0.66s;
- -o-animation-name: spin;
- -o-animation-iteration-count: infinite;
- -o-animation-timing-function: linear;
  -webkit-animation-duration: 0.66s;
  -webkit-animation-name: spin;
  -webkit-animation-iteration-count: infinite;
@@ -222,9 +217,7 @@ body#page-more {
  background: rgba(255,255,255,0.75);
  background: rgb(109,179,242);
  background: -moz-radial-gradient(center, ellipse cover, rgba(109,179,242,1) 0%, rgba(84,163,238,1) 50%, rgba(54,144,240,1) 51%, rgba(30,105,222,1) 100%); /* FF3.6+ */
- background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(109,179,242,1)), color-stop(50%,rgba(84,163,238,1)), color-stop(51%,rgba(54,144,240,1)), color-stop(100%,rgba(30,105,222,1))); /* Chrome,Safari4+ */
  background: -webkit-radial-gradient(center, ellipse cover, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -o-radial-gradient(center, ellipse cover, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* Opera 12+ */
  background: -ms-radial-gradient(center, ellipse cover, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* IE10+ */
  background: radial-gradient(ellipse at center, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* W3C */
 
@@ -255,8 +248,6 @@ body#page-more {
  -moz-transition-property: opacity, -moz-transform;
  -ms-transition: all 0.33s ease-in-out;
  -ms-transition-property: opacity, -ms-transform;
- -o-transition: all 0.33s ease-in-out;
- -o-transition-property: opacity, -o-transform;
  -webkit-transition: all 0.33s ease-in-out;
  -webkit-transition-property: opacity, -webkit-transform;
  transition: all 0.33s ease-in-out;
@@ -266,7 +257,6 @@ body#page-more {
 #tape-loader,
 #tape-loader.hidden,
 #tape-loader.visible.hidden {
- -o-transform: scale(0);
  -moz-transform: scale3d(0, 0, 1);
  -webkit-transform: scale3d(0, 0, 1);
  -ms-transform: scale3d(0, 0, 1);
@@ -275,7 +265,6 @@ body#page-more {
 }
 
 #tape-loader.visible {
- -o-transform: scale(1);
  -moz-transform: scale3d(1, 1, 1);
  -webkit-transform: scale3d(1, 1, 1);
  -ms-transform: scale3d(1, 1, 1);
@@ -302,7 +291,6 @@ body#page-more {
 .tape form input {
  -moz-transition: box-shadow 0.2s ease-in-out;
  -ms-transition: box-shadow 0.2s ease-in-out;
- -o-transition: box-shadow 0.2s ease-in-out;
  -webkit-transition: box-shadow 0.2s ease-in-out;
  transition: box-shadow 0.2s ease-in-out;
  box-shadow: none;
