@@ -1020,7 +1020,7 @@ function SoundManager(smURL, smID) {
       if (!idCheck(sID)) return false;
 
       sm2._wD(sm + '.unmute(): Unmuting "' + sID + '"');
-      
+
       return sm2.sounds[sID].unmute();
 
     }
@@ -1922,9 +1922,9 @@ function SoundManager(smURL, smID) {
 
           return s;
 
-        } else {
-          sm2._wD(fN + 'Already playing (multi-shot)', 1);
         }
+
+        sm2._wD(fN + 'Already playing (multi-shot)', 1);
 
       }
 
@@ -1966,7 +1966,7 @@ function SoundManager(smURL, smID) {
           } else {
 
             sm2._wD(fN + 'Unsupported type. Exiting.');
-            
+
             return s;
 
           }
@@ -1977,7 +1977,7 @@ function SoundManager(smURL, smID) {
         } else if (s.readyState === 2) {
 
           sm2._wD(fN + 'Could not load - exiting', 2);
-          
+
           return s;
 
         } else {
