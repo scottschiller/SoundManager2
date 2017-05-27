@@ -152,11 +152,7 @@
  text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
  box-shadow: 1px 1px 0px rgba(0,0,0,0.05);
  /* a slightly-human element */
- /*
- -moz-transform: rotate(-0.25deg);
- -webkit-transform: rotate(-0.25deg);
- transform: rotate(-0.25deg);
- */
+ /* transform: rotate(-0.25deg); */
  white-space: nowrap;
  text-overflow: ellipsis;
  overflow: hidden;
@@ -171,18 +167,6 @@
 
 .tape.playing .tape-guide,
 .tape.playing .spokes {
- -moz-animation-duration: 5s;
- -moz-animation-name: spin;
- -moz-animation-iteration-count: infinite;
- -moz-animation-timing-function: linear;
- -webkit-animation-duration: 5s;
- -webkit-animation-name: spin;
- -webkit-animation-iteration-count: infinite;
- -webkit-animation-timing-function: linear;
- -ms-animation-duration: 5s;
- -ms-animation-name: spin;
- -ms-animation-iteration-count: infinite;
- -ms-animation-timing-function: linear;
  animation-duration: 5s;
  animation-name: spin;
  animation-iteration-count: infinite;
@@ -190,26 +174,17 @@
 }
 
 .tape.playing .tape-guide {
- -moz-animation-duration: 4.5s;
- -webkit-animation-duration: 4.5s;
- -ms-animation-duration: 4.5s;
  animation-duration: 4.5s;
  z-index: 2;
 }
 
 .tape.stopped .tape-guide,
 .tape.stopped .spokes {
- -moz-animation: none;
- -webkit-animation: none;
- -ms-animation: none;
  animation: none;
 }
 
 .tape .reel.right,
 .tape .spokes.right {
- -moz-animation-duration: 3.5s;
- -webkit-animation-duration: 3.5s;
- -ms-animation-duration: 3.5s;
  animation-duration: 3.5s;
 }
 
@@ -255,33 +230,6 @@
 
 .tape.clear .reel.right {
  border-width: 0px;
-}
-
-@-moz-keyframes spin {
- from {
-  -moz-transform: rotate(360deg);
- }
- to {
-  -moz-transform: rotate(0deg);
- }
-}
-
-@-webkit-keyframes spin {
- from {
-  -webkit-transform: rotate(360deg);
- }
- to {
-  -webkit-transform: rotate(0deg);
- }
-}
-
-@-ms-keyframes spin {
- from {
-  -ms-transform: rotate(360deg);
- }
- to {
-  -ms-transform: rotate(0deg);
- }
 }
 
 @keyframes spin {
@@ -428,8 +376,6 @@
  margin-left: 17%;
  border-top: none;
  border-bottom: none;
- -moz-box-sizing: border-box;
- -webkit-box-sizing: border-box;
  box-sizing: border-box;
 }
 
@@ -450,8 +396,6 @@
  width: 16px;
  height: 16px;
  margin: -8px 0px 0px -8px;
- -moz-box-sizing: border-box;
- -webkit-box-sizing: border-box;
  box-sizing: border-box;
 }
 
@@ -522,9 +466,11 @@
 }
 
 .progress-notches {
- position: absolute;
- top: 50%;
- left: 50%;
+ transform: translate(201%, 1975%); /* GPU, avoid repaint while being dragged and dropped. Percentages are huge because of small size relative to parent container. */
+ /*
+  top: 50%;
+  left: 50%;
+ */
  width: 25%;
  height: 2.5%;
  margin: -18px 0px 0px -12.5%;
@@ -682,8 +628,6 @@
 .tape .controls ul {
  position: relative;
  margin-top: 21px;
- -webkit-transition: all 0.2s ease-out;
- -webkit-transition-property: height, margin;
  transition: all 0.2s ease-out;
  transition-property: height, margin;
 }
@@ -706,9 +650,6 @@
  overflow: hidden;
  /* http://www.colorzilla.com/gradient-editor/ */
  background: rgb(255,255,255); /* Old browsers */
- background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(241,241,241,1) 50%, rgba(225,225,225,1) 51%, rgba(246,246,246,1) 100%); /* FF3.6+ */
- background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* IE10+ */
  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* W3C */
  box-shadow: 0px 0px 2px rgba(0,0,0,0.1);
 }
@@ -716,9 +657,6 @@
 #tape1 .controls.aqua ul {
  /* http://www.colorzilla.com/gradient-editor/ */
  background: rgb(255,255,255); /* Old browsers */
- background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(241,241,241,1) 50%, rgba(225,225,225,1) 51%, rgba(246,246,246,1) 100%); /* FF3.6+ */
- background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* IE10+ */
  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%); /* W3C */
  box-shadow: 0px 1px 2px rgba(0,0,0,0.1);
 }
@@ -782,13 +720,9 @@
 .tape .controls.aqua ul li a:hover {
  background-color: rgba(0,0,0,0.1);
  background: rgb(184,225,252); /* Old browsers */
- background: -moz-linear-gradient(top, rgba(184,225,252,1) 0%, rgba(169,210,243,1) 10%, rgba(144,186,228,1) 25%, rgba(144,188,234,1) 37%, rgba(144,191,240,1) 50%, rgba(107,168,229,1) 51%, rgba(162,218,245,1) 83%, rgba(189,243,253,1) 100%); /* FF3.6+ */
- background: -webkit-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -ms-linear-gradient(top, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* IE10+ */
  background: linear-gradient(to bottom, rgba(184,225,252,1) 0%,rgba(169,210,243,1) 10%,rgba(144,186,228,1) 25%,rgba(144,188,234,1) 37%,rgba(144,191,240,1) 50%,rgba(107,168,229,1) 51%,rgba(162,218,245,1) 83%,rgba(189,243,253,1) 100%); /* W3C */
  color: #fff;
 }
-
 
 .tape .controls.aqua ul li a:active {
  background: #999;

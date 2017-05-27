@@ -6,7 +6,7 @@ body {
  margin: 0px;
  padding: 0px;
  font-size: 100%;
- font-family: "Helvetica Neue", Helvetica, verdana, arial, tahoma, sans-serif;
+ font-family: Helvetica, verdana, arial, tahoma, sans-serif;
  color: #fff;
  /* font trickery */
  -moz-osx-font-smoothing: grayscale;
@@ -29,6 +29,10 @@ body#page-more {
    url('../font/ostrich-rounded-webfont.svg#ostrich-sans_roundedmedium') format('svg');
   font-weight: normal;
   font-style: normal;
+}
+
+h1, h2, h3 {
+  font-family: "Helvetica Neue", Helvetica, verdana, arial, tahoma, sans-serif;
 }
 
 #demo-header-wrapper {
@@ -125,13 +129,13 @@ body#page-more {
 
 #demo-header a:hover {
  color: #fff;
- background: rgba(32,128,255,0.5);
+ background-color: rgba(32, 128, 192, 0.75);
 }
 
 .demo-subheader p {
  max-width: 660px;
- font-size: 95%;
- line-height: 1.4em;
+ font-size: 100%;
+ line-height: 1.75em;
 }
 
 .demo-subheader h2 {
@@ -162,7 +166,7 @@ body#page-more {
 
 .demo-subheader a:hover {
  color: #fff;
- background-color: rgba(32, 128, 255, 0.5);
+ background-color: rgba(32, 128, 192, 0.75);
  text-shadow: none;
 }
 
@@ -189,18 +193,6 @@ body#page-more {
  top: -3px;
  width: 42px;
  height: 42px;
- -moz-animation-duration: 0.66s;
- -moz-animation-name: spin;
- -moz-animation-iteration-count: infinite;
- -moz-animation-timing-function: linear;
- -ms-animation-duration: 0.66s;
- -ms-animation-name: spin;
- -ms-animation-iteration-count: infinite;
- -ms-animation-timing-function: linear;
- -webkit-animation-duration: 0.66s;
- -webkit-animation-name: spin;
- -webkit-animation-iteration-count: infinite;
- -webkit-animation-timing-function: linear;
  animation-duration: 0.66s;
  animation-name: spin;
  animation-iteration-count: infinite;
@@ -216,14 +208,11 @@ body#page-more {
  border-radius: 100%;
  background: rgba(255,255,255,0.75);
  background: rgb(109,179,242);
- background: -moz-radial-gradient(center, ellipse cover, rgba(109,179,242,1) 0%, rgba(84,163,238,1) 50%, rgba(54,144,240,1) 51%, rgba(30,105,222,1) 100%); /* FF3.6+ */
- background: -webkit-radial-gradient(center, ellipse cover, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* Chrome10+,Safari5.1+ */
- background: -ms-radial-gradient(center, ellipse cover, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* IE10+ */
  background: radial-gradient(ellipse at center, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* W3C */
 
 }
 
-@-moz-keyframes tape_loading {
+@keyframes tape_loading {
  from {
   background-position: 0px 0px;
  }
@@ -231,25 +220,9 @@ body#page-more {
   background-position: -20px 0px;
  }
 }
-
-@-webkit-keyframes tape_loading {
- from {
-  background-position: 0px 0px;
- }
- to {
-  background-position: -20px 0px;
- }
-}
-
 
 #tape-loader,
 #tape-loader.hidden {
- -moz-transition: all 0.33s ease-in-out;
- -moz-transition-property: opacity, -moz-transform;
- -ms-transition: all 0.33s ease-in-out;
- -ms-transition-property: opacity, -ms-transform;
- -webkit-transition: all 0.33s ease-in-out;
- -webkit-transition-property: opacity, -webkit-transform;
  transition: all 0.33s ease-in-out;
  transition-property: opacity, transform;
 }
@@ -257,17 +230,11 @@ body#page-more {
 #tape-loader,
 #tape-loader.hidden,
 #tape-loader.visible.hidden {
- -moz-transform: scale3d(0, 0, 1);
- -webkit-transform: scale3d(0, 0, 1);
- -ms-transform: scale3d(0, 0, 1);
  transform: scale3d(0, 0, 1);
  opacity: 0;
 }
 
 #tape-loader.visible {
- -moz-transform: scale3d(1, 1, 1);
- -webkit-transform: scale3d(1, 1, 1);
- -ms-transform: scale3d(1, 1, 1);
  transform: scale3d(1, 1, 1);
  opacity: 1;
 }
@@ -289,9 +256,6 @@ body#page-more {
 }
 
 .tape form input {
- -moz-transition: box-shadow 0.2s ease-in-out;
- -ms-transition: box-shadow 0.2s ease-in-out;
- -webkit-transition: box-shadow 0.2s ease-in-out;
  transition: box-shadow 0.2s ease-in-out;
  box-shadow: none;
 }

@@ -28,12 +28,8 @@
  box-shadow: inset 0px 0px 8px rgba(0,0,0,0.15);
  /* a little radii, modern browsers only */
  border-radius: 100%;
- -webkit-transition: all 0.1s ease-in-out;
- -moz-transition: all 0.1s ease-in-out;
  transition: all 0.1s ease-in-out;
  /* specifics */
- -moz-transition-property: background, border, box-shadow;
- -webkit-transition-property: background, border, box-shadow;
  transition-property: background, border, box-shadow;
 }
 
@@ -102,9 +98,6 @@
  /* hi-dpi / "retina" screens */
  top: -50%;
  left: -50%;
- -moz-transform: scale(0.5);
- -ms-transform: scale(0.5);
- -webkit-transform: scale(0.5);
  transform: scale(0.5);
 }
 

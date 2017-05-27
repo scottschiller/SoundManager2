@@ -7,7 +7,6 @@ body {
   /* wacky IE 6 horizontal scrollbar hack */
   _width:99.5%;
   /* a little fun: transition font size with media shift. */
-  -moz-transition: font-size 0.1s;
   -webkit-transition: font-size 0.1s;
   /* font trickery */
   -moz-osx-font-smoothing: grayscale;
@@ -257,22 +256,11 @@ body.home #about-sm2 strong {
 a.feature-hot,
 a.feature {
   display: inline-block;
-  -moz-transition: all 0.25s ease-in-out;
-  -webkit-transition: all 0.25s ease-in-out;
   transition: all 0.25s ease-in-out;
   text-shadow: 0px 1px 0px rgba(0,0,0,0.33);
 }
 
-@-moz-keyframes highlight {
-  from {
-    box-shadow: 0px 0px 0px rgba(255,64,64,0);
-  }
-  to {
-    box-shadow: 0px 0px 16px rgba(255,64,64,0.75);
-  }
-}
-
-@-webkit-keyframes highlight {
+@keyframes highlight {
   from {
     box-shadow: 0px 0px 0px rgba(255,64,64,0);
   }
@@ -289,14 +277,10 @@ a.feature {
 a.feature-hot:hover,
 a.feature:hover,
 #col3 a.button:hover {
-  -moz-animation-duration: 0.5s;
-  -moz-animation-name: highlight;
-  -moz-animation-iteration-count: infinite;
-  -moz-animation-direction: alternate;
-  -webkit-animation-duration: 0.5s;
-  -webkit-animation-name: highlight;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-direction: alternate;
+  animation-duration: 0.5s;
+  animation-name: highlight;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
 
 body.home #about-sm2 h3 {
@@ -855,9 +839,7 @@ ul li {
   min-width:19em;
   max-width:21em;
   background:#3399cc;
-  background: -moz-linear-gradient(top, rgba(51,153,204,0.99) 0%, rgba(35,96,127,0.96) 100%); /* FF3.6+ */
   background: -webkit-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* Chrome10+,Safari5.1+ */
-  background: -ms-linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* IE10+ */
   background: linear-gradient(top, rgba(51,153,204,0.99) 0%,rgba(35,96,127,0.96) 100%); /* W3C */
   text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
   _width:19em;
@@ -1405,8 +1387,6 @@ body.home #support-wrapper {
   height: 0px;
   margin: 0px;
   /* smooth height transitions, why not */
-  -webkit-transition: height 0.5s ease-in-out;
-  -moz-transition: height 0.5s ease-in-out;
   transition: height 0.5s ease-in-out;
 }
 
@@ -1741,8 +1721,6 @@ a.warning:hover {
   color:#999;
   font-size:0.9em;
   margin-top:-0.75em;
-  -webkit-transform:rotate(-15deg);
-  -moz-transform:rotate(-15deg);
   transform:rotate(-15deg);
 }
 
@@ -2098,17 +2076,7 @@ body.home #sm2-container {
   _margin:-8px 0px 0px 0px;
 }
 
-@-moz-keyframes flashblock {
-  from {
-    border-color: #ff3333;
-  }
-  
-  to {
-    border-color: #fff;
-  }
-}
-
-@-webkit-keyframes flashblock {
+@keyframes flashblock {
   from {
     border-color: #ff3333;
   }
@@ -2121,12 +2089,9 @@ body.home #sm2-container {
 body.home #sm2-container.swf_timedout {
   /* blocked state */
   border:1px solid #ff3333;
-  -moz-animation-duration: 1s;
-  -moz-animation-name: flashblock;
-  -moz-animation-iteration-count: 5;
-  -webkit-animation-duration: 1s;
-  -webkit-animation-name: flashblock;
-  -webkit-animation-iteration-count: 5;
+  animation-duration: 1s;
+  animation-name: flashblock;
+  animation-iteration-count: 5;
   width:48px;
   height:48px;
 }
@@ -2731,11 +2696,7 @@ body.home #sm2-visualization .ui360 a {
 
 body.home #sm2-visualization .ui360 a,
 body.home #sm2-visualization .ui360 canvas {
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
-  -moz-transition-property: background-color, border, box-shadow;
-  -webkit-transition-property: background-color, border, box-shadow;
   transition-property: background-color, border, box-shadow;
 }
 

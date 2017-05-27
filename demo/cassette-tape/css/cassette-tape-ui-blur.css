@@ -147,94 +147,7 @@ body {
 }
 
 .tape.draggable.dropin {
- -moz-animation: dropin 0.75s;
- -ms-animation: dropin 0.75s;
- -webkit-animation: dropin 0.75s;
  animation: dropin 0.75s;
-}
-
-@-moz-keyframes dropin {
- 0% {
-  opacity: 0;
-  -moz-transform: scale3d(2, 2, 1);
-  -moz-animation-timing-function: ease-out;
- }
- 33% {
-  opacity: 0.5;
-  -moz-transform: scale3d(0.85, 0.85, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
- 55% {
-  opacity: 1;
-  -moz-transform: scale3d(1.05, 1.05, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
- 77% {
-  opacity: 1;
-  -moz-transform: scale3d(0.98, 0.98, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
- 100% {
-  opacity: 1;
-  -moz-transform: scale3d(1, 1, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
-}
-
-@-ms-keyframes dropin {
- 0% {
-  opacity: 0;
-  -ms-transform: scale3d(2, 2, 1);
-  -ms-animation-timing-function: ease-out;
- }
- 33% {
-  opacity: 0.5;
-  -ms-transform: scale3d(0.85, 0.85, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
- 55% {
-  opacity: 1;
-  -ms-transform: scale3d(1.05, 1.05, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
- 77% {
-  opacity: 1;
-  -ms-transform: scale3d(0.98, 0.98, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
- 100% {
-  opacity: 1;
-  -ms-transform: scale3d(1, 1, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
-}
-
-@-webkit-keyframes dropin {
- 0% {
-  opacity: 0;
-  -webkit-transform: scale3d(2, 2, 1);
-  -webkit-animation-timing-function: ease-out;
- }
- 33% {
-  opacity: 0.5;
-  -webkit-transform: scale3d(0.85, 0.85, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
- 55% {
-  opacity: 1;
-  -webkit-transform: scale3d(1.05, 1.05, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
- 77% {
-  opacity: 1;
-  -webkit-transform: scale3d(0.98, 0.98, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
- 100% {
-  opacity: 1;
-  -webkit-transform: scale3d(1, 1, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
 }
 
 @keyframes dropin {
@@ -267,8 +180,6 @@ body {
 
 .tape.draggable .blur-image-wrapper {
  opacity: 0;
- -moz-transition: opacity 0.1s ease-out;
- -webkit-transition: opacity 0.1s ease-out;
  transition: opacity 0.1s ease-out;
 }
 
@@ -277,99 +188,19 @@ body {
 }
 
 .tape.draggable {
- -moz-transition: -moz-transform 0.1s ease-out;
- -moz-transform: scale3d(1, 1, 1);
- -ms-transition: -ms-transform 0.1s ease-out;
- -ms-transform: scale3d(1, 1, 1);
- -webkit-transition: -webkit-transform 0.1s ease-out;
- -webkit-transform: scale3d(1, 1, 1);
  transform: scale3d(1, 1, 1);
 }
 
 .tape.draggable.dragging {
- -ms-transform: scale3d(1.025, 1.025, 1);
- -moz-transform: scale3d(1.025, 1.025, 1);
- -webkit-transform: scale3d(1.025, 1.025, 1);
+ transition: transform 0.1s ease-out; /* slight pick-up effect */
  transform: scale3d(1.025, 1.025, 1);
 }
 
 .tape.draggable.dropping {
- -ms-animation: dragdrop 0.5s;
- -moz-animation: dragdrop 0.5s;
- -webkit-animation: dragdrop 0.5s;
  animation: dragdrop 0.5s;
 }
 
-@-ms-keyframes dragdrop {
- 0% {
-  -ms-transform: scale3d(1.025, 1,025, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
- 33% {
-  -ms-transform: scale3d(0.99, 0.99, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
- 55% {
-  -ms-transform: scale3d(1.005, 1.005, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
- 77% {
-  -ms-transform: scale3d(0.997, 0.997, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
- 100% {
-  -ms-transform: scale3d(1, 1, 1);
-  -ms-animation-timing-function: ease-in-out;
- }
-}
-
-@-moz-keyframes dragdrop {
- 0% {
-  -moz-transform: scale3d(1.025, 1,025, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
- 33% {
-  -moz-transform: scale3d(0.99, 0.99, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
- 55% {
-  -moz-transform: scale3d(1.005, 1.005, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
- 77% {
-  -moz-transform: scale3d(0.997, 0.997, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
- 100% {
-  -moz-transform: scale3d(1, 1, 1);
-  -moz-animation-timing-function: ease-in-out;
- }
-}
-
-@-webkit-keyframes dragdrop {
- 0% {
-  -webkit-transform: scale3d(1.025, 1,025, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
- 33% {
-  -webkit-transform: scale3d(0.99, 0.99, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
- 55% {
-  -webkit-transform: scale3d(1.005, 1.005, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
- 77% {
-  -webkit-transform: scale3d(0.997, 0.997, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
- 100% {
-  -webkit-transform: scale3d(1, 1, 1);
-  -webkit-animation-timing-function: ease-in-out;
- }
-}
-
-keyframes dragdrop {
+@keyframes dragdrop {
  0% {
   transform: scale3d(1.025, 1,025, 1);
   animation-timing-function: ease-in-out;
