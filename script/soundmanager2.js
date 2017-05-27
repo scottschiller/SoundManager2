@@ -610,9 +610,7 @@ function SoundManager(smURL, smID) {
 
     // explicitly destroy a sound before normal page unload, etc.
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
 
     var oS = sm2.sounds[sID], i;
 
@@ -651,9 +649,8 @@ function SoundManager(smURL, smID) {
 
   this.load = function(sID, oOptions) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].load(oOptions);
 
   };
@@ -666,9 +663,8 @@ function SoundManager(smURL, smID) {
 
   this.unload = function(sID) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].unload();
 
   };
@@ -685,9 +681,8 @@ function SoundManager(smURL, smID) {
 
   this.onPosition = function(sID, nPosition, oMethod, oScope) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].onposition(nPosition, oMethod, oScope);
 
   };
@@ -706,9 +701,8 @@ function SoundManager(smURL, smID) {
 
   this.clearOnPosition = function(sID, nPosition, oMethod) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].clearOnPosition(nPosition, oMethod);
 
   };
@@ -734,10 +728,8 @@ function SoundManager(smURL, smID) {
 
     if (!idCheck(sID, overloaded)) {
 
-      if (!overloaded) {
-        // no sound found for the given ID. Bail.
-        return false;
-      }
+      // no sound found for the given ID. Bail.
+      if (!overloaded) return false;
 
       if (overloaded) {
         oOptions = {
@@ -782,9 +774,8 @@ function SoundManager(smURL, smID) {
 
   this.setPlaybackRate = function(sID, rate, allowOverride) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].setPlaybackRate(rate, allowOverride);
 
   };
@@ -799,9 +790,8 @@ function SoundManager(smURL, smID) {
 
   this.setPosition = function(sID, nMsecOffset) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].setPosition(nMsecOffset);
 
   };
@@ -815,11 +805,10 @@ function SoundManager(smURL, smID) {
 
   this.stop = function(sID) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
 
     sm2._wD(sm + '.stop(' + sID + ')', 1);
+
     return sm2.sounds[sID].stop();
 
   };
@@ -851,9 +840,8 @@ function SoundManager(smURL, smID) {
 
   this.pause = function(sID) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].pause();
 
   };
@@ -880,9 +868,8 @@ function SoundManager(smURL, smID) {
 
   this.resume = function(sID) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].resume();
 
   };
@@ -909,9 +896,8 @@ function SoundManager(smURL, smID) {
 
   this.togglePause = function(sID) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].togglePause();
 
   };
@@ -926,9 +912,8 @@ function SoundManager(smURL, smID) {
 
   this.setPan = function(sID, nPan) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].setPan(nPan);
 
   };
@@ -957,9 +942,7 @@ function SoundManager(smURL, smID) {
 
     // setVolume('mySound', 50) case
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
 
     return sm2.sounds[sID].setVolume(nVol);
 
@@ -989,9 +972,8 @@ function SoundManager(smURL, smID) {
 
     } else {
 
-      if (!idCheck(sID)) {
-        return false;
-      }
+      if (!idCheck(sID)) return false;
+
       sm2._wD(sm + '.mute(): Muting "' + sID + '"');
       return sm2.sounds[sID].mute();
 
@@ -1035,10 +1017,10 @@ function SoundManager(smURL, smID) {
 
     } else {
 
-      if (!idCheck(sID)) {
-        return false;
-      }
+      if (!idCheck(sID)) return false;
+
       sm2._wD(sm + '.unmute(): Unmuting "' + sID + '"');
+      
       return sm2.sounds[sID].unmute();
 
     }
@@ -1066,9 +1048,8 @@ function SoundManager(smURL, smID) {
 
   this.toggleMute = function(sID) {
 
-    if (!idCheck(sID)) {
-      return false;
-    }
+    if (!idCheck(sID)) return false;
+
     return sm2.sounds[sID].toggleMute();
 
   };
@@ -1106,9 +1087,7 @@ function SoundManager(smURL, smID) {
     }
 
     // already disabled?
-    if (disabled) {
-      return false;
-    }
+    if (disabled) return false;
 
     disabled = true;
 
@@ -1186,11 +1165,7 @@ function SoundManager(smURL, smID) {
 
   this.canPlayLink = function(oLink) {
 
-    if (oLink.type !== _undefined && oLink.type) {
-      if (sm2.canPlayMIME(oLink.type)) {
-        return true;
-      }
-    }
+    if (oLink.type !== _undefined && oLink.type && sm2.canPlayMIME(oLink.type)) return true;
 
     return sm2.canPlayURL(oLink.href);
 
@@ -1205,9 +1180,7 @@ function SoundManager(smURL, smID) {
 
   this.getSoundById = function(sID, _suppressDebug) {
 
-    if (!sID) {
-      return null;
-    }
+    if (!sID) return null;
 
     var result = sm2.sounds[sID];
 
@@ -1314,9 +1287,7 @@ function SoundManager(smURL, smID) {
 
     var sDID = 'soundmanager-debug', o, oItem;
 
-    if (!sm2.setupOptions.debugMode) {
-      return false;
-    }
+    if (!sm2.setupOptions.debugMode) return false;
 
     if (hasConsole && sm2.useConsole) {
       if (sTypeOrObject && typeof sTypeOrObject === 'object') {
@@ -1327,16 +1298,12 @@ function SoundManager(smURL, smID) {
       } else {
         console.log(sText);
       }
-      if (sm2.consoleOnly) {
-        return true;
-      }
+      if (sm2.consoleOnly) return true;
     }
 
     o = id(sDID);
 
-    if (!o) {
-      return false;
-    }
+    if (!o) return false;
 
     oItem = doc.createElement('div');
 
@@ -1517,6 +1484,7 @@ function SoundManager(smURL, smID) {
      */
 
     _wDS('reset');
+
     return sm2.reboot(true, true);
 
   };
@@ -1532,12 +1500,11 @@ function SoundManager(smURL, smID) {
     /**
      * Interesting syntax notes...
      * Flash/ExternalInterface (ActiveX/NPAPI) bridge methods are not typeof "function" nor instanceof Function, but are still valid.
-     * Additionally, JSLint dislikes ('PercentLoaded' in flash)-style syntax and recommends hasOwnProperty(), which does not work in this case.
      * Furthermore, using (flash && flash.PercentLoaded) causes IE to throw "object doesn't support this property or method".
      * Thus, 'in' syntax must be used.
      */
 
-    return (flash && 'PercentLoaded' in flash ? flash.PercentLoaded() : null); // Yes, JSLint. See nearby comment in source for explanation.
+    return (flash && 'PercentLoaded' in flash ? flash.PercentLoaded() : null);
 
   };
 
@@ -1552,9 +1519,7 @@ function SoundManager(smURL, smID) {
 
     setTimeout(function() {
 
-      if (initPending) {
-        return false;
-      }
+      if (initPending) return false;
 
       createMovie();
       initMovie();
@@ -1899,8 +1864,7 @@ function SoundManager(smURL, smID) {
 
       var fN, allowMulti, a, onready,
           audioClone, onended, oncanplay,
-          startOK = true,
-          exit = null;
+          startOK = true;
 
       // <d>
       fN = s.id + ': play(): ';
@@ -1956,16 +1920,12 @@ function SoundManager(smURL, smID) {
             s.setPosition(s._iO.position);
           }
 
-          exit = s;
+          return s;
 
         } else {
           sm2._wD(fN + 'Already playing (multi-shot)', 1);
         }
 
-      }
-
-      if (exit !== null) {
-        return exit;
       }
 
       // edge case: play() with explicit URL parameter
@@ -2006,7 +1966,8 @@ function SoundManager(smURL, smID) {
           } else {
 
             sm2._wD(fN + 'Unsupported type. Exiting.');
-            exit = s;
+            
+            return s;
 
           }
 
@@ -2016,7 +1977,8 @@ function SoundManager(smURL, smID) {
         } else if (s.readyState === 2) {
 
           sm2._wD(fN + 'Could not load - exiting', 2);
-          exit = s;
+          
+          return s;
 
         } else {
 
@@ -2029,10 +1991,6 @@ function SoundManager(smURL, smID) {
         // "play()"
         sm2._wD(fN.substr(0, fN.lastIndexOf(':')));
 
-      }
-
-      if (exit !== null) {
-        return exit;
       }
 
       if (!s.isHTML5 && fV === 9 && s.position > 0 && s.position === s.duration) {
@@ -2084,8 +2042,6 @@ function SoundManager(smURL, smID) {
               _oncanplay: onready
             });
 
-            exit = false;
-
           } else if (!s.isHTML5 && !s.loaded && (!s.readyState || s.readyState !== 2)) {
 
             // to be safe, preload the whole thing in Flash.
@@ -2096,12 +2052,6 @@ function SoundManager(smURL, smID) {
               onload: onready
             });
 
-            exit = false;
-
-          }
-
-          if (exit !== null) {
-            return exit;
           }
 
           // otherwise, we're ready to go. re-apply local options, and continue
@@ -2460,9 +2410,7 @@ function SoundManager(smURL, smID) {
 
     this.pause = function(_bCallFlash) {
 
-      if (s.paused || (s.playState === 0 && s.readyState !== 1)) {
-        return s;
-      }
+      if (s.paused || (s.playState === 0 && s.readyState !== 1)) return s;
 
       sm2._wD(s.id + ': pause()');
       s.paused = true;
@@ -2502,9 +2450,7 @@ function SoundManager(smURL, smID) {
 
       var instanceOptions = s._iO;
 
-      if (!s.paused) {
-        return s;
-      }
+      if (!s.paused) return s;
 
       sm2._wD(s.id + ': resume()');
       s.paused = false;
@@ -2777,9 +2723,7 @@ function SoundManager(smURL, smID) {
 
       var i, item, j = onPositionItems.length;
 
-      if (!j || !s.playState || onPositionFired >= j) {
-        return false;
-      }
+      if (!j || !s.playState || onPositionFired >= j) return false;
 
       for (i = j - 1; i >= 0; i--) {
 
@@ -2807,9 +2751,7 @@ function SoundManager(smURL, smID) {
       // reset "fired" for items interested in this position
       var i, item, j = onPositionItems.length;
 
-      if (!j) {
-        return false;
-      }
+      if (!j) return false;
 
       for (i = j - 1; i >= 0; i--) {
 
@@ -3212,9 +3154,7 @@ function SoundManager(smURL, smID) {
 
     add_html5_events = function() {
 
-      if (s._a._added_events) {
-        return false;
-      }
+      if (s._a._added_events) return false;
 
       var f;
 
@@ -3312,14 +3252,10 @@ function SoundManager(smURL, smID) {
 
     this._onbufferchange = function(nIsBuffering) {
 
-      if (s.playState === 0) {
-        // ignore if not playing
-        return false;
-      }
+      // ignore if not playing
+      if (s.playState === 0) return false;
 
-      if ((nIsBuffering && s.isBuffering) || (!nIsBuffering && !s.isBuffering)) {
-        return false;
-      }
+      if ((nIsBuffering && s.isBuffering) || (!nIsBuffering && !s.isBuffering)) return false;
 
       s.isBuffering = (nIsBuffering === 1);
 
@@ -3470,10 +3406,8 @@ function SoundManager(smURL, smID) {
       var instanceOptions = s._iO,
           eqLeft;
 
-      if (isNaN(nPosition) || nPosition === null) {
-        // flash safety net
-        return false;
-      }
+      // flash safety net
+      if (isNaN(nPosition) || nPosition === null) return false;
 
       // Safari HTML5 play() may return small -ve values when starting from position: 0, eg. -50.120396875. Unexpected/invalid per W3, I think. Normalize to 0.
       s.position = Math.max(0, nPosition);
@@ -4280,9 +4214,7 @@ function SoundManager(smURL, smID) {
      * }
      */
 
-    if (!sm2.useHTML5Audio || !sm2.hasHTML5) {
-      return false;
-    }
+    if (!sm2.useHTML5Audio || !sm2.hasHTML5) return false;
 
     var url = (o.url || null),
         mime = (o.type || null),
@@ -4294,9 +4226,7 @@ function SoundManager(smURL, smID) {
 
     // account for known cases like audio/mp3
 
-    if (mime && sm2.html5[mime] !== _undefined) {
-      return (sm2.html5[mime] && !preferFlashCheck(mime));
-    }
+    if (mime && sm2.html5[mime] !== _undefined) return (sm2.html5[mime] && !preferFlashCheck(mime));
 
     if (!html5Ext) {
 
@@ -4393,9 +4323,7 @@ function SoundManager(smURL, smID) {
           result = false,
           isOK = false;
 
-      if (!a || typeof a.canPlayType !== 'function') {
-        return result;
-      }
+      if (!a || typeof a.canPlayType !== 'function') return result;
 
       if (m instanceof Array) {
 
@@ -4647,10 +4575,8 @@ function SoundManager(smURL, smID) {
 
         urlParams = movieURL.substr(movieURL.toLowerCase().lastIndexOf('.swf?') + 4);
 
-        if (urlParams) {
-          // assume user knows what they're doing
-          return movieURL;
-        }
+        // assume user knows what they're doing
+        if (urlParams) return movieURL;
 
       } else if (movieURL.lastIndexOf('/') !== movieURL.length - 1) {
 
@@ -4950,15 +4876,11 @@ function SoundManager(smURL, smID) {
       };
     }
 
-    if (!didInit && oOptions && !oOptions.ignoreInit) {
-      // not ready yet.
-      return false;
-    }
+    // not ready yet.
+    if (!didInit && oOptions && !oOptions.ignoreInit) return false;
 
-    if (oOptions.type === 'ontimeout' && (sm2.ok() || (disabled && !oOptions.ignoreInit))) {
-      // invalid case
-      return false;
-    }
+    // invalid case
+    if (oOptions.type === 'ontimeout' && (sm2.ok() || (disabled && !oOptions.ignoreInit))) return false;
 
     var status = {
           success: (oOptions && oOptions.ignoreInit ? sm2.ok() : !disabled)
@@ -5039,10 +4961,8 @@ function SoundManager(smURL, smID) {
      * http://featureblend.com/javascript-flash-detection-library.html / http://featureblend.com/license.txt
      */
 
-    if (hasFlash !== _undefined) {
-      // this work has already been done.
-      return hasFlash;
-    }
+    // this work has already been done.
+    if (hasFlash !== _undefined) return hasFlash;
 
     var hasPlugin = false, n = navigator, obj, type, types, AX = window.ActiveXObject;
 
@@ -5435,10 +5355,8 @@ function SoundManager(smURL, smID) {
 
   createMovie = function(movieID, movieURL) {
 
-    if (didAppend && appendSuccess) {
-      // ignore if already succeeded
-      return false;
-    }
+    // ignore if already connected
+    if (didAppend && appendSuccess) return false;
 
     function initMsg() {
 
@@ -5714,9 +5632,7 @@ function SoundManager(smURL, smID) {
     }
 
     // attempt to get, or create, movie (may already exist)
-    if (flash) {
-      return false;
-    }
+    if (flash) return false;
 
     if (!sm2.url) {
 
@@ -5991,9 +5907,7 @@ function SoundManager(smURL, smID) {
 
   initComplete = function(bNoDisable) {
 
-    if (didInit) {
-      return false;
-    }
+    if (didInit) return false;
 
     if (sm2.html5Only) {
       // all good.
@@ -6185,9 +6099,7 @@ function SoundManager(smURL, smID) {
 
   domContentLoaded = function() {
 
-    if (didDCLoaded) {
-      return false;
-    }
+    if (didDCLoaded) return false;
 
     didDCLoaded = true;
 
