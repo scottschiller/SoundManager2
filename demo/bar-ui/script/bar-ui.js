@@ -11,7 +11,7 @@
    * http://schillmania.com/projects/soundmanager2/license.txt
    */
 
-  "use strict";
+  'use strict';
 
   var Player,
       players = [],
@@ -121,13 +121,13 @@
 
     }
 
-    function callback(method, soundObject) {
+    function callback(method, oSound) {
       if (method) {
         // fire callback, passing current player and sound objects
         if (exports.on && exports.on[method]) {
-          exports.on[method](exports, soundObject);
+          exports.on[method](exports, oSound);
         } else if (players.on[method]) {
-          players.on[method](exports, soundObject);
+          players.on[method](exports, oSound);
         }
       }
     }
@@ -558,7 +558,7 @@
 
           if (itemBottom > containerHeight + scrollTop) {
             // bottom-align
-            dom.playlist.scrollTop = itemBottom - containerHeight + itemPadding;
+            dom.playlist.scrollTop = (itemBottom - containerHeight) + itemPadding;
           } else if (itemTop < scrollTop) {
             // top-align
             dom.playlist.scrollTop = item.offsetTop - itemPadding;
@@ -610,7 +610,7 @@
           if (window.console && console.warn) {
             console.warn('refreshDOM(): playlist node not found?');
           }
-          return false;
+          return;
         }
 
         data.playlist = dom.playlist.getElementsByTagName('li');
@@ -625,7 +625,7 @@
 
       }
 
-      function init() {
+      function initPlaylistController() {
 
         // inherit the default SM2 volume
         defaultVolume = soundManager.defaultOptions.volume;
@@ -643,7 +643,7 @@
 
       }
 
-      init();
+      initPlaylistController();
 
       return {
         data: data,
@@ -666,6 +666,8 @@
         return true;
       }
 
+      return false;
+
     }
 
     function getActionData(target) {
@@ -673,7 +675,7 @@
       // DOM measurements for volume slider
 
       if (!target) {
-        return false;
+        return;
       }
 
       actionData.volume.x = utils.position.getOffX(target);
@@ -700,7 +702,7 @@
       target = e.target || e.srcElement;
 
       if (isRightClick(e)) {
-        return true;
+        return;
       }
 
       // normalize to <a>, if applicable.
@@ -725,16 +727,67 @@
         utils.events.add(document, 'touchend', actions.releaseVolume);
 
         // and apply right away
-        return actions.adjustVolume(e);
+        actions.adjustVolume(e);
 
       }
+
+    }
+
+    function handleMouse(e) {
+
+      var target, barX, barWidth, x, clientX, newPosition, sound;
+
+      target = dom.progressTrack;
+
+      barX = utils.position.getOffX(target);
+      barWidth = target.offsetWidth;
+      clientX = utils.events.getClientX(e);
+
+      x = (clientX - barX);
+
+      newPosition = (x / barWidth);
+
+      sound = soundObject;
+
+      if (sound && sound.duration) {
+
+        sound.setPosition(sound.duration * newPosition);
+
+        // a little hackish: ensure UI updates immediately with current position, even if audio is buffering and hasn't moved there yet.
+        if (sound._iO && sound._iO.whileplaying) {
+          sound._iO.whileplaying.apply(sound);
+        }
+
+      }
+
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+
+      return false;
+
+    }
+
+    function releaseMouse(e) {
+
+      utils.events.remove(document, 'mousemove', handleMouse);
+      utils.events.remove(document, 'touchmove', handleMouse);
+
+      utils.css.remove(dom.o, 'grabbing');
+
+      utils.events.remove(document, 'mouseup', releaseMouse);
+      utils.events.remove(document, 'touchend', releaseMouse);
+
+      utils.events.preventDefault(e);
+
+      return false;
 
     }
 
     function handleProgressMouseDown(e) {
 
       if (isRightClick(e)) {
-        return true;
+        return;
       }
 
       utils.css.add(dom.o, 'grabbing');
@@ -744,7 +797,7 @@
       utils.events.add(document, 'mouseup', releaseMouse);
       utils.events.add(document, 'touchend', releaseMouse);
 
-      return handleMouse(e);
+      handleMouse(e);
 
     }
 
@@ -834,56 +887,7 @@
 
       }
 
-    }
-
-    function handleMouse(e) {
-
-      var target, barX, barWidth, x, clientX, newPosition, sound;
-
-      target = dom.progressTrack;
-
-      barX = utils.position.getOffX(target);
-      barWidth = target.offsetWidth;
-      clientX = utils.events.getClientX(e);
-
-      x = (clientX - barX);
-
-      newPosition = (x / barWidth);
-
-      sound = soundObject;
-
-      if (sound && sound.duration) {
-
-        sound.setPosition(sound.duration * newPosition);
-
-        // a little hackish: ensure UI updates immediately with current position, even if audio is buffering and hasn't moved there yet.
-        if (sound._iO && sound._iO.whileplaying) {
-          sound._iO.whileplaying.apply(sound);
-        }
-
-      }
-
-      if (e.preventDefault) {
-        e.preventDefault();
-      }
-
-      return false;
-
-    }
-
-    function releaseMouse(e) {
-
-      utils.events.remove(document, 'mousemove', handleMouse);
-      utils.events.remove(document, 'touchmove', handleMouse);
-
-      utils.css.remove(dom.o, 'grabbing');
-
-      utils.events.remove(document, 'mouseup', releaseMouse);
-      utils.events.remove(document, 'touchend', releaseMouse);
-
-      utils.events.preventDefault(e);
-
-      return false;
+      return true;
 
     }
 
@@ -1316,7 +1320,7 @@
       function addClass(o, cStr) {
 
         if (!o || !cStr || hasClass(o, cStr)) {
-          return false; // safety net
+          return; // safety net
         }
         o.className = (o.className ? o.className + ' ' : '') + cStr;
 
@@ -1325,7 +1329,7 @@
       function removeClass(o, cStr) {
 
         if (!o || !cStr || !hasClass(o, cStr)) {
-          return false;
+          return;
         }
         o.className = o.className.replace(new RegExp('( ' + cStr + ')|(' + cStr + ')', 'g'), '');
 
@@ -1419,8 +1423,6 @@
       }
 
       function ancestor(nodeName, element, checkCurrent) {
-
-        var result;
 
         if (!element || !nodeName) {
           return element;
@@ -1615,12 +1617,10 @@
         return localAnimationFrame.apply(window, arguments);
       } : null;
 
-      function has(prop) {
+      function has(propName) {
 
         // test for feature support
-        var result = testDiv.style[prop];
-
-        return (result !== undefined ? prop : null);
+        return (testDiv.style[propName] !== undefined ? propName : null);
 
       }
 
