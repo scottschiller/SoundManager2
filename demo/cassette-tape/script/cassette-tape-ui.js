@@ -8,7 +8,13 @@
 
 (function(window) {
 
+/* global window, document, Image, soundManager */
+
 var caughtError = false;
+var utils;
+var dragHandler;
+var tapeUIs = [];
+var ignoreNextClick = false;
 
 var CanvasImage = function(canvas, image) {
 
@@ -211,7 +217,7 @@ function imageMask(imageSrc, maskSrc, canvasWidth, canvasHeight, useRepeat, onco
 
   }
 
-  function init() {
+  function initImage() {
 
     // preload source / target images
 
@@ -225,7 +231,7 @@ function imageMask(imageSrc, maskSrc, canvasWidth, canvasHeight, useRepeat, onco
 
   }
 
-  init();
+  initImage();
 
 }
 
@@ -343,7 +349,7 @@ function TapeUI(oOptions) {
   function initMask(callback) {
 
     if (!dom.node.className.match(/cutout/i)) {
-      return false;
+      return;
     }
 
     // draw our tape cut-outs
@@ -440,7 +446,7 @@ function TapeUI(oOptions) {
 
     // don't center unless draggable.
     if (!dragHandler.data.dragTarget.node) {
-      return false;
+      return;
     }
 
     var screenX = window.innerWidth,
@@ -615,9 +621,9 @@ function TapeUI(oOptions) {
 
     // draw a line of tape between the two reels, at angles relative to the amount of tape on each reel.
 
-    var leftReelRadius = borderMaxWidth - (borderMaxWidth * progress);
+    var leftReelRadius = borderMaxWidth - (borderMaxWidth * progress * 0.995);
 
-    var rightReelRadius = (borderMaxWidth * progress);
+    var rightReelRadius = (borderMaxWidth * progress * 1.0425);
 
     var bottomTapeOffset = scaleHeight(0.998);
 
@@ -806,8 +812,6 @@ function TapeUI(oOptions) {
 
 }
 
-var tapeUIs = [];
-
 function resetTapeUIs() {
 
   for (var i=tapeUIs.length; i--;) {
@@ -816,9 +820,7 @@ function resetTapeUIs() {
 
 }
 
-var ignoreNextClick = false;
-
-var dragHandler = (function() {
+dragHandler = (function() {
 
   var css,
       data,
@@ -948,70 +950,6 @@ var dragHandler = (function() {
   return {
     data: data,
     init: init
-  }
-
-}());
-
-var utils = (function() {
-
-  var addEventHandler = (typeof window.addEventListener !== 'undefined' ? function(o, evtName, evtHandler) {
-    return o.addEventListener(evtName,evtHandler,false);
-  } : function(o, evtName, evtHandler) {
-    o.attachEvent('on'+evtName,evtHandler);
-  });
-
-  var removeEventHandler = (typeof window.removeEventListener !== 'undefined' ? function(o, evtName, evtHandler) {
-    return o.removeEventListener(evtName,evtHandler,false);
-  } : function(o, evtName, evtHandler) {
-    return o.detachEvent('on'+evtName,evtHandler);
-  });
-
-  var classContains = function(o,cStr) {
-    return (typeof(o.className)!=='undefined'?o.className.match(new RegExp('(\s|^)'+cStr+'(\s|$)')):false);
-  };
-
-  var addClass = function(o,cStr) {
-    if (!o || !cStr || classContains(o,cStr)) {
-      return false;
-    }
-    o.className = (o.className?o.className+' ':'')+cStr;
-  };
-
-  var removeClass = function(o,cStr) {
-    if (!o || !cStr || classContains(o,cStr)) {
-      return false;
-    }
-    o.className = o.className.replace(new RegExp('( '+cStr+')|('+cStr+')','g'),'');
-  };
-
-/*
-  var isChildOfNode = function(o,sNodeName) {
-    if (!o || !o.parentNode) {
-      return false;
-    }
-    sNodeName = sNodeName.toLowerCase();
-    do {
-      o = o.parentNode;
-    } while (o && o.parentNode && o.nodeName.toLowerCase() !== sNodeName);
-    return (o.nodeName.toLowerCase() === sNodeName ? o : null);
-  };
-*/
-
-  return {
-    css: {
-      has: classContains,
-      add: addClass,
-      remove: removeClass
-    },
-/*
-    dom: {
-      isChildOfNode: this.isChildOfNode
-    },
-*/
-    events: {
-      add: addEventHandler,
-      remove: removeEventHandler
-    }
   }
 
 }());
@@ -1181,6 +1119,52 @@ function delayInit() {
     init();
   }, 20);
 }
+
+utils = (function() {
+
+  var addEventHandler = (typeof window.addEventListener !== 'undefined' ? function(o, evtName, evtHandler) {
+    return o.addEventListener(evtName,evtHandler,false);
+  } : function(o, evtName, evtHandler) {
+    o.attachEvent('on'+evtName,evtHandler);
+  });
+
+  var removeEventHandler = (typeof window.removeEventListener !== 'undefined' ? function(o, evtName, evtHandler) {
+    return o.removeEventListener(evtName,evtHandler,false);
+  } : function(o, evtName, evtHandler) {
+    return o.detachEvent('on'+evtName,evtHandler);
+  });
+
+  var classContains = function(o,cStr) {
+    return (typeof(o.className)!=='undefined'?o.className.match(new RegExp('(\s|^)'+cStr+'(\s|$)')):false);
+  };
+
+  var addClass = function(o,cStr) {
+    if (!o || !cStr || classContains(o,cStr)) {
+      return false;
+    }
+    o.className = (o.className?o.className+' ':'')+cStr;
+  };
+
+  var removeClass = function(o,cStr) {
+    if (!o || !cStr || classContains(o,cStr)) {
+      return false;
+    }
+    o.className = o.className.replace(new RegExp('( '+cStr+')|('+cStr+')','g'),'');
+  };
+
+  return {
+    css: {
+      has: classContains,
+      add: addClass,
+      remove: removeClass
+    },
+    events: {
+      add: addEventHandler,
+      remove: removeEventHandler
+    }
+  }
+
+}());
 
 soundManager.setup({
   url: '../../swf/',
