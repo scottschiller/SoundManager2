@@ -29,6 +29,9 @@
 
 (function SM2(window, _undefined) {
 
+/* global Audio, document, window, navigator, define, module, SM2_DEFER, opera, setTimeout, setInterval, clearTimeout, sm2Debugger */
+
+'use strict';
 
 if (!window || !window.document) {
 
