@@ -144,14 +144,14 @@ function PagePlayer() {
 
   this.addClass = function(o, cStr) {
     if (!o || !cStr || self.hasClass(o, cStr)) {
-      return false; // safety net
+      return; // safety net
     }
     o.className = (o.className ? o.className + ' ' : '') + cStr;
   };
 
   this.removeClass = function(o, cStr) {
     if (!o || !cStr || !self.hasClass(o, cStr)) {
-      return false;
+      return;
     }
     o.className = o.className.replace(new RegExp('( ' + cStr + ')|(' + cStr + ')', 'g'), '');
   };
@@ -313,15 +313,13 @@ function PagePlayer() {
 
   this.setPageTitle = function(sTitle) {
     if (!self.config.updatePageTitle) {
-      return false;
+      return;
     }
     try {
       document.title = (sTitle ? sTitle + ' - ' : '') + self.pageTitle;
     } catch(e) {
       // oh well
-      self.setPageTitle = function() {
-        return false;
-      };
+      self.setPageTitle = function() {};
     }
   };
 
@@ -346,7 +344,7 @@ function PagePlayer() {
 
     pause: function() {
       if (pl.dragActive) {
-        return false;
+        return;
       }
       pl.removeClass(this._data.oLI, this._data.className);
       this._data.className = pl.css.sPaused;
@@ -357,7 +355,7 @@ function PagePlayer() {
 
     resume: function() {
       if (pl.dragActive) {
-        return false;
+        return;
       }
       pl.removeClass(this._data.oLI, this._data.className);
       this._data.className = pl.css.sPlaying;
@@ -389,7 +387,7 @@ function PagePlayer() {
         doWork.apply(this);
       } else {
         var d = new Date();
-        if (d && d - self.lastWLExec > 50 || this.bytesLoaded === this.bytesTotal) {
+        if ((d && (d - self.lastWLExec > 50)) || this.bytesLoaded === this.bytesTotal) {
           doWork.apply(this);
           self.lastWLExec = d;
         }
@@ -400,12 +398,10 @@ function PagePlayer() {
     onload: function() {
       if (!this.loaded) {
         var oTemp = this._data.oLI.getElementsByTagName('a')[0],
-            oString = oTemp.innerHTML,
-            oThis = this;
+            oString = oTemp.innerHTML;
         oTemp.innerHTML = oString + ' <span style="font-size:0.5em"> | Load failed, d\'oh! ' + (sm.sandbox.noRemote ? ' Possible cause: Flash sandbox is denying remote URL access.' : (sm.sandbox.noLocal ? 'Flash denying local filesystem access' : '404?')) + '</span>';
         setTimeout(function() {
           oTemp.innerHTML = oString;
-          // pl.events.finish.apply(oThis); // load next
         }, 5000);
       } else if (this._data.metadata) {
           this._data.metadata.refresh();
@@ -420,7 +416,7 @@ function PagePlayer() {
           if (pl.config.usePeakData && this.instanceOptions.usePeakData) {
             self.updatePeaks.apply(this);
           }
-          if (pl.config.useWaveformData && this.instanceOptions.useWaveformData || pl.config.useEQData && this.instanceOptions.useEQData) {
+          if ((pl.config.useWaveformData && this.instanceOptions.useWaveformData) || (pl.config.useEQData && this.instanceOptions.useEQData)) {
             self.updateGraph.apply(this);
           }
         }
@@ -440,7 +436,7 @@ function PagePlayer() {
             if (pl.config.usePeakData && this.instanceOptions.usePeakData) {
               self.updatePeaks.apply(this);
             }
-            if (pl.config.useWaveformData && this.instanceOptions.useWaveformData || pl.config.useEQData && this.instanceOptions.useEQData) {
+            if ((pl.config.useWaveformData && this.instanceOptions.useWaveformData) || (pl.config.useEQData && this.instanceOptions.useEQData)) {
               self.updateGraph.apply(this);
             }
           }
@@ -457,7 +453,7 @@ function PagePlayer() {
 
   this.setPageIcon = function(sDataURL) {
     if (!self.config.useFavIcon || !self.config.usePeakData || !sDataURL) {
-      return false;
+      return;
     }
     var link = document.getElementById('sm2-favicon');
     if (link) {
@@ -476,7 +472,7 @@ function PagePlayer() {
 
   this.resetPageIcon = function() {
     if (!self.config.useFavIcon) {
-      return false;
+      return;
     }
     var link = document.getElementById('favicon');
     if (link) {
@@ -487,8 +483,8 @@ function PagePlayer() {
   this.updatePeaks = function() {
     var o = this._data.oPeak,
         oSpan = o.getElementsByTagName('span');
-    oSpan[0].style.marginTop = (13 - (Math.floor(15 * this.peakData.left)) + 'px');
-    oSpan[1].style.marginTop = (13 - (Math.floor(15 * this.peakData.right)) + 'px');
+    oSpan[0].style.marginTop = ((13 - (Math.floor(15 * this.peakData.left))) + 'px');
+    oSpan[1].style.marginTop = ((13 - (Math.floor(15 * this.peakData.right))) + 'px');
     if (sm.flashVersion > 8 && self.config.useFavIcon && self.config.usePeakData) {
       self.setPageIcon(self.vuMeterData[parseInt(16 * this.peakData.left, 10)][parseInt(16 * this.peakData.right, 10)]);
     }
@@ -496,7 +492,7 @@ function PagePlayer() {
 
   this.updateGraph = function() {
     if (pl.config.flashVersion < 9 || (!pl.config.useWaveformData && !pl.config.useEQData)) {
-      return false;
+      return;
     }
     var sbC = this._data.oGraph.getElementsByTagName('div'),
         scale, i, offset;
@@ -510,14 +506,14 @@ function PagePlayer() {
       // eq spectrum
       offset = 9;
       for (i = 255; i--;) {
-        sbC[255 - i].style.marginTop = ((offset * 2) - 1 + Math.ceil(this.eqData[i] * -offset)) + 'px';
+        sbC[255 - i].style.marginTop = ((offset * 2) - (1 + Math.ceil(this.eqData[i] * -offset))) + 'px';
       }
     }
   };
 
   this.resetGraph = function() {
     if (!pl.config.useEQData || pl.config.flashVersion < 9) {
-      return false;
+      return;
     }
     var sbC = this._data.oGraph.getElementsByTagName('div'),
         scale = (!pl.config.useEQData ? '9px' : '17px'),
@@ -553,29 +549,33 @@ function PagePlayer() {
       }
       return pl.config.allowRightClick; // ignore right-clicks
     }
+
     var o = self.getTheDamnTarget(e),
-        sURL, soundURL, thisSound, oControls, oLI, str;
+        soundURL, thisSound, oControls, oLI, str;
+
     if (!o) {
       return true;
     }
+
     if (self.dragActive) {
       self.stopDrag(); // to be safe
     }
+
     if (self.withinStatusBar(o)) {
       // self.handleStatusClick(e);
       return false;
     }
+
     if (o.nodeName.toLowerCase() !== 'a') {
       o = self.getParentByNodeName(o, 'a');
     }
+
     if (!o) {
       // not a link
       return true;
     }
 
     // OK, we're dealing with a link
-
-    sURL = o.getAttribute('href');
 
     if (!o.href || (!sm.canPlayLink(o) && !self.hasClass(o, 'playable')) || self.hasClass(o, 'exclude')) {
 
@@ -584,113 +584,113 @@ function PagePlayer() {
 
     }
 
-      // we have something we're interested in.
+    // we have something we're interested in.
 
-      // find and init parent UL, if need be
-      self.initUL(self.getParentByNodeName(o, 'ul'));
+    // find and init parent UL, if need be
+    self.initUL(self.getParentByNodeName(o, 'ul'));
 
-      // and decorate the link too, if needed
-      self.initItem(o);
+    // and decorate the link too, if needed
+    self.initItem(o);
 
-      soundURL = o.href;
-      thisSound = self.getSoundByObject(o);
+    soundURL = o.href;
+    thisSound = self.getSoundByObject(o);
 
-      if (thisSound) {
+    if (thisSound) {
 
-        // sound already exists
-        self.setPageTitle(thisSound._data.originalTitle);
-        if (thisSound === self.lastSound) {
-          // ..and was playing (or paused) and isn't in an error state
-          if (thisSound.readyState !== 2) {
-            if (thisSound.playState !== 1) {
-              // not yet playing
-              thisSound.play();
-            } else {
-              thisSound.togglePause();
-            }
+      // sound already exists
+      self.setPageTitle(thisSound._data.originalTitle);
+      if (thisSound === self.lastSound) {
+        // ..and was playing (or paused) and isn't in an error state
+        if (thisSound.readyState !== 2) {
+          if (thisSound.playState !== 1) {
+            // not yet playing
+            thisSound.play();
           } else {
-            sm._writeDebug('Warning: sound failed to load (security restrictions, 404 or bad format)', 2);
+            thisSound.togglePause();
           }
         } else {
-          // ..different sound
-          if (self.lastSound) {
-            self.stopSound(self.lastSound);
-          }
-          if (spectrumContainer) {
-            thisSound._data.oTimingBox.appendChild(spectrumContainer);
-          }
-          thisSound.togglePause(); // start playing current
+          sm._writeDebug('Warning: sound failed to load (security restrictions, 404 or bad format)', 2);
         }
-
       } else {
-
-        // create sound
-        thisSound = sm.createSound({
-          id: o.id,
-          url: decodeURI(soundURL),
-          onplay: self.events.play,
-          onstop: self.events.stop,
-          onpause: self.events.pause,
-          onresume: self.events.resume,
-          onfinish: self.events.finish,
-          type: (o.type || null),
-          whileloading: self.events.whileloading,
-          whileplaying: self.events.whileplaying,
-          onmetadata: self.events.metadata,
-          onload: self.events.onload
-        });
-
-        // append control template
-        oControls = self.oControls.cloneNode(true);
-        oLI = o.parentNode;
-        oLI.appendChild(oControls);
-        if (spectrumContainer) {
-          oLI.appendChild(spectrumContainer);
-        }
-        self.soundsByObject[o.id] = thisSound;
-
-        // tack on some custom data
-        thisSound._data = {
-          oLink: o, // DOM reference within SM2 object event handlers
-          oLI: oLI,
-          oControls: self.select('controls', oLI),
-          oStatus: self.select('statusbar', oLI),
-          oLoading: self.select('loading', oLI),
-          oPosition: self.select('position', oLI),
-          oTimingBox: self.select('timing', oLI),
-          oTiming: self.select('timing', oLI).getElementsByTagName('div')[0],
-          oPeak: self.select('peak', oLI),
-          oGraph: self.select('spectrum-box', oLI),
-          className: self.css.sPlaying,
-          originalTitle: o.innerHTML,
-          metadata: null
-        };
-
-        if (spectrumContainer) {
-          thisSound._data.oTimingBox.appendChild(spectrumContainer);
-        }
-
-        // "Metadata"
-        if (thisSound._data.oLI.getElementsByTagName('ul').length) {
-          thisSound._data.metadata = new Metadata(thisSound);
-        }
-
-        // set initial timer stuff (before loading)
-        str = self.strings.timing.replace('%s1', self.config.emptyTime);
-        str = str.replace('%s2', self.config.emptyTime);
-        thisSound._data.oTiming.innerHTML = str;
-        self.sounds.push(thisSound);
+        // ..different sound
         if (self.lastSound) {
           self.stopSound(self.lastSound);
         }
-        self.resetGraph.apply(thisSound);
-        thisSound.play();
-
+        if (spectrumContainer) {
+          thisSound._data.oTimingBox.appendChild(spectrumContainer);
+        }
+        thisSound.togglePause(); // start playing current
       }
 
-      self.lastSound = thisSound; // reference for next call
-      return self.stopEvent(e);
+    } else {
 
+      // create sound
+      thisSound = sm.createSound({
+        id: o.id,
+        url: decodeURI(soundURL),
+        onplay: self.events.play,
+        onstop: self.events.stop,
+        onpause: self.events.pause,
+        onresume: self.events.resume,
+        onfinish: self.events.finish,
+        type: (o.type || null),
+        whileloading: self.events.whileloading,
+        whileplaying: self.events.whileplaying,
+        onmetadata: self.events.metadata,
+        onload: self.events.onload
+      });
+
+      // append control template
+      oControls = self.oControls.cloneNode(true);
+      oLI = o.parentNode;
+      oLI.appendChild(oControls);
+      if (spectrumContainer) {
+        oLI.appendChild(spectrumContainer);
+      }
+      self.soundsByObject[o.id] = thisSound;
+
+      // tack on some custom data
+      thisSound._data = {
+        oLink: o, // DOM reference within SM2 object event handlers
+        oLI: oLI,
+        oControls: self.select('controls', oLI),
+        oStatus: self.select('statusbar', oLI),
+        oLoading: self.select('loading', oLI),
+        oPosition: self.select('position', oLI),
+        oTimingBox: self.select('timing', oLI),
+        oTiming: self.select('timing', oLI).getElementsByTagName('div')[0],
+        oPeak: self.select('peak', oLI),
+        oGraph: self.select('spectrum-box', oLI),
+        className: self.css.sPlaying,
+        originalTitle: o.innerHTML,
+        metadata: null
+      };
+
+      if (spectrumContainer) {
+        thisSound._data.oTimingBox.appendChild(spectrumContainer);
+      }
+
+      // "Metadata"
+      if (thisSound._data.oLI.getElementsByTagName('ul').length) {
+        thisSound._data.metadata = new Metadata(thisSound);
+      }
+
+      // set initial timer stuff (before loading)
+      str = self.strings.timing.replace('%s1', self.config.emptyTime);
+      str = str.replace('%s2', self.config.emptyTime);
+      thisSound._data.oTiming.innerHTML = str;
+      self.sounds.push(thisSound);
+      if (self.lastSound) {
+        self.stopSound(self.lastSound);
+      }
+      self.resetGraph.apply(thisSound);
+      thisSound.play();
+
+    }
+
+    self.lastSound = thisSound; // reference for next call
+
+    return self.stopEvent(e);
 
   };
 
@@ -763,8 +763,10 @@ function PagePlayer() {
         self.lastSound.resume();
       }
       self.dragActive = false;
-      return self.stopEvent(e);
+      self.stopEvent(e);
+      return false;
     }
+    return true;
   };
 
   this.handleStatusClick = function(e) {
@@ -772,7 +774,8 @@ function PagePlayer() {
     if (!pl.hasClass(self.lastSound._data.oLI, self.css.sPaused)) {
       self.resume();
     }
-    return self.stopEvent(e);
+    self.stopEvent(e);
+    return false;
   };
 
   this.stopEvent = function(e) {
@@ -792,7 +795,7 @@ function PagePlayer() {
     var oThis = self.getTheDamnTarget(e),
         x, oControl, oSound, nMsecOffset;
     if (!oThis) {
-      return true;
+      return;
     }
     oControl = oThis;
     while (!self.hasClass(oControl, 'controls') && oControl.parentNode) {
@@ -801,7 +804,7 @@ function PagePlayer() {
     oSound = self.lastSound;
     x = parseInt(e.clientX, 10);
     // play sound at this position
-    nMsecOffset = Math.floor((x - self.getOffX(oControl) - 4) / (oControl.offsetWidth) * self.getDurationEstimate(oSound));
+    nMsecOffset = Math.floor(((x - self.getOffX(oControl) - 4) / (oControl.offsetWidth)) * self.getDurationEstimate(oSound));
     if (!isNaN(nMsecOffset)) {
       nMsecOffset = Math.min(nMsecOffset, oSound.duration);
     }
@@ -882,7 +885,7 @@ function PagePlayer() {
   this.testCanvas = function() {
     // canvas + toDataURL();
     var c = document.createElement('canvas'),
-        ctx = null, ok;
+        ctx = null;
     if (!c || typeof c.getContext === 'undefined') {
       return null;
     }
@@ -892,7 +895,7 @@ function PagePlayer() {
     }
     // just in case..
     try {
-        ok = c.toDataURL('image/png');
+        c.toDataURL('image/png');
     } catch(e) {
       // no canvas or no toDataURL()
       return null;
