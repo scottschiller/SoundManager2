@@ -1,6 +1,3 @@
-﻿/*jslint plusplus: true, white: true, nomen: true */
-/*global console, document, navigator, soundManager, window */
-
 (function(window) {
 
   /**
@@ -10,6 +7,8 @@
    * Code provided under BSD license.
    * http://schillmania.com/projects/soundmanager2/license.txt
    */
+
+  /* global console, document, navigator, soundManager, window */
 
   'use strict';
 
@@ -70,11 +69,11 @@
     nodes = utils.dom.getAll(playerSelector);
 
     if (nodes && nodes.length) {
-      for (i=0, j=nodes.length; i<j; i++) {
+      for (i = 0, j = nodes.length; i < j; i++) {
         players.push(new Player(nodes[i]));
       }
     }
-  
+
   });
 
   /**
@@ -136,14 +135,14 @@
 
       // convert milliseconds to hh:mm:ss, return as object literal or string
 
-      var nSec = Math.floor(msec/1000),
-          hh = Math.floor(nSec/3600),
-          min = Math.floor(nSec/60) - Math.floor(hh * 60),
-          sec = Math.floor(nSec -(hh*3600) -(min*60));
+      var nSec = Math.floor(msec / 1000),
+          hh = Math.floor(nSec / 3600),
+          min = Math.floor(nSec / 60) - Math.floor(hh * 60),
+          sec = Math.floor(nSec - (hh * 3600) - (min * 60));
 
       // if (min === 0 && sec === 0) return null; // return 0:00 as null
 
-      return (useString ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + ( sec < 10 ? '0' + sec : sec ) ) : { 'min': min, 'sec': sec });
+      return (useString ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec)) : { min: min, sec: sec });
 
     }
 
@@ -181,15 +180,15 @@
           var progressMaxLeft = 100,
               left,
               width;
-  
+
           left = Math.min(progressMaxLeft, Math.max(0, (progressMaxLeft * (this.position / this.durationEstimate)))) + '%';
-          width = Math.min(100, Math.max(0, (100 * this.position / this.durationEstimate))) + '%';
-  
+          width = Math.min(100, Math.max(0, (100 * (this.position / this.durationEstimate)))) + '%';
+
           if (this.duration) {
 
             dom.progress.style.left = left;
             dom.progressBar.style.width = width;
-              
+
             // TODO: only write changes
             dom.time.innerHTML = getTime(this.position, true);
 
@@ -258,7 +257,7 @@
             // playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li>' + item.innerHTML + '</li></ul>';
 
             if (extras.loadFailedCharacter) {
-              dom.playlistTarget.innerHTML = dom.playlistTarget.innerHTML.replace('<li>' ,'<li>' + extras.loadFailedCharacter + ' ');
+              dom.playlistTarget.innerHTML = dom.playlistTarget.innerHTML.replace('<li>', '<li>' + extras.loadFailedCharacter + ' ');
               if (playlistController.data.playlist && playlistController.data.playlist[playlistController.data.selectedIndex]) {
                 element = playlistController.data.playlist[playlistController.data.selectedIndex].getElementsByTagName('a')[0];
                 html = element.innerHTML;
@@ -273,7 +272,7 @@
           callback('error', this);
 
           // load next, possibly with delay.
-            
+
           if (navigator.userAgent.match(/mobile/i)) {
             // mobile will likely block the next play() call if there is a setTimeout() - so don't use one here.
             actions.next();
@@ -308,7 +307,7 @@
           item = playlistController.getNext();
 
           // don't play the same item over and over again, if at end of playlist (excluding single item case.)
-          if (item && (playlistController.data.selectedIndex !== lastIndex || (playlistController.data.playlist.length == 1 && playlistController.data.loopMode))) {
+          if (item && (playlistController.data.selectedIndex !== lastIndex || (playlistController.data.playlist.length === 1 && playlistController.data.loopMode))) {
 
             playlistController.select(item);
 
@@ -448,7 +447,7 @@
 
         if (list) {
 
-          for (i=0, j=list.length; i<j; i++) {
+          for (i = 0, j = list.length; i < j; i++) {
             if (list[i] === item) {
               offset = i;
               break;
@@ -525,7 +524,7 @@
 
         items = utils.dom.getAll(dom.playlist, '.' + css.selected);
 
-        for (i=0, j=items.length; i<j; i++) {
+        for (i = 0, j = items.length; i < j; i++) {
           utils.css.remove(items[i], css.selected);
         }
 
@@ -580,7 +579,7 @@
         offset = (offset || 0);
 
         item = getItem(offset);
-        
+
         if (item) {
           playLink(item.getElementsByTagName('a')[0]);
         }
@@ -593,7 +592,7 @@
         var item, url;
 
         item = getItem();
-      
+
         if (item) {
           url = item.getElementsByTagName('a')[0].href;
         }
@@ -865,7 +864,7 @@
 
             if (offset !== -1) {
 
-              methodName = target.href.substr(offset+1);
+              methodName = target.href.substr(offset + 1);
 
               if (methodName && actions[methodName]) {
                 handled = true;
@@ -967,7 +966,7 @@
         /**
          * This is an overloaded function that takes mouse/touch events or offset-based item indices.
          * Remember, "auto-play" will not work on mobile devices unless this function is called immediately from a touch or click event.
-         * If you have the link but not the offset, you can also pass a fake event object with a target of an <a> inside the playlist - e.g. { target: someMP3Link }         
+         * If you have the link but not the offset, you can also pass a fake event object with a target of an <a> inside the playlist - e.g. { target: someMP3Link }
          */
 
         var target,
@@ -976,7 +975,8 @@
 
         if (offsetOrEvent !== undefined && !isNaN(offsetOrEvent)) {
           // smells like a number.
-          return playlistController.playItemByOffset(offsetOrEvent);
+          playlistController.playItemByOffset(offsetOrEvent);
+          return;
         }
 
         // DRY things a bit
@@ -1171,12 +1171,12 @@
         // relative position of mouse over element
         value = Math.max(0, Math.min(1, (clientX - actionData.volume.x) / actionData.volume.width));
 
-        target.style.clip = 'rect(0px, ' + (actionData.volume.width * value) + 'px, ' + actionData.volume.height + 'px, ' + (actionData.volume.width * (backgroundMargin/100)) + 'px)';
+        target.style.clip = 'rect(0px, ' + (actionData.volume.width * value) + 'px, ' + actionData.volume.height + 'px, ' + (actionData.volume.width * (backgroundMargin / 100)) + 'px)';
 
         // determine logical volume, including background margin
-        pixelMargin = ((backgroundMargin/100) * actionData.volume.width);
+        pixelMargin = ((backgroundMargin / 100) * actionData.volume.width);
 
-        volume = Math.max(0, Math.min(1, ((clientX - actionData.volume.x) - pixelMargin) / (actionData.volume.width - (pixelMargin*2)))) * 100;
+        volume = Math.max(0, Math.min(1, ((clientX - actionData.volume.x) - pixelMargin) / (actionData.volume.width - (pixelMargin * 2)))) * 100;
 
         // set volume
         if (soundObject) {
@@ -1225,10 +1225,10 @@
           backgroundMargin = (100 - backgroundSize) / 2;
 
           // margin as pixel value relative to width
-          backgroundOffset = actionData.volume.width * (backgroundMargin/100);
+          backgroundOffset = actionData.volume.width * (backgroundMargin / 100);
 
           from = backgroundOffset;
-          to = from + ((actionData.volume.width - (backgroundOffset*2)) * (volume/100));
+          to = from + ((actionData.volume.width - (backgroundOffset * 2)) * (volume / 100));
 
           target.style.clip = 'rect(0px, ' + to + 'px, ' + actionData.volume.height + 'px, ' + from + 'px)';
 
@@ -1292,7 +1292,7 @@
         var i, j, temp;
 
         for (i = array.length - 1; i > 0; i--) {
-          j = Math.floor(Math.random() * (i+1));
+          j = Math.floor(Math.random() * (i + 1));
           temp = array[i];
           array[i] = array[j];
           array[j] = temp;
@@ -1414,7 +1414,7 @@
 
         // hackish: if an array, return the last item.
         if (results && results.length) {
-          return results[results.length-1];
+          return results[results.length - 1];
         }
 
         // handle "not found" case
