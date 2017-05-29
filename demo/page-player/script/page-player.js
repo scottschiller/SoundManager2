@@ -139,7 +139,7 @@ function PagePlayer() {
   // event + DOM utilities
 
   this.hasClass = function(o, cStr) {
-    return (typeof (o.className) !== 'undefined' ? new RegExp('(^|\\s)' + cStr + '(\\s|$)').test(o.className) : false);
+    return (typeof o.className !== 'undefined' ? o.className.match(new RegExp('(\\s|^)' + cStr + '(\\s|$)')) : false);
   };
 
   this.addClass = function(o, cStr) {

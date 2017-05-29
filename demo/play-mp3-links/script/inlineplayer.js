@@ -58,7 +58,7 @@ function InlinePlayer() {
   });
 
   this.classContains = function(o, cStr) {
-    return (typeof (o.className) !== 'undefined' ? o.className.match(new RegExp('(^)' + cStr + '($)')) : false);
+    return (typeof o.className !== 'undefined' ? o.className.match(new RegExp('(\\s|^)' + cStr + '(\\s|$)')) : false);
   };
 
   this.addClass = function(o, cStr) {

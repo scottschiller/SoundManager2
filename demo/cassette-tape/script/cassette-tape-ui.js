@@ -1121,7 +1121,7 @@ utils = (function() {
   });
 
   var classContains = function(o, cStr) {
-    return (typeof (o.className) !== 'undefined' ? o.className.match(new RegExp('(^)' + cStr + '($)')) : false);
+    return (typeof o.className !== 'undefined' ? o.className.match(new RegExp('(\\s|^)' + cStr + '(\\s|$)')) : false);
   };
 
   var addClass = function(o, cStr) {
