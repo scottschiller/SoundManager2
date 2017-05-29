@@ -71,7 +71,6 @@ a.sm2_button {
  border-radius:2px;
  margin-top:-1px; /* vertical align tweak */
  transition: all 0.2s ease-in-out;
- transition-property: hover;
  /* weird IE 6/7 display fixes, and/or I'm doing it wrong */
  *text-indent:0px;
  *line-height:99em;
