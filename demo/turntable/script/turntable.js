@@ -11,7 +11,7 @@
    * http://schillmania.com/projects/soundmanager2/license.txt
    */
 
-  "use strict";
+  'use strict';
 
   var turntables = [],
       turntablesById = {},
@@ -213,13 +213,11 @@
             add(css.turntable.hasArtwork);
             data.record.hasArtwork = true;
           }
-        } else {
-          if (data.record.hasArtwork) {
+        } else if (data.record.hasArtwork) {
             dom.record.style.backgroundImage = 'none';
             remove(css.turntable.hasArtwork);
             data.record.hasArtwork = false;
           }
-        }
         if (options.hideLabelWithArtwork) {
           add(css.turntable.hideLabelWithArtwork);
         } else {
@@ -234,15 +232,15 @@
       var target, action;
 
       target = e.target;
-      
+
       if (target) {
-        
+
         action = target.getAttribute('data-method');
-        
+
         if (action && methods[action]) {
           methods[action](e);
         }
-      
+
       }
 
     }
@@ -253,6 +251,8 @@
           utils.events.preventDefault(e);
           return false;
         }
+
+        return true;
 
     }
 
@@ -339,7 +339,7 @@
         var i, j, temp;
 
         for (i = array.length - 1; i > 0; i--) {
-          j = Math.floor(Math.random() * (i+1));
+          j = Math.floor(Math.random() * (i + 1));
           temp = array[i];
           array[i] = array[j];
           array[j] = temp;
@@ -360,14 +360,14 @@
 
       function hasClass(o, cStr) {
 
-        return (o.className !== undefined ? new RegExp('(^|\\s)' + cStr + '(\\s|$)').test(o.className) : false);
+        return (o.className !== undefined ? !!new RegExp('(^|\\s)' + cStr + '(\\s|$)').test(o.className) : false);
 
       }
 
       function addClass(o, cStr) {
 
         if (!o || !cStr || hasClass(o, cStr)) {
-          return false; // safety net
+          return; // safety net
         }
         o.className = (o.className ? o.className + ' ' : '') + cStr;
 
@@ -376,7 +376,7 @@
       function removeClass(o, cStr) {
 
         if (!o || !cStr || !hasClass(o, cStr)) {
-          return false;
+          return;
         }
         o.className = o.className.replace(new RegExp('( ' + cStr + ')|(' + cStr + ')', 'g'), '');
 
@@ -461,7 +461,7 @@
 
         // hackish: if an array, return the last item.
         if (results && results.length) {
-          return results[results.length-1];
+          return results[results.length - 1];
         }
 
         // handle "not found" case
@@ -635,12 +635,12 @@
         return localAnimationFrame.apply(window, arguments);
       } : null;
 
-      function has(prop) {
+      function has(propName) {
 
         // test for feature support
-        var result = testDiv.style[prop];
+        var result = testDiv.style[propName];
 
-        return (result !== undefined ? prop : null);
+        return (result !== undefined ? propName : null);
 
       }
 
@@ -649,7 +649,6 @@
 
         transform: {
           ie: has('-ms-transform'),
-          moz: has('MozTransform'),
           opera: has('OTransform'),
           webkit: has('webkitTransform'),
           w3: has('transform'),
@@ -727,13 +726,13 @@
     nodes = utils.dom.getAll(turntableSelector);
 
     if (nodes && nodes.length) {
-      for (i=0, j=nodes.length; i<j; i++) {
+      for (i = 0, j = nodes.length; i < j; i++) {
         tt = new Turntable(nodes[i]);
         turntables.push(tt);
         turntablesById[tt.id] = tt;
       }
     }
-  
+
   });
 
   window.turntables = turntables;
