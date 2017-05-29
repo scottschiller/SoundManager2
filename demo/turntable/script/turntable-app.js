@@ -1,5 +1,4 @@
-/*jslint vars: true, plusplus: true, white: true, nomen: true */
-/*global soundManager, console, document, navigator, turntables, turntablesById, window */
+/* global soundManager, console, document, navigator, turntablesById, window */
 
 (function(window) {
 
@@ -11,7 +10,7 @@
    * http://schillmania.com/projects/soundmanager2/license.txt
    */
 
-  "use strict";
+  'use strict';
 
   var turntables;
   var events;
@@ -37,7 +36,7 @@
 
     // show a record right away? (otherwise, "techniques" slipmat.)
     hasRecordAtStart: false,
-  
+
     // play some background noise when end of record is hit.
     useEndOfRecordNoise: true,
 
@@ -77,7 +76,7 @@
         events.sound.finish.apply(this, arguments);
       }
     }
-  
+
   };
 
   sounds = {
@@ -137,7 +136,7 @@
 
     playableLinks = [];
 
-    for (i=0, j=links.length; i<j; i++) {
+    for (i = 0, j = links.length; i < j; i++) {
 
       if (canPlayLink(links[i])) {
 
@@ -182,7 +181,7 @@
     mouse: {
 
       click: function(e) {
-        
+
         // look for and play links to sounds.
 
         var target,
@@ -207,16 +206,19 @@
           // artwork URL?
           turntable.methods.setArtwork(target.getAttribute('data-artwork') || '');
 
-          return utils.events.preventDefault(e);
+          utils.events.preventDefault(e);
+          return false;
 
         }
+
+        return true;
 
       }
 
     },
-    
+
     sound: {
-  
+
       whileplaying: function() {
 
         var progress = (this.position / this.durationEstimate);
@@ -227,7 +229,7 @@
         }
 
       },
-  
+
       error: function() {
 
         // something failed. 404, decode error, network loss etc.
@@ -246,7 +248,7 @@
         state.finished = true;
 
         if (config.playNext) {
-          
+
           nextLink = findNextLink(state.lastLink);
 
           // click handler again
@@ -265,14 +267,14 @@
 
             // make sure we're at end of record
             this._turntable.methods.setTonearmAngle(config.turntable.tonearm.angleToRecord + config.turntable.tonearm.recordAngleSpan);
-            
+
             // end of record?
             state.endOfRecordNoise = sounds.endOfRecordNoise[parseInt(Math.random() * sounds.endOfRecordNoise.length, 10)];
 
             state.endOfRecordNoise.play({
               loops: 999
             });
-          
+
           } else {
 
             // no more to do?
@@ -283,9 +285,9 @@
         }
 
       }
-  
+
     }
-  
+
   };
 
   playSound = function(turntable, url, load_only) {
@@ -309,12 +311,10 @@
         url: url
       });
 
-    } else {
+    } else if (sound.url !== url) {
 
       // loading a new URL?
-      if (sound.url !== url) {
-        sound.stop();
-      }
+      sound.stop();
 
     }
 
@@ -357,7 +357,7 @@
     var i, j;
 
     if (!isMonophonic && config.useEndOfRecordNoise && config.endOfRecordNoise.length) {
-      for (i=0, j=config.endOfRecordNoise.length; i<j; i++) {
+      for (i = 0, j = config.endOfRecordNoise.length; i < j; i++) {
         sounds.endOfRecordNoise.push(soundManager.createSound({
           url: config.endOfRecordNoise[i]
         }));
@@ -365,7 +365,7 @@
     }
 
     if (config.hasRecordAtStart) {
-      for (i=0, j=turntables.length; i<j; i++) {
+      for (i = 0, j = turntables.length; i < j; i++) {
         turntables[i].methods.addRecord();
       }
     }
@@ -394,7 +394,7 @@
     // TODO: use proper mixin
     // note use of Function.bind (IE 9, Chrome 7, Firefox 4, Opera 11.60, Safari 5.1.4) to correct scope ('this') within handler.
     if (localMethods.load.bind) {
-      for (i=0, j=turntables.length; i<j; i++) {
+      for (i = 0, j = turntables.length; i < j; i++) {
         turntables[i].methods.load = localMethods.load.bind(turntables[i]);
       }
     }

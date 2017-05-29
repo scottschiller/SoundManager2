@@ -1,5 +1,4 @@
-/*jslint plusplus: true, white: true, nomen: true */
-/*global soundManager, document, console, window */
+/* global soundManager, document, console, window */
 
 (function(window) {
 
