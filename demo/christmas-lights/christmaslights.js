@@ -567,7 +567,7 @@
         // hack for SM2 homepage
         if (document.body && document.body.className && document.body.className.match(/home/i)) {
 
-          _id('lights').style.display = 'block';
+          document.getElementById('lights').style.display = 'block';
 
           // start lights to the right of <h1>
           // offset = parseInt(document.getElementsByTagName('h1')[0].offsetWidth)+16;
