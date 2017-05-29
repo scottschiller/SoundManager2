@@ -48,11 +48,11 @@ function SM2Debugger() {
         xhr = new ActiveXObject('Msxml2.XMLHTTP');
       } catch(e) {
         try {
-  	      xhr = new ActiveXObject('Microsoft.XMLHTTP');
+          xhr = new ActiveXObject('Microsoft.XMLHTTP');
         } catch(E) {
          xhr = null;
         }
-  	  }
+      }
     }
     return xhr;
   }
@@ -61,100 +61,100 @@ function SM2Debugger() {
     var xhr = self.getXHR();
     var msg = '<a href="'+soundManager.url+'" title="This should be a valid .SWF URL, not a 404 etc.">'+soundManager.url+'</a>';
     if (soundManager.getMoviePercent() == 100) {
-	// SWF may have already loaded
-	fOnComplete(true,msg);
+    // SWF may have already loaded
+    fOnComplete(true,msg);
     } else {
       try {
-	  xhr.open("HEAD",sURL,true);
-    	xhr.onreadystatechange = function() {
-	  if (xhr.readyState == 4) {
-		if (xhr.status == '200') {
-		  fOnComplete(true,msg);
-		} else if (xhr.status == '404') {
-		  fOnComplete(false,msg);
-		} else {
-		  // some other response
-		  fOnComplete('unknown',(xhr.status != '0'?'HTTP response: '+xhr.status+', ':'')+msg); // safari returns 0 when offline
-		}
-	  }
-	}
-	xhr.send(null);
+      xhr.open("HEAD",sURL,true);
+        xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        if (xhr.status == '200') {
+          fOnComplete(true,msg);
+        } else if (xhr.status == '404') {
+          fOnComplete(false,msg);
+        } else {
+          // some other response
+          fOnComplete('unknown',(xhr.status != '0'?'HTTP response: '+xhr.status+', ':'')+msg); // safari returns 0 when offline
+        }
+      }
+    }
+    xhr.send(null);
 
       } catch(e) {
-	  // fail (cross-domain, or no XHR) unless offline
-	  fOnComplete('unknown',msg);
-	  return false;
+      // fail (cross-domain, or no XHR) unless offline
+      fOnComplete('unknown',msg);
+      return false;
       }
     }
   }
 
   this.handleEvent = function(sEventType,bSuccess,sMessage) {
-	var o = elements[sEventType];
-	if (o) {
-	  o.className = (bSuccess == true?'pass':(bSuccess != false?bSuccess:'fail')); // true = pass, className as argument, or false == fail
-	  if (sMessage) {
-	    var oSpan = o.getElementsByTagName('span')[4];
-	    if (oSpan) {
-	      oSpan.innerHTML = (oSpan.innerHTML +' <span class="msg">'+sMessage+'</msg>');
-	    } else {
-	      o.title = sMessage;
-	    }
-	  }
-	  // associated events
-	  if (sEventType == 'onload') {
-	    if (bSuccess) {
-	      self.doSoundTest();
-	    } else {
-	      self.testURL(soundManager.url,function(bSuccess,sMessage) {
-		if (typeof sMessage == 'undefined') {
-		  sMessage = null;
-		}
-		self.handleEvent('swf',bSuccess,sMessage);
-	      });
-	    }
-	  } else if (sEventType == 'swf') {
-            if (bSuccess == false) {
-              // don't show flashtojs at all if SWF failed to load
-              self.handleEvent('flashtojs','default'); // reset to N/A status
-            }
-	  } else if (sEventType == 'flashtojs') {
-            if (bSuccess != true) {
-	      // online or offline help messages
-	      if (soundManager._overHTTP) {
-		document.getElementById('d-flashtojs-offline').style.display = 'none';
-	      } else {
-		document.getElementById('d-flashtojs-online').style.display = 'none';
-              }
-	    }
-	  }
-	} else {
-	  soundManager._writeDebug('SM2 debugger warning: Undefined event type "'+sEventType+'"',1);
-	}
+    var o = elements[sEventType];
+    if (o) {
+      o.className = (bSuccess == true?'pass':(bSuccess != false?bSuccess:'fail')); // true = pass, className as argument, or false == fail
+      if (sMessage) {
+        var oSpan = o.getElementsByTagName('span')[4];
+        if (oSpan) {
+          oSpan.innerHTML = (oSpan.innerHTML +' <span class="msg">'+sMessage+'</msg>');
+        } else {
+          o.title = sMessage;
+        }
+      }
+      // associated events
+      if (sEventType == 'onload') {
+        if (bSuccess) {
+          self.doSoundTest();
+        } else {
+          self.testURL(soundManager.url,function(bSuccess,sMessage) {
+        if (typeof sMessage == 'undefined') {
+          sMessage = null;
+        }
+        self.handleEvent('swf',bSuccess,sMessage);
+          });
+        }
+      } else if (sEventType == 'swf') {
+        if (bSuccess == false) {
+          // don't show flashtojs at all if SWF failed to load
+          self.handleEvent('flashtojs','default'); // reset to N/A status
+        }
+      } else if (sEventType == 'flashtojs') {
+        if (bSuccess != true) {
+          // online or offline help messages
+          if (soundManager._overHTTP) {
+            document.getElementById('d-flashtojs-offline').style.display = 'none';
+          } else {
+            document.getElementById('d-flashtojs-online').style.display = 'none';
+          }
+        }
+      }
+    } else {
+      soundManager._writeDebug('SM2 debugger warning: Undefined event type "'+sEventType+'"',1);
+    }
   }
 
   this.doSoundTest = function() {
     var foo = soundManager.createSound({
-	  id: 'sm2TestSound',
-	  url: ('http://www.schillmania.com/projects/soundmanager2/demo/_mp3/mouseover.mp3')
+      id: 'sm2TestSound',
+      url: ('http://www.schillmania.com/projects/soundmanager2/demo/_mp3/mouseover.mp3')
     });
     if (!soundManager._disabled) {
       foo.play();
-	  // looks to be OK..
-	  if (!soundManager._disabled) {
-		// still OK..
-	    self.handleEvent('soundtest',true);
-	  } else {
-	    self.handleEvent('soundtest',false,': Failed after play()');	
-	  }
+      // looks to be OK..
+      if (!soundManager._disabled) {
+        // still OK..
+        self.handleEvent('soundtest',true);
+      } else {
+        self.handleEvent('soundtest',false,': Failed after play()');    
+      }
     } else {
-	  self.handleEvent('soundtest',false,': Failed after createSound()');
+      self.handleEvent('soundtest',false,': Failed after createSound()');
     }
   }
 
   this.init = function() {
-	// map event elements to DOM nodes - eg. elements.flashtojs = document.getElementById('d-flashtojs');
+    // map event elements to DOM nodes - eg. elements.flashtojs = document.getElementById('d-flashtojs');
     for (var i=elementIDs.length; i--;) {
-	  elements[elementIDs[i]] = document.getElementById('d-'+elementIDs[i]);
+      elements[elementIDs[i]] = document.getElementById('d-'+elementIDs[i]);
     }
     self.doFlashTest();
   }
