@@ -136,9 +136,9 @@ soundManager.setup({
 
 				<h3>Download SoundManager 2</h3>
 
-				<p><b>Latest changes:</b> Minor tweaks for mobile and desktop Safari. Package/module (bower/npm) setup, "Bar UI" API update, Turntable UI demo and more. See <a href="#history">revision history</a> for details.</p>
+				<p><b>Latest changes:</b> IE "Edge" 14 fix, <code>onError()</code> and <code>setPlaybackRate()</code> for sound objects, <code>eslint</code> code modernization (maintaining back-compat to IE 6) and more. See <a href="#history">revision history</a> for details.</p>
 				
-				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20150601.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20150601</a> or see <a href="https://github.com/scottschiller/SoundManager2/" title="SoundManager 2 on GitHub">on GitHub</a>, or <a href="https://www.npmjs.com/package/soundmanager2" title="SoundManager 2 on npm">on npm</a></p>
+				<p style="padding-top:0.5em"><a href="../../download/soundmanagerv297a-20170601.zip" title="Download SoundManager 2" class="norewrite feature">Download SoundManager 2.97a.20170601</a> or see <a href="https://github.com/scottschiller/SoundManager2/" title="SoundManager 2 on GitHub">on GitHub</a>, or <a href="https://www.npmjs.com/package/soundmanager2" title="SoundManager 2 on npm">on npm</a></p>
 
 				<p><b>Performance tip:</b> SM2's code size varies from over 150 KB (commented, debug-enabled) down to 12 KB (optimized) over HTTP; check the <a href="../getstarted/#basic-inclusion" title="Including SoundManager 2 on your site: Script build options">pre-optimized builds</a> for details.</p>
 
@@ -174,6 +174,106 @@ soundManager.setup({
 			  	<p>A changelog of sorts.</p>
 
 				<ul id="revision-list" class="standard">
+
+					<li id="sm2-20170601" class="in">
+
+						<h3><b>V2.97a.20170601</b> - IE "Edge" 14 fix, <code>onError()</code> and <code>setPlaybackRate()</code> for sound objects, <code>eslint</code> code modernization (maintaining back-compat to IE 6) and more. <a href="https://github.com/scottschiller/SoundManager2/compare/V2.97a.20150601...V2.97a.20170601">See GitHub commits</a>.</h3>
+
+						<ul>
+
+							<li class="in">
+
+								<p class="compact">Bug fixes</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+
+										<p>
+											Internet Explorer "Edge" 14 fix, <code>try ... catch</code>code> due to <code>navigator.plugins</code> access now throwing an exception. See <a href="https://github.com/scottschiller/SoundManager2/pull/150" title="PR #150">PR #150</a>.
+										</p>
+
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">API Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Sound objects finally have an <code>onError()</code> event callback for load failures (and network/decode/playback for HTML5.) See <a href="../doc/#smsound-onerror" title="SMSound.onError() documentation">SMSound.onError()</a> for details.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											<code>setPlaybackRate()</code> (HTML5-only), accepting values between 0.5 and 4. See <a href="../doc/#smsound-setplaybackrate" title="SMSound.setPlaybackRate() documentation">SMSound.setPlaybackRate()</a> for details.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Bar UI Updates</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Touch events added for playback / progress track. Touch, drag and release to scrub through time.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											 <code>whileplaying</code> callback added to player <code>on</code> object. <code>SMSound</code> object also now provided to callback.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+							<li class="in">
+
+								<p class="compact">Miscellaneous</p>
+
+								<ul class="nested compact flat">
+
+									<li>
+										<p>
+											Large <code>eslint</code> modernization, stylistic and formatting updates to SM2 core and most demo JavaScript, whilst maintaining ES5 compatibility back to IE 6.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											<code>FLAC</code> support check added to <code>audioFormats</code>. SM2 will always check for MIME/file extension support if not already known, but FLAC support has been added to Chrome 56. See <a href="https://github.com/scottschiller/SoundManager2/issues/148">Issue 148</a>.
+										</p>
+									</li>
+
+									<li>
+										<p>
+											De-cruftication and removal of many legacy <code>-o-</code>, <code>-ms-</code> and <code>-webkit-</code> -specific CSS prefixes.
+										</p>
+									</li>
+
+								</ul>
+
+							</li>
+
+						</ul>
+
+					</li>
 
 					<li id="sm2-20150601" class="in">
 
