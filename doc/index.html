@@ -222,6 +222,7 @@ soundManager.setup({
      <li><a href="#soundmanager-resumeall">resumeAll()</a></li>
      <li><a href="#soundmanager-setup">setup()</a></li>
      <li><a href="#soundmanager-setpan" title="Flash-only feature">setPan()</a></li>
+     <li><a href="#soundmanager-setplaybackrate" title="New HTML5-only feature, added in V2.97a.20170601" class="new">setPlaybackRate()</a></li>
      <li><a href="#soundmanager-setposition">setPosition()</a></li>
      <li><a href="#soundmanager-setvolume">setVolume()</a></li>
      <li><a href="#soundmanager-supported">supported()</a></li>
@@ -259,6 +260,7 @@ soundManager.setup({
      <li>multiShotEvents</li>
      <li>pan</li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-peakdata">peakData</a></li>
+     <li><a href="#smsound-playbackrate" title="New, HTML5-only, introduced with V2.97a.20170601" class="new">playbackRate</a></li>
      <li><a href="#smsound-position">position</a></li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-serverurl">serverURL</a></li>
      <li>stream</li>
@@ -293,7 +295,7 @@ soundManager.setup({
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-onbufferchange">onbufferchange</a></li>
      <li title="Flash 9+ only" class="flash9"><a href="#smsound-onconnect">onconnect</a></li>
      <li title="Flash 9.0.r115+" class="flash9"><a href="#smsound-ondataerror">ondataerror</a></li>
-     <li class="new"><a href="#smsound-onerror" title="New feature">onerror</a></li>
+     <li class="new"><a href="#smsound-onerror" title="New feature, introduced with V2.97a.20170601">onerror</a></li>
      <li><a href="#smsound-onfinish">onfinish</a></li>
      <li><a href="#smsound-onload">onload</a></li>
      <li><a href="#smsound-onpause">onpause</a></li>
@@ -1031,6 +1033,13 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 	   <dd>Example: <code>soundManager.setPan('<span>mySound</span>',<span>-80</span>);</code></dd>
 	   </dl>
 
+       <dl id="soundmanager-setplaybackrate" class="f-block f-setplaybackrate">
+       <dt title="HTML5-only" class="html5">setPlaybackRate(<span>id:string,playbackRate:number</span>)</dt>
+       <dd>Sets HTML5 sound playback rate, between 0.5 and 4.0 of normal rate (1.0).</dd>
+       <dd>Example: <code>soundManager.setPlaybackRate('<span>mySound</span>',<span>1.5</span>);</code></dd>
+       <dd>See <a href="https://developer.mozilla.org/en-US/Apps/Build/Audio_and_video_delivery/WebAudio_playbackRate_explained" title="Playback Rate (Mozilla Developer)">playbackRate</a> (Mozilla) for more information.</dd>
+       </dl>
+
 	   <dl id="soundmanager-setposition" class="f-block f-setposition">
 	   <dt><span>object:SMSound</span> setPosition(<span>id:string,msecOffset:integer</span>)</dt>
 	   <dd title="id:string,msecOffset:integer">Seeeks to a given position within a sound, specified by miliseconds (1000 msec = 1 second) and returns the related sound object. Affects <span>position</span> property.</dd>
@@ -1202,6 +1211,12 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 				   <dd>Example: <code>mySound.setPan(<span>-80</span>);</code></dd>
 				   </dl>
 
+                   <dl id="smsound-setplaybackrate" class="f-block s-setplaybackrate">
+                   <dt title="HTML5-only" class="html5">setPlaybackRate(<span>playbackRate:number</span>)</dt>
+                   <dd>Sets HTML5 sound playback rate, between 0.5 and 4.0 of normal rate (1.0).</dd>
+                   <dd>See <a href="https://developer.mozilla.org/en-US/Apps/Build/Audio_and_video_delivery/WebAudio_playbackRate_explained" title="Playback Rate (Mozilla Developer)">playbackRate</a> (Mozilla) for more information.</dd>
+                   </dl>
+
 				   <dl id="smsound-setvolume" class="f-block s-setvolume">
 				   <dt><span>object:SMSound</span> setVolume(<span>volume:integer</span>)</dt>
 				   <dd title="volume:integer">Sets the volume of the given sound. Accepted values: 0-100. Affects <span>volume</span> property.</dd>
@@ -1275,7 +1290,7 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
 				
 				   <dl id="smsound-ondataerror" class="f-block s-ondataerror s-waveformdata s-eqdata">
 				   <dt title="Flash 9+ only" class="flash9">ondataerror()</dt>
-				   <dd>Fires at least once per sound play instance when Flash encounters a security error when trying to call computeSpectrum() internally. This typically happens when sounds are 'inaccessible' due to another Flash movie (eg. YouTube) in another tab which has loaded, and may (or may not be) playing sound. Flash attempts to read the "combined" output to the sound card, and must have security permissions for all sounds as a result. See <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#areSoundsInaccessible()">areSoundsInaccessible()</a> on Adobe for more info.</dd>
+				   <dd>Fires at least once per sound play instance when Flash 9 encounters a security error when trying to call computeSpectrum() internally. This typically happens when sounds are 'inaccessible' due to another Flash movie (eg. YouTube) in another tab which has loaded, and may (or may not be) playing sound. Flash attempts to read the "combined" output to the sound card, and must have security permissions for all sounds as a result. See <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/media/SoundMixer.html#areSoundsInaccessible()">areSoundsInaccessible()</a> on Adobe for more info.</dd>
 				   <dd>If the offending resource causing the security error is closed or becomes inactive(?), the data will become available again. Intermittent availability will result in intermittent calls to <code>ondataerror()</code>.</dd>
 				   </dl>
 
@@ -1334,7 +1349,7 @@ mySoundObject.play(); <span><span>// SMSound object instance</span></span></code
     }
   }
 }).play();</pre></code></dd>
-                    <dd>HTML5 error codes and descriptions are as follows, from <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#error-codes" title="WhatWG: video elment error codes" target="_blank">whatwg.org</a>:</dd>
+                    <dd>HTML5 error codes and descriptions are as follows, from <a href="https://html.spec.whatwg.org/multipage/embedded-content.html#error-codes" title="WhatWG: video elment error codes" target="_blank">whatwg.org</a>:</dd>
                     <dd>
                      <ul>
                       <li>Error code 1, MEDIA_ERR_ABORTED: Client aborted download at user's request.</li>
@@ -1635,6 +1650,13 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 						   <dd>Boolean indicating pause status. True/False.</dd>
 						   <dd>Treat as read-only; use <code>pause()</code>, <code>resume()</code> and <code>togglePause()</code> methods to affect state.</dd>
 						   </dl>
+
+                           <dl id="smsound-playbackrate" class="f-block s-playbackrate">
+                           <dt title="HTML5-only" class="html5">playbackRate</dt>
+                           <dd>Number affecting HTML5 sound playback rate, between 0.5 and 4.0 of normal rate (1.0).</dd>
+                           <dd>Can also be set via <code>setPlaybackRate()</code>.</dd>
+                           <dd>See <a href="https://developer.mozilla.org/en-US/Apps/Build/Audio_and_video_delivery/WebAudio_playbackRate_explained" title="Playback Rate (Mozilla Developer)">playbackRate</a> (Mozilla) for more information.</dd>
+                           </dl>
 						
 						   <dl id="smsound-peakdata" class="f-block s-peakdata">
 						   <dt title="Flash 9+ only" class="flash9">peakData = {<span>left:0.0, right:0.0</span>}</dt>
@@ -1730,10 +1752,11 @@ for (i=0, j=this.buffered.length; i&lt;j; i++) {
 					   <dt><a href="#smsound-play" onclick="resetFilter()">play(<span>[options object]</span>)</a></dt>
 					   <dt><a href="#smsound-resume" onclick="resetFilter()">resume()</a></dt>
 					   <dt><a href="#smsound-setposition" onclick="resetFilter()">setPosition(<span>msecOffset:integer</span>)</a></dt>
-					   <dt><a href="#smsound-togglepause" onclick="resetFilter()">togglePause()</a></dt>
 					   <dt><a href="#smsound-setvolume" onclick="resetFilter()">setVolume(<span>volume:integer</span>)</a></dt>
+                       <dt><a href="#smsound-setplaybackrate" onclick="resetFilter()">setPlaybackRate(<span>playBackRate:number</span>)</a></dt>
 					   <dt><a href="#smsound-setpan" onclick="resetFilter()">setPan(<span>pan:integer</span>)</a></dt>
 					   <dt><a href="#smsound-stop" onclick="resetFilter()">stop()</a></dt>
+                       <dt><a href="#smsound-togglepause" onclick="resetFilter()">togglePause()</a></dt>
 					   <dt><a href="#smsound-unload" onclick="resetFilter()">unload()</a></dt>
 					   <dt><a href="#smsound-unmute" onclick="resetFilter()">unmute()</a></dt>
 
