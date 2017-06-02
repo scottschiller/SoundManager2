@@ -367,7 +367,7 @@ pre code,
 dt,
 #soundmanager-debug,
 .c3 ul li ul li {
-  font-family:Menlo,"DejaVu Sans Mono","DejaVuSansMonoBook",monaco,"Andale Mono","VT-100","Lucida Console","Courier New",monospace,courier,system,sans-serif;
+  font-family:Consolas,monaco,"Ubuntu Mono",courier,monospace,system;;
 }
 
 pre,
@@ -1116,7 +1116,7 @@ ul.standard ul {
 }
 
 .wedge .r {
-  margin-top:-15px;
+  margin-top:-16px;
   border-top:none;
   height:16px;
   border-bottom:2em solid #3399cc;
@@ -1178,7 +1178,6 @@ ul.standard ul {
   font-size: 97%;
   line-height:2.4em;
   text-indent:0.5em;
-  padding: 0px 0.25em;
   cursor:hand;
   border-bottom: 1px dotted #eee;
 }
@@ -1212,7 +1211,7 @@ ul.standard ul {
 .c3 h4 {
   font-size:1em;
   margin:0px;
-  padding:0.4em 0.2em 0.4em 0.75em;
+  padding:0.39em 0.2em 0.4em 0.75em;
   vertical-align:middle;
   color:#333;
   background-color: #f3f3f3;
@@ -1227,14 +1226,6 @@ ul.standard ul {
 }
 
 #get-satisfaction h2 a {
-  color:#fff;
-}
-
-#get-satisfaction a {
-  color:#444;
-}
-
-#get-satisfaction a:hover {
   color:#fff;
 }
 
