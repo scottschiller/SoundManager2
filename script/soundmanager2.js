@@ -188,11 +188,11 @@ function SoundManager(smURL, smID) {
       type: ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
       required: false
     },
-	  
+
     flac: {
       type: ['audio/flac'],
       required: false
-    }	  
+    }
 
   };
 
