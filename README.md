@@ -49,7 +49,7 @@ Refer to `build.xml` for compiler downloads and path definitions.
 
 ## Versioning / Development Notes
 
-Releases are versioned by date, e.g., `V2.97a.20170601` and are tagged as such.*
+Releases are versioned by date, e.g., `V2.97a.20170601` and are tagged as such.
 The latest official release is always on trunk/master.
 Post-release development builds may be available on the appropriate +DEV branch, eg., `V2.97a.20170601+DEV`
 
