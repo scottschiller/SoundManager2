@@ -68,7 +68,7 @@ http://sonify.org/flashsound/kungfu/
 
 Flash's `ExternalInterface` API was not introduced until Flash 8, but a limited JS <-> Flash API existed via LiveConnect et al which still let the basics work. The original SoundManager used Flash's `TCallLabel()` methods, exposed to JS, to perform specific actions within "Movie Clips" (essentially, objects).
 
-Movie Clips contained Frames (in the animation sense) which could be given IDs (labels), and could also accept name/value parameters via `SetVariable()`. Thus, it was possible to create a Movie Clip for each sound, which would have a labeled frame for each sound action desired (stop, seek, pause, volume, and pan), e.g., `flashMovie.SetVariable('/MySound:volume, 50)`
+Movie Clips contained Frames (in the animation sense) which could be given IDs (labels), and could also accept name/value parameters via `SetVariable()`. Thus, it was possible to create a Movie Clip for each sound, which would have a labeled frame for each sound action desired (stop, seek, pause, volume, and pan), e.g., `flashMovie.SetVariable('/MySound:volume, 50);`
 
 http://web.archive.org/web/20020404030916/http://sonify.org:80/flashsound/timeline/actionscript.html
 
