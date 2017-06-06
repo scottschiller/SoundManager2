@@ -198,15 +198,6 @@
 
         },
 
-        onbufferchange: function(isBuffering) {
-
-          if (isBuffering) {
-            utils.css.add(dom.o, 'buffering');
-          } else {
-            utils.css.remove(dom.o, 'buffering');
-          }
-
-        },
 
         onplay: function() {
           utils.css.swap(dom.o, 'paused', 'playing');
@@ -372,7 +363,20 @@
 
         soundObject.play({
           url: link.href,
-          position: 0
+          position: 0,
+          onbufferchange: function(isBuffering) {
+
+            if (isBuffering) {
+              utils.css.add(dom.o, 'buffering');
+            } else {
+              utils.css.remove(dom.o, 'buffering');
+            }
+            // Fixes an issue with playback not starting on mobile
+            if (this.duration > 1500) {
+              this.pause();
+              this.resume();
+            }
+          }
         });
 
       }
