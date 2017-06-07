@@ -664,6 +664,26 @@ function SoundManager(smURL, smID) {
   };
 
   /**
+   * Create the <audio> element in the DOM
+   *
+   * @return {HTMLAudioElement} The audio element created in the dom
+   */
+   this.createAudioElement = function (src) {
+
+    try {
+      var d = doc.createElement('div'),
+          a = doc.createElement('audio');
+      d.id = 'sm2-html5Audio-wrapper';
+      a.id = 'sm2-html5Audio';
+      a.src = (src) ? src : '';
+      doc.body.appendChild(d).appendChild(a);
+    } catch (e) {} finally {
+      return a;
+    }
+
+  };
+
+  /**
    * Calls the unload() method of a SMSound object by ID.
    *
    * @param {string} sID The ID of the sound
@@ -2134,7 +2154,7 @@ function SoundManager(smURL, smID) {
 
             sm2._wD(s.id + ': Cloning Audio() for instance #' + s.instanceCount + '...');
 
-            audioClone = new Audio(s._iO.url);
+            audioClone = (mobileHTML5) ? sm2.createAudioElement(s._iO.url) : new Audio(s._iO.url);
 
             onended = function() {
               event.remove(audioClone, 'ended', onended);
@@ -3107,13 +3127,14 @@ function SoundManager(smURL, smID) {
 
         if (instanceOptions.autoLoad || instanceOptions.autoPlay) {
 
-          s._a = new Audio(instanceOptions.url);
+          s._a = (mobileHTML5) ? sm2.createAudioElement(instanceOptions.url) : new Audio(instanceOptions.url);
+
           s._a.load();
 
         } else {
 
           // null for stupid Opera 9.64 case
-          s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
+          s._a = (mobileHTML5) ? sm2.createAudioElement() : (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
 
         }
 
