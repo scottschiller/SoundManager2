@@ -144,12 +144,6 @@
 <!-- fetch the license from the full source, and prepend it to the jsmin builds. -->
 
 <!-- a cheap hack: Read the first N lines of a file -->
-<loadfile property="sm2_license_jslint" srcFile="script/soundmanager2.js">
-	<filterchain>
-    	<headfilter lines="15"/>
-  </filterchain>
-</loadfile>
-
 <loadfile property="sm2_license" srcFile="script/soundmanager2.js">
 	<filterchain>
     	<headfilter lines="12"/>
@@ -161,7 +155,7 @@
 
 <!-- prepend license -->
 <!-- this is stupid, there must be a better concat + prepend way, but I couldn't seem to find it. -->
-<replaceregexp file="script/soundmanager2-nodebug.js" match="(.*+)" flags="s" replace="${sm2_license_jslint}\1" />
+<replaceregexp file="script/soundmanager2-nodebug.js" match="(.*+)" flags="s" replace="${sm2_license}\1" />
 <replaceregexp file="script/soundmanager2-nodebug-jsmin.js" match="(.*+)" flags="s" replace="${sm2_license}\1" />
 
 <!-- show size -->
