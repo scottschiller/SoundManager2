@@ -3897,6 +3897,7 @@ function SoundManager(smURL, smID) {
 
     abort: html5_event(function() {
 
+      if (!this._s) return;
       sm2._wD(this._s.id + ': abort');
 
     }),
@@ -3907,6 +3908,8 @@ function SoundManager(smURL, smID) {
 
       var s = this._s,
           position1K;
+
+      if (!s) return;
 
       if (s._html5_canplay) {
         // this event has already fired. ignore.
@@ -3941,6 +3944,8 @@ function SoundManager(smURL, smID) {
 
       var s = this._s;
 
+      if (!s) return;
+
       if (!s.loaded) {
         s._onbufferchange(0);
         s._whileloading(s.bytesLoaded, s.bytesTotal, s._get_html5_duration());
@@ -3955,6 +3960,8 @@ function SoundManager(smURL, smID) {
 
       var s = this._s,
           duration;
+
+      if (!s) return;
 
       duration = s._get_html5_duration();
 
@@ -3981,6 +3988,8 @@ function SoundManager(smURL, smID) {
 
       var s = this._s;
 
+      if (!s) return;
+
       sm2._wD(s.id + ': ended');
 
       s._onfinish();
@@ -3989,6 +3998,7 @@ function SoundManager(smURL, smID) {
 
     error: html5_event(function() {
 
+      if (!this._s) return;
       var description = (html5ErrorCodes[this.error.code] || null);
       sm2._wD(this._s.id + ': HTML5 error, code ' + this.error.code + (description ? ' (' + description + ')' : ''));
       this._s._onload(false);
@@ -3999,6 +4009,8 @@ function SoundManager(smURL, smID) {
     loadeddata: html5_event(function() {
 
       var s = this._s;
+
+      if (!s) return;
 
       sm2._wD(s.id + ': loadeddata');
 
@@ -4011,20 +4023,24 @@ function SoundManager(smURL, smID) {
 
     loadedmetadata: html5_event(function() {
 
+      if (!this._s) return;
       sm2._wD(this._s.id + ': loadedmetadata');
 
     }),
 
     loadstart: html5_event(function() {
 
-      sm2._wD(this._s.id + ': loadstart');
+      var s = this._s;
+      if (!s) return;
+      sm2._wD(s.id + ': loadstart');
       // assume buffering at first
-      this._s._onbufferchange(1);
+      s._onbufferchange(1);
 
     }),
 
     play: html5_event(function() {
 
+      if (!this._s) return;
       // sm2._wD(this._s.id + ': play()');
       // once play starts, no buffering
       this._s._onbufferchange(0);
@@ -4033,6 +4049,7 @@ function SoundManager(smURL, smID) {
 
     playing: html5_event(function() {
 
+      if (!this._s) return;
       sm2._wD(this._s.id + ': playing ' + String.fromCharCode(9835));
       // once play starts, no buffering
       this._s._onbufferchange(0);
@@ -4043,6 +4060,7 @@ function SoundManager(smURL, smID) {
 
       // note: can fire repeatedly after "loaded" event, due to use of HTTP range/partials
 
+      if (!this._s) return;
       var s = this._s,
           i, j, progStr, buffered = 0,
           isProgress = (e.type === 'progress'),
@@ -4106,6 +4124,7 @@ function SoundManager(smURL, smID) {
 
     ratechange: html5_event(function() {
 
+      if (!this._s) return;
       sm2._wD(this._s.id + ': ratechange');
 
     }),
@@ -4114,7 +4133,7 @@ function SoundManager(smURL, smID) {
 
       // download paused/stopped, may have finished (eg. onload)
       var s = this._s;
-
+      if (!s) return;
       sm2._wD(this._s.id + ': suspend');
       html5_events.progress.call(this, e);
       s._onsuspend();
@@ -4123,12 +4142,14 @@ function SoundManager(smURL, smID) {
 
     stalled: html5_event(function() {
 
+      if (!this._s) return;
       sm2._wD(this._s.id + ': stalled');
 
     }),
 
     timeupdate: html5_event(function() {
 
+      if (!this._s) return;
       this._s._onTimer();
 
     }),
@@ -4136,6 +4157,7 @@ function SoundManager(smURL, smID) {
     waiting: html5_event(function() {
 
       var s = this._s;
+      if (!s) return;
 
       // see also: seeking
       sm2._wD(this._s.id + ': waiting');
