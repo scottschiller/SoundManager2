@@ -8,7 +8,7 @@
  * Code provided under the BSD License:
  * http://schillmania.com/projects/soundmanager2/license.txt
  *
- * V2.97a.20170601
+ * V2.97a.20170601+DEV
  */
 
 (function SM2(window, _undefined) {
@@ -115,7 +115,7 @@ function SoundManager(smURL, smID) {
   this.id = (smID || 'sm2movie');
   this.debugID = 'soundmanager-debug';
   this.debugURLParam = /([#?&])debug=1/i;
-  this.versionNumber = 'V2.97a.20170601';
+  this.versionNumber = 'V2.97a.20170601+DEV';
   this.version = null;
   this.movieURL = null;
   this.altURL = null;
@@ -1690,10 +1690,12 @@ function SoundManager(smURL, smID) {
   }
   html5_events = {
     abort: html5_event(function() {
+      if (!this._s) return;
     }),
     canplay: html5_event(function() {
       var s = this._s,
           position1K;
+      if (!s) return;
       if (s._html5_canplay) {
         return;
       }
@@ -1712,6 +1714,7 @@ function SoundManager(smURL, smID) {
     }),
     canplaythrough: html5_event(function() {
       var s = this._s;
+      if (!s) return;
       if (!s.loaded) {
         s._onbufferchange(0);
         s._whileloading(s.bytesLoaded, s.bytesTotal, s._get_html5_duration());
@@ -1721,6 +1724,7 @@ function SoundManager(smURL, smID) {
     durationchange: html5_event(function() {
       var s = this._s,
           duration;
+      if (!s) return;
       duration = s._get_html5_duration();
       if (!isNaN(duration) && duration !== s.duration) {
         s.durationEstimate = s.duration = duration;
@@ -1728,31 +1732,40 @@ function SoundManager(smURL, smID) {
     }),
     ended: html5_event(function() {
       var s = this._s;
+      if (!s) return;
       s._onfinish();
     }),
     error: html5_event(function() {
+      if (!this._s) return;
       var description = (html5ErrorCodes[this.error.code] || null);
       this._s._onload(false);
       this._s._onerror(this.error.code, description);
     }),
     loadeddata: html5_event(function() {
       var s = this._s;
+      if (!s) return;
       if (!s._loaded && !isSafari) {
         s.duration = s._get_html5_duration();
       }
     }),
     loadedmetadata: html5_event(function() {
+      if (!this._s) return;
     }),
     loadstart: html5_event(function() {
-      this._s._onbufferchange(1);
+      var s = this._s;
+      if (!s) return;
+      s._onbufferchange(1);
     }),
     play: html5_event(function() {
+      if (!this._s) return;
       this._s._onbufferchange(0);
     }),
     playing: html5_event(function() {
+      if (!this._s) return;
       this._s._onbufferchange(0);
     }),
     progress: html5_event(function(e) {
+      if (!this._s) return;
       var s = this._s,
           i, j, progStr, buffered = 0,
           isProgress = (e.type === 'progress'),
@@ -1778,19 +1791,24 @@ function SoundManager(smURL, smID) {
       }
     }),
     ratechange: html5_event(function() {
+      if (!this._s) return;
     }),
     suspend: html5_event(function(e) {
       var s = this._s;
+      if (!s) return;
       html5_events.progress.call(this, e);
       s._onsuspend();
     }),
     stalled: html5_event(function() {
+      if (!this._s) return;
     }),
     timeupdate: html5_event(function() {
+      if (!this._s) return;
       this._s._onTimer();
     }),
     waiting: html5_event(function() {
       var s = this._s;
+      if (!s) return;
       s._onbufferchange(1);
     })
   };
