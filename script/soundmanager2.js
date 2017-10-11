@@ -117,6 +117,7 @@ function SoundManager(smURL, smID) {
     pan: 0,                 // "pan" settings, left-to-right, -100 to 100
     playbackRate: 1,        // rate at which to play the sound (HTML5-only)
     stream: true,           // allows playing before entire file has loaded (recommended)
+    title: '',              // wordings shown in iOS lock screen
     to: null,               // position to end playback within a sound (msec), default = end
     type: null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     usePolicyFile: false,   // enable crossdomain.xml request for audio on remote domains (for ID3/waveform access)
@@ -3116,6 +3117,9 @@ function SoundManager(smURL, smID) {
           s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
 
         }
+
+        // set the title of the audio
+        s._a.title = instanceOptions.title;
 
         // assign local reference
         a = s._a;
