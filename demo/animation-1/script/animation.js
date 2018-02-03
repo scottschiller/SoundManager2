@@ -177,14 +177,14 @@ getWindowCoords = (navigator.userAgent.toLowerCase().indexOf('opera')>0||navigat
 
 window.onresize = getWindowCoords;
 
-soundManager.preferFlash = true;
-soundManager.flashVersion = 9;
-soundManager.url = '../../swf/';
-soundManager.useHighPerformance = true;
-soundManager.debugMode = false; // disable debug mode
-soundManager.defaultOptions.multiShot = true;
-
-soundManager.onload = function() {
-  // soundManager is ready to use (create sounds and so on)
-  init();
-}
+soundManager.setup({
+  preferFlash: true,
+  flashVersion: 9,
+  url: '../../swf/',
+  useHighPerformance: true,
+  debugMode: false, // disable debug mode
+  onready: function() {
+    // soundManager is ready to use (create sounds and so on)
+    init();
+  }
+});

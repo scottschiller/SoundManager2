@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>SoundManager 2 Template</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style type="text/css">
 #soundmanager-debug {
  /* SM2 debug container (optional, use or customize this as you like - makes in-browser debug output more useable) */
@@ -14,106 +15,190 @@
 
 <!-- SM2 BAREBONES TEMPLATE: START -->
 
-<!-- include SM2 library -->
+<!-- include SM2 library (see builds for optimized versions) -->
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 
-<!-- And now, customize it! -->
+<!-- configure SM2 for your use -->
 <script type="text/javascript">
 
-// soundManager.debugMode = false; // disable debug output
-soundManager.url = '../../swf/'; // path to directory containing SoundManager2 .SWF file
-soundManager.flashVersion = 8;
-soundManager.useFlashBlock = false; // skip for now. See the flashblock demo when you want to start getting fancy.
+soundManager.setup({
 
-soundManager.onready(function() {
-  // soundManager.createSound() etc. may now be called
-  soundManager._writeDebug('soundManager.onready() callback - your code executes here');
+  // location: path to SWF files, as needed (SWF file name is appended later.)
+
+  url: '../../swf/',
+
+  // optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)
+  // flashVersion: 9,
+
+  // optional: use Flash for MP3/MP4/AAC formats, even if HTML5 support present. useful if HTML5 is quirky.
+  // preferFlash: true
+
+  // use soundmanager2-nodebug-jsmin.js, or disable debug mode (enabled by default) after development/testing
+  // debugMode: false,
+
+  // good to go: the onready() callback
+
+  onready: function() {
+
+    // SM2 has started - now you can create and play sounds!
+
+    var mySound = soundManager.createSound({
+      id: 'aSound', // optional: an id will be generated if not provided.
+      url: '../_mp3/click-high.mp3'
+      // onload: function() { console.log('sound loaded!', this); }
+      // other options here..
+    });
+
+    mySound.play();
+
+  },
+
+  // optional: ontimeout() callback for handling start-up failure, flash required but blocked, etc.
+
+  ontimeout: function() {
+
+    // Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?
+    // See the flashblock demo when you want to start getting fancy.
+
+  }
+
 });
-
-soundManager.ontimeout(function() {
-  // SM2 could not start. Flash missing, blocked, no support?
-  soundManager._writeDebug('soundManager.ontimeout() callback - your code executes here');
-});
-
 
 </script>
 
 <!-- SM2 BAREBONES TEMPLATE: END -->
 
+<script type="text/javascript">
+// helper function for this page only, demo purposes
+function checkDomain() {
+  if (!document.domain && !this.href.match(/index/i)) {
+    this.href=this.href+'index.html';
+  }
+}
+</script>
+
 </head>
 
 <body style="height:100%">
 
-<div style="margin-right:43em">
+<div style="max-width:75em">
+
  <h1>SoundManager 2 Template Example</h1>
- <p>This is a basic template for adding SoundManager to your page.</p> 
+ <p>This page covers the basics of adding SoundManager 2 to your project.</p>
+
  <h2>How it works</h2>
- <p>This page includes the SM2 script, which starts up on its own as appropriate. By default it will try to start as soon as possible.</p>
- <p>The minimal code needed to get SoundManager 2 going is below, with <em><em>configurable parts</em></em>. You can copy/paste it to get started.</p>
-<code>
-<pre>
-<span>&lt;!-- include SM2 library --&gt;</span>
+ <p>The minimal code needed to get SoundManager 2 going is below, with <em><em>configurable parts highlighted</em></em>. You can copy/paste it to get started. This page is also running the template code; If available, look at your JavaScript console for debug output from SM2.</p>
+
+ <h2>Dependencies</h2>
+
+ <p>You'll need to copy the files inside the <b>script/</b> and <b>swf/</b> subdirectories included with the SoundManager 2 package into your project.</p>
+
+ <ul class="file-structure">
+  <li>
+   soundmanager2/
+   <ul>
+    <li class="core">
+     script/ <span>- API core, soundmanager2.js</span>
+    </li>
+    <li class="core">
+     swf/ <span>- API core, SoundManager 2 .SWF files</span>
+    </li>
+   </ul>
+  </li>
+ </ul>
+
+
+ <p>At the bare minimum, you will need <b>soundmanager2.js</b>, <b>soundmanager2.swf</b> and <b>soundmanager2_debug.swf</b> for the default flash 8-based configuration. (Optionally, SM2 can use a Flash 9-based audio API which has MP4 support, data visualization and a few other features.)</p>
+
+ <h2 id="minimal">Template Code: Basic Version</h2>
+
+ <p>This is a compact version of the template you can copy/paste to get started. For new users, see the <a href="#commented-template">commented version</a>.</p>
+
+<pre class="block"><code>&lt;script src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
+&lt;script&gt;
+soundManager.setup({
+  url: '<em><em>/path/to/swf-files/</em></em>',
+  onready: function() {
+    var mySound = soundManager.createSound({
+      id: '<em><em>aSound</em></em>',
+      url: '<em><em>/path/to/an.mp3</em></em>'
+    });
+    mySound.play();
+  },
+  ontimeout: function() {
+    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?</span></span>
+  }
+});
+&lt;/script&gt;</code></pre>
+
+
+
+ <h2 id="commented-template">Template Code: Commented Version</h2>
+
+<pre class="block"><code><span><span>&lt;!-- include SM2 library (see <a href="../../doc/getstarted/#basic-inclusion" title="SoundManager 2: Script build versions" onclick="checkDomain()">builds</a> for optimized versions) --&gt;</span></span>
 &lt;script type="text/javascript" src="<em><em>/path/to/soundmanager2.js</em></em>"&gt;&lt;/script&gt;
 
-<span>&lt;!-- configure it for your use --&gt;</span>
+<span><span>&lt;!-- configure SM2 for your use --&gt;</span></span>
 &lt;script type="text/javascript"&gt;
 
-soundManager.url = '<em><em>/path/to/sm2-flash-files/</em></em>'; <span>// directory where SM2 .SWFs live</span>
+soundManager.setup({
 
-<span><span>/*
- * Note that SoundManager will determine and append the appropriate .SWF file to the URL,
- * eg. /path/to/sm2-flash-files/soundmanager2.swf automatically.
- *
- * Bonus: Read up on <a href="../../doc/#soundmanager-usehtml5audio">HTML5 audio support</a>, if you're feeling adventurous.
- * iPad/iPhone and devices without flash installed will always attempt to use it.
- *
- * Also, See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">flashblock demo</a> when you want to start getting fancy.
-*/</span></span>
+  <span><span>// location: path to SWF files, as needed (SWF file name is appended later.)</span></span>
 
-<span>// disable debug mode after development/testing..</span>
-<span>// soundManager.debugMode = false;</span>
+  url: '<em><em>/path/to/swf-files/</em></em>',
 
-<span style="background:#ccc;padding:0.25em;color:#333">// The basics: onready() callback</span>
+  <span><span>// optional: version of SM2 flash audio API to use (8 or 9; default is 8 if omitted, OK for most use cases.)
+  // flashVersion: <em><em>9</em></em>,
 
-soundManager.onready(function(){
+  // use soundmanager2-nodebug-jsmin.js, <i>or</i> disable debug mode (enabled by default) after development/testing
+  // debugMode: <em><em>false</em></em>,
 
-  <span>// SM2 has loaded - now you can create and play sounds!</span>
+  // good to go: the onready() callback</span></span>
 
-  var mySound = soundManager.createSound({
-    id: '<em><em>aSound</em></em>',
-    url: '<em><em>/path/to/an.mp3</em></em>'
-    <span>// onload: <span>myOnloadHandler,</span></span>
-    <span>// other options here..</span>
-  });
+  onready: function() {
 
-  mySound.play();
+    <span><span>// SM2 has started - now you can create and play sounds!</span></span>
 
-</em></em>});
+    var mySound = soundManager.createSound({
+      id: '<em><em>aSound</em></em>', <span><span>// optional: provide your own unique id</span></span>
+      url: '<em><em>/path/to/an.mp3</em></em>'
+      <span><span>// onload: function() { console.log('sound loaded!', this); }
+      // <a href="../../doc/#smdefaults" onclick="checkDomain()">other options</a> here..</span></span>
+    });
 
-<span style="background:#ccc;padding:0.25em;color:#333">// Optional: ontimeout() callback for handling start-up failure</span>
+    mySound.play();
 
-soundManager.ontimeout(function(){
+  },
 
-  <span>// Hrmm, SM2 could not start. Flash blocker involved? Show an error, etc.?</span>
+  <span><span>// optional: ontimeout() callback for handling start-up failure</span></span>
+
+  ontimeout: function() {
+
+    <span><span>// Hrmm, SM2 could not start. Missing SWF? Flash blocked? No HTML5 audio support? Show an error, etc.?
+    // See the <a href="../flashblock/" title="SoundManager 2 flashblock handling demo" onclick="checkDomain()">flashblock demo</a> when you want to start getting fancy.</span></span>
+
+  }
 
 });
 
-&lt;/script&gt;</pre></code>
+&lt;/script&gt;</code></pre>
+
+ <h2 id="html5-notes">HTML5 Support Notes</h2>
+ <p>Read up on <a href="../../doc/#soundmanager-usehtml5audio" onclick="checkDomain()">HTML5 audio support</a>, if you're feeling adventurous. iPad/iPhone and devices without flash installed will always use 100% HTML5 mode. By default, SM2 will use 100% HTML5 mode where supported. If you want to override this, specify <code>preferFlash: true</code> and Flash will be used (if present) for playing MP3 and MP4 (AAC) formats.</p>
 
  <h2 id="flashblock-handling">Handling flash blockers</h2>
- <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info on this, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">Flashblock</a> example.</p>
+ <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="checkDomain()">Flashblock</a> example.</p>
 
- <h2>Making SM2 wait for window.onload()</h2>
- <p>If you prefer to have the library wait for window.onload() before making onready() / ontimeout() callbacks, you can modify SM2's "waitForWindowLoad" property:</p>
-<code>soundManager.waitForWindowLoad = true;</code>
  <h2 style="margin-top:1em">Disabling debug output</h2>
- <p>SoundManager 2 will write to a debug &lt;div&gt; element or a javascript console if available, by default. To disable it, simply set the relevant property to false:</p>
-<code>soundManager.debugMode = false;</code>
+ <p>SoundManager 2 will write debug output via <code>console.log()</code> if available, by default. To disable it, simply specify <code>debugMode: false</code>.</p>
+ <p>You can also write HTML-based debug output to the DOM via <code>consoleOnly: false</code> and/or <code>useConsole: false</code>.</p>
  <p>To see related configuration code, refer to the source of this page which basically does all of the above "for real."</p>
- <h2>Troubleshooting</h2>
- <p>If SM2 is failing to start and throwing errors due to flash security, timeouts or other issues, check out the <a href="../../doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href.replace(/\#/,'index.html#')">troubleshooting tool</a> which can help you fix things.</p>
+
+ <h2>Troubleshooting ("failed to start": Viewing offline, missing SWF, flash blockers etc.)</h2>
+ <p>If SM2 is failing to start and throwing errors due to flash security, timeouts or other issues, check out the <a href="../../doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool" onclick="checkDomain()">troubleshooting tool</a> for tips.</p>
+
  <h2>No-debug, compressed version of soundmanager2.js</h2>
- <p>Once development is finished, you can also use the "minified" (down to 10% of original size with gzip!) version of SM2, which has debug output and comments removed for you: <a href="../../script/soundmanager2-nodebug-jsmin.js">soundmanager2-nodebug-jsmin.js</a>. Serve with gzip compression wherever possible for best bandwidth savings.</p>
+ <p>Once development is finished, you can also use the "minified" (down to ~8% of original size with gzip!) version of SM2, which has debug output and comments removed for you: <a href="../../script/soundmanager2-nodebug-jsmin.js">soundmanager2-nodebug-jsmin.js</a>. Serve with gzip compression wherever possible for best bandwidth savings.</p>
  
 </div>
 

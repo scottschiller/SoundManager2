@@ -40,7 +40,7 @@ package {
 
   public class SoundManager2_AS3 extends Sprite {
 
-    public var version:String = "V2.97a.20111220";
+    public var version:String = "V2.97a.20170601";
     public var version_as:String = "(AS3/Flash 9)";
 
     /**
@@ -186,12 +186,12 @@ package {
     // methods
     // -----------------------------------
 
-    public function writeDebug (s:String, bTimestamp: Boolean = false) : Boolean {
+    public function writeDebug (s:String, logLevel:Number = 0) : Boolean {
       if (!debugEnabled) {
         return false;
       }
       // <d>
-      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, bTimestamp);
+      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, null, logLevel);
       // </d>
       return true;
     }
@@ -205,18 +205,17 @@ package {
       try {
         if (isFirstCall == true) {
           flashDebug('Testing Flash -&gt; JS...');
-          var d: Date = new Date();
-          ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime(), version);
+          ExternalInterface.call(baseJSController + "._externalInterfaceOK", version);
           flashDebug('Flash -&gt; JS OK');
+          flashDebug('Waiting for JS -&gt; Flash...');
         } else {
-          writeDebug('SM2 SWF ' + version + ' ' + version_as);
-          flashDebug('JS -> Flash OK');
+          // writeDebug('SM2 SWF ' + version + ' ' + version_as, 1);
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
-          writeDebug('JS to/from Flash OK');
+          flashDebug('JS -&gt; Flash OK');
         }
       } catch(e: Error) {
         flashDebug('Fatal: Flash &lt;-&gt; JS error: ' + e.toString());
-        writeDebug('_externalInterfaceTest: Error: ' + e.toString());
+        writeDebug('_externalInterfaceTest: Error: ' + e.toString(), 2);
         if (!caughtFatal) {
           caughtFatal = true;
         }
@@ -326,7 +325,7 @@ package {
             ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
             ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", oSound.duration > 0 ? 1 : 0);
           } catch(e: Error) {
-            writeDebug('_whileLoading/_onload error: ' + e.toString());
+            writeDebug('_whileLoading/_onload error: ' + e.toString(), 2);
           }
         } else if (oSound.loaded != true && hasNew) {
           ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
@@ -363,7 +362,7 @@ package {
         if (forceEndCheck) {
           // sound finish case: Ensure position is at end (sound duration), as flash 9 does not always correctly match the two.
           if (nP < nD) {
-            writeDebug('correcting sound ' + oSound.sID + ' end position ('+nP+') to length: '+ nD);
+            writeDebug('correcting sound ' + oSound.sID + ' end position ('+nP+') to length: '+ nD, 2);
             nP = nD;
           }
         }
@@ -416,7 +415,7 @@ package {
       isPlaying = (oSound.didLoad && !oSound.paused && (!oSound.useNetstream || (oSound.useNetstream && oSound.lastNetStatus != "NetStream.Play.Stop"))); // don't update if stream has ended
 
       // raw waveform + EQ spectrum data
-      if (isPlaying && oSoundChannel) { // || oSound.useNetstream)) {
+      if (isPlaying && (oSoundChannel || oSound.useNetstream)) {
 
         if (oSound.useWaveformData) {
           if (!areSoundsInaccessible && !oSound.handledDataError && !oSound.ignoreDataError) {
@@ -511,9 +510,8 @@ package {
         oSound.loaded = true;
         // force duration update (doesn't seem to be always accurate)
         ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._whileloading", oSound.bytesLoaded, oSound.bytesTotal, oSound.length || oSound.duration);
-        // TODO: Determine if loaded or failed - bSuccess?
-        // ExternalInterface.call(baseJSObject+"['"+oSound.sID+"']._onload",bSuccess?1:0);
-        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", 1);
+        // duration > 0 means a valid sound was loaded.
+        ExternalInterface.call(baseJSObject + "['" + oSound.sID + "']._onload", (oSound.length || oSound.duration ? 1 : 0));
       }
     }
 
@@ -579,7 +577,7 @@ package {
       // a crossdomain.xml file would fix the problem easily
     }
 
-    public function _setPosition(sID:String, nSecOffset:Number, isPaused: Boolean) : void {
+    public function _setPosition(sID:String, nSecOffset:Number, isPaused: Boolean, allowMultiShot: Boolean) : void {
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
       // writeDebug('_setPosition()');
@@ -591,7 +589,7 @@ package {
       if (s.useNetstream) {
         // Minimize the buffer so playback starts ASAP
         s.ns.bufferTime = s.bufferTime;
-        writeDebug('setPosition: setting buffer to '+s.ns.bufferTime+' secs');
+        writeDebug('setPosition ('+ sID + '): setting buffer to '+s.ns.bufferTime+' secs');
 
         nSecOffset = nSecOffset > 0 ? nSecOffset / 1000 : 0;
         s.ns.seek(nSecOffset);
@@ -600,13 +598,13 @@ package {
         if (s.soundChannel) {
           s.soundChannel.stop();
         }
-        writeDebug('setPosition: ' + nSecOffset); // +', '+(s.lastValues.loops?s.lastValues.loops:1));
+        writeDebug('setPosition ('+ sID + '): ' + nSecOffset); // +', '+(s.lastValues.loops?s.lastValues.loops:1));
         if (s.lastValues.loops > 1 && nSecOffset != 0) {
           writeDebug('Warning: Looping functionality being disabled due to Flash limitation.');
           s.lastValues.loops = 1;
         }
         try {
-          s.start(nSecOffset, s.lastValues.loops || 1); // start playing at new position
+          s.start(nSecOffset, s.lastValues.loops || 1, allowMultiShot); // start playing at new position
         } catch(e: Error) {
           writeDebug('Warning: Could not set position on ' + sID + ': ' + e.toString());
         }
@@ -821,10 +819,11 @@ package {
       }
     }
 
-    public function _start(sID:String, nLoops: int, nMsecOffset: int) : void {
+    public function _start(sID:String, nLoops: int, nMsecOffset: int, allowMultiShot: Boolean) : Boolean {
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
-      if (!s) return void;
-      writeDebug('start: ' + nMsecOffset + (nLoops > 1 ? ', loops: ' + nLoops : ''));
+      var result: Boolean;
+      if (!s) return true;
+      writeDebug('start (' + sID + '): ' + nMsecOffset + (nLoops > 1 ? ', loops: ' + nLoops : ''));
       s.lastValues.paused = false; // reset pause if applicable
       s.lastValues.loops = (nLoops || 1);
       if (!s.useNetstream) {
@@ -832,7 +831,7 @@ package {
       }
       s.handledDataError = false; // reset this flag
       try {
-        s.start(nMsecOffset, nLoops);
+        result = s.start(nMsecOffset, nLoops, allowMultiShot);
       } catch(e: Error) {
         writeDebug('Could not start ' + sID + ': ' + e.toString());
       }
@@ -841,10 +840,11 @@ package {
       } catch(e: Error) {
         writeDebug('_start(): registerOnComplete failed');
       }
+      return result;
     }
 
-    public function _pause(sID:String) : void {
-      // writeDebug('_pause()');
+    public function _pause(sID:String, allowMultiShot: Boolean) : void {
+      // writeDebug('_pause(): ' + sID);
       var s: SoundManager2_SMSound_AS3 = soundObjects[sID];
       if (!s) return void;
       // writeDebug('s.paused: '+s.paused);
@@ -872,7 +872,7 @@ package {
         if (s.useNetstream) {
           s.ns.resume();
         } else {
-          s.start(s.lastValues.position, s.lastValues.loops);
+          s.start(s.lastValues.position, s.lastValues.loops, allowMultiShot);
         }
         try {
           registerOnComplete(sID);
@@ -898,14 +898,14 @@ package {
     public function _setPolling(bPolling: Boolean = false, nTimerInterval: uint = 50) : void {
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
-        writeDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
+        flashDebug('Enabling polling, ' + nTimerInterval + ' ms interval');
         timer = new Timer(nTimerInterval, 0);
         timer.addEventListener(TimerEvent.TIMER, function() : void {
           checkProgress();
         }); // direct reference eg. checkProgress doesn't work? .. odd.
         timer.start();
       } else if (timer && !pollingEnabled) {
-        writeDebug('Disabling polling');
+        flashDebug('Disabling polling');
         // flash.utils.clearInterval(timer);
         timer.reset();
       }

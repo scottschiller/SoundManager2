@@ -1,0 +1,20 @@
+{
+  "name": "SoundManager2",
+  "homepage": "https://github.com/scottschiller/SoundManager2",
+  "main": ["script/soundmanager2.js", "swf/soundmanager2.swf", "swf/soundmanager2_flash9.swf"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "demo",
+    "doc",
+    "test",
+    "tests",
+    "tasks",
+    "component.json",
+    "composer.json",
+    "CONTRIBUTING.md",
+    "package.js",
+    "package.json"
+  ]
+}

@@ -51,7 +51,7 @@ function loadScript(sURL, onLoad) {
 
 function msg(s) {
 
-  document.getElementById('sm2-status').innerHTML = s;
+  document.getElementById('sm2-status').innerHTML += '<br />' + s;
 
 }
 
@@ -67,26 +67,39 @@ window.onload = function() {
 
       // SM2 script has loaded
 
-      soundManager.url = '../../swf/';
+      window.setTimeout(function() {
+        msg('soundmanager2.js loaded, delaying before setup()...');
+      }, 500);
 
-      soundManager.onready(function() {
+      window.setTimeout(function() {
 
-        soundManager.createSound({
-          id:'foo',
-          url:'../_mp3/mouseover.mp3'
-        }).play();
+        soundManager.setup({
 
-        msg('started OK');
+          url: '../../swf/',
 
-      });
+          onready: function() {
 
-      soundManager.ontimeout(function() {
+            soundManager.createSound({
+              id:'foo',
+              url:'../_mp3/mouseover.mp3'
+            }).play();
 
-        msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
+            msg('Started OK');
 
-      });
+          },
 
-      soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+          ontimeout: function() {
+
+            msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
+
+          }
+
+        });
+
+        // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+        soundManager.beginDelayedInit();
+
+      }, 1000);
 
     });
 
@@ -102,25 +115,42 @@ window.onload = function() {
 <div style="margin-right:43em">
 
  <h1>SoundManager 2: Lazy Loading Example</h1>
- <p>This is an example of dynamically loading SoundManager 2 using JS, after window.onload() has fired.</p> 
+ <p>This is an example of dynamically loading SoundManager 2 using JS, after <code>window.onload()</code> has fired.</p>
 
  <h2>How it works</h2>
- <p>This page waits until window.onload(), delays 1 second and loads soundmanager2.js, which should then start up.</p>
+ <p>This page waits until <code>window.onload()</code>, delays 1 second and loads soundmanager2.js, which should then start up.</p>
+ <p><b>Behaviour note:</b> SM2 will not automatically start if it is loaded at or after the <code>DOMContentLoaded</code> event has fired, which may be common with most JS loaders.</p>
+ <p>However, SM2 will try to start once <code>soundManager.setup()</code> is called and a <code>url</code> attribute has been provided.</p>
+ <p>If you want to ensure that SM2 starts after setup, you can call <code>soundManager.beginDelayedInit()</code> - this should be safe to call after <code>DOMContentLoaded</code> has fired.</p>
+
+<h2>Pseudo-code Example</h2>
+
+<p>Once SM2 has been dymamically loaded, you can call its <code>setup()</code> method. Passing a <code>url</code> attribute will trigger the initialization process.</p>
+
+<pre class="block"><code>loadJS('<span>soundmanager2.js</span>', function() {
+  soundManager.setup({
+    url: '<span>/path/to/swfs/</span>',
+    onready: function() {
+      <span><span>// good to go!
+      // soundManager.createSound(...), etc.</span></span>
+    }
+  });
+});</code></pre>
+
+<h2>Live Example</h2>
 
 <p>SoundManager 2 status: <b id="sm2-status">Waiting for window.onload()...</b></p>
 
-<pre>
-<span>/*
- * Dynamic script loading helper
+<pre class="block"><code><span><span>/**
+ * Dynamic script loading helper (example)
  * Normalizes good browser onload() vs. IE readyState weirdness
  */
-</span>
-
+</span></span>
 function loadScript(sURL, onLoad) {
 
   function loadScriptHandler() {
     var rs = this.readyState;
-    if (rs == 'loaded' || rs == 'complete') {
+    if (rs == '<span>loaded</span>' || rs == '<span>complete</span>') {
       this.onreadystatechange = null;
       this.onload = null;
       if (onLoad) {
@@ -135,72 +165,77 @@ function loadScript(sURL, onLoad) {
     window.setTimeout(onLoad,20);
   }
 
-  var oS = document.createElement('script');
-  oS.type = 'text/javascript';
+  var oS = document.createElement('<span>script</span>');
+  oS.type = '<span>text/javascript</span>';
   if (onLoad) {
     oS.onreadystatechange = loadScriptHandler;
     oS.onload = scriptOnload;
   }
   oS.src = sURL;
-  document.getElementsByTagName('head')[0].appendChild(oS);
+  document.getElementsByTagName('<span>head</span>')[0].appendChild(oS);
 
 }
 
-<span>// Wait for window load, then load soundmanager2.js, let it start and play a test sound</span>
+<span><span>// Wait for window load, then load soundmanager2.js, let it start and play a test sound</span></span>
 
 window.onload = function() {</span>
 
-  msg('Window loaded, waiting 1 second...');
+  msg('<span>Window loaded, waiting 1 second...</span>');
 
   setTimeout(function() {
 
-    msg('Loading soundmanager2.js...');
+    msg('<span>Loading soundmanager2.js...</span>');
 
-    loadScript('../../script/soundmanager2.js', function() {
+    loadScript('<span>../../script/soundmanager2.js</span>', function() {
 
-      <span>// SM2 script has loaded</span>
+      <span><span>// SM2 script has loaded</span></span>
 
-      soundManager.url = '../../swf/';
+      window.setTimeout(function() {
+        msg('<span>soundmanager2.js loaded, delaying before setup()...</span>');
+      }, 500);
 
-      soundManager.onready(function() {
-        soundManager.createSound({
-          id:'foo',
-          url:'../_mp3/mouseover.mp3'
-        }).play();
-        msg('started OK');
-      });
+      window.setTimeout(function() {
 
-      soundManager.ontimeout(function() {
-        msg('Loaded OK, but unable to start: unsupported/flash blocked, etc.');
-      });
+        soundManager.setup({
+          url: '<span>../../swf/</span>',
+          onready: function() {
+            soundManager.createSound({
+              id: '<span>foo</span>',
+              url: '<span>../_mp3/mouseover.mp3</span>'
+            }).play();
+            msg('<span>Started OK</span>');
+          },
+          ontimeout: function() {
+            msg('<span>Loaded OK, but unable to start: unsupported/flash blocked, etc.</span>');
+          }
+        });
 
-      soundManager.beginDelayedInit(); // ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable
+        <span><span>// ensure start-up in case document.readyState and/or DOMContentLoaded are unavailable</span></span>
+        soundManager.beginDelayedInit();
+
+      }, 1000);
 
     });
 
-  },1000);
+  }, 1000);
 
 </span>}
-</pre>
+</code></pre>
 
  <h2 id="flashblock-handling">Handling flash blockers</h2>
  <p>It's good to let users see the flash component of SM2, so those with flash blockers can unblock it and allow SM2 to start. For more info on this, see the <a href="../flashblock/" title="SoundManager 2 with Flash block handling" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href+'index.html'">Flashblock</a> example.</p>
-
- <h2>Making SM2 wait for window.onload()</h2>
- <p>If you prefer to have the library wait for window.onload() before calling soundManager.onload()/onerror() methods, you can modify SM2's "waitForWindowLoad" property:</p>
-<code>soundManager.waitForWindowLoad = true;</code>
 
  <h2 style="margin-top:1em">Preventing auto-init using SM2_DEFER</h2>
  <p>If you want to completely defer the normal start-up of SM2 and call the SoundManager() constructor yourself, you can declare an SM2_DEFER global and set it to true. See the <a href="sm2_defer-example.html" title="SoundManager 2: SM2_DEFER example">SM2_DEFER example</a> for details.</p>
 
  <h2 style="margin-top:1em">Disabling debug output</h2>
  <p>SoundManager 2 will write to a debug &lt;div&gt; element or a javascript console if available, by default. To disable it, simply set the relevant property to false:</p>
-<code>soundManager.debugMode = false;</code>
+<code>soundManager.setup({ debugMode: false });</code>
  <p>To see related configuration code, refer to the source of this page which basically does all of the above "for real."</p>
  <h2>Troubleshooting</h2>
  <p>If SM2 is failing to start and throwing errors due to flash security, timeouts or other issues, check out the <a href="../../doc/getstarted/#troubleshooting" title="SoundManager 2 troubleshooting tool" onclick="if (!document.domain && !this.href.match(/index/i)) this.href=this.href.replace(/\#/,'index.html#')">troubleshooting tool</a> which can help you fix things.</p>
  <h2>No-debug, compressed version of soundmanager2.js</h2>
- <p>Once development is finished, you can also use the "minified" (60% smaller) version of SM2, which has debug output and comments removed for you: <a href="../../script/soundmanager2-nodebug-jsmin.js">soundmanager2-nodebug-jsmin.js</a>. If you can, serve this with gzip compression for even greater bandwidth savings!</p>
+ <p>You can also use the "minified" (60% smaller) version of SM2, which has debug output and comments removed for you: <a href="../../script/soundmanager2-nodebug-jsmin.js">soundmanager2-nodebug-jsmin.js</a>. If you can, serve this with gzip compression for even greater bandwidth savings!</p>
  
 </div>
 

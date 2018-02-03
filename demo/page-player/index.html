@@ -35,12 +35,14 @@ ul.playlist li .comment {font-size:0.65em;opacity:0.5}
 -------- */
 
 // demo only, but you can use these settings too..
-soundManager.flashVersion = 9;
-soundManager.preferFlash = true; // for visualization effects
-soundManager.useHighPerformance = true; // keep flash on screen, boost performance
-soundManager.wmode = 'transparent'; // transparent SWF, if possible
-soundManager.useFastPolling = true; // increased JS callback frequency
-soundManager.url = '../../swf/';
+soundManager.setup({
+  flashVersion: 9,
+  // preferFlash: true, // for visualization effects
+  useHighPerformance: true, // keep flash on screen, boost performance
+  html5PollingInterval: 50,
+  wmode: 'transparent', // transparent SWF, if possible
+  url: '../../swf/'
+});
 
 // custom page player configuration
 
@@ -72,7 +74,7 @@ var PP_CONFIG = {
 
  <h2 style="margin-top:0px;border:none">Muxtape.com-style UI, MP3/AAC Player Example</h2>
 
- <p style="padding-top:0.5em;color:#333">This page uses shiny features which require Flash 9. The <a href="basic.html" title="Basic page player demo">default config</a> uses Flash 8.</p>
+ <p style="padding-top:0.5em;color:#333">This page uses Flash 9-based effects where supported. The <a href="basic.html" title="Basic page player demo">default config</a> uses Flash 8.</p>
 
  <p id="experimental-features" style="margin-top:0.5em;color:#333">You can also try enabling <a href="#experimental" onclick="window.location.href = this;window.location.reload()">experimental visualization features</a>.</p>
 
@@ -187,7 +189,10 @@ var PP_CONFIG = {
 <p>The custom parameters used to make this demo page are highlighted in red.</p>
 <pre class="block"><code>  <span>// ( within page-player.js )</span>
 
-  soundManager.flashVersion = <span style="color:red">9</span>; <span>// If you need flash 9, include this line.</span>
+  soundManager.setup({
+    <span>// If you need flash 9, include this line.</span>
+    flashVersion: <span style="color:red">9</span>
+  });
 
   this.config = {
     usePeakData: <span style="color:red">true</span>,     <span>// [Flash 9 only] show peak (VU-meter) data</span>
@@ -208,9 +213,12 @@ var PP_CONFIG = {
 
 <p>Alternately, you may override the defaults on a per-page basis by defining an "alternate configuration" object <b>before</b> the page-player.js file has been included in your source code:</p>
 
-<pre class="block"><code>  <span>// ( before soundManager.onready()/onload() have fired )</span>
+<pre class="block"><code>  <span>// ( before soundManager.onready() has fired )</span>
 
-  soundManager.flashVersion = <span style="color:red">9</span>; <span>// If you need flash 9, include this line.</span>
+  soundManager.setup({
+    <span>// If you need flash 9, include this line.</span>
+    flashVersion: <span style="color:red">9</span>
+  });
 
   var PP_CONFIG = {
     usePeakData: true,     <span>// [Flash 9 only] whether or not to show peak data (no notable CPU cost)</span>

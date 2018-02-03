@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<!--
+/**
+ * Cassette Tape UI Prototype (09/2012)
+ * ALPHA build / experimental state, unsupported; use at own risk
+ * Requires CSS3 border-radius + <canvas> support
+ * http://www.schillmania.com/projects/soundmanager2/
+ */
+-->
+<html>
+<head>
+<title>SoundManager 2: Cassette Tape Prototype</title>
+<meta name="description" content="An experimental HTML and CSS-based web audio player featuring designs based on the TDK MA-R90 cassette tape, a classic metal-alloy cassette model from 1982, and others" />
+<meta name="keywords" content="javascript sound, html5 audio, css3, cassette tape, tdk, mar, ma-r, mar90, html5 sound, javascript audio, schill, schillmania, soundmanager, soundmanager2" />
+<meta name="author" content="Scott Schiller" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" media="screen" href="css/cassette-tape-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="css/demo.css" />
+<script src="../../script/soundmanager2.js"></script>
+<script src="script/cassette-tape-ui.js"></script>
+</head>
+<body id="page-more">
+
+<div id="content">
+
+ <div id="demo-header-wrapper" class="visible light">
+
+  <div id="demo-header">
+   <h1>Cassette Tape UI</h1>
+   <p>An exercise in skeuomorphic excess. <a href="./" title="More cassette tape prototype designs">main &rarrlp;</a></p>
+  </div>
+
+ </div>
+
+ <div id="col1" class="demo-subheader">
+
+  <h2 id="about">About</h2>
+  <p>The Cassette Tape UI began as a silly web design idea which spawned a <a href="#lamp-project" title="Tangential: The Cassette Tape Lamp Project">Tape Lamp Project</a> and some <a href="http://www.flickr.com/photos/schill/sets/72157630538617822/" title="Cassette Tape Miscellany by Schill (on Flickr)">eBay finds</a> along the way. This page documents some analog history, and the "making-of".</p>
+
+  <h2 id="purpose">Purpose</h2>
+  <p>Following up on the <a href="http://www.schillmania.com/content/entries/2011/wheels-of-steel/" title="The Wheels Of Steel: An Ode To Turntables (in HTML)">Wheels Of Steel</a>, The Cassette Tape UI is another experiment in skeuomorphic design - a term that in the context of computers, involves digital recreations of analog design elements and functionality that serve little to no practical purpose in the digital world.</p>
+  <p>In other words: <em>"You know what never gets old? ... Nostalgia."</em></p>
+
+  <h2 id="technology">Technology</h2>
+  <p>This experimental UI demo uses <a href="http://www.schillmania.com/projects/soundmanager2/" title="SoundManager 2: JavaScript Sound For The Web">SoundManager 2</a> for audio playback and control. HTML5 and/or Flash can be used by SM2 under the hood, depending on support.</p>
+  <p>The UI is driven mostly by the <code>whileplaying()</code> event, which results in the spooling of cassette tape between the reels as playback progresses. The tape "connecting" the two reels is drawn dynamically on a <code>&lt;canvas&gt;</code> element, as applicable.</p>
+  <p>CSS animations are used to make the reels spin at different speeds, and <code>&lt;canvas&gt;</code> is also used to apply some masking and blurring effects on the home page demo.</p>
+
+  <h2 id="credits">Credits</h2>
+  <p>Thanks go out to <a href="http://www.sxates.com/" title="Brian Scates, design-centric entrepreneur">Brian Scates</a>, who designed graphic elements for the tape spokes, reels and textures. Kudos are also due to design + tech friends who played with early pre-release versions, found bugs and gave feedback.</p>
+  <p>Web fonts used: <a href="http://www.google.com/webfonts/specimen/Just+Another+Hand" title="Just Another Hand (Google Web Fonts)">Just Another Hand</a> (mixtape "label"), <a href="http://www.theleagueofmoveabletype.com/ostrich-sans" title="Ostrich Sans (League Of Moveable Type)">Ostrich Sans</a> (Demo page headers).</p>
+
+  <h2 id="inspiration">Inspiration</h2>
+  <p>
+   <a href="http://www.flickr.com/photos/schill/7586864728/" title="Heavy Metal: TDK MA-R90 Cassette Tape by Schill, on Flickr" style="margin-bottom:1em"><img src="http://farm8.staticflickr.com/7274/7586864728_a4466d7703_z.jpg" width="640" height="427" alt="Heavy Metal: TDK MA-R90 Cassette Tape"></a>
+   <a href="http://www.flickr.com/photos/schill/7990633818/" title="TDK MAR-90 Cassette Tape (Back) by Schill, on Flickr"><img src="http://farm9.staticflickr.com/8038/7990633818_8c5c5f7aa8_z.jpg" width="640" height="427" alt="TDK MAR-90 Cassette Tape (Back)"></a>
+  </p>
+  <p>The <b>TDK MA-R</b> (Metal-Alloy Reference) cassette series debuted in 1979 with a stunning design. Housed in a metal shell, the MA-R was a pretty serious piece of hardware weighing several times more than its counterparts. It was also innovative: Unlike other tapes with one-use tabs designed to be snapped and broken off, the MA-R series' tabs could be rotated in-place to prevent re-recording.</p>
+  <p>It turns out that cassette tapes, like many other things, are collectible. Rare and still-new, sealed models can go for hundreds of dollars online.</p>
+  <p>There were also some creative blends of functionality and design. It's inspiring to note that someone thought to make this tape head degausser tool transparent, exposing its unique inner circuitry.</p>
+  <p>
+   <a href="http://www.flickr.com/photos/schill/7992502552/" title="TDK HD-01 Head Demagnetizer by Schill, on Flickr"><img src="http://farm9.staticflickr.com/8035/7992502552_14c0c33689_z.jpg" width="640" height="427" alt="TDK HD-01 Head Demagnetizer"></a>
+  </p>
+
+  <h2 id="lamp-project">Tangential: The Lamp Project</h2>
+
+  <p>When searching for transparent tape designs online, I found photos of a "lamp" made by a San Francisco-based architecture firm and couldn't resist a shot at making my own. While they used larger scales and incandescent lighting, my approach was to build 1x5 and 2x5 stacks using transparent Maxell DUP-120 tapes in jewel boxes, and to light the stack with a special LED panel.</p>
+
+  <p>
+   <a href="http://www.flickr.com/photos/schill/7992891165/" title="Cassette Tape Lamps: 1x5, 2x5 by Schill, on Flickr"><img src="http://farm9.staticflickr.com/8039/7992891165_d2c44fb063_z.jpg" width="640" height="427" alt="Cassette Tape Lamps: 1x5, 2x5"></a>
+  </p>
+
+  <p>Incandescent flood lighting was tested, and turned out to be impractical (and perhaps, fire-prone).</p>
+
+  <p>
+   <a href="http://www.flickr.com/photos/schill/7635098808/" title="Cassette Tape Lamp: Test Build 1 (Desaturated) by Schill, on Flickr"><img src="http://farm9.staticflickr.com/8427/7635098808_3b9683286a_z.jpg" width="640" height="427" alt="Cassette Tape Lamp: Test Build 1 (Desaturated)"></a>
+  </p>
+
+  <p>Things improved greatly with a dimmable RGB LED panel which offered consistent illumination.</p>
+
+  <p>
+   <a href="http://www.flickr.com/photos/schill/7786579946/" title="Cassette Tape Lamp, LED Panel lighting by Schill, on Flickr"><img src="http://farm8.staticflickr.com/7256/7786579946_407c942bb9_z.jpg" width="640" height="427" alt="Cassette Tape Lamp, LED Panel lighting"></a>
+  </p>
+
+  <p>After making three 2x5 lamps (120 tapes in total), it was too tempting not to stack them.</p>
+
+  <p>
+   <a href="http://www.flickr.com/photos/schill/7821156750/" title="Cassette Tape Tower + RGB LED Panel Lighting by Schill, on Flickr"><img src="http://farm9.staticflickr.com/8445/7821156750_2384af6d10_z.jpg" width="640" height="240" alt="Cassette Tape Tower + RGB LED Panel Lighting"></a>
+  </p>
+
+  <p>Following up on the larger builds, I started making smaller 1x5-sized lamps for friends.</p>
+
+  <p>
+   <a href="http://www.flickr.com/photos/schill/8077249383/" title="Tape Lamp @ FlickrHQ (1x1x5), HDR by Schill, on Flickr"><img src="http://farm9.staticflickr.com/8325/8077249383_45b95de864_c.jpg" width="600" height="800" alt="Tape Lamp @ FlickrHQ (1x1x5), HDR"></a>
+   <a href="http://www.flickr.com/photos/schill/8078733596/" title="Accidental Minecraft-style lighting by Schill, on Flickr"><img src="http://farm9.staticflickr.com/8323/8078733596_89b79d174a_c.jpg" width="600" height="800" alt="Accidental Minecraft-style lighting"></a>
+  </p>
+
+  <p>See the <a href="http://www.flickr.com/photos/schill/sets/72157630659892600/" title="Cassette Tape Lamp Project by Schill (on Flickr)">Cassette Tape Lamp Project</a> set for more photos.</p>
+
+ </div>
+
+ <div id="col2" class="demo-subheader">
+
+  <h2 id="demo">Live Demo</h2>
+
+  <p>Here are some cassette tape UI skin/theme variants; the styling is a mix of HTML elements and class names.</p>
+
+  <p style="font-size:small"><b style="font-weight:bold">Disclaimer</b>: This UI is a prototype, experimental and subject to change. It is not officially "supported" as a demo, and requires a fairly-modern browser that supports CSS3 and &lt;canvas&gt;. It does not degrade gracefully in older browsers. Use at your own risk.</p>
+
+  <div class="cutout clear texture ma-r90 tape">
+   <div class="rail-left"></div>
+   <div class="rail-right"></div>
+   <div class="rail-middle">
+    <div class="rail-middle-outline"></div>
+   </div>
+   <div class="left reel-mask"></div>
+   <div class="right reel-mask"></div>
+   <canvas class="connecting-tape"></canvas>
+   <div class="left reel"></div>
+   <div class="left spokes"></div>
+   <div class="right reel"></div>
+   <div class="right spokes"></div>
+   <div class="progress-notches">
+    <div class="n1"></div>
+    <div class="n2"></div>
+    <div class="n3"></div>
+    <div class="n4"></div>
+    <div class="n5"></div>
+    <div class="n6"></div>
+    <div class="n7"></div>
+    <div class="n8"></div>
+    <div class="n9"></div>
+   </div>
+   <div class="label">Mixtape Demo</div>
+   <div class="aqua controls">
+    <div class="bd">
+     <ul>
+      <li><a href="#" title="play/pause" class="play">&#9668;</a></li>
+      <li><a href="#" title="rewind" class="rew">&#171;</a></li>
+      <li><a href="#" title="fast-forward" class="ffwd">&#187;</a></li>
+      <li><a href="#" title="stop" class="stop">&#9632;</a></li>
+     </ul>
+    </div>
+   </div>
+  </div>
+
+  <div class="clear black-micro dark cutout texture tape">
+   <div class="rail-left"></div>
+   <div class="rail-right"></div>
+   <div class="rail-middle">
+    <div class="rail-middle-outline" style="border:none;background-color:transparent">
+     <div class="hole-1"></div>
+     <div class="hole-2"></div>
+     <div class="hole-3"></div>
+     <div class="hole-4"></div>
+     <div class="tape-pad-holder">
+      <div class="tape-pad"></div>
+      <div class="tape-pad-line"></div>
+     </div>
+    </div>
+    <div class="screw-bm"></div>
+   </div>
+   <div class="screw-tl"></div>
+   <div class="screw-tr"></div>
+   <div class="screw-bl"></div>
+   <div class="screw-br"></div>
+   <div class="screw-tm"></div>
+   <div class="left reel-mask"></div>
+   <div class="right reel-mask"></div>
+   <canvas class="connecting-tape"></canvas>
+   <div class="left reel"></div>
+   <div class="left spokes"></div>
+   <div class="right reel"></div>
+   <div class="right spokes"></div>
+   <div class="progress-notches">
+    <div class="n1"></div>
+    <div class="n2"></div>
+    <div class="n3"></div>
+    <div class="n4"></div>
+    <div class="n5"></div>
+    <div class="n6"></div>
+    <div class="n7"></div>
+    <div class="n8"></div>
+    <div class="n9"></div>
+   </div>
+   <div class="label">Mixtape Demo</div>
+   <div class="controls">
+    <div class="bd">
+     <ul>
+      <li><a href="#" title="play/pause" class="play">&#9668;</a></li>
+      <li><a href="#" title="rewind" class="rew">&#171;</a></li>
+      <li><a href="#" title="fast-forward" class="ffwd">&#187;</a></li>
+      <li><a href="#" title="stop" class="stop">&#9632;</a></li>
+     </ul>
+    </div>
+   </div>
+  </div>
+
+  <div class="clear texture cutout tape">
+   <div class="rail-left"></div>
+   <div class="rail-right"></div>
+   <div class="rail-middle">
+    <div class="rail-middle-outline">
+     <div class="hole-1"></div>
+     <div class="hole-2"></div>
+     <div class="hole-3"></div>
+     <div class="hole-4"></div>
+     <div class="tape-pad-holder">
+      <div class="tape-pad"></div>
+      <div class="tape-pad-line"></div>
+     </div>
+    </div>
+    <div class="screw-bm"></div>
+   </div>
+   <div class="screw-tl"></div>
+   <div class="screw-tr"></div>
+   <div class="screw-bl"></div>
+   <div class="screw-br"></div>
+   <div class="screw-tm"></div>
+   <div class="left reel-mask"></div>
+   <div class="right reel-mask"></div>
+   <canvas class="connecting-tape"></canvas>
+   <div class="left reel"></div>
+   <div class="left spokes"></div>
+   <div class="right reel"></div>
+   <div class="right spokes"></div>
+   <div class="progress-notches">
+    <div class="n1"></div>
+    <div class="n2"></div>
+    <div class="n3"></div>
+    <div class="n4"></div>
+    <div class="n5"></div>
+    <div class="n6"></div>
+    <div class="n7"></div>
+    <div class="n8"></div>
+    <div class="n9"></div>
+   </div>
+   <div class="label">Mixtape Demo</div>
+   <div class="controls">
+    <div class="bd">
+     <ul>
+      <li><a href="#" title="play/pause" class="play">&#9668;</a></li>
+      <li><a href="#" title="rewind" class="rew">&#171;</a></li>
+      <li><a href="#" title="fast-forward" class="ffwd">&#187;</a></li>
+      <li><a href="#" title="stop" class="stop">&#9632;</a></li>
+     </ul>
+    </div>
+   </div>
+  </div>
+
+  <div id="tape1-x" class="clear tape">
+   <div class="window"></div>
+   <div class="rail-left"></div>
+   <div class="rail-right"></div>
+   <div class="rail-middle">
+    <div class="rail-middle-outline">
+     <div class="hole-1"></div>
+     <div class="hole-2"></div>
+     <div class="hole-3"></div>
+     <div class="hole-4"></div>
+     <div class="tape-pad-holder">
+      <div class="tape-pad"></div>
+      <div class="tape-pad-line"></div>
+     </div>
+    </div>
+    <div class="screw-bm"></div>
+   </div>
+   <div class="screw-tl"></div>
+   <div class="screw-tr"></div>
+   <div class="screw-bl"></div>
+   <div class="screw-br"></div>
+   <div class="left reel"></div>
+   <div class="left spokes"></div>
+   <div class="right reel"></div>
+   <div class="right spokes">
+   </div>
+   <canvas class="connecting-tape"></canvas>
+   <div class="left tape-guide"></div>
+   <div class="right tape-guide"></div>
+   <div class="progress-notches">
+    <div class="n1"></div>
+    <div class="n2"></div>
+    <div class="n3"></div>
+    <div class="n4"></div>
+    <div class="n5"></div>
+    <div class="n6"></div>
+    <div class="n7"></div>
+    <div class="n8"></div>
+    <div class="n9"></div>
+   </div>
+   <div class="label">Mixtape Demo</div>
+   <div class="controls">
+    <div class="bd">
+     <ul>
+      <li><a href="#" title="play/pause" class="play">&#9668;</a></li>
+      <li><a href="#" title="rewind" class="rew">&#171;</a></li>
+      <li><a href="#" title="fast-forward" class="ffwd">&#187;</a></li>
+      <li><a href="#" title="stop" class="stop">&#9632;</a></li>
+     </ul>
+    </div>
+   </div>
+  </div>
+
+  <div class="clear blue color texture tape">
+   <div class="window"></div>
+   <div class="rail-left"></div>
+   <div class="rail-right"></div>
+   <div class="rail-middle">
+    <div class="rail-middle-outline">
+     <div class="hole-1"></div>
+     <div class="hole-2"></div>
+     <div class="hole-3"></div>
+     <div class="hole-4"></div>
+     <div class="tape-pad-holder">
+     <div class="tape-pad"></div>
+     <div class="tape-pad-line"></div>
+    </div>
+   </div>
+   <div class="screw-bm"></div>
+   </div>
+   <div class="screw-tl"></div>
+   <div class="screw-tr"></div>
+   <div class="screw-bl"></div>
+   <div class="screw-br"></div>
+   <div class="left reel"></div>
+   <div class="left spokes">
+   </div>
+   <div class="right reel"></div>
+   <div class="right spokes">
+   </div>
+   <canvas class="connecting-tape"></canvas>
+   <div class="left tape-guide"></div>
+   <div class="right tape-guide"></div>
+   <div class="progress-notches">
+    <div class="n1"></div>
+    <div class="n2"></div>
+    <div class="n3"></div>
+    <div class="n4"></div>
+    <div class="n5"></div>
+    <div class="n6"></div>
+    <div class="n7"></div>
+    <div class="n8"></div>
+    <div class="n9"></div>
+   </div>
+   <div class="label">Mixtape Demo</div>
+   <div class="controls">
+    <div class="bd">
+     <ul>
+      <li><a href="#" title="play/pause" class="play">&#9668;</a></li>
+      <li><a href="#" title="rewind" class="rew">&#171;</a></li>
+      <li><a href="#" title="fast-forward" class="ffwd">&#187;</a></li>
+      <li><a href="#" title="stop" class="stop">&#9632;</a></li>
+     </ul>
+    </div>
+   </div>
+  </div>
+
+  <div class="black-micro dark clear texture tape">
+   <div class="rail-left"></div>
+   <div class="rail-right"></div>
+   <div class="rail-middle">
+    <div class="rail-middle-outline" style="border:none;background-color:transparent">
+     <div class="hole-1"></div>
+     <div class="hole-2"></div>
+     <div class="hole-3"></div>
+     <div class="hole-4"></div>
+     <div class="tape-pad-holder">
+      <div class="tape-pad"></div>
+      <div class="tape-pad-line"></div>
+     </div>
+    </div>
+    <div class="screw-bm"></div>
+   </div>
+   <div class="screw-tl"></div>
+   <div class="screw-tr"></div>
+   <div class="screw-bl"></div>
+   <div class="screw-br"></div>
+   <div class="screw-tm"></div>
+   <div class="left reel"></div>
+   <div class="left spokes"></div>
+   <div class="right reel"></div>
+   <div class="right spokes"></div>
+   <div class="progress-notches">
+    <div class="n1"></div>
+    <div class="n2"></div>
+    <div class="n3"></div>
+    <div class="n4"></div>
+    <div class="n5"></div>
+    <div class="n6"></div>
+    <div class="n7"></div>
+    <div class="n8"></div>
+    <div class="n9"></div>
+   </div>
+   <!--
+    <div class="label"></div>
+   -->
+   <div class="controls">
+    <div class="bd">
+     <ul>
+      <li><a href="#" title="play/pause" class="play">&#9668;</a></li>
+      <li><a href="#" title="rewind" class="rew">&#171;</a></li>
+      <li><a href="#" title="fast-forward" class="ffwd">&#187;</a></li>
+      <li><a href="#" title="stop" class="stop">&#9632;</a></li>
+     </ul>
+    </div>
+   </div>
+  </div>
+
+ </div>
+
+</div>
+
+</body>

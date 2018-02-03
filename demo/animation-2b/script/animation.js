@@ -1,9 +1,11 @@
-soundManager.preferFlash = true;
-soundManager.flashVersion = 9;
-soundManager.url = '../../swf/';
-soundManager.useHighPerformance = true;
-soundManager.wmode = 'transparent';
-soundManager.debugMode = false;
+soundManager.setup({
+  preferFlash: true,
+  flashVersion: 9,
+  url: '../../swf/',
+  useHighPerformance: true,
+  wmode: 'transparent',
+  debugMode: false
+});
 
 var points = [];
 var o = null;
@@ -68,7 +70,7 @@ function Point(x,y,scale) {
   document.body.appendChild(this.o);
 }
 
-soundManager.onload = function() {
+soundManager.onready(function() {
   noise = soundManager.createSound({
     id:'noise',
     url:'../animation/audio/fingerplop.mp3',
@@ -88,7 +90,7 @@ soundManager.onload = function() {
     autoLoad: true
   });
   initPoints();
-}
+});
 
 soundManager.onerror = function() {
   alert('d\'oh, something didn\'t work - SM2 failed to start.');

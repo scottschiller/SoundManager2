@@ -102,14 +102,17 @@
 <!-- remove [d] and [/d] blocks -->
 <replaceregexp match="// &lt;d&gt;*.+?// &lt;\/d&gt;" replace="" flags="gs" byline="false" file="script/soundmanager2-nodebug.js" />
 
-<!-- remove _s._wD() calls -->
-<replaceregexp match="\s+_s._wD\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+<!-- remove sm2._wD() calls -->
+<replaceregexp match="\s+sm2._wD\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
 
 <!-- remove _wDS() calls -->
 <replaceregexp match="\s+_wDS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
 
-<!-- remove _debugTS() calls -->
-<replaceregexp match="\s+_debugTS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+<!-- remove debugTS() calls -->
+<replaceregexp match="\s+debugTS\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
+
+<!-- remove complain() calls -->
+<replaceregexp match="\s+complain\(*.+?\);" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
 
 <!-- remove single-line comments -->
 <replaceregexp match="\s+?//.*" replace="" flags="s" byline="true" file="script/soundmanager2-nodebug.js" />
@@ -141,12 +144,6 @@
 <!-- fetch the license from the full source, and prepend it to the jsmin builds. -->
 
 <!-- a cheap hack: Read the first N lines of a file -->
-<loadfile property="sm2_license_jslint" srcFile="script/soundmanager2.js">
-	<filterchain>
-    	<headfilter lines="15"/>
-  </filterchain>
-</loadfile>
-
 <loadfile property="sm2_license" srcFile="script/soundmanager2.js">
 	<filterchain>
     	<headfilter lines="12"/>
@@ -158,7 +155,7 @@
 
 <!-- prepend license -->
 <!-- this is stupid, there must be a better concat + prepend way, but I couldn't seem to find it. -->
-<replaceregexp file="script/soundmanager2-nodebug.js" match="(.*+)" flags="s" replace="${sm2_license_jslint}\1" />
+<replaceregexp file="script/soundmanager2-nodebug.js" match="(.*+)" flags="s" replace="${sm2_license}\1" />
 <replaceregexp file="script/soundmanager2-nodebug-jsmin.js" match="(.*+)" flags="s" replace="${sm2_license}\1" />
 
 <!-- show size -->

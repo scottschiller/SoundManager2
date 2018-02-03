@@ -5,6 +5,11 @@
  position:relative;
 }
 
+.ui360 {
+ margin-bottom: 5px;
+ margin-right: 5px;
+}
+
 .ui360,
 .sm2-360ui {
  min-width:50px; /* should always be at least this. */
@@ -14,6 +19,24 @@
 .sm2-360ui {
  width:50px;
  height:50px;
+}
+
+.sm2-360ui {
+ /* slight inner shadow + BG color + border */
+ background-color: #f9f9f9;
+ background-color: rgba(0,0,0,0.025);
+ box-shadow: inset 0px 0px 8px rgba(0,0,0,0.15);
+ /* a little radii, modern browsers only */
+ border-radius: 100%;
+ transition: all 0.1s ease-in-out;
+ /* specifics */
+ transition-property: background, border, box-shadow;
+}
+
+.sm2-360ui:hover {
+ background-color: rgba(0,0,0,0.1);
+ border-color: rgba(0,0,0,0.15);
+ box-shadow: inset 0px 0px 5px rgba(0,0,0,0.15);
 }
 
 .ui360,
@@ -26,9 +49,7 @@
  display:inline-block; /* firefox 3 et al */
  float:left; /* IE 6+7, firefox 2 needs this, inline-block would work with fx3 and others */
  *display:inline;
-/*
  clear:left;
-*/
 }
 
 .sm2-360ui.sm2_playing,
@@ -73,6 +94,13 @@
  top:0px;
 }
 
+.ui360 .sm2-canvas.hi-dpi {
+ /* hi-dpi / "retina" screens */
+ top: -50%;
+ left: -50%;
+ transform: scale(0.5);
+}
+
 .ui360 .sm2-timing {
  position:absolute;
  display:block;
@@ -88,7 +116,11 @@
 }
 
 .ui360 .sm2-timing.alignTweak {
- text-indent:1px; /* devious center-alignment tweak for Safari (might break things for others.) */
+ /* devious center-alignment tweak for Safari (might break things for others.) */
+ /* no longer applies. */
+ /*
+ text-indent:1px;
+ */
 }
 
 .ui360 .sm2-cover {
@@ -148,8 +180,12 @@
 .ui360,
 .ui360 .sm2-360btn-default,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn {
- background:transparent url(360-button-play.png) no-reoeat;
+ background:transparent url(360-button-play.png) no-repeat;
+ /* if you change the source image, update these data: URIs as well. */
  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABoUlEQVR42sWVu2oCQRhGU/s8gpVYJeQJNkZSbiH4QNuLlQZS21sJayGYaOEFVFDxNiremj9zig2uzk5YQpKFg8PMd75ZZle9E5Ff4e+Ll8tlQuNoPI2vUcCYOdbIxCmm9F5T0YgNMmS/LebSwWdNa7VayXq9ls1mI9vtVna7nQBj5lgjQxYHN7KY3QkiUbDf7+V4PMrpdArBHGtkyOJc3/n1mVaUUl+F5/PZSrABDi4dpmKH3QkixQEHlw5TsccZmsRCoSD1et1ajkuHqdg/HA5GKZPJCOTzeanVasYMLh2mYsXDIGAoDuG6rlSr1WCdBxrcsTIWazgrQiHS6bSRYJ3XDzeq2O/3+9Ltdm9IpVIhstmslEqlUAY36ii8ZrMpjUbjhmQyKeA4jhSLRWMGN+rhOZ1Oh8ANuVxOyuUy40hwo163RK/XeyPQbrdjgYNr/ILAYDB41Gf1wZnFAQfX+iM0HA5fxuPx+2g0Ej22QoYsDq61mGsymTxMp9NX/Sk2yJDFsRZfXpzXbDZ7WiwW3nw+9zUKGDPHGpkL5V//mn7OJyJZApyzeUS5AAAAAElFTkSuQmCC);
+ /* hi-dpi, we presume */
+ background-image: none, url(360-button-play-2x.png);
+ background-size: 22px 22px;
  *background-image: url(360-button-play.png);
  background-repeat: no-repeat;
 }
@@ -177,6 +213,9 @@
 .ui360 .sm2-360btn-default:hover,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn:hover {
  background:transparent url(360-button-play-light.png) no-repeat 50% 50%;
+ /* hi-dpi, we presume */
+ background-image: none, url(360-button-play-light-2x.png);
+ background-size: 22px 22px;
  _background:transparent url(360-button-play.gif) no-repeat 50% 50%;
  cursor:pointer;
 }
@@ -184,6 +223,8 @@
 .ui360 .sm2-360ui.sm2_playing .sm2-360btn:hover,
 .ui360 .sm2-360btn-playing:hover {
  background:transparent url(360-button-pause-light.png) no-repeat 50% 50%;
+ background-image: none, url(360-button-pause-light-2x.png);
+ background-size: 22px 22px;
  _background:transparent url(360-button-pause-light.gif) no-repeat 50% 50%;
  cursor:pointer;
 }
@@ -232,12 +273,9 @@
  display:inline-block;
  float:left;
  _display:inline;
+ /*
  margin-bottom:-15px;
-}
-
-.sm2-inline-list .ui360 {
- /* inline player: minor tweak, tighten spacing */
- margin-right:-2px;
+ */
 }
 
 .sm2-inline-block .ui360 {

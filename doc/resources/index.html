@@ -14,11 +14,10 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
-	soundManager.handleFlashBlock = false;
-	soundManager.debugMode = false;
-	soundManager.url = '../../swf/';
-	soundManager.onload = function() {
-	}
+soundManager.setup({
+  debugMode: false,
+  url: '../../swf/'
+});
 </script>
 </head>
 
@@ -40,7 +39,9 @@
 	  <li>
 	   <a href="#">Demos</a>
 	   <ul>
+		<li><a href="../../demo/template/">Basic Template</a></li>
 		<li><a href="../../demo/api/">API Examples</a></li>
+		<li><a href="../../demo/bar-ui/">Bar UI</a></li>
 	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 	    <li><a href="../../demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
 		<li><a href="../../demo/page-player/">Muxtape-style UI</a></li>
@@ -48,7 +49,6 @@
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
 		<li><a href="../../demo/animation/">DOM/Animation Demos</a></li>
 		<li><a href="../../demo/flashblock/">FlashBlock Handling</a></li>
-		<li><a href="../../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
 
@@ -69,7 +69,7 @@
 		<li><a href="../#smdefaults">Global Sound Defaults</a></li>
 		<li><a href="../#api">SoundManager Core API</a></li>
 		<li><a href="../#smsoundmethods">Sound Object (SMSound) API</a></li>
-		<li><a href="../generated/script/soundmanager2.html">Generated Documentation</a></li>
+		<li><a href="../generated/soundmanager2.html">Generated Documentation</a></li>
 	   </ul>
 	  </li>
 	
@@ -85,6 +85,9 @@
 	   <a href="../technotes/">Technical Notes</a>
 	   <ul>
 		<li><a href="../technotes/#requirements">System Requirements</a></li>
+		<li><a href="../technotes/#serving-audio">Serving To HTML5 + Flash Clients</a></li>
+		<li><a href="../technotes/#client-requests">How Clients Download Audio</a></li>
+		<li><a href="../technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 		<li><a href="../technotes/#debug-output">Debug + Console Output</a></li>
 	   </ul>
 	  </li>
@@ -94,7 +97,7 @@
 	   <ul>
 		<li><a href="#licensing">Licensing</a></li>
 		<li><a href="#related">Related Projects</a></li>
-		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
+		<li><a href="https://github.com/scottschiller/soundmanager2/issues">SM2 support / discussion</a></li>
 		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
@@ -134,18 +137,14 @@
 				
 			  <div class="f-block c-about">
 			  <h3 id="general">General</h3>
-			  <p>SoundManager was written to meet a desire to have Javascript-driven sound for interactive web-based projects, and "to make it easy to play MP3s in the browser." It is free for use in both personal and commercial projects (see <a href="#licensing" title="SoundManager 2 licensing information" onclick="resetFilter()">Licensing</a>.) It was originally developed for personal use and has been packaged with the hopes of being useful to others.</p>
+			  <p>SoundManager was written to meet a desire to have Javascript-driven sound for interactive web-based projects, and "to make it easy to play MP3s in the browser." It is free for use in both personal and commercial projects (see license, above.) It was originally developed for personal use and has been packaged with the hopes of being useful to others.</p>
 			  </div>
 
 			  <div class="f-block">
 
 			  <h3 id="related-projects">Related Projects</h3>
 
-			  <h4 id="html5-compatibility">HTML 5 Audio/Video Compatibility Wrappers, &lt;audio&gt; for HTML 4 etc.</h4>
-			  <p><a href="http://gettingsoftware.posterous.com/html5flash-using-html5-video-and-audio-right">HTML5Flash</a> is a project that lets you use HTML 5's <code>&lt;audio&gt;</code> and <code>&lt;video&gt;</code> tags in HTML 4 browsers, making them compatible using SoundManager 2 behind the scenes.</p>
-			  <p>Additionally, see the <a href="http://getsatisfaction.com/schillmania/topics/html5_audio">SM2 discussion thread on HTML 5 audio</a> support.</p>
-
-			  <h4>JavaScript/DHTML/Flash MP3 and video players</h4>
+			  <h4 id="html5-compatibility">JavaScript/DHTML/Flash MP3 and video players</h4>
 			  <p>Searching for an included/embedded-type media player? These related projects might be of use.</p>
 			  <ul>
 			   <li><a href="http://jplayer.org/" title="Happyworm jPlayer">jPlayer</a> is a HTML5/Flash player which jQuery fans should feel at home with; several different players and skins are provided.</li>
@@ -178,9 +177,10 @@
 	  <div id="support-wrapper">
 		  <div id="get-satisfaction" class="box">
 		   <div id="gsfn_list_widget">
-		    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
-		    <div id="gsfn_content"></div>
-		    <div class="powered_by"><a href="http://getsatisfaction.com/" rel="nofollow">Get Satisfaction support network</a></div>
+		    <h2>Discussion / Support<span class="l"></span><span class="r"></span></h2>
+			<div id="gsfn_content">
+				<p style="line-height:1rem;margin-bottom:0px">For bug reports and technical support, see <a href="https://github.com/scottschiller/soundmanager2/issues" class="cta">GitHub Issues</a>.</p>
+			</div>
 		   </div>
 		  <!-- /.box -->
 	  </div>

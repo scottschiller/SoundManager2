@@ -1,0 +1,323 @@
+/**
+ * Cassette demo page CSS - you don't need this part.
+ */
+
+body {
+ margin: 0px;
+ padding: 0px;
+ font-size: 100%;
+ font-family: Helvetica, verdana, arial, tahoma, sans-serif;
+ color: #fff;
+ /* font trickery */
+ -moz-osx-font-smoothing: grayscale;
+ -webkit-font-smoothing: antialiased;
+}
+
+body#page-more {
+ color: #222;
+}
+
+@font-face {
+ /**
+  * http://www.theleagueofmoveabletype.com/ostrich-sans
+  */
+  font-family: 'ostrich-sans-roundedmedium';
+  src: url('../font/ostrich-rounded-webfont.eot');
+  src: url('../font/ostrich-rounded-webfont.eot?#iefix') format('embedded_opentype'),
+   url('../font/ostrich-rounded-webfont.woff') format('woff'),
+   url('../font/ostrich-rounded-webfont.ttf') format('truetype'),
+   url('../font/ostrich-rounded-webfont.svg#ostrich-sans_roundedmedium') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+h1, h2, h3 {
+  font-family: "Helvetica Neue", Helvetica, verdana, arial, tahoma, sans-serif;
+}
+
+#demo-header-wrapper {
+ position: relative;
+ background: rgba(0,0,0,0.15);
+ opacity: 0;
+}
+
+#demo-header-wrapper.visible {
+ opacity: 1;
+}
+
+#demo-header-wrapper.visible {
+ -moz-transition: opacity 0.2s ease-in-out;
+ -ms-transition: opacity 0.2s ease-in-out;
+ -webkit-transition: opacity 0.2s ease-in-out;
+ transition: opacity 0.2s ease-in-out;
+}
+
+#demo-header {
+ position: relative;
+ display: inline-block;
+ margin: 0.5em;
+ border-top: 2px solid #fff;
+ border-bottom: 2px solid #fff;
+ padding: 0.5em 0px;
+ text-shadow: 0px 1px 1px rgba(0,0,0,0.15);
+ white-space: nowrap;
+}
+
+#demo-header,
+.demo-subheader {
+ margin: 0.5em;
+}
+
+#demo-header-wrapper.light #demo-header {
+ border-color: #222;
+ text-shadow: none;
+}
+
+#demo-header h1,
+#demo-header p,
+#demo-header h2 {
+ font-weight: normal;
+ margin: 0px;
+ padding: 0px;
+}
+
+#demo-header h1,
+#demo-header h2 {
+ font-family: ostrich-sans-roundedmedium, verdana, tahoma, arial, sans-serif;
+}
+
+#demo-header h1 {
+ font-size: 533%;
+}
+
+#demo-header h2 {
+ font-size: 300%;
+}
+
+#demo-header p {
+ background: rgba(0,0,0,0.35);
+ margin-bottom: 0.5em;
+ vertical-align: middle;
+ text-indent: 5px;
+ font-weight: 400;
+}
+
+#demo-header-wrapper.light,
+#demo-header-wrapper.light #demo-header p {
+ background: transparent;
+}
+
+#demo-header-wrapper.light p {
+ font-size: 131%;
+ text-indent: 2px;
+}
+
+#demo-header p:last-of-type {
+ margin-bottom: 0px;
+}
+
+#demo-header a {
+ display: inline-block;
+ color: #fff;
+ text-decoration: none;
+ text-shadow: none;
+ padding: 2px;
+ line-height: 20px;
+ min-height: 20px;
+ background: rgba(0,0,0,0.4);
+}
+
+#demo-header a:hover {
+ color: #fff;
+ background-color: rgba(32, 128, 192, 0.75);
+}
+
+.demo-subheader p {
+ max-width: 660px;
+ font-size: 100%;
+ line-height: 1.75em;
+}
+
+.demo-subheader h2 {
+ font-weight: 400;
+ margin: 1em 0px 0px 0px;
+ padding: 0px;
+}
+
+.demo-subheader h2:first-of-type {
+ margin-top: 0.5em;
+}
+
+.demo-subheader p {
+ margin-top: 0.5em;
+ font-weight: 300;
+}
+
+.demo-subheader a {
+ display: inline-block;
+ color: #222;
+ background-color: #f3f3f3;
+ text-decoration: none;
+ padding: 0px 3px;
+ margin: 0px -1px;
+ border-radius: 2px;
+ text-shadow: 0px 1px 0px #fff;
+}
+
+.demo-subheader a:hover {
+ color: #fff;
+ background-color: rgba(32, 128, 192, 0.75);
+ text-shadow: none;
+}
+
+.demo-subheader a img {
+ padding: 3px 0px;
+ vertical-align: bottom;
+}
+
+#tape-loader {
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ width: 36px;
+ height: 36px;
+ margin: -42px 0px 0px -28px;
+ border: 9px solid rgba(0,0,0,0.66);
+ border-radius: 100%;
+ opacity: 1;
+}
+
+#tape-loader .spinner-box {
+ position: absolute;
+ left: -3px;
+ top: -3px;
+ width: 42px;
+ height: 42px;
+ animation-duration: 0.66s;
+ animation-name: spin;
+ animation-iteration-count: infinite;
+ animation-timing-function: linear;
+}
+
+#tape-loader .spinner {
+ position: absolute;
+ left: 0px;
+ top: 0px;
+ width: 10px;
+ height: 10px;
+ border-radius: 100%;
+ background: rgba(255,255,255,0.75);
+ background: rgb(109,179,242);
+ background: radial-gradient(ellipse at center, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 50%,rgba(54,144,240,1) 51%,rgba(30,105,222,1) 100%); /* W3C */
+
+}
+
+@keyframes tape_loading {
+ from {
+  background-position: 0px 0px;
+ }
+ to {
+  background-position: -20px 0px;
+ }
+}
+
+#tape-loader,
+#tape-loader.hidden {
+ transition: all 0.33s ease-in-out;
+ transition-property: opacity, transform;
+}
+
+#tape-loader,
+#tape-loader.hidden,
+#tape-loader.visible.hidden {
+ transform: scale3d(0, 0, 1);
+ opacity: 0;
+}
+
+#tape-loader.visible {
+ transform: scale3d(1, 1, 1);
+ opacity: 1;
+}
+
+/* demo loader */
+.tape form {
+ margin: 0px;
+ padding: 0px;
+}
+
+.tape form input {
+ margin: 0px;
+ padding: 0px;
+ border: none;
+}
+
+.tape form input:-moz-placeholder {
+ color: #999;
+}
+
+.tape form input {
+ transition: box-shadow 0.2s ease-in-out;
+ box-shadow: none;
+}
+
+.tape form input:hover,
+.tape form input:focus {
+ box-shadow: 0px 0px 12px rgb(0,192,255);
+}
+
+/**
+ * Oh, what a hack! Let some of the background show through, so we don't entirely mask the header + HTML content with the blurred image.
+ * to truly blur the content behind the tape window, one would have to clone the entire DOM (including webfonts, etc.)
+ * to mix with the canvas content before blurring, and that is a fairly significant challenge at present.
+ */
+.tape .blur-image-wrapper .blur-image {
+ opacity: 0.9;
+}
+
+/* "more" demo page */
+
+#col1 {
+ width: 640px;
+ margin-right: 20px;
+}
+
+#col2 {
+ width: 500px;
+}
+
+#col1,
+#col2 {
+ display: inline-block;
+ vertical-align: top;
+ -moz-box-sizing: border-box;
+ -webkit-box-sizing: border-box;
+ box-sizing: border-box;
+}
+
+#col2 .tape {
+ margin-top: 1em;
+}
+
+.thanks {
+ position: fixed;
+ bottom: 0px;
+ left: 0px;
+ margin: 0px;
+ width: 100%;
+}
+
+.thanks p {
+ display: block;
+ margin: 0px;
+ padding: 0.75em;
+ background: rgba(0,0,0,0.25);
+ text-shadow: 0px 1px #000;
+ font-weight: normal;
+ font-size: 12px;
+ color: #ddd;
+}
+
+.thanks a {
+ color: #99ccff;
+ text-decoration: none;
+}

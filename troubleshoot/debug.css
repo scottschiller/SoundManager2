@@ -33,6 +33,7 @@
  padding-top:0.3em;
  margin-top:0px;
  border-bottom:1px solid #ccc;
+ border-top: none;
 }
 
 #sm2-test ul.items li:last-child h3 {

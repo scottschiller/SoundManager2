@@ -36,7 +36,7 @@ class SoundManager2 {
 
   function SoundManager2() {
 
-    var version = "V2.97a.20111220";
+    var version = "V2.97a.20170601";
     var version_as = "(AS2/Flash 8)";
 
     /**
@@ -92,10 +92,10 @@ class SoundManager2 {
     sm2Menu.customItems.push(sm2MenuItem);
     _root.menu = sm2Menu;
 
-    var writeDebug = function(s) {
+    var writeDebug = function(s, logLevel) {
       // <d>
       if (!debugEnabled) return false;
-      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s);
+      ExternalInterface.call(baseJSController + "['_writeDebug']", "(Flash): " + s, (logLevel || 0));
       // </d>
     }
 
@@ -138,16 +138,15 @@ class SoundManager2 {
             didSandboxMessage = true;
             flashDebug('<br><b>Fatal: Security sandbox error: Got "' + sandboxType + '", expected "remote" or "localTrusted".<br>Additional security permissions need to be granted.<br>See <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">flash security settings panel</a> for non-HTTP, eg. file:// use.</b><br>http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html<br><br>You may also be able to right-click this movie and choose from the menu: <br>"Global Settings" -> "Advanced" tab -> "Trusted Location Settings"<br>');
           }
-          var d = new Date();
-          ExternalInterface.call(baseJSController + "._externalInterfaceOK", d.getTime(), version);
+          ExternalInterface.call(baseJSController + "._externalInterfaceOK", version);
           if (!didSandboxMessage) {
             flashDebug('Flash -&gt; JS OK');
+            flashDebug('Waiting for JS -&gt; Flash...');
           }
         } else {
-          writeDebug('SM2 SWF ' + version + ' ' + version_as);
-          flashDebug('JS -&gt; Flash OK');
-          writeDebug('JS to/from Flash OK');
+          // writeDebug('SM2 SWF ' + version + ' ' + version_as, 1);
           ExternalInterface.call(baseJSController + "._setSandboxType", sandboxType);
+          flashDebug('JS -&gt; Flash OK');
         }
       } catch(e) {
         flashDebug(e.toString());
@@ -223,12 +222,13 @@ class SoundManager2 {
       }
     }
 
-    var _setPosition = function(sID, nSecOffset, isPaused) {
+    var _setPosition = function(sID, nSecOffset, isPaused, _allowMultiShot) {
+      // note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
       var s = soundObjects[sID];
       // writeDebug('_setPosition()');
       s.lastValues.position = s.position;
       if (s.lastValues.loops > 1 && nSecOffset != 0) {
-        writeDebug('Warning: Looping functionality being disabled due to Flash limitation.');
+        writeDebug('Warning: Looping functionality being disabled due to Flash limitation.', 240);
         s.lastValues.loops = 1;
       }
       s.start(nSecOffset, s.lastValues.nLoops || 1); // start playing at new position
@@ -238,7 +238,7 @@ class SoundManager2 {
     }
 
     var _load = function(sID, sURL, bStream, bAutoPlay, bCheckPolicyFile) {
-      // writeDebug('_load(): '+sID+', '+sURL+', '+bStream+', '+bAutoPlay);
+      // writeDebug('_load(): '+sID+', '+sURL+', '+bStream+', '+bAutoPlay+', '+bCheckPolicyFile);
       if (typeof bAutoPlay == 'undefined') {
         bAutoPlay = false;
       }
@@ -322,16 +322,19 @@ class SoundManager2 {
       }
     }
 
-    var _start = function(sID, nLoops, nMsecOffset) {
+    var _start = function(sID, nLoops, nMsecOffset, _allowMultiShot) {
+      // note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
       // writeDebug('_start: ' + sID + ', loops: ' + nLoops + ', nMsecOffset: ' + nMsecOffset);
       registerOnComplete();
       var s = soundObjects[sID];
       s.lastValues.paused = false; // reset pause if applicable
       s.lastValues.nLoops = (nLoops || 1);
       s.start(nMsecOffset, nLoops);
+      return true;
     }
 
-    var _pause = function(sID) {
+    var _pause = function(sID, _allowMultiShot) {
+       // note: multiShot is Flash 9-only; retained so JS/Flash function signatures are identical.
       // writeDebug('_pause()');
       var s = soundObjects[sID];
       if (!s.paused) {
@@ -362,10 +365,10 @@ class SoundManager2 {
       }
       pollingEnabled = bPolling;
       if (timer == null && pollingEnabled) {
-        writeDebug('Enabling polling, ' + timerInterval + ' ms interval');
+        flashDebug('Enabling polling, ' + timerInterval + ' ms interval');
         timer = setInterval(checkProgress, timerInterval);
       } else if (timer && !pollingEnabled) {
-        writeDebug('Disabling polling');
+        flashDebug('Disabling polling');
         clearInterval(timer);
         timer = null;
       }

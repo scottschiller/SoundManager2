@@ -13,7 +13,6 @@
  /* a little extra spacing */
  padding-top:1px;
  padding-bottom:1px;
- margin-bottom:-18px; /* approximate "line height" we want */
  padding-left:248px;
  margin-left:0px;
  background-position:22.6% 50%; /* (~109px) initial play button position */
@@ -95,11 +94,6 @@
 .sm2-inline-list .ui360-vis a.sm2_link:active,
 .sm2-inline-list .ui360-vis a.sm2_link:focus {
  background-color:transparent;
-}
-
-.sm2-inline-list .ui360-vis:hover a.sm2_link {
- background-color:#fafafa;
- *background-color:transparent; /* eh, screw IE. */
 }
 
 /* Use a bigger loading image for this layout */

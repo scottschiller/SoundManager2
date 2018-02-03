@@ -14,12 +14,12 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="../../demo/index.js"></script>
 <script type="text/javascript">
-	soundManager.debugMode = true;
-	soundManager.consoleOnly = false;
-	soundManager.debugFlash = true;
-	soundManager.url = '../../swf/';
-	soundManager.onload = function() {
-	}
+soundManager.setup({
+  url: '../../swf/',
+  debugMode: true,
+  consoleOnly: false,
+  debugFlash: true
+});
 </script>
 </head>
 
@@ -41,7 +41,9 @@
 	  <li>
 	   <a href="#">Demos</a>
 	   <ul>
+		<li><a href="../../demo/template/">Basic Template</a></li>
 		<li><a href="../../demo/api/">API Examples</a></li>
+		<li><a href="../../demo/bar-ui/">Bar UI</a></li>
 	    <li><a href="../../demo/play-mp3-links/" class="exclude">Playable MP3 links</a></li>
 	    <li><a href="../../demo/mp3-player-button/" class="exclude">Basic MP3 Play Button</a></li>
 		<li><a href="../../demo/page-player/">Muxtape-style UI</a></li>
@@ -49,7 +51,6 @@
 	    <li><a href="../../demo/mpc/">Drum Machine (MPC)</a></li>
 		<li><a href="../../demo/animation/">DOM/Animation Demos</a></li>
 		<li><a href="../../demo/flashblock/">FlashBlock Handling</a></li>
-		<li><a href="../../demo/template/">Basic Template</a></li>
 	   </ul>
 	  </li>
 
@@ -70,7 +71,7 @@
 		<li><a href="../#smdefaults">Global Sound Defaults</a></li>
 		<li><a href="../#api">SoundManager Core API</a></li>
 		<li><a href="../#smsoundmethods">Sound Object (SMSound) API</a></li>
-		<li><a href="../generated/script/soundmanager2.html">Generated Documentation</a></li>
+		<li><a href="../generated/soundmanager2.html">Generated Documentation</a></li>
 	   </ul>
 	  </li>
 	
@@ -86,6 +87,9 @@
 	   <strong><a href="../technotes/">Technical Notes</a></strong>
 	   <ul>
 		<li><a href="../technotes/#requirements">System Requirements</a></li>
+		<li><a href="../technotes/#serving-audio">Serving To HTML5 + Flash Clients</a></li>
+		<li><a href="../technotes/#client-requests">How Clients Download Audio</a></li>
+		<li><a href="../technotes/#mobile-device-limitations">Mobile Device Limitations</a></li>
 		<li><a href="../technotes/#debug-output">Debug + Console Output</a></li>
 	   </ul>
 	  </li>
@@ -95,7 +99,7 @@
 	   <ul>
 		<li><a href="../resources/#licensing">Licensing</a></li>
 		<li><a href="../resources/#related">Related Projects</a></li>
-		<li><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/">SM2 support / discussion</a></li>
+		<li><a href="https://github.com/scottschiller/soundmanager2/issues">SM2 support / discussion</a></li>
 		<li><a href="http://www.schillmania.com/content/react/contact/">Contact Info @ Schillmania.com</a></li>
 	   </ul>
 	  </li>
@@ -147,7 +151,8 @@
 			  <ul>
 			   <li>Firefox (all versions), Windows/Mac</li>
 			   <li>Safari 1.3+ (Mac) / All Windows versions</li>
-			   <li>Mobile Webkit: iOS 4.0 devices, or iPad 3.2+</li>
+			   <li>Mobile Webkit: iOS 4.0 devices, iPad 3.2 (original iPad iOS release) and newer</li>
+			   <li>Android (2.3+, confirmed on 2.3.3.)</li>
 			   <li>Google Chrome (all versions/OSes)</li>
 			   <li>Internet Explorer 5.0+, Windows</li>
 			   <li>Opera 9.10 (slightly buggy, 9.5+ ideal), Windows/Mac</li>
@@ -183,7 +188,7 @@
 
 			  <h4>Flash 8 limitations with multiShot (overlaying/"chorus") effects</h4>
 			  <p class="in">Regarding "layering" sounds (calling <code>play()</code> on a sound multiple times): Even though a multi-shot option can be specified, it does not work with Flash 8; a single instance of a sound can only have one timeline. The current behaviour is that when <code>multiShot</code> is specified and <code>play()</code> is called on a currently-playing sound, it will restart from the beginning without an overlay.</p>
-			  <p>However, the API does provide some creative ways (<code class="in">onbeforefinish</code> for looping, multiple sound objects for multi-shot layering) of working around these Flash limitations.</p>
+			  <p>However, the API does provide some creative ways (<code>onfinish</code> for looping, multiple sound objects for multi-shot layering) of working around these Flash limitations.</p>
 			  <p>It should be noted that sounds can loop seamlessly and be layered when linked and exported to SWF from within the Flash IDE, but SoundManager does not support SWF-based audio.</p>
 
 			  <h4>Flash 9 multiShot capabilities</h4>
@@ -201,15 +206,210 @@
 			  <p>JavaScript-to-Flash communication is not instantaneous on slower systems, but can be much better on more modern systems. Latency (timing lag/delays) can be noted in some cases from function call to sound execution. It is possible some performance analysis can help to speed up this area for timing-critical applications involving animation etc., but this area has not been thoroughly investigated yet. Brad Neuberg has some notes on <a href="http://codinginparadise.org/weblog/2006/02/how-to-speed-up-flash-8s.html" title="Brad Neuberg - How To Speed Up ExternalInterface">speeding up ExternalInterface</a> which may be relevant.</p>
 			  <p>Flash-to-OS/hardware latency (where flash reports progress, but no sound is heard for a number of milliseconds) may also be an unfortunate reality of Flash-based audio, varying between platform and OS version etc.</p>
 			  <p>Additionally, MP3 files may contain audible gaps at the beginning or end by default when encoded, even if the source (eg. WAVE) file did not. Using optional "nogap" encoding options with programs such as LAME may help to remedy this.</p>
-			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X. As well, <code class="in">useFastPolling</code> will use a lower timer interval within Flash, making polling calls run as quickly as reasonably possible and increasing the frequency of calls to <code class="in">whileplaying()</code>, <code class="in">whileloading()</code> and other time-related events.</p>
+			  <p>Finally, the <code class="in">useHighPerformance</code> option may help with JS/flash lag. Using this option causes the flash movie to be placed with position:fixed on-screen at all times (though in a small, hidden box) and has been shown to notably improve performance on Mac OS X. As well, <code class="in">flashPollingInterval</code> will use a lower timer value, making polling calls run as quickly as reasonably possible and increasing the frequency of calls to <code class="in">whileplaying()</code>, <code class="in">whileloading()</code> and other time-related events.</p>
+			  <p>Use these options with caution, as overly-aggressive intervals may hinder performance if event callbacks become too frequent.</p>
 
 			  </div>
 
 			</div>
 			
 		</div>
+
+		<div id="serving-audio" class="columnar">
+
+			<div class="c1">
+
+				<h2>Serving to HTML5 + Flash Clients</h2>
+				<p>A few notes on HTTP response headers, configuration and so forth.</p>
+
+			</div>
+
+			<div class="c2">
+
+				<h3>Tips for serving audio to HTML5 + Flash Clients</h3>
+				<p>HTTP response headers from your server are important. Below is a brief list of recommended practices for serving audio content to clients using HTML5, and/or Flash.</p>
+
+				<h4>HTML5</h4>
+
+				<ul>
+					<li>Likes <code>Content-Length</code> HTTP response headers (can affect duration and playback events if missing.)</li>
+					<li>Arbitrary seeking, dynamic loading/buffering works when the server supports <a href="#byte-serving">Byte Serving</a> via byte ranges, also known as HTTP partials / range requests. Without this support, behaviour falls back to a Flash-like single-connection, sequential/progressive-style download.</li>
+					<li>Likes a proper MIME type response from the server, e.g., <code>audio/mpeg</code> for MP3 content.</li>
+				</ul>
+
+				<h4>Flash</h4>
+
+				<ul>
+					<li>Likes <code>Content-Length</code> HTTP response headers. When missing, duration may be unknown and certain events like <code>whileloading()</code> / <code>whileplaying()</code> may not fire.</li>
+					<li>Does not care about MIME type or partials in server responses.</li>
+				</ul>
+
+				<p><b>In summary...</b></p>
+
+				<p>Always serve a proper <code>Content-Length</code> HTTP response header. For HTML5, review that HTTP partials / range requests are enabled and that you are serving the correct MIME type in your response as well.</p>
+				<p>Never apply <code>gzip</code> or <code>mod_deflate</code> compression to binary assets. It causes playback problems, costs CPU and in some cases, may even increase the transfer size.</p>
+		
+
+			</div>
+
+		</div>
+
+		<div id="client-requests" class="columnar">
+
+			<div class="c1">
+
+				<h2>How Clients Download Audio</h2>
+				<p>Progressive, sequential HTTP vs. HTTP 206 partials / range requests.</p>
+
+			</div>
+
+			<div class="c2">
+
+				<h3>How HTML5 + Flash Clients Download Audio</h3>
+
+				<p>In terms of HTTP, assets are typically requested and downloaded in sequential byte order over a single connection. Flash typically works this way, but HTML5 clients can use behaviours that are closer to streaming - instead, using multiple requests for pieces of data.</p>
+
+				<p>Browsers can request audio from servers either sequentially or using <a href="#byte-serving">Byte Serving</a> (AKA "partials"), depending on client and server capabilities. The key difference is that with byte serving, clients request data in a "streaming" fashion and can buffer at will, therefore allowing arbitrary seeking, pausing and requesting of audio data in pieces - similar to how video playback typically works on YouTube, for example. Thus, preloading and <code>onload()</code> is less-meaningful when byte serving is involved.</p>
+
+				<h4 id="progressive-download">Traditional, "progressive" download (single request)</h4>
+
+				<p>The typical HTTP file download can be described as follows:</p>
+
+				<ul>
+					<li>Single HTTP request, one TCP connection</li>
+					<li>All bytes are sent sequentially "over the wire"</li>
+					<li>Network connection is closed when the download completes (or fails)</li>
+					<li>SoundManager 2 fires relevant sound <code>onload()</code> callback when the connection closes and the sound is deemed to be valid</li>
+				</ul>
+
+				<p>In terms of HTTP traffic, the sequence is something like this (excluding some headers for brevity):</p>
+
+				<ul>
+					<li><b>Client request</b>
+						<ul class="flat">
+						 	<li>GET some.mp3 HTTP/1.1</li>
+						</ul>
+					</li>
+					<li>
+						<b>Server response</b>
+						<ul class="flat">
+							<li>HTTP/1.1 200 OK</li>
+							<li>Content-Length: 158958</li>
+							<li>Connection: close</li>
+							<li>Content-type: audio/mpeg</li>
+						</ul>
+				</ul>
+
+				<h4>Progressive downloading behaviour in SoundManager 2</h4>
+
+				<p>This method is typically used by Flash when requesting audio via standard HTTP, and HTML5 clients in the event that <a href="#byte-serving">Byte Serving</a> (HTTP 206/Partial Content) is not implemented or cannot be negotiated.</p>
+
+				<ul>
+					<li>Playback begins after a small amount of buffering, once the download has started.</li>
+					<li>Once started, the download progress continues until all bytes are received. Stopping or pausing playback does not cancel the download.</li>
+					<li>During load, a SM2 sound object's <code>whileloading()</code> event will fire at a regular interval with <code>bytesLoaded</code>, <code>bytesTotal</code> and <code>duration</code> properties updating as the file progresses. Because Flash only reflects the "amount of duration loaded", <code>durationEstimate</code> is provided as a means of reflecting the total duration before load has completed (at which point duration is 100% and accurate.)</li>
+					<li>During load, the user can only seek within the amount of data (duration) downloaded.</li>
+					<li><code>onload()</code> fires when the connection is closed, and all bytes have been received.</li>
+				</ul>
+
+				<h4 id="byte-serving">Byte Serving (partials / byte range requests, "streaming"-style delivery)</h4>
+
+				<p>HTML5 clients will send a <b>Accept-ranges: bytes</b> header in the HTTP request for an audio asset to indicate their capability for Byte Serving, along with a <b>Range</b> header indicating what piece of the file to download.</p>
+				<p>If the server supports partials, it will reply with a <b>HTTP/1.1 206 Partial Content</b> header and a <b>Content-Range</b> header indicating the bytes it is going to send.</p>
+				<p>It appears that servers will return the whole range in the first response unless interrupted (and when a client requests a range of <b>"0-"</b> as in this case), but the initial connection may be dropped by the client if it wishes to stop "buffering" at any point, or if the user tries to seek to a new position in the audio that has not yet buffered.</p>
+
+				<ul>
+					<li>
+						<b>Client request</b>
+						<ul class="flat">
+							<li>GET some.mp3 HTTP/1.1</li>
+							<li>Range: bytes=0-</li>
+						</ul>
+					</li>
+					<li>
+						<b>Server response</b>
+						<ul class="flat">
+							<li>HTTP/1.1 206 Partial Content</li>
+							<li>Accept-ranges: bytes</li>
+							<li>Content-length: 4237566</li>
+							<li>Content-Range: bytes 0-4237565/7237566</li>
+						</ul>
+					</li>
+					<li>The first response includes all bytes in this case, but a client may drop this connection and make a new range request, if needed; for example, the user may seek to a new position in the file where data is not yet available, and the client will make a new request to buffer data beginning at the appropriate offset.</li>
+				</ul>
+
+				<h4>HTTP/1.1 206 Partial Content request/response example</h4>
+
+				<ul>
+					<li>
+						<b>Client request</b>
+						<ul class="flat">
+							<li>GET some.ogg HTTP/1.1</li>
+							<li>Range: bytes=5210604-5275910</li>
+							<li>If-Range: "508107-4d8a0b4e90d26"</li>
+						</ul>
+					</li>
+					<li>
+						<b>Server response</b>
+						<ul class="flat">
+							<li>HTTP/1.1 206 Partial Content</li>
+							<li>Accept-Ranges: bytes</li>
+							<li>Content-length: 65307</li>
+							<li>Content-Range: bytes 5210604-5275910/5275911</li>
+							<li>Content-Type: audio/ogg</li>
+						</ul>
+					</li>
+				</ul>
+
+				<h4>Byte Serving behaviour in SoundManager 2</h4>
+
+				<p>Byte Serving is automatically negotiated between client and server, and offers a number of advantages over traditional downloads. Most notably, Byte Serving is closer to a "streaming" technology and enables clients to seek, buffer and resume playback at arbitrary positions within a file once the duration is known. Larger files benefit most from this technique, since they can be handled in smaller chunks vs. being held entirely in memory <i>a la</i> Flash.</p>
+
+				<p>While SoundManager 2 uses the same events for HTML5 and Flash regardless of transport mechanism, there are some notable differences in SoundManager 2's behaviour when using HTML5 and Byte Serving.</p>
+
+				<p>Most importantly, the concept of "loaded" (i.e., preloading data and waiting for <code>onload()</code>) with partials is irrelevant due to the way clients are able to pause, cancel and resume requests.</p>
+
+				<ul>
+					<li>Playback begins after a small amount of buffering, once the download has started.</li>
+					<li>The HTML5-native <code>canplay()</code> event fires when playback is ready to begin. This will cause SoundManager 2 to fire a sound's <code>onload()</code> callback. At this point, the sound's duration should be known, but the SM2-provided <code>bytesLoaded</code> and <code>bytesTotal</code> sound properties may not be known and thus are 0/0 during load time, and 1/1 if still undefined at load time.</li>
+					<li>SoundManager 2 attempts to fire <code>whileloading()</code> events as the HTML5-native <code>progress()</code> event fires, but keep in mind that any "bytes loaded" data may refer to blocks (i.e., buffered sequences of data) that are non-sequential and thus <code>bytesLoaded</code> and <code>bytesTotal</code> should not be relied on as an indicator of "total load progress".</li>
+					<li>HTML5 clients may use their own heuristic to determine how much to buffer, if and when to pause, cancel or resume requesting data.</li>
+					<li>Clients may request metadata from the end of a file in some cases, as with OGG formats, in order to determine information like the total duration of the sound.</li>
+					<li>During load (and once the duration is known), the user can seek to any position within the file.</li>
+					<li>A client may drop an open request in order to request a new byte range - for example, to buffer and resume playback if the user jumps to half-way through the file where that data has not been downloaded yet.</li>
+				</ul>
+
+			</div>
+
+		</div>
+
+		<div id="mobile-device-limitations" class="columnar">
+
+			<div class="c1">
+				<h2>Mobile Device Limitations</h2>
+				<p>Known restrictions, quirks and annoyances relating to HTML5 + mobile Webkit (iOS / Android) software.</p>
+			</div>
+			
+			<div class="c2">
+				<h3>Mobile Device Restrictions, Quirks and Issues</h3>
+				<p>Mobile devices tend to be somewhat limited in terms of battery life, network connection and other resources. Furthermore, they are unlike larger (laptop/desktop) devices in that audio is often not a "shareable" resource, and only one application may be using the sound hardware at any given time. Thus, mobile devices must be treated slightly differently in terms of playing audio via JavaScript.</p>
+				<h3>iOS (mobile Safari/Webkit)</h3>
+				<ul>
+					<li>Sound <code>play()</code> calls are blocked by the OS unless in direct response to a user event like touch or click. ("Auto-play" attempts will be blocked, and the sound may fire a <code>suspend</code> event in this case.) For the curious, <code>setTimeout()</code> calls will also result in playback being blocked.</li>
+					<li>Sound <code>load()</code> and load-related methods may also have some limitations, similar to <code>play()</code>.</li>
+					<li>Only one sound may be actively playing at a time. If an other sound (or application) is playing audio, it will be stopped by the OS in order to play the new sound.</li>
+					<li>Chained playback (sequential / playlist-style behaviour) works when using the <code>onfinish</code> event handler. Otherwise, blocking occurs.</li>
+				</ul>
+				<h3>Possible Alternatives</h3>
+				<p>The Webkit Audio API (possibly a future standard as the Web Audio API) allows for low-level access, manipulation and control of audio from JavaScript. This API is mostly separate from the HTML5 audio API, but will ultimately allow for better fine-grained control and mixing of sound.</p>
+				<p>Once playback is allowed, the Webkit Audio API should be able to get around many of the current HTML5 audio limitations present on iOS including multiple sound playback, volume and pan control, and dynamic filtering / processing effects. However, the API is not a standard and is not consistently supported in Webkit, let alone other browsers.</p>				
+				<p>SM2 does not presently use the Webkit Audio API. It may be experimentally or more formally added at some point in the future, when the API is more universally-supported.</p>
+			</div>
+
+		</div>
 		
 		<div id="debug-output" class="columnar">
+
 			<div class="c1">
 				<h2>Debug + Console Output</h2>
 				<p>Console-style messaging, useful for troubleshooting start-up and runtime issues.</p>
@@ -217,9 +417,9 @@
 			
 			<div class="c2">
 				<h3>Live Debug Output</h3>
-				<p class="in">With debug mode enabled via <code>soundManager.debugMode = true</code>, SM2 can write helpful troubleshooting information to JavaScript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of "<code>soundmanager-debug</code>".</p>
-				<p class="in"><code>soundManager.consoleOnly</code> can be set to true to disable HTML output (using <code>console.log()</code>-only methods) as well.</p>
-				<p>Additionally, debugging within the Flash portion of SM2 is also available and set using <code>soundManager.debugFlash = true</code>. Debug messages are written to the flash movie itself.</p>
+				<p class="in">With debug mode enabled via <code>soundManager.setup({debugMode: true})</code>, SM2 can write helpful troubleshooting information to JavaScript <code>console.log()</code>-style interfaces. Additionally, output can be written to an optional DIV element with the ID of <code>soundmanager-debug</code>.</p>
+				<p class="in"><code>soundManager.setup({consoleOnly: true})</code> can be applied to disable HTML output (using <code>console.log()</code>-only methods) as well.</p>
+				<p>Additionally, debugging within the Flash portion of SM2 is also available and set using <code>soundManager.setup({debugFlash: true})</code>. Debug messages are written to the flash movie itself.</p>
 				<p>For info on SoundManager 2 loading/initialization failures and how to fix them, see <a href="../getstarted/#troubleshooting">troubleshooting</a>.</p>
 				
 				<p>Below is a live example of debug output from SM2:</p>
@@ -230,24 +430,26 @@
 				 </div>
 				</div>
 				
-				<p>And, Flash debug output:</p>
+				<p>Flash debug output, as applicable:</p>
 
 				<div id="sm2-container">
 				 <!-- flash movie goes here -->
 				</div>
-
 			</div>
 
 		</div>
+
 
 	<div id="col3" class="c3">
 
 	  <div id="support-wrapper">
 		  <div id="get-satisfaction" class="box">
 		   <div id="gsfn_list_widget">
-		    <h2><a href="http://getsatisfaction.com/schillmania/products/schillmania_soundmanager_2/" title="User discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
-		    <div id="gsfn_content"></div>
-		    <div class="powered_by"><a href="http://getsatisfaction.com/" rel="nofollow">Get Satisfaction support network</a></div>
+		    <h2><a href="https://github.com/scottschiller/soundmanager2/issues" title="Developer discussion, FAQs and support for SoundManager 2" rel="nofollow">Discussion / Support</a><span class="l"></span><span class="r"></span></h2>
+			<div id="gsfn_content">
+				<p style="line-height:1rem;margin-bottom:0px">For bug reports and technical support, see <a href="https://github.com/scottschiller/soundmanager2/issues" class="cta">GitHub Issues</a>.
+				</p>
+			</div>
 		   </div>
 		  <!-- /.box -->
 	  </div>

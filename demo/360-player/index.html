@@ -19,7 +19,10 @@
 <script type="text/javascript" src="script/360player.js"></script>
 
 <script type="text/javascript">
-soundManager.url = '../../swf/';
+soundManager.setup({
+  // path to directory containing SM2 SWF
+  url: '../../swf/'
+});
 </script>
 
 <!-- stuff you don't need -->
@@ -33,6 +36,10 @@ soundManager.url = '../../swf/';
 <style type="text/css">
 
 /* Demo page, general layout */
+
+body {
+ background-image: none;
+}
 
 #left {
  position:relative;
@@ -77,9 +84,7 @@ pre.block {
 	</div>
 
 
-	<div style="float:left;display:inline;margin-left:40px;border-left:1px solid #ccc;padding-left:30px;width:152px">
-
-	 <p style="margin-top:1em;margin-bottom:0px">Alternate style: inline</p>
+	<div style="float:left;display:inline;margin-left:40px;border-left:1px solid #ccc;padding-left:30px;width:150px">
 
 	 <div class="sm2-inline-list" style="margin-bottom:10px"> <!-- note the CSS class, changes the layout -->
 

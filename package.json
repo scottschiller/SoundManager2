@@ -1,0 +1,36 @@
+{
+  "name": "soundmanager2",
+  "version": "2.97.20170601",
+  "description": "A JavaScript Sound API supporting MP3, MPEG4 and HTML5 audio + RTMP, providing reliable cross-browser/platform audio control in as little as 12 KB.",
+  "main": "script/soundmanager2.js",
+  "directories": {
+    "lib": "./script"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scottschiller/SoundManager2/"
+  },
+  "keywords": [
+    "soundmanager2",
+    "soundmanager 2",
+    "browser",
+    "audio",
+    "sound",
+    "mp3",
+    "mpeg4",
+    "html5"
+  ],
+  "author": {
+    "name": "Scott Schiller",
+    "email": "spam@schillmania.com",
+    "url": "http://schillmania.com/"
+  },
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/scottschiller/SoundManager2/issues/"
+  },
+  "homepage": "http://www.schillmania.com/projects/soundmanager2/"
+}

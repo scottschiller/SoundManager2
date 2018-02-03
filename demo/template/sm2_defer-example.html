@@ -46,9 +46,11 @@ window.onload = function() {
   window.soundManager = new SoundManager();
 
   // assign flash url, flashVersion and other SM2 options as usual
-  soundManager.url = '../../swf/';
-  soundManager.flashVersion = 9;
-  // etc...
+  soundManager.setup({
+    url: '../../swf/',
+    flashVersion: 9
+    // etc...
+  });
 
   // finally, kick-start init process.
   // (old IE etc. may miss domloaded/ready/window.load if they've already fired.)
@@ -74,51 +76,51 @@ window.onload = function() {
 
  <h2>Example code</h2>
 
-<pre>
-&lt;script type="text/javascript"&gt;
+<pre class="block"><code>&lt;script type="<span>text/javascript</span>"&gt;
 
-<span>/*
+<span><span>/*
  * Firstly, define SM2_DEFER and set it to true *before* we load soundmanager2.js.
  * This prevents the SoundManager() constructor from being called immediately.
  * SM2_DEFER should be assigned within the global scope.
-*/</span>
+*/</span></span>
 
 window.SM2_DEFER = true;
 
 &lt;/script&gt;
 
-<span>&lt;!-- Now, load soundmanager2.js as we normally would. --&gt;</span>
-&lt;script type="text/javascript" src="../../script/soundmanager2.js"&gt;&lt;/script&gt;
+<span><span>&lt;!-- Now, load soundmanager2.js as we normally would. --&gt;</span></span>
+&lt;script type="text/javascript" src="<span>../../script/soundmanager2.js</span>"&gt;&lt;/script&gt;
 
-<span>&lt;!-- "Some time later", window.onload() may have fired and you now want to start SM2, etc... --&gt;</span>
+<span><span>&lt;!-- "Some time later", window.onload() may have fired and you now want to start SM2, etc... --&gt;</span></span>
 &lt;script type="text/javascript"&gt;
 
-<span>// for example purposes, we'll wait until window.onload before starting things.</span>
+<span><span>// for example purposes, we'll wait until window.onload before starting things.</span></span>
 window.onload = function() {
 
-  <span>/*
+  <span><span>/*
    * Now that the SM2 constructor is defined, you can call the constructor,
    * set the options and "kick-start" SM2's init process, and it should work as normal.
    * WARNING: Do not call beginDelayedInit() before "DOM ready", or things will fail.
-  */</span>
+  */</span></span>
 
-  <span>// construct the instance (must be named soundManager, and scoped globally)</span>
+  <span><span>// construct the instance (must be named soundManager, and scoped globally)</span></span>
   window.soundManager = new SoundManager();
 
-  <span>// assign flash url, flashVersion and other SM2 options as usual</span>
-  soundManager.url = '../../swf/';
-  soundManager.flashVersion = 9;
-  <span>// etc...</span>
+  <span><span>// assign flash url, flashVersion and other SM2 options as usual</span></span>
+  soundManager.setup({
+    // path to directory containing SM2 SWF
+    url: '<span>/path/to/swfs/</span>',
+    flashVersion: 9
+    <span><span>// etc...</span></span>
+  });
 
-  <span>// finally, kick-start the init process.</span>
-  <span>// (old IE etc. may miss domloaded/ready/window.load if they've already fired.)</span>
+  <span><span>// finally, kick-start the init process.</span></span>
+  <span><span>// (old IE etc. may miss domloaded/ready/window.load if they've already fired.)</span></span>
   soundManager.beginDelayedInit();
 
 }
 
-&lt;/script&gt;
-
-</pre>
+&lt;/script&gt;</code></pre>
 
 </div>
 

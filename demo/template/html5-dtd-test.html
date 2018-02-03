@@ -50,19 +50,30 @@ function loadScript(sURL,onLoad) {
 }
 
 window.onload = function() {
-	loadScript('../../script/soundmanager2.js', function() {
-		soundManager.flashVersion = 9;
-		soundManager.flash9Options.useEQData = true;
-		soundManager.flash9Options.useWaveformData = true;
-		soundManager.url = '../../swf/'; // path to directory containing SoundManager2 .SWF file
-		soundManager.onload = function() {
-			alert('Loaded!');
-		};
-		soundManager.debugMode = true;
-		soundManager.useHighPerformance = true;
-		soundManager.debugFlash = false;
-		soundManager.beginDelayedInit(); // ensure things start, in case document.readyState / domReady are missed (eg. Firefox 3.5.5/win32 with HTML5 DTD, no document.readyState??)
-	});
+
+  loadScript('../../script/soundmanager2.js', function() {
+
+    soundManager.setup({
+      // path to directory containing SoundManager2 .SWF file
+      url: '../../swf/',
+      flashVersion = 9,
+      flash9Options: {
+        useEQData = true,
+        useWaveformData = true
+      },
+      onready: function() {
+        alert('Loaded!');
+      }),
+      debugMode: true,
+      useHighPerformance: true,
+      debugFlash: false,
+    });
+
+    // ensure things start, in case document.readyState / domReady are missed (eg. Firefox 3.5.5/win32 with HTML5 DTD, no document.readyState??)
+    soundManager.beginDelayedInit();
+
+  }
+
 }
 
 </script>

@@ -29,7 +29,10 @@ body {
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 <script type="text/javascript" src="script/mp3-player-button.js"></script>
 <script>
-soundManager.url = '../../swf/'; // required: path to directory containing SM2 SWF files
+soundManager.setup({
+  // required: path to directory containing SM2 SWF files
+  url: '../../swf/'
+});
 </script>
 
 </head>
@@ -38,7 +41,7 @@ soundManager.url = '../../swf/'; // required: path to directory containing SM2 S
 
  <h1><a href="http://www.schillmania.com/projects/soundmanager2/" title="Play MP3s inline with javascript using SoundManager 2">SoundManager 2</a> / Basic MP3 Play Button: Template</h1>
 
- <p>View the source code of this page for detail. Don't forget to set <b>soundManager.debugMode = false;</b> to disable debug output.</p>
+ <p>View the source code of this page for detail. Don't forget to set <b>debugMode: false</b> to disable debug output.</p>
 
  <p><a href="../_mp3/walking.mp3" class="sm2_button">Walking</a> Walking</p>
 

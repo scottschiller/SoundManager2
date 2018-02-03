@@ -15,19 +15,28 @@
 <script type="text/javascript" src="../../../script/soundmanager2.js"></script>
 
 <script type="text/javascript">
-// custom demo options, not for your needs
-soundManager.debugMode = true;
-soundManager.url = '../../../swf/';
 
-// flash version URL switch (for this demo page)
+soundManager.setup({
+  // custom demo options, not for your needs
+  debugMode: true,
+  url: '../../../swf/'
+});
+
 var winLoc = window.location.toString();
+
 if (winLoc.match(/flash9/i)) {
-  soundManager.flashVersion = 9;
+  soundManager.setup({
+    flashVersion: 9
+  });
   if (winLoc.match(/highperformance/i)) {
-	soundManager.useHighPerformance = true;
+    soundManager.setup({
+      useHighPerformance: true
+    });
   }
 } else if (winLoc.match(/flash8/i)) {
-  soundManager.flashVersion = 8;
+  soundManager.setup({
+    flashVersion: 8
+  });
 }
 
 soundManager.onready(function(){

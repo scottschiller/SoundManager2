@@ -205,7 +205,7 @@ function Cursor() {
     oD.style.opacity = Math.min(1,Math.max(scaleY*1.5,0.1));
     self.oDots.appendChild(oD);
 
-    // var sID = self.sounds[0].sID;
+    // var sID = self.sounds[0].id;
     if (!self.soundTimer) {
       // self.soundTimer = window.setTimeout(function(){soundManager.play(sID,{volume:100*scaleY,pan:100*scaleX});self.soundTimer=null;},20);
       self.sounds[Math.random()>0.5?1:0].play({pan:100*scaleX,volume:100*scaleY});
@@ -315,13 +315,15 @@ function doInit() {
   cursor = new Cursor();
 }
 
-soundManager.preferFlash = true;
-soundManager.flashVersion = 9;
-soundManager.url = '../../swf/';
-soundManager.useHighPerformance = true;
-soundManager.wmode = 'transparent';
-soundManager.debugMode = false;
-soundManager.onload = doInit;
+soundManager.setup({
+  preferFlash: true,
+  flashVersion: 9,
+  url: '../../swf/',
+  useHighPerformance: true,
+  wmode: 'transparent',
+  debugMode: false,
+  onready: doInit
+});
 
 </script>
 </head>

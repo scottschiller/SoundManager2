@@ -1,13 +1,19 @@
-/*
-
- DEMO ONLY, just to make the demo page pretty.
-
- You don't need this stuff for SM2 to work. :)
-
-*/
+/**
+ *
+ * SoundManager 2: TEMPLATE EXAMPLE / DEMO ONLY, just to make the demo page pretty.
+ *
+ * You don't need this stuff for SM2 to work. :)
+ *
+ */
 
 body {
  font-size:75%;
+ background: #fff url(../../demo/_image/noise.png);
+}
+
+pre {
+ padding: 0.5em;
+ background: #f9f9f9;
 }
 
 code, pre {
@@ -24,7 +30,7 @@ em em {
 
 h1,
 h2.special {
- letter-spacing:-1px;
+ letter-spacing: -0.005em;
 }
 
 h1, h2, h3, h4 {
@@ -37,11 +43,18 @@ h1, h2, h3, h4 {
 
 h1 {
  font-size:2em;
+ border-bottom: 1px dotted #999;
 }
 
 h2 {
- font-family:helvetica,arial,verdana,tahoma,"sans serif";
+ font-family:"helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
  font-size:1.5em;
+ margin-top: 1.5em;
+ margin-bottom: 0px;
+}
+
+h2 code {
+ font-size: 85%;
 }
 
 h3 {
@@ -57,11 +70,92 @@ h4 {
 }
 
 
-p {
+p,
+li {
  font:normal 1em verdana,tahoma,arial,"sans serif";
+ line-height: 1.4em;
 }
 
 code span,
 pre span {
  color:#666;
+}
+
+ul.file-structure ul {
+  padding-left:1.5em;
+}
+
+ul.file-structure li {
+  list-style-type:square;
+  margin-top:0.25em;
+  margin-left:0px;
+}
+
+ul.file-structure li span {
+  color:#999;
+}
+
+/* re-used bits from index.css */
+
+pre code {
+  font-size:1em;
+}
+
+pre {
+  white-space:-moz-pre-wrap;
+  white-space:pre-wrap;
+  word-wrap:break-word; /* IE */
+}
+
+ul.code-block em,
+pre span,
+code span,
+dt span {
+  color:#339933;
+}
+
+ul.code-block em {
+  font-style: normal;
+}
+
+ul.code-block span,
+pre span span,
+code span span,
+dt span span {
+  color:#667788;
+}
+
+pre.block,
+pre.block code,
+div.block div.code,
+ul.code-block {
+  position:relative;
+  display:table;
+  *display:block;
+  border:1px solid #ccc;
+  border-radius:3px;
+}
+
+div.block,
+pre.block {
+  background:#e9f3ff;
+  border-color:#eee;
+  padding:3px;
+}
+
+pre.block code,
+.block .code {
+  background:#fff;
+  border:1px solid #ccddee;
+  padding:0.5em;
+  font-size: 100%;
+  line-height:1.75em;
+  background-image: -webkit-linear-gradient(#fcfcfc 50%, #fff 50%);
+  background-image: linear-gradient(#fcfcfc 50%, #fff 50%);
+  background-size: 100% 3.5em;
+  background-origin: content-box;
+}
+
+pre.block code {
+  padding: 1em;
 }

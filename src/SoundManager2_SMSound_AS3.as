@@ -24,6 +24,7 @@ package {
   import flash.utils.getTimer;
   import flash.net.NetConnection;
   import flash.net.NetStream;
+  import flash.net.Responder;
 
   public class SoundManager2_SMSound_AS3 extends Sound {
 
@@ -141,6 +142,14 @@ package {
 
     }
 
+    public function rtmpResponder(result:Object):void {
+      // callback from Flash Media Server (RTMP) for 'getStreamLength' server-side method - result should be a floating-point.
+      // http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html
+      writeDebug('RTMP server getStreamLength() response: ' + result);
+      // we now know the duration. type cast to floating-point - this will update JS-land during whileloading() / whileplaying().
+      this.duration = Number(result) * 1000;
+    }
+
     public function netStatusHandler(event:NetStatusEvent):void {
 
       if (this.useEvents) {
@@ -156,13 +165,19 @@ package {
             // bufferTime reference: http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html#bufferTime
             this.ns.bufferTime = this.bufferTime; // set to 0.1 or higher. 0 is reported to cause playback issues with static files.
             this.st = new SoundTransform();
-            this.cc.onMetaData = this.metaDataHandler;
+            this.cc.onMetaData = this.onMetaData;
+            this.cc.setCaption = this.captionHandler;
             this.ns.client = this.cc;
             this.ns.receiveAudio(true);
             this.addNetstreamEvents();
             this.connected = true;
             // RTMP-only
             if (this.serverUrl && this.useEvents) {
+              var responder:Responder = new Responder(rtmpResponder);
+              // call a method on server to get the length of the stream (like onMetaData, but Flash Media Server-specific)
+              // Red5 and other RTMP servers appear to provide duration via onMetaData event(s) in the stream.
+              // http://help.adobe.com/en_US/FlashMediaServer/3.5_Deving/WS5b3ccc516d4fbf351e63e3d11a0773d117-7ffe.html
+              nc.call('getStreamLength', responder, this.sURL);
               writeDebug('NetConnection: connected');
               writeDebug('firing _onconnect for '+this.sID);
               ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._onconnect", 1);
@@ -215,21 +230,21 @@ package {
         //  ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", 'Reconnecting...');
         //  break;
 
-        // Consider everything else a failure...
+        // Consider everything else a warning...
         default:
-          this.failed = true;
-          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'! Description: " + event.info.description);
-          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onfailure", '', event.info.level, event.info.code);
+          // this.failed = true;
+          writeDebug("NetConnection: got unhandled code '" + event.info.code + "'. Description: " + event.info.description);
+          ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onwarning", event.info.description, event.info.level, event.info.code);
           break;
       }
 
     }
 
-    public function writeDebug (s: String, bTimestamp: Boolean = false) : Boolean {
-      return this.sm.writeDebug (s, bTimestamp); // defined in main SM object
+    public function writeDebug (s: String, logLevel: Number = 0) : Boolean {
+      return this.sm.writeDebug (s,logLevel); // defined in main SM object
     }
 
-    public function metaDataHandler(infoObject: Object) : void {
+    public function onMetaData(infoObject: Object) : void {
       var prop:String;
       if (sm.debugEnabled) {
         var data:String = new String();
@@ -243,7 +258,7 @@ package {
         // writeDebug('not loaded yet: '+this.ns.bytesLoaded+', '+this.ns.bytesTotal+', '+infoObject.duration*1000);
         // TODO: investigate loaded/total values
         // ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.ns.bytesLoaded, this.ns.bytesTotal, infoObject.duration*1000);
-        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, (infoObject.duration || this.duration))
+        ExternalInterface.call(baseJSObject + "['" + this.sID + "']._whileloading", this.bytesLoaded, this.bytesTotal, (this.duration || infoObject.duration))
       }
       var metaData:Array = [];
       var metaDataProps:Array = [];
@@ -253,11 +268,33 @@ package {
       }
       // pass infoObject to _onmetadata, too
       ExternalInterface.call(baseJSObject + "['" + this.sID + "']._onmetadata", metaData, metaDataProps);
+writeDebug('waiting for next call...');
       // this handler may fire multiple times, eg., when a song changes while playing an RTMP stream.
       if (!this.serverUrl) {
         // disconnect for non-RTMP cases, since multiple firings may mess up duration.
-        this.cc.onMetaData = function(infoObject: Object) : void {}
+        // this.cc.onMetaData = function(infoObject: Object) : void {}
       }
+    }
+
+    public function captionHandler(infoObject: Object) : void {
+
+      if (sm.debugEnabled) {
+        var data:String = new String();
+        for (var prop:* in infoObject) {
+          data += prop+': '+infoObject[prop]+' \n';
+        }
+        writeDebug('Caption: '+data);
+      }
+
+      // null this out for the duration of this object's existence.
+      // it may be called multiple times.
+      // this.cc.setCaption = function(infoObject: Object) : void {}
+    
+      // writeDebug('Caption\n'+infoObject['dynamicMetadata']);
+      // writeDebug('firing _oncaptiondata for '+this.sID);
+
+      ExternalInterface.call(this.sm.baseJSObject + "['" + this.sID + "']._oncaptiondata", infoObject['dynamicMetadata']);
+
     }
 
     public function getWaveformData() : void {
@@ -278,8 +315,10 @@ package {
       }
     }
 
-    public function start(nMsecOffset: int, nLoops: int) : void {
+    public function start(nMsecOffset: int, nLoops: int, allowMultiShot:Boolean) : Boolean {
+
       this.useEvents = true;
+
       if (this.useNetstream) {
 
         writeDebug("SMSound::start nMsecOffset "+ nMsecOffset+ ' nLoops '+nLoops + ' current bufferTime '+this.ns.bufferTime+' current bufferLength '+this.ns.bufferLength+ ' this.lastValues.position '+this.lastValues.position);
@@ -287,7 +326,7 @@ package {
         // mark for later Netstream.Play.Stop / sound completion
         this.finished = false;
 
-        this.cc.onMetaData = this.metaDataHandler;
+        this.cc.onMetaData = this.onMetaData;
 
         // Don't seek if we don't have to because it destroys the buffer
         var set_position:Boolean = this.lastValues.position != null && this.lastValues.position != nMsecOffset;
@@ -331,10 +370,25 @@ package {
 
       } else {
         // writeDebug('start: seeking to '+nMsecOffset+', '+nLoops+(nLoops==1?' loop':' loops'));
-        this.soundChannel = this.play(nMsecOffset, nLoops);
-        this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
-        this.applyTransform();
+        if (!this.soundChannel || allowMultiShot) {
+          this.soundChannel = this.play(nMsecOffset, nLoops);
+          this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
+          this.applyTransform();
+        } else {
+          // writeDebug('start: was already playing, no-multishot case. Seeking to '+nMsecOffset+', '+nLoops+(nLoops==1?' loop':' loops'));
+          // already playing and no multi-shot allowed, so re-start and set position
+          if (this.soundChannel) {
+            this.soundChannel.stop();
+          }
+          this.soundChannel = this.play(nMsecOffset, nLoops); // start playing at new position
+          this.addEventListener(Event.SOUND_COMPLETE, _onfinish);
+          this.applyTransform();
+        }
       }
+
+      // if soundChannel is null (and not a netStream), there is no sound card (or 32-channel ceiling has been hit.)
+      // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/media/Sound.html#play%28%29
+      return (!this.useNetstream && this.soundChannel === null ? false : true);
 
     }
 

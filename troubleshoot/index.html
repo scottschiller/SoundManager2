@@ -28,10 +28,9 @@
 </style>
 <script type="text/javascript" src="../script/soundmanager2.js"></script>
 <script type="text/javascript">
-// optional
-soundManager.url = '../swf/'; 
-soundManager.onload = function() {}
-
+soundManager.setup({
+  url: '../swf/'
+});
 </script>
 
 <script type="text/javascript" src="debug.js"></script>
@@ -51,7 +50,7 @@ soundManager.onload = function() {}
   <li id="d-onload" class="default">
    <h3><span class="yay">OK</span><span class="boo">FAIL</span><span class="default">N/A</span><span class="unknown">Unknown</span><span>SoundManager 2 start-up</span></h3>
    <div id="sm2-startup" class="details">
-    <p>soundManager.onload() or soundManager.onerror() is ultimately called when start-up completes.</p>
+    <p>soundManager onready() or ontimeout() events are ultimately called when start-up completes.</p>
     <p>If you're seeing a failure, refer to the below for troubleshooting details for common causes.</p>
    </div>
   </li>
@@ -89,8 +88,8 @@ soundManager.onload = function() {}
      <div id="ss-box" style="display:none">
 	  <h4>Illustrated guide: Adding a "trusted location" in Flash</h4>
       <p>Below: Adding a location, and selecting "Browse for folder" (or directory), to whitelist the SoundManager 2 project directory for offline viewing.</p>
-      <p><img src="../../troubleshoot/fpgss-add-location.png" alt="Adding a location: Browse for the file or directory to whitelist" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
-      <p><img src="../../troubleshoot/fpgss-added-location.png" alt="Whitelisted location has now been added, JS + Flash will work under this path" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
+      <p><img src="fpgss-add-location.png" alt="Adding a location: Browse for the file or directory to whitelist" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
+      <p><img src="fpgss-added-location.png" alt="Whitelisted location has now been added, JS + Flash will work under this path" style="width:100%;_width:auto;min-width:72px;max-width:396px" /></p>
      </div>
      <p><a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html" target="_blank" class="feature">Launch the Flash Security Settings Panel</a></p>
     </div>
@@ -119,6 +118,7 @@ soundManager.onload = function() {}
    <div class="details">
     <p>At this point, Javascript attempts to respond to Flash's initial outgoing Flash -&gt; JS call, completing the test for JS/flash communication. If SM2 does not receive a response from flash, it will eventually fail.</p>
     <p>Offline viewing conditions and cross-domain security rules will prevent Flash &lt;-&gt; JS communication. See the details of Flash -&gt; JS for information.</p>
+    <p><b>Special Firefox Note</b>: Some versions of Firefox (9.0 and newer?) may break JS/Flash in the file:// or offline case even when the path has been whitelisted in the Flash player security settings panel. IE, Chrome, Safari and Opera do not have this issue.</p>
    </div>   
   </li>
 

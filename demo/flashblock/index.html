@@ -15,24 +15,30 @@
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
 
 <script type="text/javascript">
-// enable flash block handling
-soundManager.useFlashBlock = true; // make sure you check and use flashblock.css too, as that is used to position the SWF with this feature on!
+soundManager.setup({
+  // enable flash block handling
+  useFlashBlock: true,
+  // making sure this demo uses flash, of course...
+  preferFlash: true,
+  // custom demo options, not for your needs
+  debugMode: true,
+  url: '../../swf/'
+});
 
-soundManager.preferFlash = true; // making sure this demo uses flash, of course...
-
-// custom demo options, not for your needs
-soundManager.debugMode = true;
-soundManager.url = '../../swf/';
-
-// flash version URL switch (for this demo page)
 var winLoc = window.location.toString();
 if (winLoc.match(/flash9/i)) {
-  soundManager.flashVersion = 9;
+  soundManager.setup({
+    flashVersion: 9
+  });
   if (winLoc.match(/highperformance/i)) {
-	soundManager.useHighPerformance = true;
+    soundManager.setup({
+      useHighPerformance: true
+    });
   }
 } else if (winLoc.match(/flash8/i)) {
-  soundManager.flashVersion = 8;
+  soundManager.setup({
+    flashVersion: 8
+  });
 }
 
 soundManager.ontimeout(function(){
@@ -49,7 +55,7 @@ soundManager.onready(function(){
 </head>
 <body>
 
-<div style="margin:1em;max-width:60em;font-size:110%">
+<div style="margin:1em;max-width:60em">
 	
 	<h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Flashblock / "click to flash" handling demos</h1>
 

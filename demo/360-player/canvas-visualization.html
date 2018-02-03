@@ -26,9 +26,10 @@
 
 <script type="text/javascript">
 
-soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
-
-soundManager.useFastPolling = true; // increased JS callback frequency, combined with useHighPerformance = true
+soundManager.setup({
+  // path to directory containing SM2 SWF
+  url: '../../swf/'
+});
 
 threeSixtyPlayer.config.scaleFont = (navigator.userAgent.match(/msie/i)?false:true);
 threeSixtyPlayer.config.showHMSTime = true;
@@ -79,6 +80,10 @@ if (window.location.href.match(/html5/i)) {
 
 <link rel="stylesheet" type="text/css" href="demo.css" />
 <style type="text/css">
+
+body {
+ background-image: none;
+}
 
 #left h2 {
  padding-top:0px;
@@ -180,6 +185,14 @@ pre.block {
 			    <div class="slider" title="Amount to downsample EQ data by"></div>
 			   </dd>
 
+			   <dt>Ring Thickness</dt>
+			   <dd class="title">(Scale)</dd>
+			   <dd>1-200</dd>
+			   <dd class="control">
+			    <div class="bar" title="Click to move here"></div>
+			    <div class="slider" title="Scale factor for the ring width"></div>
+			   </dd>
+
 			  </dl>
 
 			  <div id="options" class="col">
@@ -256,6 +269,7 @@ pre.block {
 
 		<div class="sm2-inline-list"> <!-- remove this class to have one item per line -->
 
+			<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/The%20Fugitives%20-%20Graffiti%20Sex.mp3">The Fugitives - Graffiti Sex</a></div>
 			<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/Adrian%20Glynn%20-%20Blue%20Belle%20Lament.mp3">Adrian Glynn - Blue Belle Lament</a></div>
 			<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20I%20Tried.mp3">SonReal - I Tried</a></div>
 			<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20People%20Asking.mp3">SonReal - People Asking</a></div>
@@ -263,11 +277,12 @@ pre.block {
 
 	   	</div>
 	
-		<p class="note medium-note" style="clear:both"><b>Artist thank-yous</b>: "Blue Belle Lament" courtesy of <a href="http://www.adrianglynn.com/" title="Adrian Glynn, Vancouver-based Singer/Songwriter">Adrian Glynn</a>. "I Tried" and "People Asking" courtesy of <a href="http://sonreal.bandcamp.com/album/the-lightyear-mixtape" title="The Lightyear Mixtape from SonReal, Vancouver-based hip-hop artist">SonReal</a>.</p>
+		<p class="note medium-note" style="clear:both"><b>Artist thank-yous</b>: "Graffiti Sex" courtesy of <a href="http://www.fugitives.ca/" title="A group of musicians, poets, and multi-instrumentalists from Vancouver, Canada">The Fugitives</a>. "Blue Belle Lament" courtesy of <a href="http://www.adrianglynn.com/" title="Adrian Glynn, Vancouver-based Singer/Songwriter">Adrian Glynn</a>. "I Tried" and "People Asking" courtesy of <a href="http://sonreal.bandcamp.com/album/the-lightyear-mixtape" title="The Lightyear Mixtape from SonReal, Vancouver-based hip-hop artist">SonReal</a>.</p>
 
 	 	<h2 style="clear:left;padding-top:1em">Block list</h2>
 
 		<div>
+	     	<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/gong-192kbps.mp3">32" Chau Gong Sounds</a></div>
 	     	<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/mpc/20090207%20-%20Loverman.mp3">20090207 - Loverman</a></div>
 		 	<div class="ui360 ui360-vis"><a href="http://freshly-ground.com/data/audio/sm2/dialup.mp3">56K Modem dial-up sound (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>
 		 	<div class="ui360 ui360-vis"><a href="../../demo/_mp3/1hz-10khz-sweep.mp3">1-10 Khz Sweep (Warning: <span style="color:#ff3333">LOUD</span>)</a></div>

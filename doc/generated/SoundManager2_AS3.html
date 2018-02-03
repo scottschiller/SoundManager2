@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>SoundManager2_AS3.as</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="soundmanager2.html">
+                soundmanager2.js
+              </a>
+            
+              
+              <a class="source" href="SoundManager2_AS.html">
+                SoundManager2_AS.as
+              </a>
+            
+              
+              <a class="source" href="SoundManager2_AS3.html">
+                SoundManager2_AS3.as
+              </a>
+            
+              
+              <a class="source" href="SoundManager2_SMSound_AS3.html">
+                SoundManager2_SMSound_AS3.as
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>SoundManager2_AS3.as</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="comment">/**
+ * SoundManager 2: Javascript Sound for the Web
+ * ----------------------------------------------
+ * http://schillmania.com/projects/soundmanager2/
+ *
+ * Copyright (c) 2007, Scott Schiller. All rights reserved.
+ * Code licensed under the BSD License:
+ * http://www.schillmania.com/projects/soundmanager2/license.txt
+ *
+ * Flash 9 / ActionScript 3 version
+ */</span>
+
+<span class="package"><span class="keyword">package</span> {</span>
+
+  <span class="preprocessor"><span class="keyword">import</span> flash.display.Sprite;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.events.Event;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.events.IOErrorEvent;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.events.MouseEvent;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.events.SecurityErrorEvent;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.events.AsyncErrorEvent;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.events.NetStatusEvent;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.events.TimerEvent;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.external.ExternalInterface;</span> <span class="comment">// woo</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.media.Sound;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.media.SoundChannel;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.media.SoundMixer;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.net.URLLoader;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.net.URLRequest;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.system.Security;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.system.System;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.text.TextField;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.text.TextFormat;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.text.TextFieldAutoSize;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.ui.ContextMenu;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.ui.ContextMenuItem;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.utils.setInterval;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.utils.clearInterval;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.utils.Dictionary;</span>
+  <span class="preprocessor"><span class="keyword">import</span> flash.utils.Timer;</span>
+
+  <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SoundManager2_AS3</span> <span class="keyword">extends</span> <span class="title">Sprite</span> {</span>
+
+    <span class="keyword">public</span> <span class="keyword">var</span> version:String = <span class="string">"V2.97a.20170601"</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> version_as:String = <span class="string">"(AS3/Flash 9)"</span>;
+
+    <span class="comment">/**
+     *  Cross-domain security options
+     *  HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
+     *  // allow_xdomain_scripting = true;
+     *  // xdomain = "foo.com";
+     *  For all domains (possible security risk?), use xdomain = "*"; which ends up as System.security.allowDomain("*");
+     *  When loading from HTTPS, use System.security.allowInsecureDomain();
+     *  See http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#allowDomain()
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> allow_xdomain_scripting:Boolean = <span class="literal">false</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> xdomain:String = <span class="string">"*"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>externalInterface references (for Javascript callbacks)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">public</span> <span class="keyword">var</span> baseJSController:String = <span class="string">"soundManager"</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> baseJSObject:String = baseJSController + <span class="string">".sounds"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>internal objects</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">public</span> <span class="keyword">var</span> sounds:Array = []; <span class="comment">// indexed string array</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> soundObjects: Dictionary = <span class="keyword">new</span> Dictionary(); <span class="comment">// associative Sound() object Dictionary type</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> timer: Timer = <span class="literal">null</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> pollingEnabled: Boolean = <span class="literal">false</span>; <span class="comment">// polling (timer) flag - disabled by default, enabled by JS-&gt;Flash call</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> debugEnabled: Boolean = <span class="literal">true</span>; <span class="comment">// Flash debug output enabled by default, disabled by JS call</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> flashDebugEnabled: Boolean = <span class="literal">false</span>; <span class="comment">// Flash internal debug output (write to visible SWF in browser)</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> loaded: Boolean = <span class="literal">false</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> currentObject: SoundManager2_SMSound_AS3 = <span class="literal">null</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> paramList:Object = <span class="literal">null</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> messages:Array = [];
+    <span class="keyword">public</span> <span class="keyword">var</span> textField: TextField = <span class="literal">null</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> textStyle: TextFormat = <span class="keyword">new</span> TextFormat();
+    <span class="keyword">public</span> <span class="keyword">var</span> didSandboxMessage: Boolean = <span class="literal">false</span>;
+    <span class="keyword">public</span> <span class="keyword">var</span> caughtFatal: Boolean = <span class="literal">false</span>;
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">SoundManager2_AS3</span><span class="params">()</span> {</span>
+
+      <span class="keyword">if</span> (allow_xdomain_scripting &amp;&amp; xdomain) {
+        Security.allowDomain(xdomain);
+        version_as += <span class="string">' - cross-domain enabled'</span>;
+      }
+
+      <span class="keyword">this</span>.paramList = <span class="keyword">this</span>.root.loaderInfo.parameters;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <d>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (<span class="keyword">this</span>.paramList[<span class="string">'debug'</span>] == <span class="number">1</span>) {
+        <span class="keyword">this</span>.flashDebugEnabled = <span class="literal">true</span>;
+      }
+
+      <span class="keyword">if</span> (<span class="keyword">this</span>.flashDebugEnabled) {
+        <span class="keyword">var</span> canvas: Sprite = <span class="keyword">new</span> Sprite();
+        canvas.graphics.drawRect(<span class="number">0</span>, <span class="number">0</span>, stage.stageWidth, stage.stageHeight);
+        addChild(canvas);
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p></d></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+      flashDebug(<span class="string">'SM2 SWF '</span> + version + <span class="string">' '</span> + version_as);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>context menu item with version info</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+      <span class="keyword">var</span> sm2Menu:ContextMenu = <span class="keyword">new</span> ContextMenu();
+      <span class="keyword">var</span> sm2MenuItem:ContextMenuItem = <span class="keyword">new</span> ContextMenuItem(<span class="string">'SoundManager '</span> + version + <span class="string">' '</span> + version_as);
+      sm2MenuItem.enabled = <span class="literal">false</span>;
+      sm2Menu.customItems.push(sm2MenuItem);
+      contextMenu = sm2Menu;
+
+      <span class="keyword">if</span> (ExternalInterface.available) {
+        flashDebug(<span class="string">'ExternalInterface available'</span>);
+        <span class="keyword">try</span> {
+          flashDebug(<span class="string">'Adding ExternalInterface callbacks...'</span>);
+          ExternalInterface.addCallback(<span class="string">'_load'</span>, _load);
+          ExternalInterface.addCallback(<span class="string">'_unload'</span>, _unload);
+          ExternalInterface.addCallback(<span class="string">'_stop'</span>, _stop);
+          ExternalInterface.addCallback(<span class="string">'_start'</span>, _start);
+          ExternalInterface.addCallback(<span class="string">'_pause'</span>, _pause);
+          ExternalInterface.addCallback(<span class="string">'_setPosition'</span>, _setPosition);
+          ExternalInterface.addCallback(<span class="string">'_setPan'</span>, _setPan);
+          ExternalInterface.addCallback(<span class="string">'_setVolume'</span>, _setVolume);
+          ExternalInterface.addCallback(<span class="string">'_setPolling'</span>, _setPolling);
+          ExternalInterface.addCallback(<span class="string">'_externalInterfaceTest'</span>, _externalInterfaceTest);
+          ExternalInterface.addCallback(<span class="string">'_disableDebug'</span>, _disableDebug);
+          ExternalInterface.addCallback(<span class="string">'_getMemoryUse'</span>, _getMemoryUse);
+          ExternalInterface.addCallback(<span class="string">'_createSound'</span>, _createSound);
+          ExternalInterface.addCallback(<span class="string">'_destroySound'</span>, _destroySound);
+          ExternalInterface.addCallback(<span class="string">'_setAutoPlay'</span>, _setAutoPlay);
+        } <span class="keyword">catch</span>(e: Error) {
+          flashDebug(<span class="string">'Fatal: ExternalInterface error: '</span> + e.toString());
+        }
+      } <span class="keyword">else</span> {
+        flashDebug(<span class="string">'Fatal: ExternalInterface (Flash &amp;lt;-&amp;gt; JS) not available'</span>);
+      };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>call after delay, to be safe (ensure callbacks are registered by the time JS is called below)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> timer: Timer = <span class="keyword">new</span> Timer(<span class="number">20</span>, <span class="number">0</span>);
+      timer.addEventListener(TimerEvent.TIMER, <span class="keyword">function</span>() : <span class="keyword">void</span> {
+        timer.reset();
+        _externalInterfaceTest(<span class="literal">true</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>timer.reset();
+flashDebug(&#39;Init OK&#39;);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      });
+      timer.start();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>delayed, see above
+_externalInterfaceTest(true);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    } <span class="comment">// SoundManager2()</span>
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">flashDebug</span> <span class="params">(txt:String)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <d>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      messages.push(txt);
+      <span class="keyword">if</span> (<span class="keyword">this</span>.flashDebugEnabled) {
+        <span class="keyword">var</span> didCreate: Boolean = <span class="literal">false</span>;
+        textStyle.font = <span class="string">'Arial'</span>;
+        textStyle.size = <span class="number">12</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>       <span class="keyword">var</span> w:Number = <span class="keyword">this</span>.stage.width?<span class="keyword">this</span>.stage.width:<span class="number">320</span>;
+       <span class="keyword">var</span> h:Number = <span class="keyword">this</span>.stage.height?<span class="keyword">this</span>.stage.height:<span class="number">240</span>;
+        <span class="keyword">if</span> (textField == <span class="literal">null</span>) {
+          didCreate = <span class="literal">true</span>;
+          textField = <span class="keyword">new</span> TextField();
+          textField.autoSize = TextFieldAutoSize.LEFT;
+          textField.x = <span class="number">0</span>;
+          textField.y = <span class="number">0</span>;
+          textField.multiline = <span class="literal">true</span>;
+          textField.textColor = <span class="number">0</span>;
+          textField.wordWrap = <span class="literal">true</span>;
+        }
+        textField.htmlText = messages.join(<span class="string">'\n'</span>);
+        textField.setTextFormat(textStyle);
+        textField.width = w;
+        textField.height = h;
+        <span class="keyword">if</span> (didCreate) {
+          <span class="keyword">this</span>.addChild(textField);
+        }
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p></d></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_setAutoPlay</span><span class="params">(sID:String, autoPlay:Boolean)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      <span class="keyword">if</span> (s) {
+        s.setAutoPlay(autoPlay);
+      }
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h2>methods</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">writeDebug</span> <span class="params">(s:String, logLevel:Number = 0)</span> <span class="type">: Boolean</span> {</span>
+      <span class="keyword">if</span> (!debugEnabled) {
+        <span class="keyword">return</span> <span class="literal">false</span>;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <d>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ExternalInterface.call(baseJSController + <span class="string">"['_writeDebug']"</span>, <span class="string">"(Flash): "</span> + s, <span class="literal">null</span>, logLevel);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p></d></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">return</span> <span class="literal">true</span>;
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_externalInterfaceTest</span><span class="params">(isFirstCall: Boolean)</span> <span class="type">: Boolean</span> {</span>
+      <span class="keyword">var</span> sandboxType:String = flash.system.Security[<span class="string">'sandboxType'</span>];
+      <span class="keyword">if</span> (!didSandboxMessage &amp;&amp; sandboxType != <span class="string">'localTrusted'</span> &amp;&amp; sandboxType != <span class="string">'remote'</span>) {
+        didSandboxMessage = <span class="literal">true</span>;
+        flashDebug(<span class="string">'&lt;br&gt;&lt;b&gt;Fatal: Security sandbox error: Got "'</span> + sandboxType + <span class="string">'", expected "remote" or "localTrusted".&lt;br&gt;Additional security permissions need to be granted.&lt;br&gt;See &lt;a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html"&gt;flash security settings panel&lt;/a&gt; for non-HTTP, eg., file:// use.&lt;/b&gt;&lt;br&gt;http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html&lt;br&gt;&lt;br&gt;You may also be able to right-click this movie and choose from the menu: &lt;br&gt;"Global Settings" -&gt; "Advanced" tab -&gt; "Trusted Location Settings"&lt;br&gt;'</span>);
+      }
+      <span class="keyword">try</span> {
+        <span class="keyword">if</span> (isFirstCall == <span class="literal">true</span>) {
+          flashDebug(<span class="string">'Testing Flash -&amp;gt; JS...'</span>);
+          ExternalInterface.call(baseJSController + <span class="string">"._externalInterfaceOK"</span>, version);
+          flashDebug(<span class="string">'Flash -&amp;gt; JS OK'</span>);
+          flashDebug(<span class="string">'Waiting for JS -&amp;gt; Flash...'</span>);
+        } <span class="keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;SM2 SWF &#39; + version + &#39; &#39; + version_as, 1);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          ExternalInterface.call(baseJSController + <span class="string">"._setSandboxType"</span>, sandboxType);
+          flashDebug(<span class="string">'JS -&amp;gt; Flash OK'</span>);
+        }
+      } <span class="keyword">catch</span>(e: Error) {
+        flashDebug(<span class="string">'Fatal: Flash &amp;lt;-&amp;gt; JS error: '</span> + e.toString());
+        writeDebug(<span class="string">'_externalInterfaceTest: Error: '</span> + e.toString(), <span class="number">2</span>);
+        <span class="keyword">if</span> (!caughtFatal) {
+          caughtFatal = <span class="literal">true</span>;
+        }
+        <span class="keyword">return</span> <span class="literal">false</span>;
+      }
+      <span class="keyword">return</span> <span class="literal">true</span>; <span class="comment">// to verify that a call from JS to here, works. (eg. JS receives "true", thus OK.)</span>
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_disableDebug</span><span class="params">()</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>prevent future debug calls from Flash going to client (maybe improve performance)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      writeDebug(<span class="string">'_disableDebug()'</span>);
+      debugEnabled = <span class="literal">false</span>;
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkLoadProgress</span><span class="params">(e: Event)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">try</span> {
+        <span class="keyword">var</span> oSound:Object = e.target;
+        <span class="keyword">var</span> bL: int = oSound.bytesLoaded;
+        <span class="keyword">var</span> bT: int = oSound.bytesTotal;
+        <span class="keyword">var</span> nD: int = oSound.length || oSound.duration || <span class="number">0</span>;
+        <span class="keyword">var</span> sMethod:String = baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._whileloading"</span>;
+        ExternalInterface.call(sMethod, bL, bT, nD);
+        <span class="keyword">if</span> (bL &amp;&amp; bT &amp;&amp; bL != oSound.lastValues.bytes) {
+          oSound.lastValues.bytes = bL;
+          ExternalInterface.call(sMethod, bL, bT, nD);
+        }
+      } <span class="keyword">catch</span>(e: Error) {
+        writeDebug(<span class="string">'checkLoadProgress(): '</span> + e.toString());
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkSoundProgress</span><span class="params">(oSound:SoundManager2_SMSound_AS3, forceCheck:Boolean = false, forceEndCheck:Boolean = false)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">var</span> bL: int = <span class="number">0</span>;
+      <span class="keyword">var</span> bT: int = <span class="number">0</span>;
+      <span class="keyword">var</span> nD: int = <span class="number">0</span>;
+      <span class="keyword">var</span> nP: int = <span class="number">0</span>;
+      <span class="keyword">var</span> bufferLength: int = <span class="number">0</span>;
+      <span class="keyword">var</span> lP:Number = <span class="number">0</span>;
+      <span class="keyword">var</span> rP:Number = <span class="number">0</span>;
+      <span class="keyword">var</span> isBuffering:Object = <span class="literal">null</span>;
+      <span class="keyword">var</span> oSoundChannel: flash.media.SoundChannel = <span class="literal">null</span>;
+      <span class="keyword">var</span> sMethod:String = <span class="literal">null</span>;
+      <span class="keyword">var</span> newPeakData: Boolean = <span class="literal">false</span>;
+      <span class="keyword">var</span> newWaveformData: Boolean = <span class="literal">false</span>;
+      <span class="keyword">var</span> newEQData: Boolean = <span class="literal">false</span>;
+      <span class="keyword">var</span> areSoundsInaccessible: Boolean = SoundMixer.areSoundsInaccessible();
+      <span class="keyword">var</span> isPlaying: Boolean = <span class="literal">true</span>; <span class="comment">// special case for NetStream when ending</span>
+      <span class="keyword">var</span> hasNew:Boolean = <span class="literal">false</span>;
+      <span class="keyword">var</span> hasNewLoaded:Boolean = <span class="literal">false</span>;
+
+      <span class="keyword">if</span> (!oSound || !oSound.useEvents || oSound.failed || !oSound.connected) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>edge cases for ignoring: if sounds are destructed within event handlers while checkProgress() is running, may be null</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">return</span>;
+      }
+
+      sMethod = baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._whileloading"</span>;
+
+      <span class="keyword">if</span> (oSound.useNetstream) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Don&#39;t do anything if there is no NetStream object yet</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (!oSound.ns) {
+          <span class="keyword">return</span>;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>stream</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        bufferLength = oSound.ns.bufferLength;
+        bL = oSound.ns.bytesLoaded;
+        bT = oSound.ns.bytesTotal;
+        nD = int(oSound.duration || <span class="number">0</span>); <span class="comment">// can sometimes be null with short MP3s? Wack.</span>
+        nP = oSound.ns.time * <span class="number">1000</span>;
+
+        <span class="keyword">if</span> (oSound.paused) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>special case: paused netStreams don&#39;t update if setPosition() is called while they are paused.
+instead, return lastValues.position which should reflect setPosition() call.
+writeDebug(&#39;paused case, setting nP of &#39;+nP+&#39; to -1&#39;);
+writeDebug(&#39;lastValues: &#39;+oSound.lastValues.position);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          nP = oSound.lastValues.position;
+        }
+
+        <span class="keyword">if</span> (nP &gt;= <span class="number">0</span> &amp;&amp; nP != oSound.lastValues.position) {
+          oSound.lastValues.position = nP;
+          hasNew = <span class="literal">true</span>;
+        }
+        <span class="keyword">if</span> (nD &gt; oSound.lastValues.duration) {
+          oSound.lastValues.duration = nD;
+          hasNew = <span class="literal">true</span>;
+        }
+        <span class="keyword">if</span> (bL &gt; oSound.lastValues.bytesLoaded) {
+          oSound.lastValues.bytesLoaded = bL;
+          hasNew = <span class="literal">true</span>;
+        }
+        <span class="keyword">if</span> (bT &gt; oSound.lastValues.bytes) {
+          oSound.lastValues.bytes = bT;
+          hasNew = <span class="literal">true</span>;
+        }
+        <span class="keyword">if</span> (bufferLength != oSound.lastValues.bufferLength) {
+          oSound.lastValues.bufferLength = bufferLength;
+          hasNew = <span class="literal">true</span>;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Don&#39;t set loaded for streams because bytesLoaded and bytesTotal are always 0
+writeDebug(&#39;ns: time/duration, bytesloaded/total: &#39;+nP+&#39;/&#39;+nD+&#39;, &#39;+bL+&#39;/&#39;+bT);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (oSound.loaded != <span class="literal">true</span> &amp;&amp; nD &gt; <span class="number">0</span> &amp;&amp; bL == bT &amp;&amp; bL != <span class="number">0</span> &amp;&amp; bT != <span class="number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>non-MP3 has loaded</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          oSound.loaded = <span class="literal">true</span>;
+          <span class="keyword">try</span> {
+            ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
+            ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._onload"</span>, oSound.duration &gt; <span class="number">0</span> ? <span class="number">1</span> : <span class="number">0</span>);
+          } <span class="keyword">catch</span>(e: Error) {
+            writeDebug(<span class="string">'_whileLoading/_onload error: '</span> + e.toString(), <span class="number">2</span>);
+          }
+        } <span class="keyword">else</span> <span class="keyword">if</span> (oSound.loaded != <span class="literal">true</span> &amp;&amp; hasNew) {
+          ExternalInterface.call(sMethod, bL, bT, nD, bufferLength);
+        }
+
+      } <span class="keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>MP3 sound</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        oSoundChannel = oSound.soundChannel;
+        bL = oSound.bytesLoaded;
+        bT = oSound.bytesTotal;
+        nD = int(oSound.length || <span class="number">0</span>); <span class="comment">// can sometimes be null with short MP3s? Wack.</span>
+        isBuffering = oSound.isBuffering;
+
+        <span class="keyword">if</span> (oSoundChannel) {
+          nP = (oSoundChannel.position || <span class="number">0</span>);
+          <span class="keyword">if</span> (oSound.lastValues.loops &gt; <span class="number">1</span> &amp;&amp; nP &gt; oSound.length) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>round down to nearest loop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="keyword">var</span> playedLoops:Number = Math.floor(nP/oSound.length);
+            nP = nP - (oSound.length*playedLoops);
+          }
+          <span class="keyword">if</span> (oSound.usePeakData) {
+            lP = int((oSoundChannel.leftPeak) * <span class="number">1000</span>) / <span class="number">1000</span>;
+            rP = int((oSoundChannel.rightPeak) * <span class="number">1000</span>) / <span class="number">1000</span>;
+          } <span class="keyword">else</span> {
+            lP = <span class="number">0</span>;
+            rP = <span class="number">0</span>;
+          }
+          } <span class="keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>stopped, not loaded or feature not used</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          nP = <span class="number">0</span>;
+        }
+
+        <span class="keyword">if</span> (forceEndCheck) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>sound finish case: Ensure position is at end (sound duration), as flash 9 does not always correctly match the two.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span> (nP &lt; nD) {
+            writeDebug(<span class="string">'correcting sound '</span> + oSound.sID + <span class="string">' end position ('</span>+nP+<span class="string">') to length: '</span>+ nD, <span class="number">2</span>);
+            nP = nD;
+          }
+        }
+
+        <span class="keyword">if</span> (nP != oSound.lastValues.position &amp;&amp; nP !== <span class="number">0</span> &amp;&amp; !oSound.didFinish) { <span class="comment">// once "completed", sound is locked via didFinish so no more position-type events fire.</span>
+          oSound.lastValues.position = nP;
+          hasNew = <span class="literal">true</span>;
+        }
+
+        <span class="keyword">if</span> (nD &gt; oSound.lastValues.duration) { <span class="comment">// original sound duration * number of sound loops</span>
+          oSound.lastValues.duration = nD;
+          hasNew = <span class="literal">true</span>;
+        }
+
+        <span class="keyword">if</span> (bL &gt; oSound.lastValues.bytesLoaded) {
+          oSound.lastValues.bytesLoaded = bL;
+          hasNew = <span class="literal">true</span>;
+        }
+
+        <span class="keyword">if</span> (bT &gt; oSound.lastValues.bytes) {
+          oSound.lastValues.bytes = bT;
+          hasNew = <span class="literal">true</span>;
+          hasNewLoaded = <span class="literal">true</span>;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>loading progress</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (hasNewLoaded) {
+          oSound.lastValues.bytes = bL;
+          ExternalInterface.call(sMethod, bL, bT, nD);
+        }
+
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>peak data</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (oSoundChannel &amp;&amp; oSound.usePeakData) {
+        <span class="keyword">if</span> (lP != oSound.lastValues.leftPeak) {
+          oSound.lastValues.leftPeak = lP;
+          newPeakData = <span class="literal">true</span>;
+        }
+        <span class="keyword">if</span> (rP != oSound.lastValues.rightPeak) {
+          oSound.lastValues.rightPeak = rP;
+          newPeakData = <span class="literal">true</span>;
+        }
+      }
+
+      <span class="keyword">var</span> newDataError:Boolean = <span class="literal">false</span>;
+      <span class="keyword">var</span> dataError:String;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>special case: Netstream may try to fire whileplaying() after finishing. check that stop hasn&#39;t fired.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      isPlaying = (oSound.didLoad &amp;&amp; !oSound.paused &amp;&amp; (!oSound.useNetstream || (oSound.useNetstream &amp;&amp; oSound.lastNetStatus != <span class="string">"NetStream.Play.Stop"</span>))); <span class="comment">// don't update if stream has ended</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>raw waveform + EQ spectrum data</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (isPlaying &amp;&amp; (oSoundChannel || oSound.useNetstream)) {
+
+        <span class="keyword">if</span> (oSound.useWaveformData) {
+          <span class="keyword">if</span> (!areSoundsInaccessible &amp;&amp; !oSound.handledDataError &amp;&amp; !oSound.ignoreDataError) {
+            <span class="keyword">try</span> {
+              oSound.getWaveformData();
+            } <span class="keyword">catch</span>(e: Error) {
+              <span class="keyword">if</span> (!oSound.handledDataError) {
+                writeDebug(<span class="string">'getWaveformData() (waveform data) '</span>+e.toString());
+              }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>oSound.useWaveformData = false;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              newDataError = <span class="literal">true</span>;
+              dataError = e.toString();
+            }
+          }
+        }
+
+        <span class="keyword">if</span> (oSound.useEQData) {
+          <span class="keyword">if</span> (!areSoundsInaccessible &amp;&amp; !oSound.handledDataError &amp;&amp; !oSound.ignoreDataError) {
+            <span class="keyword">try</span> {
+              oSound.getEQData();
+            } <span class="keyword">catch</span>(e: Error) {
+              <span class="keyword">if</span> (!oSound.handledDataError) {
+                writeDebug(<span class="string">'computeSpectrum() (EQ data) '</span>+e.toString());
+              }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>oSound.useEQData = false;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              newDataError = <span class="literal">true</span>;
+              dataError = e.toString();
+            }
+          }
+        }
+
+        <span class="keyword">if</span> (oSound.waveformDataArray != oSound.lastValues.waveformDataArray) {
+          oSound.lastValues.waveformDataArray = oSound.waveformDataArray;
+          newWaveformData = <span class="literal">true</span>;
+        }
+
+        <span class="keyword">if</span> (oSound.eqDataArray != oSound.lastValues.eqDataArray) {
+          oSound.lastValues.eqDataArray = oSound.eqDataArray;
+          newEQData = <span class="literal">true</span>;
+        }
+
+        <span class="keyword">if</span> (newDataError &amp;&amp; !oSound.handledDataError) {
+          sMethod = baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._ondataerror"</span>;
+          ExternalInterface.call(sMethod, <span class="string">'data unavailable: '</span> + dataError);
+          oSound.handledDataError = <span class="literal">true</span>;
+        }
+
+      }
+
+      <span class="keyword">if</span> (<span class="keyword">typeof</span> nP != <span class="string">'undefined'</span> &amp;&amp; (hasNew &amp;&amp; (oSound.soundChannel || oSound.useNetstream || forceCheck || forceEndCheck))) { <span class="comment">// &amp;&amp; isPlaying - removed to allow updates while paused, eg. from setPosition() calls. Also be more liberal if we're using netStream.</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>oSound.lastValues.position = nP;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        sMethod = baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._whileplaying"</span>;
+        <span class="keyword">var</span> waveDataLeft:String = (newWaveformData ? oSound.waveformDataArray.slice(<span class="number">0</span>, <span class="number">256</span>).join(<span class="string">','</span>) : <span class="literal">null</span>);
+        <span class="keyword">var</span> waveDataRight:String = (newWaveformData ? oSound.waveformDataArray.slice(<span class="number">256</span>).join(<span class="string">','</span>) : <span class="literal">null</span>);
+        <span class="keyword">var</span> eqDataLeft:String = (newEQData ? oSound.eqDataArray.slice(<span class="number">0</span>, <span class="number">256</span>).join(<span class="string">','</span>) : <span class="literal">null</span>);
+        <span class="keyword">var</span> eqDataRight:String = (newEQData ? oSound.eqDataArray.slice(<span class="number">256</span>).join(<span class="string">','</span>) : <span class="literal">null</span>);
+        ExternalInterface.call(sMethod, nP, (newPeakData ? {
+          leftPeak: lP,
+          rightPeak: rP
+        } : <span class="literal">null</span>), waveDataLeft, waveDataRight, (newEQData ? {
+          leftEQ: eqDataLeft,
+          rightEQ: eqDataRight
+        } : <span class="literal">null</span>));
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>check isBuffering</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (!oSound.useNetstream &amp;&amp; oSound.isBuffering != oSound.lastValues.isBuffering) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>property has changed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        oSound.lastValues.isBuffering = oSound.isBuffering;
+        sMethod = baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._onbufferchange"</span>;
+        ExternalInterface.call(sMethod, oSound.isBuffering ? <span class="number">1</span> : <span class="number">0</span>);
+      }
+
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkProgress</span><span class="params">()</span> <span class="type">: void</span> {</span>
+      <span class="keyword">for</span> (<span class="keyword">var</span> i: int = <span class="number">0</span>, j: int = sounds.length; i &lt; j; i++) {
+        checkSoundProgress(soundObjects[sounds[i]]);
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onLoadError</span><span class="params">(oSound:Object)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>something went wrong. 404, bad format etc.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._onload"</span>, <span class="number">0</span>);
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onLoad</span><span class="params">(e: Event)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">var</span> oSound:Object = e.target;
+      checkSoundProgress(soundObjects[oSound.sID]); <span class="comment">// ensure progress stats are up-to-date</span>
+      <span class="keyword">if</span> (!oSound.useNetstream) { <span class="comment">// FLV must also have metadata</span>
+        oSound.loaded = <span class="literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>force duration update (doesn&#39;t seem to be always accurate)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._whileloading"</span>, oSound.bytesLoaded, oSound.bytesTotal, oSound.length || oSound.duration);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>duration &gt; 0 means a valid sound was loaded.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._onload"</span>, (oSound.length || oSound.duration ? <span class="number">1</span> : <span class="number">0</span>));
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onID3</span><span class="params">(e: Event)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>--- NOTE: BUGGY (Flash 8 only? Haven&#39;t really checked 9 + 10.) ---
+TODO: Investigate holes in ID3 parsing - for some reason, Album will be populated with Date if empty and date is provided. (?)
+ID3V1 seem to parse OK, but &quot;holes&quot; / blanks in ID3V2 data seem to get messed up (eg. missing album gets filled with date.)
+iTunes issues: onID3 was not called with a test MP3 encoded with iTunes 7.01, and what appeared to be valid ID3V2 data.
+May be related to thumbnails for album art included in MP3 file by iTunes. See <a href="http://mabblog.com/blog/?p=33">http://mabblog.com/blog/?p=33</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">try</span> {
+        <span class="keyword">var</span> oSound:Object = e.target;
+
+        <span class="keyword">var</span> id3Data:Array = [];
+        <span class="keyword">var</span> id3Props:Array = [];
+        <span class="keyword">for</span> (<span class="keyword">var</span> prop:String <span class="keyword">in</span> oSound.id3) {
+          id3Props.push(prop);
+          id3Data.push(oSound.id3[prop]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;id3[&#39;+prop+&#39;]: &#39;+oSound.id3[prop]);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        }
+        ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + oSound.sID + <span class="string">"']._onid3"</span>, id3Props, id3Data);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>unhook own event handler, prevent second call (can fire twice as data is received - ID3V2 at beginning, ID3V1 at end.)
+Therefore if ID3V2 data is received, ID3V1 is ignored.
+soundObjects[oSound.sID].onID3 = null;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      } <span class="keyword">catch</span>(e: Error) {
+        writeDebug(<span class="string">'onID3(): Unable to get ID3 info for '</span> + oSound.sID + <span class="string">'.'</span>);
+      }
+      oSound.removeEventListener(Event.ID3, onID3);
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">registerOnComplete</span><span class="params">(sID:String)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">var</span> oSound: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      <span class="keyword">if</span> (oSound &amp;&amp; oSound.soundChannel) {
+        oSound.didFinish = <span class="literal">false</span>; <span class="comment">// reset this flag</span>
+        oSound.soundChannel.addEventListener(Event.SOUND_COMPLETE, <span class="keyword">function</span>() : <span class="keyword">void</span> {
+          <span class="keyword">if</span> (oSound) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>force progress check, catching special end-of-sound case where position may not match duration.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            checkSoundProgress(oSound, <span class="literal">true</span>, <span class="literal">true</span>);
+            <span class="keyword">try</span> {
+              oSound.ignoreDataError = <span class="literal">true</span>; <span class="comment">// workaround: avoid data error handling for this manual step..</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>oSound.soundChannel.stop();</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              oSound.didFinish = <span class="literal">true</span>; <span class="comment">// "lock" sound, prevent extra whileplaying() position-type updates</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>call onfinish first (with end position)...</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + sID + <span class="string">"']._onfinish"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>then reset sound so it can be played again.
+oSound.start(0, 1); // go back to 0</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            } <span class="keyword">catch</span>(e: Error) {
+              writeDebug(<span class="string">'Could not set position on '</span> + sID + <span class="string">': '</span> + e.toString());
+            }
+            oSound.ignoreDataError = <span class="literal">false</span>; <span class="comment">// ..and reset</span>
+            oSound.handledDataError = <span class="literal">false</span>; <span class="comment">// reset this flag</span>
+          } <span class="keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>safety net</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            ExternalInterface.call(baseJSObject + <span class="string">"['"</span> + sID + <span class="string">"']._onfinish"</span>);
+          }
+        });
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">doSecurityError</span><span class="params">(oSound: SoundManager2_SMSound_AS3, e: SecurityErrorEvent)</span> <span class="type">: void</span> {</span>
+      writeDebug(<span class="string">'securityError: '</span> + e.text);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>when this happens, you don&#39;t have security rights on the server containing the FLV file
+a crossdomain.xml file would fix the problem easily</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_setPosition</span><span class="params">(sID:String, nSecOffset:Number, isPaused: Boolean, allowMultiShot: Boolean)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      <span class="keyword">if</span> (!s) <span class="keyword">return</span> <span class="keyword">void</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;_setPosition()&#39;);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>stop current channel, start new one.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (s.lastValues) {
+        s.lastValues.position = nSecOffset; <span class="comment">// s.soundChannel.position;</span>
+      }
+      <span class="keyword">if</span> (s.useNetstream) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>Minimize the buffer so playback starts ASAP</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        s.ns.bufferTime = s.bufferTime;
+        writeDebug(<span class="string">'setPosition ('</span>+ sID + <span class="string">'): setting buffer to '</span>+s.ns.bufferTime+<span class="string">' secs'</span>);
+
+        nSecOffset = nSecOffset &gt; <span class="number">0</span> ? nSecOffset / <span class="number">1000</span> : <span class="number">0</span>;
+        s.ns.seek(nSecOffset);
+        checkSoundProgress(s); <span class="comment">// force UI update</span>
+      } <span class="keyword">else</span> {
+        <span class="keyword">if</span> (s.soundChannel) {
+          s.soundChannel.stop();
+        }
+        writeDebug(<span class="string">'setPosition ('</span>+ sID + <span class="string">'): '</span> + nSecOffset); <span class="comment">// +', '+(s.lastValues.loops?s.lastValues.loops:1));</span>
+        <span class="keyword">if</span> (s.lastValues.loops &gt; <span class="number">1</span> &amp;&amp; nSecOffset != <span class="number">0</span>) {
+          writeDebug(<span class="string">'Warning: Looping functionality being disabled due to Flash limitation.'</span>);
+          s.lastValues.loops = <span class="number">1</span>;
+        }
+        <span class="keyword">try</span> {
+          s.start(nSecOffset, s.lastValues.loops || <span class="number">1</span>, allowMultiShot); <span class="comment">// start playing at new position</span>
+        } <span class="keyword">catch</span>(e: Error) {
+          writeDebug(<span class="string">'Warning: Could not set position on '</span> + sID + <span class="string">': '</span> + e.toString());
+        }
+        checkSoundProgress(s); <span class="comment">// force UI update</span>
+        <span class="keyword">try</span> {
+          registerOnComplete(sID);
+        } <span class="keyword">catch</span>(e: Error) {
+          writeDebug(<span class="string">'_setPosition(): Could not register onComplete'</span>);
+        }
+        <span class="keyword">if</span> (isPaused &amp;&amp; s.soundChannel) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;_setPosition: stopping (paused) sound&#39;);
+writeDebug(&#39;last position: &#39;+s.lastValues.position+&#39; vs &#39;+s.soundChannel.position);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          s.soundChannel.stop();
+        }
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_load</span><span class="params">(sID:String, sURL:String, bStream: Boolean, bAutoPlay: Boolean, nLoops: Number, bAutoLoad: Boolean, bCheckPolicyFile: Boolean)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;_load()&#39;);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (<span class="keyword">typeof</span> bAutoPlay == <span class="string">'undefined'</span>) bAutoPlay = <span class="literal">false</span>;
+      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      <span class="keyword">if</span> (!s) <span class="keyword">return</span> <span class="keyword">void</span>;
+      <span class="keyword">var</span> didRecreate: Boolean = <span class="literal">false</span>;
+      <span class="keyword">if</span> (s.didLoad == <span class="literal">true</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>need to recreate sound</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        didRecreate = <span class="literal">true</span>;
+        writeDebug(<span class="string">'recreating sound '</span> + sID + <span class="string">' in order to load '</span> + sURL);
+        <span class="keyword">var</span> ns:Object = <span class="keyword">new</span> Object();
+        ns.sID = s.sID;
+        ns.loops = nLoops||<span class="number">1</span>;
+        ns.usePeakData = s.usePeakData;
+        ns.useWaveformData = s.useWaveformData;
+        ns.useEQData = s.useEQData;
+        ns.useNetstream = s.useNetstream;
+        ns.bufferTime = s.bufferTime;
+        ns.serverUrl = s.serverUrl;
+        ns.duration = s.duration;
+        ns.checkPolicyFile = s.checkPolicyFile;
+        ns.useEvents = <span class="literal">true</span>;
+        _destroySound(s.sID);
+        _createSound(ns.sID, sURL, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, bAutoPlay, ns.useEvents, bAutoLoad, ns.checkPolicyFile);
+        s = soundObjects[sID];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;Sound object replaced&#39;);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      }
+      checkSoundProgress(s);
+
+      <span class="keyword">if</span> (!s.didLoad) {
+        <span class="keyword">try</span> {
+          s.addEventListener(Event.ID3, onID3);
+          s.addEventListener(Event.COMPLETE, onLoad);
+        } <span class="keyword">catch</span>(e: Error) {
+          writeDebug(<span class="string">'_load(): could not assign ID3/complete event handlers'</span>);
+        }
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>don&#39;t try to load if same request already made</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      s.sURL = sURL;
+
+      <span class="keyword">try</span> {
+        <span class="keyword">if</span> (!s.useNetstream) {
+          s.addEventListener(IOErrorEvent.IO_ERROR, <span class="keyword">function</span>(e: IOErrorEvent) : <span class="keyword">void</span> {
+            s.doIOError(e);
+          });
+        }
+        s.loadSound(sURL);
+      } <span class="keyword">catch</span>(e: Error) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>oh well</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        writeDebug(<span class="string">'_load: Error loading '</span> + sURL + <span class="string">'. Flash error detail: '</span> + e.toString());
+      }
+
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_unload</span><span class="params">(sID:String)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = (soundObjects[sID] || <span class="literal">null</span>);
+      <span class="keyword">if</span> (!s) <span class="keyword">return</span> <span class="keyword">void</span>;
+      <span class="keyword">var</span> sURL:String = s.sURL; <span class="comment">// save existing sound URL for object recreation</span>
+      <span class="keyword">try</span> {
+        removeEventListener(Event.ID3, onID3);
+        removeEventListener(Event.COMPLETE, onLoad);
+      } <span class="keyword">catch</span>(e: Error) {
+        writeDebug(<span class="string">'_unload() warn: Could not remove ID3/complete events'</span>);
+      }
+      s.paused = <span class="literal">false</span>;
+      <span class="keyword">if</span> (s.soundChannel) {
+        s.soundChannel.stop();
+      }
+      <span class="keyword">try</span> {
+        <span class="keyword">if</span> (s.didLoad &amp;&amp; !s.loaded &amp;&amp; !s.useNetstream) {
+          s.close(); <span class="comment">// close stream only if still loading?</span>
+        }
+      } <span class="keyword">catch</span>(e: Error) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>stream may already have closed if sound loaded, etc.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        writeDebug(sID + <span class="string">'._unload(): Note: Unable to close stream: '</span> + e.toString());</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>oh well</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>destroy and recreate Flash sound object, try to reclaim memory
+writeDebug(&#39;sound._unload(): recreating sound &#39;+sID+&#39; to free memory&#39;);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (s.useNetstream) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;_unload(): closing netStream stuff&#39;);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">try</span> {
+          s.removeNetstreamEvents();
+          s.ns.close();
+          s.nc.close();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>s.nc = null;
+s.ns = null;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        } <span class="keyword">catch</span>(e: Error) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>oh well</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          writeDebug(<span class="string">'_unload(): caught exception during netConnection/netStream close'</span>);
+        }
+      }
+      <span class="keyword">var</span> ns:Object = <span class="keyword">new</span> Object();
+      ns.sID = s.sID;
+      ns.loops = s.loops;
+      ns.usePeakData = s.usePeakData;
+      ns.useWaveformData = s.useWaveformData;
+      ns.useEQData = s.useEQData;
+      ns.useNetstream = s.useNetstream;
+      ns.bufferTime = s.bufferTime;
+      ns.serverUrl = s.serverUrl;
+      ns.duration = s.duration;
+      ns.autoPlay = s.autoPlay;
+      ns.autoLoad = s.autoLoad;
+      ns.checkPolicyFile = s.checkPolicyFile;
+      _destroySound(s.sID);
+      _createSound(ns.sID, sURL, ns.usePeakData, ns.useWaveformData, ns.useEQData, ns.useNetstream, ns.bufferTime, ns.loops, ns.serverUrl, ns.duration, ns.autoPlay, <span class="literal">false</span>, ns.autoLoad, ns.checkPolicyFile); <span class="comment">// false: don't allow events just yet</span>
+      soundObjects[sID].connected = <span class="literal">true</span>; <span class="comment">// fake it?</span>
+      writeDebug(s.sID + <span class="string">'.unload(): ok'</span>);
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_createSound</span><span class="params">(sID:String, sURL:String, usePeakData: Boolean, useWaveformData: Boolean, useEQData: Boolean, useNetstream: Boolean, bufferTime:Number, loops:Number, serverUrl:String, duration:Number, autoPlay:Boolean, useEvents:Boolean, autoLoad:Boolean, checkPolicyFile:Boolean)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = <span class="keyword">new</span> SoundManager2_SMSound_AS3(<span class="keyword">this</span>, sID, sURL, usePeakData, useWaveformData, useEQData, useNetstream, bufferTime, serverUrl, duration, autoPlay, useEvents, autoLoad, checkPolicyFile);
+      <span class="keyword">if</span> (!soundObjects[sID]) {
+        sounds.push(sID);
+      }
+      soundObjects[sID] = s;
+      <span class="keyword">this</span>.currentObject = s;
+      s.sID = sID;
+      s.sURL = sURL;
+      s.paused = <span class="literal">false</span>;
+      s.loaded = <span class="literal">false</span>;
+      s.checkPolicyFile = checkPolicyFile;
+      s.lastValues = {
+        bytes: <span class="number">0</span>,
+        duration: <span class="number">0</span>,
+        position: <span class="number">0</span>,
+        loops: loops||<span class="number">1</span>,
+        leftPeak: <span class="number">0</span>,
+        rightPeak: <span class="number">0</span>,
+        bufferLength: <span class="number">0</span>
+      };
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_destroySound</span><span class="params">(sID:String)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>for the power of garbage collection! .. er, Greyskull!</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = (soundObjects[sID] || <span class="literal">null</span>);
+      <span class="keyword">if</span> (!s) <span class="keyword">return</span> <span class="keyword">void</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>try to unload the sound</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">for</span> (<span class="keyword">var</span> i: int = <span class="number">0</span>, j: int = sounds.length; i &lt; j; i++) {
+        <span class="keyword">if</span> (sounds[i] == sID) {
+          sounds.splice(i, <span class="number">1</span>);
+          <span class="keyword">break</span>;
+        }
+      }
+      <span class="keyword">if</span> (s.soundChannel) {
+        s.soundChannel.stop();
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <p>if is a movie, remove that as well.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (s.useNetstream) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <p>s.nc.client = null;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">try</span> {
+          s.removeNetstreamEvents();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <p>s.nc.removeEventListener(NetStatusEvent.NET_STATUS, s.doNetStatus);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        } <span class="keyword">catch</span>(e: Error) {
+          writeDebug(<span class="string">'_destroySound(): Events already removed from netStream/netConnection?'</span>);
+        }
+        <span class="keyword">if</span> (s.didLoad) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <p>TODO: figure out if stream is still open first, can&#39;t close an already-closed stream.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">try</span> {
+            s.ns.close();
+            s.nc.close();
+          } <span class="keyword">catch</span>(e: Error) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <p>oh well</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            writeDebug(<span class="string">'_destroySound(): caught exception: '</span>+e.toString());
+          }
+        }
+      } <span class="keyword">else</span> <span class="keyword">if</span> (s.didLoad) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <p>non-netstream case</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">try</span> {
+          s.close(); <span class="comment">// close stream only if still loading?</span>
+        } <span class="keyword">catch</span>(e: Error) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <p>oh well</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        }
+      }
+      s = <span class="literal">null</span>;
+      soundObjects[sID] = <span class="literal">null</span>;
+      <span class="keyword">delete</span> soundObjects[sID];
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_stop</span><span class="params">(sID:String, bStopAll: Boolean)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>stop this particular instance (or &quot;all&quot;, based on parameter)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (bStopAll) {
+        SoundMixer.stopAll();
+      } <span class="keyword">else</span> {
+        <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+        <span class="keyword">if</span> (!s) <span class="keyword">return</span> <span class="keyword">void</span>;
+        <span class="keyword">if</span> (s.useNetstream &amp;&amp; s.ns) {
+          s.ns.pause();
+        } <span class="keyword">else</span> <span class="keyword">if</span> (s.soundChannel) {
+          s.soundChannel.stop();
+        }
+        s.paused = <span class="literal">false</span>;
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_start</span><span class="params">(sID:String, nLoops: int, nMsecOffset: int, allowMultiShot: Boolean)</span> <span class="type">: Boolean</span> {</span>
+      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      <span class="keyword">var</span> result: Boolean;
+      <span class="keyword">if</span> (!s) <span class="keyword">return</span> <span class="literal">true</span>;
+      writeDebug(<span class="string">'start ('</span> + sID + <span class="string">'): '</span> + nMsecOffset + (nLoops &gt; <span class="number">1</span> ? <span class="string">', loops: '</span> + nLoops : <span class="string">''</span>));
+      s.lastValues.paused = <span class="literal">false</span>; <span class="comment">// reset pause if applicable</span>
+      s.lastValues.loops = (nLoops || <span class="number">1</span>);
+      <span class="keyword">if</span> (!s.useNetstream) {
+        s.lastValues.position = nMsecOffset;
+      }
+      s.handledDataError = <span class="literal">false</span>; <span class="comment">// reset this flag</span>
+      <span class="keyword">try</span> {
+        result = s.start(nMsecOffset, nLoops, allowMultiShot);
+      } <span class="keyword">catch</span>(e: Error) {
+        writeDebug(<span class="string">'Could not start '</span> + sID + <span class="string">': '</span> + e.toString());
+      }
+      <span class="keyword">try</span> {
+        registerOnComplete(sID);
+      } <span class="keyword">catch</span>(e: Error) {
+        writeDebug(<span class="string">'_start(): registerOnComplete failed'</span>);
+      }
+      <span class="keyword">return</span> result;
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_pause</span><span class="params">(sID:String, allowMultiShot: Boolean)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;_pause(): &#39; + sID);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> s: SoundManager2_SMSound_AS3 = soundObjects[sID];
+      <span class="keyword">if</span> (!s) <span class="keyword">return</span> <span class="keyword">void</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;s.paused: &#39;+s.paused);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (!s.paused) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <p>reference current position, stop sound</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        s.paused = <span class="literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;_pause(): position: &#39;+s.lastValues.position);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (s.useNetstream) {
+          <span class="keyword">if</span> (s.ns) {
+            s.lastValues.position = s.ns.time*<span class="number">1000</span>;
+            s.ns.pause();
+          } <span class="keyword">else</span> <span class="keyword">if</span> (s.autoPlay) {
+            s.setAutoPlay(<span class="literal">false</span>);
+          }
+        } <span class="keyword">else</span> {
+          <span class="keyword">if</span> (s.soundChannel) {
+            s.lastValues.position = s.soundChannel.position;
+            s.soundChannel.stop();
+          }
+        }
+      } <span class="keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <p>resume playing from last position
+writeDebug(&#39;resuming - playing at &#39;+s.lastValues.position+&#39;, &#39;+s.lastValues.loops+&#39; times&#39;);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        s.paused = <span class="literal">false</span>;
+        <span class="keyword">if</span> (s.useNetstream) {
+          s.ns.resume();
+        } <span class="keyword">else</span> {
+          s.start(s.lastValues.position, s.lastValues.loops, allowMultiShot);
+        }
+        <span class="keyword">try</span> {
+          registerOnComplete(sID);
+        } <span class="keyword">catch</span>(e: Error) {
+          writeDebug(<span class="string">'_pause(): registerOnComplete() failed'</span>);
+        }
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_setPan</span><span class="params">(sID:String, nPan:Number)</span> <span class="type">: void</span> {</span>
+      <span class="keyword">if</span> (soundObjects[sID]) {
+        soundObjects[sID].setPan(nPan);
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_setVolume</span><span class="params">(sID:String, nVol:Number)</span> <span class="type">: void</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <p>writeDebug(&#39;_setVolume: &#39;+nVol);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (soundObjects[sID]) {
+        soundObjects[sID].setVolume(nVol);
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_setPolling</span><span class="params">(bPolling: Boolean = false, nTimerInterval: uint = 50)</span> <span class="type">: void</span> {</span>
+      pollingEnabled = bPolling;
+      <span class="keyword">if</span> (timer == <span class="literal">null</span> &amp;&amp; pollingEnabled) {
+        flashDebug(<span class="string">'Enabling polling, '</span> + nTimerInterval + <span class="string">' ms interval'</span>);
+        timer = <span class="keyword">new</span> Timer(nTimerInterval, <span class="number">0</span>);
+        timer.addEventListener(TimerEvent.TIMER, <span class="keyword">function</span>() : <span class="keyword">void</span> {
+          checkProgress();
+        }); <span class="comment">// direct reference eg. checkProgress doesn't work? .. odd.</span>
+        timer.start();
+      } <span class="keyword">else</span> <span class="keyword">if</span> (timer &amp;&amp; !pollingEnabled) {
+        flashDebug(<span class="string">'Disabling polling'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <p>flash.utils.clearInterval(timer);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        timer.reset();
+      }
+    }
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">_getMemoryUse</span><span class="params">()</span> <span class="type">: String</span> {</span>
+      <span class="keyword">return</span> System.totalMemory.toString();
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <hr>
+<p>end methods</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <p>package</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -26,9 +26,10 @@
 
 <script type="text/javascript">
 
-soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
-
-soundManager.useFastPolling = true; // increased JS callback frequency, combined with useHighPerformance = true
+soundManager.setup({
+  // path to directory containing SM2 SWF
+  url: '../../swf/'
+});
 
 threeSixtyPlayer.config.scaleFont = (navigator.userAgent.match(/msie/i)?false:true);
 threeSixtyPlayer.config.showHMSTime = true;

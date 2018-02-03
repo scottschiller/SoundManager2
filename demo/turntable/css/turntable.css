@@ -1,0 +1,357 @@
+/**
+ * SoundManager 2: "Turntable UI" - CSS
+ * Copyright (c) 2015, Scott Schiller. All rights reserved.
+ * http://www.schillmania.com/projects/soundmanager2/
+ * Code provided under BSD license.
+ * http://schillmania.com/projects/soundmanager2/license.txt
+ */
+
+.turntable {
+ position: relative;
+}
+
+.turntable,
+.turntable img.stub {
+ width: 100%;
+ max-width: 1256px;
+ /* optional: max-width: 628px; if you want nice retina-scale graphics at full-width. */
+}
+
+.turntable .table-bg {
+ position: absolute;
+ top: 0px;
+ left: 0px;
+ width: 100%;
+ height: 100%;
+ background: transparent url(../image/tt_table.png) no-repeat 0px 0px;
+ background-size: contain;
+}
+
+.turntable .frame,
+.turntable .bd {
+ position: absolute;
+ top: 9.7%;
+ left: 5.4936%;
+ height: 82.25%;
+ width: 88.15%;
+ padding: 0.054936% 0px 0px 0.099%;
+ border-radius: 5px;
+ -webkit-background-clip: padding-box;
+ background-clip: padding-box;
+ overflow: hidden;
+}
+
+.turntable .frame {
+ /* If you want to skin the turntable body with a texture etc., apply a background image and/or color here. */
+ /*
+ background: #cdcfc7;
+ background: #a4a4a4;
+ background: #262626;
+ */
+ background: #262626;
+ /* rounding hacks */
+ padding: 1px;
+ margin-left: -1px;
+}
+
+.turntable .platter {
+ position: absolute;
+ top: 0.33%;
+ left: 5.025%;
+ width: 72.75%;
+ height: 100%;
+ background: transparent url(../image/platter.png) no-repeat 50% 50%;
+ background-size: contain;
+ border-radius: 100%;
+ overflow: hidden;
+ }
+
+.turntable .slipmat,
+.turntable .record,
+.turntable .record-grooves {
+ position: absolute;
+ top: 6.3%;
+ left: 8.35%;
+ width: 66.2%;
+ height: 87.994%;
+ border-radius: 100%;
+ overflow: hidden;
+}
+
+.turntable .label {
+ position: absolute;
+ top: 37.25%;
+ left: 31.45%;
+ width: 20%;
+ height: 26.5%;
+ background: #fff;
+ border-radius: 100%;
+}
+
+.turntable.has-artwork.hide-label-with-artwork .label {
+ display: none;
+}
+
+.turntable .slipmat {
+ background: transparent url(../image/slipmat.jpg) no-repeat 50% 50%;
+ background-size: contain;
+}
+
+.turntable.power-on.motor-on .platter,
+.turntable.power-on.motor-on .spindle,
+.turntable.power-on.motor-on .record-grooves,
+.turntable.power-on.motor-on.has-artwork .record,
+.turntable.power-on.motor-on .slipmat {
+ -webkit-transition-property: -webkit-transform;
+ -webkit-transform-origin: 50% 50%;
+ transition-property: transform;
+ transform-origin: 50% 50%;
+ -webkit-animation: spin 2.33s linear infinite;
+ animation: spin 2.33s linear infinite;
+}
+
+.turntable.power-on.motor-on .slipmat {
+ -webkit-animation-duration: 1.75s;
+ animation-duration: 1.75s;
+}
+
+.turntable .record-holder,
+.turntable .slipmat-holder {
+ position: absolute;
+ top: 0px;
+ left: 0px;
+ width: 100%;
+ height: 100%;
+ /* hide by default */
+ opacity: 0;
+ /* lazy */
+ -webkit-transition: all 0.35s;
+ transition: all 0.35s;
+ transform: scale3d(1.15,1.15,1.15);
+ transform-origin: 42% 50%;
+}
+
+.turntable.has-record .record-holder,
+.turntable.has-slipmat .slipmat-holder {
+ opacity: 1;
+ transform: scale3d(1,1,1);
+ -webkit-filter: none;
+ filter: none;
+}
+
+.turntable .record {
+ background-color: #000;
+ /* in the event artwork is applied, try to scale and center by default. */
+ /* slightly oversize to fix possible rounding errors. */
+ background-size: cover;
+ background-position: 50% 50%;
+ background-repeat: no-repeat;
+}
+
+.turntable .record-grooves {
+ background: transparent url(../image/record-grooves-1440x1440-white.png) no-repeat 50% 50%;
+ background-size: contain;
+ opacity: 0.15;
+}
+
+.turntable .spindle {
+ position: absolute;
+ left: 40.78%;
+ top: 49.45%;
+ width: 1.17%;
+ height: 1.55%;
+ background-color: rgba(0,0,0,0.65);
+ border-radius: 100%;
+ border: 1px solid rgba(0,0,0,0.15);
+ background-image: -webkit-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(128,128,128,0) 100%); /* Chrome10+,Safari5.1+ */
+ background-image: -ms-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(128,128,128,0) 100%); /* IE10+ */
+ background-image: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%,rgba(128,128,128,0) 100%); /* W3C */
+ /* fix border bleed */
+ -webkit-background-clip: padding-box;
+ background-clip: padding-box;
+}
+
+.turntable .tonearm-holder,
+.turntable .tonearm {
+ -webkit-transform-origin: 54% 27%;
+ transform-origin: 54% 27%;
+}
+
+.turntable .tonearm-holder {
+ position: absolute;
+ right: 0px;
+ top: 0px;
+ margin-top: -4%;
+ margin-right: 2.75%;
+ width: 28.55%;
+ height: 99.75%;
+}
+
+.turntable .tonearm {
+ position: absolute;
+ right: 0px;
+ top: 0px;
+ width: 100%;
+ height: 100%;
+ background: transparent url(../image/tt_arm.png) no-repeat 0px 0px;
+ background-size: contain;
+ -webkit-transition: -webkit-transform 0.1s;
+ transition: transform 0.1s;
+}
+
+.turntable.motor-on.has-record .tonearm-holder {
+ -webkit-animation: wobble 1s ease-in-out alternate infinite;
+ animation: wobble 1s ease-in-out alternate infinite;
+}
+
+.turntable .button:active {
+ transform-origin: 50% 50%;
+ transform: scale(0.975);
+ opacity: 0.9;
+}
+
+.turntable .start-stop {
+ position: absolute;
+ top: 85.85%;
+ left: 2%;
+ width: 10.58983%;
+ height: 10.65%;
+ background: transparent url(../image/tt_startstop.png) no-repeat 0px 0px;
+ background-size: contain;
+ margin: 0.175% 0px 0px -0.175%;
+ border-radius: 5px;
+}
+
+.turntable .power-light {
+ position: absolute;
+ bottom: 18.5%;
+ left: 5.75%;
+ width: 15.95%;
+ height: 17.9%;
+ background: transparent url(../image/power-light.png) no-repeat 0px 0px;
+ background-size: contain;
+ -webkit-transform: rotate(12.5deg);
+ transform: rotate(12.5deg);
+ -webkit-transform-origin: 50% 50%;
+ transform-origin: 50% 50%;
+ -webkit-transition: opacity 0.25s;
+ transition: opacity 0.25s;
+ opacity: 0;
+}
+
+.turntable.power-on .power-light {
+ opacity: 1;
+}
+
+.turntable.power-on.motor-on .power-light {
+ -webkit-animation: flicker 0.08s linear infinite;
+ animation: flicker 0.08s linear infinite;
+}
+
+.turntable .power-dial {
+ position: absolute;
+ bottom: 17.5%;
+ left: 2.75%;
+ width: 5.95%;
+ height: 7.9%;
+ -webkit-transform: rotate(0deg);
+ -webkit-transform-origin: 50% 50%;
+ -webkit-transition: transform 0.2s ease-out;
+ transform: rotate(0deg);
+ transform-origin: 50% 50%;
+ -webkit-transition: -webkit-transform 0.2s ease-out;
+ transition: transform 0.2s ease-out;
+ background: transparent url(../image/tt_powerdial.png) no-repeat 0px 0px;
+ background-size: contain;
+}
+
+.turntable.power-on .power-dial {
+ -webkit-transform: rotate(22.5deg);
+ transform: rotate(22.5deg);
+}
+
+.turntable .speed-33 {
+ position: absolute;
+ bottom: 4%;
+ left: 13.4%;
+ width: 5.12%;
+ height: 1.85%;
+ background: transparent url(../image/tt_33.png) no-repeat 0px 0px;
+ background-size: contain;
+}
+
+.turntable.power-on .speed-33.on {
+ background-image: url(../image/tt_33_on.png);
+}
+
+.turntable .speed-45 {
+ position: absolute;
+ bottom: 4%;
+ left: 19.05%;
+ width: 5.12%;
+ height: 1.85%;
+ background: transparent url(../image/tt_45.png) no-repeat 0px 0px;
+ background-size: contain;
+}
+
+.turntable.power-on .speed-45.on {
+ background-image: url(../image/tt_45_on.png);
+}
+
+.turntable .light {
+ position: absolute;
+ bottom: 2%;
+ left: 48.25%;
+ width: 21.7%;
+ height: 24.9%;
+ background: transparent url(../image/tt_lightoff.png) no-repeat 0px 0px;
+ background-size: contain;
+}
+
+.turntable .light-on {
+ position: absolute;
+ bottom: 3.15%;
+ left: 52.25%;
+ width: 18.7%;
+ height: 19.9%;
+ background: transparent url(../image/tt_lighton.png) no-repeat 0px 0px;
+ background-size: contain;
+ transform: rotate(12deg);
+ opacity: 0;
+ -webkit-transition: opacity 0.2s;
+ transition: opacity 0.2s;
+}
+
+.turntable.power-on .light-on {
+ opacity: 1;
+}
+
+@-webkit-keyframes flicker {
+ from { opacity: 0.85; }
+ to { opacity: 1; }
+}
+
+@keyframes flicker {
+ from { opacity: 0.85; }
+ to { opacity: 1; }
+}
+
+@-webkit-keyframes spin {
+ from { -webkit-transform: rotate(180deg); }
+ to { -webkit-transform: rotate(540deg); }
+}
+
+@keyframes spin {
+ from { transform: rotate(180deg); }
+ to { transform: rotate(540deg); }
+}
+
+@-webkit-keyframes wobble {
+ from { -webkit-transform: rotate(0deg); }
+ to { -webkit-transform: rotate(0.33deg); }
+}
+
+@keyframes wobble {
+ from { transform: rotate(0deg); }
+ to { transform: rotate(0.33deg); }
+}

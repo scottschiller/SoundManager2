@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8" />
+<title>SoundManager 2: Turntable UI</title>
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script src="script/turntable.js"></script>
+<script src="script/turntable-app.js"></script>
+<link rel="stylesheet" href="css/turntable.css" />
+</head>
+
+<body>
+
+<style>
+
+/* a bit of demo CSS - you don't need this. */
+
+body {
+ font-family: helvetica, arial, verdana, sans-serif;
+ font-size: 1rem;
+ font-weight: lighter;
+ color: #fff;
+ background: #393939;
+ -moz-osx-font-smoothing: grayscale;
+ -webkit-font-smoothing: antialiased;
+ /* general font niceness? */
+ font-smoothing: antialiased;
+ text-rendering: optimizeLegibility;
+ color: #ccc;
+}
+
+h1,
+h2 {
+ font-family: "Helvetica Neue", helvetica, arial, verdana, sans-serif;
+ font-weight: 100;
+}
+
+/* skin the turntable body? see turntable.css for more. */
+.turntable .frame {
+ background-color: #333;
+ background-image: url(image/textures/textured_paper.png);
+ /* scale for retina, etc. */
+ background-size: 250px 250px;
+ /* classic champagne-ish color? */
+ /* background: #abacac; */
+}
+
+div.about {
+ position: relative;
+ z-index: 2;
+ margin: 0px 0px -4% 5%;
+ color: #fff;
+}
+
+div.about h1 {
+ font-size: 3.275em;
+ margin: 0px 0px 0.1em 0px;
+}
+
+div.about h2 {
+ font-size: 2.5em;
+ margin: 0.75em 0px 0.2em 0px;
+}
+
+div.about a {
+ text-decoration: none;
+ color: #fff;
+}
+
+div.about p {
+ line-height: 1.5em;
+ margin: 0px 0px 0.25em 0px;
+}
+
+div.about p:last-of-type {
+ margin-bottom: 2em;
+}
+
+ul,
+.indent {
+ padding-left: 4em;
+}
+
+ul {
+ clear: both;
+ margin-top: 0px;
+ padding-top: 0px;
+ margin-bottom: 0px;
+ color: #999;
+}
+
+ul li {
+ line-height: 1.4em;
+}
+
+ul li a {
+ position: relative;
+ padding: 0px 3px;
+ margin: 0px -3px;
+ text-decoration: none;
+ display: inline-block;
+ border-radius: 3px;
+}
+
+b {
+ font-weight: 500;
+}
+
+code {
+ font-family: "lucida console", "courier new", monaco, monospace;
+ font-size: 1em;
+ color: #99ff99;
+}
+
+div.about p a,
+ul li a {
+ color: #99ccff;
+}
+
+div.about p a:hover,
+ul li a:hover {
+ background-color: #000;
+ color: #fff;
+ outline: 1px solid rgba(255,255,255,0.1);
+}
+
+</style>
+
+<div style="position:relative">
+
+  <div class="about">
+   
+   <h1><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager 2</a>: Turntable UI</h1>
+  
+   <p>An experimental HTML + CSS design inspired by the infamous Technics 1200 turntable.</p>
+  
+   <p>This project is a remix of <a href="http://www.schillmania.com/content/entries/2011/wheels-of-steel/" title="The Wheels Of Steel: HTML Turntables in the web browser">The Wheels Of Steel</a>, using a subset of features from the original.</p>
+  
+  </div>
+
+  <!-- start turntable: centered and scales up to a predetermined max-width (based on image size) -->
+
+  <div style="position:relative;text-align:center">
+
+    <!-- note: inline-block is just for centering -->
+
+    <div id="turntable-large" class="turntable has-slipmat" style="display:inline-block">
+
+       <div class="frame"></div>
+
+       <div class="table-bg"></div>
+
+       <!-- image that sets the base dimensions-->
+       <img src="image/tt_case_and_lighting.png" alt="" class="stub" />
+
+       <div class="bd">
+
+        <div class="platter"></div>
+        
+        <div class="slipmat-holder">
+         <div class="slipmat"></div>
+        </div>
+
+        <div class="record-holder">
+         <div class="record"></div>
+         <div class="record-grooves"></div>
+         <div class="label"></div>
+        </div>
+
+        <div class="spindle"></div>
+        <div class="power-light"></div>
+        <a href="#" class="power-dial" data-method="powerToggle"></a>
+        <a href="#" class="button start-stop" data-method="toggle"></a>
+        <a href="#" class="button speed-33 on"></a>
+        <a href="#" class="button speed-45"></a>
+        <div class="light light-on"></div>
+        <a href="#" class="button light"></a>
+        <div class="tonearm-holder">
+         <div class="tonearm"></div>
+        </div>
+       </div>
+
+    </div>
+
+  </div>
+
+  <div>
+
+  <!-- end turntable -->
+
+    <p class="indent" style="margin-top:-3%">Click a link to load it on the turntable.</p>
+
+    <ul>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/Figub%20Brazlevi%C4%8D%20-%20Bosnian%20Syndicate.mp3" data-turntable="turntable-large" data-artwork="http://freshly-ground.com/data/image/sm2/trainyards-cover-640.jpg"><b>Figub Brazlevič</b> - Bosnian Syndicate</a> (<span title="Published under a Creative Commons BY-NC-ND license">BY-CC-ND license</span>, <a href="http://figubbrazlevic.bandcamp.com/track/bosnian-syndicate">via</a>)</li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/Beckyoncé%20-%20Single%20Loser.mp3" data-turntable="turntable-large" data-artwork="http://freshly-ground.com/data/image/sm2/beckyonce.jpg">Beckyoncé - Single Loser (Put A Beck On It)</a> (<span title="Published under a Creative Commons BY-NC-SA license">BY-NC-SA license</span>, <a href="https://soundcloud.com/beckyonce/single-loser-put-a-beck-on-it" target="_blank">via</a>)</li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/Chill With Schill (Summer 2012 Session Excerpt).mp3" data-turntable="turntable-large">Chill With Schill (Summer 2012 Session Excerpt)</a></li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" data-turntable="turntable-large" data-artwork="http://freshly-ground.com/data/image/sm2/sonreal-onelongday-65.jpg">SonReal - L.A. (Prod. Injetti)</a></li>
+    </ul>
+
+    <p class="indent" style="max-width:42em">HTML <code>data</code> attributes can be used to specify which turntable to use, and an optional album artwork image. You can also skin the turntable with background images, textures and colors.</p>
+
+  </div>
+
+  <div style="clear:both;height:1em"></div>
+
+  <style>
+    /* dark wood, because why not. */
+    #turntable-1 .frame {
+      background: url(image/textures/wood_pattern_dark_color.png);
+      /* scale for retina, etc. */
+      background-size: 101px 158px;
+    }
+    #turntable-2 .frame {
+      background: url(image/textures/pinstriped_suit_vertical.png);
+      background-size: 142px 76px;
+    }
+  </style>
+
+  <!-- two turntables side-by-side -->
+
+  <div style="position:relative;float:left;display:inline-block;width:50%">
+
+    <!-- start turntable -->
+
+    <div id="turntable-1" class="turntable has-slipmat">
+
+     <div class="frame"></div>
+
+     <div class="table-bg"></div>
+
+     <!-- image that sets the base dimensions-->
+     <img src="image/tt_case_and_lighting.png" alt="" class="stub" />
+
+     <div class="bd">
+
+      <div class="platter"></div>
+      
+      <div class="slipmat-holder">
+       <div class="slipmat"></div>
+      </div>
+
+      <div class="record-holder">
+       <div class="record"></div>
+       <div class="record-grooves"></div>
+       <div class="label"></div>
+      </div>
+
+      <div class="spindle"></div>
+      <div class="power-light"></div>
+      <a href="#" class="power-dial" data-method="powerToggle"></a>
+      <a href="#" class="button start-stop" data-method="toggle"></a>
+      <a href="#" class="button speed-33 on"></a>
+      <a href="#" class="button speed-45"></a>
+      <div class="light light-on"></div>
+      <a href="#" class="button light"></a>
+      <div class="tonearm-holder">
+       <div class="tonearm"></div>
+      </div>
+     </div>
+
+    </div>
+
+    <!-- end turntable -->
+
+    <ul>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/Figub%20Brazlevi%C4%8D%20-%20Bosnian%20Syndicate.mp3" data-turntable="turntable-1" data-artwork="http://freshly-ground.com/data/image/sm2/trainyards-cover-640.jpg"><b>Figub Brazlevič</b> - Bosnian Syndicate</a> (<span title="Published under a Creative Commons BY-NC-ND license">BY-CC-ND</span>, <a href="http://figubbrazlevic.bandcamp.com/track/bosnian-syndicate" target="_blank">via</a>)</li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/Beckyoncé%20-%20Single%20Loser.mp3" data-turntable="turntable-1" data-artwork="http://freshly-ground.com/data/image/sm2/beckyonce.jpg">Beckyoncé - Single Loser (Put A Beck On It)</a> (<span title="Published under a Creative Commons BY-NC-SA license">BY-NC-SA license</span>, <a href="https://soundcloud.com/beckyonce/single-loser-put-a-beck-on-it" target="_blank">via</a>)</li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" data-turntable="turntable-1" data-artwork="http://freshly-ground.com/data/image/sm2/sonreal-onelongday-65.jpg">SonReal - L.A. (Prod. Injetti)</a></li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Everything%20I%20Am.mp3" data-artwork="http://freshly-ground.com/data/image/sm2/sonreal-everythingiam-65.jpg" data-turntable="turntable-1"><b>SonReal</b> - Everything I Am</a></li>
+    </ul>
+
+  </div>
+
+  <div style="position:relative;float:left;display:inline-block;width:50%">
+
+  <!-- start turntable -->
+
+  <div id="turntable-2" class="turntable has-slipmat has-record">
+
+    <div class="frame"></div>
+
+    <div class="table-bg"></div>
+
+    <!-- image that sets the base dimensions-->
+    <img src="image/tt_case_and_lighting.png" alt="" class="stub" />
+
+    <div class="bd">
+
+     <div class="platter"></div>
+      
+     <div class="slipmat-holder">
+      <div class="slipmat"></div>
+     </div>
+
+     <div class="record-holder">
+      <div class="record"></div>
+      <div class="record-grooves"></div>
+      <div class="label"></div>
+     </div>
+
+     <div class="spindle"></div>
+     <div class="power-light"></div>
+     <a href="#" class="power-dial" data-method="powerToggle"></a>
+     <a href="#" class="button start-stop" data-method="toggle"></a>
+     <a href="#" class="button speed-33 on"></a>
+     <a href="#" class="button speed-45"></a>
+     <div class="light light-on"></div>
+     <a href="#" class="button light"></a>
+     <div class="tonearm-holder">
+      <div class="tonearm"></div>
+     </div>
+    </div>
+
+   </div>
+
+   <!-- end turntable -->
+
+    <ul>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20LA%20%28Prod%20Chin%20Injetti%29.mp3" data-turntable="turntable-2" data-artwork="http://freshly-ground.com/data/image/sm2/sonreal-onelongday-65.jpg">SonReal - L.A. (Prod. Injetti)</a></li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Everything%20I%20Am.mp3" data-artwork="http://freshly-ground.com/data/image/sm2/sonreal-everythingiam-65.jpg" data-turntable="turntable-2"><b>SonReal</b> - Everything I Am</a></li>
+      <li><a href="http://freshly-ground.com/data/audio/sm2/SonReal%20-%20Already%20There%20Remix%20ft.%20Rich%20Kidd%2C%20Saukrates.mp3" data-turntable="turntable-2"><b>SonReal</b> - Already There Remix ft. Rich Kidd, Saukrates</a></li>
+    </ul>
+
+  </div>
+
+  <div class="about" style="clear:both;padding-top:1em;padding-bottom:2em;margin:0em 0px 0px 2.65%;max-width:41em">
+
+   <h2>JavaScript API</h2>
+   
+   <p>Refer to the <code>window.turntables</code> array, where you can call methods such as <code>turntables[0].methods.powerToggle()</code>. There is also a <code>turntablesById</code> object, where the ID is based on the HTML <code>id</code> attribute of the top-level turntable <code>&lt;div&gt;</code>.
+
+   <h2>General Disclaimer</h2>
+   
+   <p><em>This is an experimental prototype provided <b>"unsupported"</b> and <b>"as-is"</b></em>, and a million things could be added; few are planned or will be implemented. Pitch bending support would require a Web Audio API implementation, not a part of SM2 at present. See the <a href="http://www.schillmania.com/content/entries/2011/wheels-of-steel/">Wheels Of Steel</a> project for the original feature list. Percentage-based scaling in this prototype means that some elements may shift slightly, and may not always be exactly square or round etc.</p>
+
+  </div>
+
+</div>
+
+</body>
+</html>

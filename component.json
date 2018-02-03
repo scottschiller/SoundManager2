@@ -1,0 +1,20 @@
+{
+	"name": "soundmanager2",
+	"repo": "scottschiller/soundmanager2",
+	"description": "A JavaScript Sound API supporting MP3, MPEG4 and HTML5 audio + RTMP, providing reliable cross-browser/platform audio control in as little as 12 KB.",
+	"version": "V2.97a.20170601-nodebug-jsmin",
+	"keywords": [
+		"audio",
+		"soundmanager2",
+		"soundmanager"
+	],
+	"license": "BSD",
+	"scripts": [
+		"script/soundmanager2-nodebug-jsmin.js"
+	],
+	"main": "script/soundmanager2-nodebug-jsmin.js",
+	"files":[
+		"swf/soundmanager2.swf",
+		"swf/soundmanager2_flash9.swf"
+	]
+}

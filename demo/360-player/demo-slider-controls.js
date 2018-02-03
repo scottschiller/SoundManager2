@@ -1,5 +1,6 @@
 /*
    Ancient fireworks slider control code (2005)
+   Kinda/sorta refactored for SM2 360 demo
    http://schillmania.com/projects/fireworks/
    --------------------------------------------
    Not required for your use!
@@ -216,6 +217,8 @@ function Controller(o) {
 	  threeSixtyPlayer.config.eqDataLineRatio = parseInt((self.controls[3].value/100)*3*1000)/1000;
 	
 	  threeSixtyPlayer.config.eqDataDownsample = (self.controls[4].value);
+
+	  threeSixtyPlayer.config.scaleArcWidth = (self.controls[5].value/100);
 	
 	  threeSixtyPlayer.config.useEQData = (document.getElementById('disabled-1').checked?true:false);
 	
@@ -356,12 +359,14 @@ document.getElementById('config-code').style.display = 'block'; // weird Fx fix
 */
 
   setTimeout(function(){
+    // default values for controls
 	var values = [
 	  256,
 	  65,
 	  40,
 	  72,
-	  48
+	  48,
+	  100
 	];
 	for (var i=0; i<values.length; i++) {
 	  self.controls[i].setValue(values[i]); // defaults
@@ -705,7 +710,9 @@ if (window.location.toString().match(/#customize/i)) {
 if (window.location.toString().match(/hifi/i)) {
 	soundManager.onready(function(){
 		document.getElementById('hifi').style.display = 'none';
+
 		threeSixtyPlayer.config = {
+
 		  playNext: false,
 		  autoPlay: false,
 		  loadRingColor: '#ccc',
@@ -734,9 +741,10 @@ if (window.location.toString().match(/hifi/i)) {
 		  peakDataColor: '#ff33ff',
 		  peakDataOutside: true,
 		  peakDataLineRatio: 0.5,
-
+                  scaleArcWidth: 1,  // thickness factor of playback progress ring
 		  useAmplifier: true
 
 		}
+
 	});
 }
