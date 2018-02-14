@@ -66,7 +66,7 @@ function SoundManager(smURL, smID) {
 
     url: (smURL || null),             // path (directory) where SoundManager 2 SWFs exist, eg., /path/to/swfs/
     flashVersion: 8,                  // flash build to use (8 or 9.) Some API features require 9.
-    debugMode: true,                  // enable debugging output (console.log() with HTML fallback)
+    debugMode: false,                 // enable debugging output (console.log() with HTML fallback)
     debugFlash: false,                // enable debugging output inside SWF, troubleshoot Flash/browser issues
     useConsole: true,                 // use console.log() if available (otherwise, writes to #soundmanager-debug element)
     consoleOnly: true,                // if console is being used, do not create/write to #soundmanager-debug

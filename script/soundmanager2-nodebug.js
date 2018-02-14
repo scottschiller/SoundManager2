@@ -21,7 +21,7 @@ function SoundManager(smURL, smID) {
   this.setupOptions = {
     url: (smURL || null),
     flashVersion: 8,
-    debugMode: true,
+    debugMode: false,
     debugFlash: false,
     useConsole: true,
     consoleOnly: true,
