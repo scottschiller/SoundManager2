@@ -2126,7 +2126,27 @@ function SoundManager(smURL, smID) {
 
             s.setPosition(s._iO.position);
 
-            a.play();
+            var aPromise = a.play();
+            
+            if (aPromise !== undefined) {
+
+              // Convert `Promise.catch` to `Promise['catch']` to compatible with IE8 (where the catch is a preserved word)
+              aPromise.then(function() {
+                // Autoplay started!
+            
+              })['catch'](function(error) {
+                // Google Chrome autoplay policy
+                // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+                // https://www.chromium.org/audio-video/autoplay
+                // https://webrtc.org/release-notes/
+                s._onerror(error.code, error.message);
+                // Autoplay was prevented.
+            
+                // Show a "Play" button so that user can start playback.
+            
+              });
+            
+            }
 
           } else {
 
