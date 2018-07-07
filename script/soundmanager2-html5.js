@@ -96,7 +96,7 @@ function SoundManager() {
     multiShot: true,        // let sounds "restart" or layer on top of each other when played multiple times, rather than one-shot/one at a time
     multiShotEvents: false, // fire multiple sound events (currently onfinish() only) when multiShot is enabled
     position: null,         // offset (milliseconds) to seek to within loaded sound data.
-    playbackRate: 1,        // rate at which to play the sound (HTML5-only)
+    playbackRate: 1,        // rate at which to play the sound
     stream: true,           // allows playing before entire file has loaded (recommended)
     to: null,               // position to end playback within a sound (msec), default = end
     type: null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
@@ -1658,10 +1658,10 @@ function SoundManager() {
 
           originalPosition = s.position;
 
-          // act like Flash, though
+          // reset position on stop
           s.setPosition(0);
 
-          // hack: reflect old position for onstop() (also like Flash)
+          // reflect old position for onstop() (also like Flash)
           s.position = originalPosition;
 
           // html5 has no stop()
@@ -2519,8 +2519,6 @@ function SoundManager() {
 
     remove_html5_events = function() {
 
-      // Remove event listeners
-
       var f;
 
       function remove(oEvt, oFn, bCapture) {
@@ -2691,7 +2689,8 @@ function SoundManager() {
 
       var instanceOptions = s._iO;
 
-      // Safari HTML5 play() may return small -ve values when starting from position: 0, eg. -50.120396875. Unexpected/invalid per W3, I think. Normalize to 0.
+      // Safari HTML5 play() may return small -ve values when starting from position: 0, eg. -50.120396875.
+      // Unexpected/invalid per W3, I think. Normalize to 0.
       s.position = Math.max(0, nPosition);
 
       s._processOnPosition();
@@ -3405,8 +3404,8 @@ function SoundManager() {
   testHTML5 = function() {
 
     /**
-     * Internal: Iterates over audioFormats, determining support eg. audio/mp3, audio/mpeg and so on
-     * assigns results to html5[] and flash[].
+     * Internal: Iterates over audioFormats, determining support eg. audio/mp3, audio/mpeg etc.
+     * results are assigned to `soundManager.html5` object.
      */
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
