@@ -737,11 +737,7 @@ function SoundManager() {
 
     var i = 0;
 
-    if (sID instanceof String) {
-      sID = null;
-    }
-
-    if (!sID) {
+    if (sID === _undefined) {
 
       sm2._wD(sm + '.mute(): Muting all sounds');
       for (i = sm2.soundIDs.length - 1; i >= 0; i--) {
