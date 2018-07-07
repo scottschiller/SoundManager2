@@ -2695,16 +2695,9 @@ function SoundManager() {
 
       s._processOnPosition();
 
-      if (s.playState === 1) {
-
-        if (instanceOptions.whileplaying) {
-          // flash may call after actual finish
-          instanceOptions.whileplaying.apply(s);
-        }
-
+      if (s.playState === 1 && instanceOptions.whileplaying) {
+        instanceOptions.whileplaying.apply(s);
       }
-
-      return true;
 
     };
 
