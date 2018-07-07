@@ -1272,8 +1272,6 @@ function SoundManager() {
       s.readyState = 1;
       s.playState = 0;
 
-      // TODO: If switching from HTML5 -> flash (or vice versa), stop currently-playing audio.
-
       if (html5OK(instanceOptions)) {
 
         oSound = s._setup_html5(instanceOptions);
@@ -1510,8 +1508,7 @@ function SoundManager() {
       s._iO = mixin(options, s._iO);
 
       /**
-       * Preload in the event of play() with position under Flash,
-       * or from/to parameters and non-RTMP case
+       * Attempt to preload in the event of from/to parameters
        */
       if (((s._iO.from !== null && s._iO.from > 0) || s._iO.to !== null) && s.instanceCount === 0 && s.playState === 0) {
 
