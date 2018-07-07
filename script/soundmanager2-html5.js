@@ -833,7 +833,7 @@ function SoundManager() {
    * Undocumented: NOPs soundManager and all SMSound objects.
    */
 
-  this.disable = function() {
+  this.disable = function(silent) {
 
     // destroy all functions
     var i;
@@ -843,7 +843,7 @@ function SoundManager() {
 
     disabled = true;
 
-    _wDS('shutdown', 1);
+    if (!silent) _wDS('shutdown', 1);
 
     for (i = sm2.soundIDs.length - 1; i >= 0; i--) {
       disableObject(sm2.sounds[sm2.soundIDs[i]]);
@@ -1147,7 +1147,7 @@ function SoundManager() {
   this.destruct = function() {
 
     sm2._wD(sm + '.destruct()');
-    sm2.disable(true);
+    sm2.disable();
 
   };
 
@@ -3878,7 +3878,11 @@ function SoundManager() {
 
     var item, tests = [];
 
-    if (!sm2.hasHTML5) return false;
+    if (!sm2.hasHTML5) {
+      complain('SoundManager 2: No HTML5 audio support detected. :( Disabling API.');
+      sm2.disable(true);
+      return false;
+    }
 
     for (item in sm2.audioFormats) {
       if (sm2.audioFormats.hasOwnProperty(item)) {
