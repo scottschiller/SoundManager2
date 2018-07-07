@@ -3931,11 +3931,11 @@ function SoundManager() {
 
     for (item in sm2.audioFormats) {
       if (sm2.audioFormats.hasOwnProperty(item)) {
-        tests.push(item + ' = ' + sm2.html5[item] + ((!sm2.html5[item] ? ' (' + (sm2.audioFormats[item].required ? 'required, ' : '') : '')));
+        tests.push(item + (sm2.html5[item] ? ' ✓' : ' ✗') + ((!sm2.html5[item] ? ' (' + (sm2.audioFormats[item].required ? 'required, ' : '') : '')));
       }
     }
 
-    sm2._wD('SoundManager 2 HTML5 support: ' + tests.join(', '), 1);
+    sm2._wD('SoundManager 2 HTML5 support: ' + tests.join(' '), 1);
 
     // </d>
 
