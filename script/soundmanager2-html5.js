@@ -114,34 +114,28 @@ function SoundManager() {
      */
 
     mp3: {
-      type: ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust'],
-      required: true
+      type: ['audio/mpeg; codecs="mp3"', 'audio/mpeg', 'audio/mp3', 'audio/MPA', 'audio/mpa-robust']
     },
 
     mp4: {
       related: ['aac', 'm4a', 'm4b'], // additional formats under the MP4 container
-      type: ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic'],
-      required: false
+      type: ['audio/mp4; codecs="mp4a.40.2"', 'audio/aac', 'audio/x-m4a', 'audio/MP4A-LATM', 'audio/mpeg4-generic']
     },
 
     ogg: {
-      type: ['audio/ogg; codecs=vorbis'],
-      required: false
+      type: ['audio/ogg; codecs=vorbis']
     },
 
     opus: {
-      type: ['audio/ogg; codecs=opus', 'audio/opus'],
-      required: false
+      type: ['audio/ogg; codecs=opus', 'audio/opus']
     },
 
     wav: {
-      type: ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav'],
-      required: false
+      type: ['audio/wav; codecs="1"', 'audio/wav', 'audio/wave', 'audio/x-wav']
     },
 
     flac: {
-      type: ['audio/flac'],
-      required: false
+      type: ['audio/flac']
     }
 
   };
