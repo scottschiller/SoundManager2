@@ -1177,9 +1177,6 @@ function SoundManager() {
     // assign property defaults
     this.volume = this.options.volume;
 
-    // whether or not this object is using HTML5
-    this.isHTML5 = false;
-
     // internal HTML5 Audio() object reference
     this._a = null;
 
@@ -1508,7 +1505,7 @@ function SoundManager() {
         };
 
         // HTML5 needs to at least have "canplay" fired before seeking.
-        if (s.isHTML5 && !s._html5_canplay) {
+        if (!s._html5_canplay) {
 
           // this hasn't been loaded yet. load it first, and then do this again.
           sm2._wD(fN + 'Beginning load for non-zero offset case');
@@ -2456,8 +2453,6 @@ function SoundManager() {
         }
 
       }
-
-      s.isHTML5 = true;
 
       // store a ref on the track
       s._a = a;
@@ -3773,7 +3768,7 @@ function SoundManager() {
 
     for (i = sm2.soundIDs.length - 1; i >= 0; i--) {
 
-      if (sm2.sounds[sm2.soundIDs[i]].isHTML5 && sm2.sounds[sm2.soundIDs[i]]._hasTimer) {
+      if (sm2.sounds[sm2.soundIDs[i]]._hasTimer) {
         sm2.sounds[sm2.soundIDs[i]]._onTimer();
       }
 
