@@ -1194,7 +1194,7 @@ function SoundManager() {
     this._debug = function() {
 
       // <d>
-      sm2._wD(s.id + ': Merged options:', s.options);
+      sm2._wD(s.id + ' options:', s.options);
       // </d>
 
     };
@@ -2569,7 +2569,7 @@ function SoundManager() {
       s.isBuffering = (nIsBuffering === 1);
 
       if (s._iO.onbufferchange) {
-        sm2._wD(s.id + ': Buffer state change: ' + nIsBuffering);
+        sm2._wD(s.id + ': isBuffering = ' + !!nIsBuffering);
         s._iO.onbufferchange.apply(s, [nIsBuffering]);
       }
 
@@ -2592,7 +2592,7 @@ function SoundManager() {
       return true;
 
     };
-    
+
     this._onfinish = function() {
 
       // store local copy before it gets trashed...
@@ -2773,6 +2773,13 @@ function SoundManager() {
 
     // </d>
 
+    var issues = {
+      setupUndef: [],
+      setupError: []
+    };
+
+    var txt;
+
     for (i in o) {
 
       if (o.hasOwnProperty(i)) {
@@ -2798,8 +2805,8 @@ function SoundManager() {
 
           } else if (bonusOptions[i] === _undefined) {
 
-            // invalid, legacy (flash-era) or disallowed parameter. complain.
-            complain(str((sm2[i] === _undefined ? 'setupUndef' : 'setupError'), i), 2);
+            // invalid, legacy (flash-era) or disallowed parameter. note for later.
+            issues[(sm2[i] === _undefined ? 'setupUndef' : 'setupError')].push(i);
 
             result = false;
 
@@ -2824,7 +2831,7 @@ function SoundManager() {
           // recursion case, eg., { defaultOptions: { ... } }
 
           // invalid or disallowed parameter. complain.
-          complain(str((sm2[i] === _undefined ? 'setupUndef' : 'setupError'), i), 2);
+          issues[(sm2[i] === _undefined ? 'setupUndef' : 'setupError')].push(i);
 
           result = false;
 
@@ -2838,6 +2845,28 @@ function SoundManager() {
       }
 
     }
+
+    // <d>
+
+    function maybePlural(string, arr) {
+      if (string === _undefined || arr.length < 2) return string;
+      var base = 'unknown option';
+      return string.replace(base, base + 's');
+    }
+
+    if (issues.setupUndef.length) {
+      txt = str('setupUndef', issues.setupUndef.join(', '));
+      txt = maybePlural(txt, issues.setupUndef);
+      complain(txt, 2);
+    }
+
+    if (issues.setupError.length) {
+      txt = str('setupError', issues.setupError.join(', '));
+      txt = maybePlural(txt, issues.setupError);
+      complain(txt, 2);
+    }
+
+    // </d>
 
     return result;
 
@@ -3029,7 +3058,7 @@ function SoundManager() {
       var s = this._s;
 
       if (!s) return;
-      sm2._wD(s.id + ': ended');
+      sm2._wD(s.id + ': ended □');
 
       s._onfinish();
 
@@ -3080,7 +3109,7 @@ function SoundManager() {
     playing: html5_event(function() {
 
       if (!this._s) return;
-      sm2._wD(this._s.id + ': playing ' + String.fromCharCode(9835));
+      sm2._wD(this._s.id + ': playing ♫');
       // once play starts, no buffering
       this._s._onbufferchange(0);
 
@@ -3450,8 +3479,6 @@ function SoundManager() {
     needFunction: smc + 'Function object expected for %s',
     badID: 'Sound ID "%s" should be a string, starting with a non-numeric character',
     currentObj: smc + '_debug(): Current sound objects',
-    waitOnload: smc + 'Waiting for window.onload()',
-    docLoaded: smc + 'Document already loaded',
     onload: smc + 'initComplete(): calling soundManager.onload()',
     onloadOK: sm + '.onload() complete',
     didInit: smc + 'init(): Already called?',
@@ -3459,16 +3486,12 @@ function SoundManager() {
     queue: smc + 'Queueing %s handler',
     manURL: 'SMSound.load(): Using manually-assigned URL',
     onURL: sm + '.load(): current URL already assigned.',
-    gotFocus: smc + 'Got window focus.',
     setup: sm + '.setup(): allowed parameters: %s',
-    setupError: sm + '.setup(): "%s" cannot be assigned with this method.',
+    setupError: sm + '.setup(): Option "%s" cannot be assigned with this method.',
     setupUndef: sm + '.setup(): Ignoring unknown option "%s"',
-    setupLate: sm + '.setup(): html5Test property changes will not take effect until reboot().',
-    sm2Loaded: 'SoundManager 2: Ready. ' + String.fromCharCode(10003),
     reset: sm + '.reset(): Removing event callbacks',
-    mobileUA: 'Mobile UA detected, preferring HTML5 by default.',
     globalHTML5: 'Using singleton HTML5 Audio() pattern for this device.',
-    ignoreMobile: 'Ignoring mobile restrictions for this device.'
+    ignoreMobile: 'Ignoring mobile restrictions for this device.',
     support: '🔊SoundManager 2 HTML5 support:',
     noSupport: 'SoundManager 2: No HTML5 audio support detected. :( Disabling API.'
     // </d>
@@ -3491,7 +3514,7 @@ function SoundManager() {
     // first argument
     o = args.shift();
 
-    sstr = (strings && strings[o] ? strings[o] : '');
+    sstr = ((strings && strings[o]) || '');
 
     if (sstr && args && args.length) {
       for (i = 0, j = args.length; i < j; i++) {
@@ -3694,7 +3717,6 @@ function SoundManager() {
 
   };
 
-
   startTimer = function(oSound) {
 
     /**
@@ -3776,22 +3798,6 @@ function SoundManager() {
 
   };
 
-  catchError = function(options) {
-
-    options = (options !== _undefined ? options : {});
-
-    if (typeof sm2.onerror === 'function') {
-      sm2.onerror.apply(window, [{
-        type: (options.type !== _undefined ? options.type : null)
-      }]);
-    }
-
-    if (options.fatal !== _undefined && options.fatal) {
-      sm2.disable();
-    }
-
-  };
-
   /**
    * Private initialization helpers
    * ------------------------------
@@ -3802,12 +3808,11 @@ function SoundManager() {
     if (didInit) return false;
 
     // all good.
-    _wDS('sm2Loaded', 1);
     didInit = true;
 
     processOnEvents();
 
-    // call user-defined "onload", scoped to window
+    // legacy, direct-assignment method: call user-defined "onload", scoped to window
     if (typeof sm2.onload === 'function') {
       _wDS('onload', 1);
       sm2.onload.apply(window);
