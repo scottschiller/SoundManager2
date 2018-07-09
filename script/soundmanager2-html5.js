@@ -162,14 +162,9 @@ function SoundManager() {
   this.filePattern = new RegExp(''); // legacy
 
   // support indicators, set at init (mostly legacy flash backcompat stuff)
-
-  this.features = {
-    buffering: false,
-    peakData: false,
-    waveformData: false,
-    eqData: false,
-    movieStar: false
-  };
+  // previously: `buffering`, `peakData`, `waveformData`, `eqData`, `movieStar`
+  // any checks from legacy code will now return undefined, false-y.
+  this.features = {};
 
   /**
    * format support
