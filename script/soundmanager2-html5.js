@@ -2328,9 +2328,8 @@ function SoundManager() {
 
     this._get_html5_duration = function() {
 
-      var instanceOptions = s._iO,
-          // if audio object exists, use its duration - else, instance option duration (if provided - it's a hack, really, and should be retired) OR null
-          d = (s._a && s._a.duration ? s._a.duration * msecScale : (instanceOptions && instanceOptions.duration ? instanceOptions.duration : null)),
+      // if audio object exists, use its duration - else, use current duration on object if known.
+      var d = (s._a && s._a.duration ? s._a.duration * msecScale : s.duration || null),
           result = (d && !isNaN(d) && d !== Infinity ? d : null);
 
       return result;
