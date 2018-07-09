@@ -183,8 +183,8 @@ function SoundManager() {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, on_queue = [], debugTS, didInit = false, disabled = false, _wDS, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, setVersionInfo, strings, domContentLoaded, winOnLoad, didDCLoaded, catchError, debugLevels = ['log', 'info', 'warn', 'error'], disableObject, str, complain, idCheck, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
-  html5OK, html5CanPlay, html5ErrorCodes, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, html5_events, idCounter = 0, didSetup, msecScale = 1000,
+  sm2 = this, globalHTML5Audio = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', ua = navigator.userAgent, wl = window.location.href.toString(), doNothing, setProperties, init, on_queue = [], debugTS, didInit = false, disabled = false, _wDS, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, setVersionInfo, strings, debugLevels = ['log', 'info', 'warn', 'error'], disableObject, str, complain, idCheck, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
+  html5OK, html5CanPlay, html5ErrorCodes, html5Ext, html5Unload, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, html5_events, idCounter = 0, didSetup, msecScale = 1000,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i),
   isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)),
   isOpera = (ua.match(/opera/i)),
@@ -1082,7 +1082,7 @@ function SoundManager() {
       sm2.sounds[sm2.soundIDs[i]].destruct();
     }
 
-    sm2.enabled = didDCLoaded = didInit = disabled = useGlobalHTML5Audio = false;
+    sm2.enabled = didInit = disabled = useGlobalHTML5Audio = false;
 
     sm2.soundIDs = [];
     sm2.sounds = {};
@@ -1133,7 +1133,7 @@ function SoundManager() {
 
   this.beginDelayedInit = function() {
 
-    domContentLoaded();
+    init();
 
   };
 
@@ -3480,6 +3480,8 @@ function SoundManager() {
     mobileUA: 'Mobile UA detected, preferring HTML5 by default.',
     globalHTML5: 'Using singleton HTML5 Audio() pattern for this device.',
     ignoreMobile: 'Ignoring mobile restrictions for this device.'
+    support: '🔊SoundManager 2 HTML5 support:',
+    noSupport: 'SoundManager 2: No HTML5 audio support detected. :( Disabling API.'
     // </d>
 
   };
@@ -3861,52 +3863,15 @@ function SoundManager() {
 
   };
 
-
   init = function() {
 
     // called after onload()
 
+    // do this work only once.
     if (didInit) {
       _wDS('didInit');
       return false;
     }
-
-    // <d>
-
-    var item, tests = [];
-
-    if (!sm2.hasHTML5) {
-      complain('SoundManager 2: No HTML5 audio support detected. :( Disabling API.');
-      sm2.disable(true);
-      return false;
-    }
-
-    for (item in sm2.audioFormats) {
-      if (sm2.audioFormats.hasOwnProperty(item)) {
-        tests.push(item + (sm2.html5[item] ? ' ✓' : ' ✗') + ((!sm2.html5[item] ? (sm2.audioFormats[item].required ? ' (required) ' : '') : '')));
-      }
-    }
-
-    sm2._wD('SoundManager 2 HTML5 support: ' + tests.join(' '), 1);
-
-    // </d>
-
-    if (!didInit) {
-      // we don't need no steenking flash!
-      event.remove(window, 'load', sm2.beginDelayedInit);
-      sm2.enabled = true;
-      initComplete();
-    }
-
-    return true;
-
-  };
-
-  domContentLoaded = function() {
-
-    if (didDCLoaded) return;
-
-    didDCLoaded = true;
 
     // allow force of debug mode via URL
     // <d>
@@ -3920,56 +3885,54 @@ function SoundManager() {
 
     testHTML5();
 
-    if (doc.removeEventListener) {
-      doc.removeEventListener('DOMContentLoaded', domContentLoaded, false);
-    }
-
     // 100% HTML5 mode
     setVersionInfo();
-    init();
 
-  };
+    if (!sm2.hasHTML5) {
+      complain(strings.noSupport);
+      sm2.disable(true);
+      return false;
+    }
 
-  domContentLoadedIE = function() {
+    // <d>
 
-    if (doc.readyState === 'complete') {
-      domContentLoaded();
-      doc.detachEvent('onreadystatechange', domContentLoadedIE);
+    var item, formats = [], tests = [], allOK = true;
+
+    for (item in sm2.audioFormats) {
+      if (sm2.audioFormats.hasOwnProperty(item)) {
+        if (!sm2.html5[item]) {
+          allOK = false;
+        }
+        formats.push(item);
+        tests.push(item + (sm2.html5[item] ? ' ✅' : ' ⛔️'));
+      }
+    }
+
+    if (allOK) {
+      sm2._wD(strings.support + ' ' + formats.join(', ') + ' 💯👌', 1);
+    } else {
+      complain(strings.support + ' ' + tests.join(' · ') + ' - likely browser/OS limitation. 😒', 1);
+    }
+
+    // </d>
+
+    if (!didInit) {
+      // we don't need no steenking flash!
+      sm2.enabled = true;
+      initComplete();
     }
 
     return true;
 
   };
 
-  winOnLoad = function() {
-
-    // catch case where DOMContentLoaded has been sent, but we're still in doc.readyState = 'interactive'
-    domContentLoaded();
-
-    event.remove(window, 'load', winOnLoad);
-
-  };
-
-  event.add(window, 'load', winOnLoad);
-
-  if (doc.addEventListener) {
-
-    doc.addEventListener('DOMContentLoaded', domContentLoaded, false);
-
-  } else if (doc.attachEvent) {
-
-    doc.attachEvent('onreadystatechange', domContentLoadedIE);
-
-  } else {
-
-    // no add/attachevent support; perhaps a browser from the stone age (IE 5, Netscape 4.7 etc.)
-    debugTS('onload', false);
-    catchError({
-      type: 'NO_DOM2_EVENTS',
-      fatal: true
-    });
-
+  function domContentLoaded() {
+    event.remove(document, 'DOMContentLoaded', init);
+    init();
   }
+
+  // wait for DOMContentLoaded to start.
+  event.add(document, 'DOMContentLoaded', domContentLoaded);
 
 } // SoundManager()
 
