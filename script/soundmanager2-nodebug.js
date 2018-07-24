@@ -1746,6 +1746,9 @@ function SoundManager(smURL, smID) {
     loadstart: html5_event(function() {
       this._s._onbufferchange(1);
     }),
+    pause: html5_event(function() {
+      sm2.pause(this._s.id);
+    }),
     play: html5_event(function() {
       this._s._onbufferchange(0);
     }),

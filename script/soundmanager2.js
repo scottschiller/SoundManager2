@@ -4023,6 +4023,11 @@ function SoundManager(smURL, smID) {
 
     }),
 
+    pause: html5_event(function() {
+      // for the case of being paused by external
+      sm2.pause(this._s.id);
+    }),
+
     play: html5_event(function() {
 
       // sm2._wD(this._s.id + ': play()');
