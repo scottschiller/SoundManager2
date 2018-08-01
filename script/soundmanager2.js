@@ -2320,6 +2320,8 @@ function SoundManager(smURL, smID) {
 
       if (s.isHTML5) {
         try {
+          s._iO.defaultPlaybackRate = normalizedRate;
+          s._a.defaultPlaybackRate = normalizedRate;
           s._iO.playbackRate = normalizedRate;
           s._a.playbackRate = normalizedRate;
         } catch(e) {
