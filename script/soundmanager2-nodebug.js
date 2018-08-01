@@ -959,6 +959,8 @@ function SoundManager(smURL, smID) {
       var normalizedRate = Math.max(0.5, Math.min(4, playbackRate));
       if (s.isHTML5) {
         try {
+          s._iO.defaultPlaybackRate = normalizedRate;
+          s._a.defaultPlaybackRate = normalizedRate;
           s._iO.playbackRate = normalizedRate;
           s._a.playbackRate = normalizedRate;
         } catch(e) {
