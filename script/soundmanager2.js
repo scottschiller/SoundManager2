@@ -174,7 +174,8 @@ function SoundManager() {
    */
 
   this.html5 = {
-    usingFlash: false // legacy: indicated if/when flash fallback was active, e.g., for MP3 support.
+    // legacy: indicated if/when flash fallback was active, e.g., for MP3 support.
+    // usingFlash: false
   };
 
   /**
