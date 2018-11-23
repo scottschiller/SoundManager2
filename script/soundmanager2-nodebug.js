@@ -64,6 +64,7 @@ function SoundManager(smURL, smID) {
     pan: 0,
     playbackRate: 1,
     stream: true,
+    title: '',
     to: null,
     type: null,
     usePolicyFile: false,
@@ -1332,6 +1333,7 @@ function SoundManager(smURL, smID) {
         } else {
           s._a = (isOpera && opera.version() < 10 ? new Audio(null) : new Audio());
         }
+        s._a.title = instanceOptions.title;
         a = s._a;
         a._called_load = false;
         if (useGlobalHTML5Audio) {
