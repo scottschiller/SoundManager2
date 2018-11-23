@@ -3081,8 +3081,7 @@ function SoundManager() {
 
       sm2._wD(s.id + ': loadeddata');
 
-      // safari seems to nicely report progress events, eventually totalling 100%
-      if (!s._loaded && !isSafari) {
+      if (!s._loaded) {
         s.duration = s._get_html5_duration();
       }
 
