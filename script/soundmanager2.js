@@ -2542,11 +2542,10 @@ function SoundManager() {
      * ------------------------------
      */
 
-    this._onload = function(nSuccess) {
+    this._onload = function(ok) {
 
       var fN,
-          // check for duration to prevent false positives from flash 8 when loading from cache.
-          loadOK = !!nSuccess;
+          loadOK = !!ok;
 
       // <d>
       fN = s.id + ': ';
