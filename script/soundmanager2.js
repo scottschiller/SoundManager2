@@ -3091,13 +3091,6 @@ function SoundManager() {
 
     }),
 
-    loadedmetadata: html5_event(function() {
-
-      if (!this._s) return;
-      sm2._wD(this._s.id + ': loadedmetadata');
-
-    }),
-
     loadstart: html5_event(function() {
 
       var s = this._s;
@@ -3227,8 +3220,6 @@ function SoundManager() {
     waiting: html5_event(function() {
 
       var s = this._s;
-      if (!s) return;
-
       if (!s) return;
 
       // see also: seeking
