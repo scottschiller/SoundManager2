@@ -2256,7 +2256,11 @@ function SoundManager() {
       s.muted = false;
       s.paused = false;
 
+      s.playState = 0;
+      s.position = null;
+
       // legacy Flash bits: eqData, peakData, waveformData, id3
+      // these are not used in the HTML5-only version, but are retained for backward compatibility.
       s.eqData = [];
       s.eqData.left = [];
       s.eqData.right = [];
@@ -2270,9 +2274,6 @@ function SoundManager() {
         left: [],
         right: []
       };
-
-      s.playState = 0;
-      s.position = null;
 
       s.id3 = {};
 
