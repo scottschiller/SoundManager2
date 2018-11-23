@@ -144,6 +144,8 @@ function SoundManager() {
 
   };
 
+  // a quick way to enable SM2's debug mode, more logging.
+
   this.debugURLParam = /([#?&])debug=1/i;
 
   // dynamic attributes
@@ -175,7 +177,7 @@ function SoundManager() {
    */
 
   this.html5 = {
-    usingFlash: false // legacy: set if/when flash fallback is needed
+    usingFlash: false // legacy: indicated if/when flash fallback was active, e.g., for MP3 support.
   };
 
   /**
@@ -234,7 +236,7 @@ function SoundManager() {
    * Configures top-level soundManager properties.
    *
    * @param {object} options Option parameters, eg. soundManager.setup({debugMode: true, ignoreMobileRestrictions: true});
-   * onready and ontimeout are also accepted parameters. call soundManager.setup() to see the full list.
+   * `onready` and `ontimeout` are also accepted parameters. call soundManager.setup() to see the full list.
    */
 
   this.setup = function(options) {
@@ -679,6 +681,8 @@ function SoundManager() {
 
   /**
    * Calls the setPan() method of a SMSound object by ID.
+   * Note: This was originally a flash-only method. Native HTML5 Audio() does not implement panning.
+   * Web Audio API supports panning, but is not implemented in SM2 (that's another whole can of worms.)
    *
    * @param {string} sID The ID of the sound
    * @param {number} nPan The pan value (-100 to 100)
@@ -704,9 +708,9 @@ function SoundManager() {
 
   this.setVolume = function(sID, nVol) {
 
-    // setVolume(50) function overloading case - apply to all sounds
-
     var i, j;
+
+    // setVolume(50) function overloading case - apply to all sounds
 
     if (sID !== _undefined && !isNaN(sID) && nVol === _undefined) {
       for (i = 0, j = sm2.soundIDs.length; i < j; i++) {
