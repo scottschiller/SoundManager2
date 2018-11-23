@@ -3101,6 +3101,18 @@ function SoundManager() {
 
     }),
 
+    pause: html5_event(function() {
+
+      var s = this._s;
+      if (!s) return;
+      sm2._wD(this._s.id + ': HTML5 pause');
+      // a device may forcefully pause this sound, e.g., device sleep or playing audio elsewhere.
+      // update SM2 state and fire events accordingly.
+      // if paused by user interaction, this should cause no ill effect.
+      s.pause();
+
+    }),
+
     play: html5_event(function() {
 
       if (!this._s) return;
