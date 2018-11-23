@@ -3061,7 +3061,7 @@ function SoundManager() {
       var s = this._s;
 
       if (!s) return;
-      sm2._wD(s.id + ': ended □');
+      sm2._wD(s.id + ': ended');
 
       s._onfinish();
 
@@ -3915,7 +3915,7 @@ function SoundManager() {
     }
 
     if (allOK) {
-      sm2._wD(strings.support + ' ' + formats.join(', ') + ' 💯👌', 1);
+      sm2._wD(strings.support + ' ' + formats.join(', ') + ' 💯✅', 1);
     } else {
       complain(strings.support + ' ' + tests.join(' · ') + ' - likely browser/OS limitation. 😒', 1);
     }
