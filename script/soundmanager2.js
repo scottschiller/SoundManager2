@@ -63,7 +63,6 @@ function SoundManager() {
   this.setupOptions = {
 
     debugMode: true,                  // enable debugging output (console.log() with HTML fallback)
-    waitForWindowLoad: false,         // force SM2 to wait for window.onload() before trying to call soundManager.onload()
     html5PollingInterval: null,       // msec affecting whileplaying() for HTML5 audio, excluding mobile devices. If null, native HTML5 update events are used.
     forceUseGlobalHTML5Audio: false,  // if true, a single Audio() object is used for all sounds - and only one can play at a time.
     ignoreMobileRestrictions: false,  // if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS > 7 and WebViews may allow multiple Audio() instances.
@@ -184,7 +183,7 @@ function SoundManager() {
    */
 
   var SMSound,
-  sm2 = this, globalHTML5Audio = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, on_queue = [], debugTS, didInit = false, disabled = false, _wDS, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, initUserOnload, setVersionInfo, strings, domContentLoaded, winOnLoad, didDCLoaded, catchError, debugLevels = ['log', 'info', 'warn', 'error'], disableObject, str, complain, idCheck, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
+  sm2 = this, globalHTML5Audio = null, sm = 'soundManager', smc = sm + ': ', h5 = 'HTML5::', ua = navigator.userAgent, wl = window.location.href.toString(), doc = document, doNothing, setProperties, init, on_queue = [], debugTS, didInit = false, disabled = false, _wDS, initComplete, mixin, assign, extraOptions, addOnEvent, processOnEvents, setVersionInfo, strings, domContentLoaded, winOnLoad, didDCLoaded, catchError, debugLevels = ['log', 'info', 'warn', 'error'], disableObject, str, complain, idCheck, startTimer, stopTimer, timerExecute, h5TimerCount = 0, h5IntervalTimer = null, parseURL, messages = [],
   html5OK, html5CanPlay, html5ErrorCodes, html5Ext, html5Unload, domContentLoadedIE, testHTML5, event, slice = Array.prototype.slice, useGlobalHTML5Audio = false, lastGlobalHTML5URL, html5_events, idCounter = 0, didSetup, msecScale = 1000,
   is_iDevice = ua.match(/(ipad|iphone|ipod)/i), isAndroid = ua.match(/android/i),
   isSafari = (ua.match(/safari/i) && !ua.match(/chrome/i)),
@@ -854,8 +853,6 @@ function SoundManager() {
 
     // fire "complete", despite fail
     initComplete();
-
-    event.remove(window, 'load', initUserOnload);
 
     return true;
 
@@ -3692,28 +3689,6 @@ function SoundManager() {
 
   };
 
-  initUserOnload = function() {
-
-    window.setTimeout(function() {
-
-      processOnEvents();
-
-      // call user-defined "onload", scoped to window
-
-      if (typeof sm2.onload === 'function') {
-        _wDS('onload', 1);
-        sm2.onload.apply(window);
-        _wDS('onloadOK', 1);
-      }
-
-      if (sm2.waitForWindowLoad) {
-        event.add(window, 'load', initUserOnload);
-      }
-
-    }, 1);
-
-  };
-
   parseURL = function(url) {
 
     /**
@@ -3874,7 +3849,16 @@ function SoundManager() {
     // all good.
     _wDS('sm2Loaded', 1);
     didInit = true;
-    initUserOnload();
+
+    processOnEvents();
+
+    // call user-defined "onload", scoped to window
+    if (typeof sm2.onload === 'function') {
+      _wDS('onload', 1);
+      sm2.onload.apply(window);
+      _wDS('onloadOK', 1);
+    }
+
     debugTS('onload', true);
     return true;
 
