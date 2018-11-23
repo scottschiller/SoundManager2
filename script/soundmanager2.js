@@ -66,7 +66,7 @@ function SoundManager() {
     html5PollingInterval: null,       // msec affecting whileplaying() for HTML5 audio, excluding mobile devices. If null, native HTML5 update events are used.
     forceUseGlobalHTML5Audio: false,  // if true, a single Audio() object is used for all sounds - and only one can play at a time.
     ignoreMobileRestrictions: false,  // if true, SM2 will not apply global HTML5 audio rules to mobile UAs. iOS > 7 and WebViews may allow multiple Audio() instances.
-    html5Test: /^(probably|maybe)$/i, // HTML5 Audio() format support test. Use /^probably$/i; if you want to be more conservative.
+    html5Test: /^(probably|maybe)$/i, // HTML5 Audio().canPlayType() format support test. Use /^probably$/i; if you want to be more conservative.
     idPrefix: 'sound'                 // if an id is not provided to createSound(), this prefix is used for generated IDs - 'sound0', 'sound1' etc.
 
   };
@@ -107,8 +107,10 @@ function SoundManager() {
   this.audioFormats = {
 
     /**
-     * determines HTML5 support.
-     * if no support for a "required" format, SM2 will fail to start.
+     * known popular file types, and associated MIME type strings for HTML5 support.
+     * the MIME is a form of file type and optional codec descriptor.
+     * variants are provided in the hope of a "probably" from `Audio().canPlayType()`.
+     * this is the API which checks the OS for codec support. "probably" is the best-case scenario. :D
      */
 
     mp3: {
