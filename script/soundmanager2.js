@@ -3099,13 +3099,6 @@ function SoundManager() {
 
     }),
 
-    loadedmetadata: html5_event(function() {
-
-      if (!this._s) return;
-      sm2._wD(this._s.id + ': loadedmetadata');
-
-    }),
-
     loadstart: html5_event(function() {
 
       if (!this._s) return;
