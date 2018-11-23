@@ -3512,7 +3512,7 @@ function SoundManager() {
     gotFocus: smc + 'Got window focus.',
     setup: sm + '.setup(): allowed parameters: %s',
     setupError: sm + '.setup(): "%s" cannot be assigned with this method.',
-    setupUndef: sm + '.setup(): Could not find option "%s"',
+    setupUndef: sm + '.setup(): Unknown option "%s"',
     setupLate: sm + '.setup(): html5Test property changes will not take effect until reboot().',
     sm2Loaded: 'SoundManager 2: Ready. ' + String.fromCharCode(10003),
     reset: sm + '.reset(): Removing event callbacks',
