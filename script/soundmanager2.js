@@ -98,7 +98,7 @@ function SoundManager() {
     position: null,         // offset (milliseconds) to seek to within loaded sound data.
     playbackRate: 1,        // rate at which to play the sound
     stream: true,           // allows playing before entire file has loaded (recommended)
-    title: '',              // wordings shown in iOS lock screen
+    title: '',              // shown on iOS lock screen, perhaps others
     to: null,               // position to end playback within a sound (msec), default = end
     type: null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     volume: 100             // self-explanatory. 0-100, the latter being the max.
@@ -2441,7 +2441,7 @@ function SoundManager() {
 
         }
 
-        // set the title of the audio
+        // Audio() title is reflected in the lock screen on iOS, maybe others.
         s._a.title = instanceOptions.title;
 
         // assign local reference
