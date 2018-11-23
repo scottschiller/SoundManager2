@@ -98,6 +98,7 @@ function SoundManager() {
     position: null,         // offset (milliseconds) to seek to within loaded sound data.
     playbackRate: 1,        // rate at which to play the sound
     stream: true,           // allows playing before entire file has loaded (recommended)
+    title: '',              // wordings shown in iOS lock screen
     to: null,               // position to end playback within a sound (msec), default = end
     type: null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     volume: 100             // self-explanatory. 0-100, the latter being the max.
@@ -2440,6 +2441,9 @@ function SoundManager() {
 
         }
 
+        // set the title of the audio
+        s._a.title = instanceOptions.title;
+
         // assign local reference
         a = s._a;
 
@@ -3087,18 +3091,27 @@ function SoundManager() {
 
     }),
 
-    loadstart: html5_event(function() {
+    loadedmetadata: html5_event(function() {
 
       if (!this._s) return;
-      sm2._wD(this._s.id + ': loadstart');
+      sm2._wD(this._s.id + ': loadedmetadata');
+
+    }),
+
+    loadstart: html5_event(function() {
+
+      var s = this._s;
+      if (!s) return;
+      sm2._wD(s.id + ': loadstart');
       // assume buffering at first
-      this._s._onbufferchange(1);
+      s._onbufferchange(1);
 
     }),
 
     play: html5_event(function() {
 
       if (!this._s) return;
+      // sm2._wD(this._s.id + ': play()');
       // once play starts, no buffering
       this._s._onbufferchange(0);
 
@@ -3118,7 +3131,6 @@ function SoundManager() {
       // note: can fire repeatedly after "loaded" event, due to use of HTTP range/partials
 
       if (!this._s) return;
-
       var s = this._s,
           i, j, progStr, buffered = 0,
           isProgress = (e.type === 'progress'),
@@ -3191,9 +3203,7 @@ function SoundManager() {
 
       // download paused/stopped, may have finished (eg. onload)
       var s = this._s;
-
       if (!s) return;
-
       sm2._wD(this._s.id + ': suspend');
       html5_events.progress.call(this, e);
       s._onsuspend();
@@ -3217,6 +3227,7 @@ function SoundManager() {
     waiting: html5_event(function() {
 
       var s = this._s;
+      if (!s) return;
 
       if (!s) return;
 
