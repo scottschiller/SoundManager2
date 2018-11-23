@@ -79,7 +79,7 @@ function SoundManager() {
      */
 
     autoLoad: false,        // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
-    autoPlay: false,        // enable playing of file as soon as possible (much faster if "stream" is true)
+    autoPlay: false,        // WARNING: legacy, don't use. Blocked by modern OSes and mobile devices. Here be dragons.
     from: null,             // position to start playback within a sound (msec), default = beginning
     loops: 1,               // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >0)
     onid3: null,            // callback function for "ID3 data is added/available"
@@ -97,7 +97,6 @@ function SoundManager() {
     multiShotEvents: false, // fire multiple sound events (currently onfinish() only) when multiShot is enabled
     position: null,         // offset (milliseconds) to seek to within loaded sound data.
     playbackRate: 1,        // rate at which to play the sound
-    stream: true,           // allows playing before entire file has loaded (recommended)
     title: '',              // shown on iOS lock screen, perhaps others
     to: null,               // position to end playback within a sound (msec), default = end
     type: null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
@@ -1472,18 +1471,8 @@ function SoundManager() {
 
       }
 
-      /**
-       * Streams will pause when their buffer is full if they are being loaded.
-       * In this case paused is true, but the song hasn't started playing yet.
-       * If we just call resume() the onplay() callback will never be called.
-       * So only call resume() if the position is > 0.
-       * Another reason is because options like volume won't have been applied yet.
-       * For normal sounds, just resume.
-       */
+      if (s.paused && s.position >= 0) {
 
-      if (s.paused && s.position >= 0 && (!s._iO.serverURL || s.position > 0)) {
-
-        // https://gist.github.com/37b17df75cc4d7a90bf6
         sm2._wD(fN + 'Resuming from paused state', 1);
         s.resume();
 
