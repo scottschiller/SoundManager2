@@ -1104,11 +1104,10 @@ function SoundManager() {
       on_queue = [];
     }
 
-    // <d>
     if (!excludeInit) {
       sm2._wD(sm + ': Rebooting...');
+      sm2.beginDelayedInit();
     }
-    // </d>
 
     return sm2;
 
