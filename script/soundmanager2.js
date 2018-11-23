@@ -2606,25 +2606,7 @@ function SoundManager() {
       return true;
 
     };
-
-    /**
-     * flash 9/movieStar + RTMP-only method, should fire only once at most
-     * at this point we just recreate failed sounds rather than trying to reconnect
-     */
-
-    this._onfailure = function(msg, level, code) {
-
-      s.failures++;
-      sm2._wD(s.id + ': Failure (' + s.failures + '): ' + msg);
-
-      if (s._iO.onfailure && s.failures === 1) {
-        s._iO.onfailure(msg, level, code);
-      } else {
-        sm2._wD(s.id + ': Ignoring failure');
-      }
-
-    };
-
+    
     this._onfinish = function() {
 
       // store local copy before it gets trashed...
