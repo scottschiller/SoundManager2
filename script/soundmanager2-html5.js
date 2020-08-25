@@ -79,7 +79,7 @@ function SoundManager() {
      */
 
     autoLoad: false,        // enable automatic loading (otherwise .load() will be called on demand with .play(), the latter being nicer on bandwidth - if you want to .load yourself, you also can)
-    autoPlay: false,        // WARNING: legacy, don't use. Blocked by modern OSes and mobile devices. Here be dragons.
+    autoPlay: false,        // enable playing of file as soon as possible (much faster if "stream" is true)
     from: null,             // position to start playback within a sound (msec), default = beginning
     loops: 1,               // how many times to repeat the sound (position will wrap around to 0, setPosition() will break out of loop when >0)
     onid3: null,            // callback function for "ID3 data is added/available"
@@ -97,7 +97,7 @@ function SoundManager() {
     multiShotEvents: false, // fire multiple sound events (currently onfinish() only) when multiShot is enabled
     position: null,         // offset (milliseconds) to seek to within loaded sound data.
     playbackRate: 1,        // rate at which to play the sound
-    title: '',              // shown on iOS lock screen, perhaps others
+    stream: true,           // allows playing before entire file has loaded (recommended)
     to: null,               // position to end playback within a sound (msec), default = end
     type: null,             // MIME-like hint for file pattern / canPlay() tests, eg. audio/mp3
     volume: 100             // self-explanatory. 0-100, the latter being the max.
@@ -213,7 +213,7 @@ function SoundManager() {
   this.hasHTML5 = (function() {
     try {
       // new Audio(null) for stupid Opera 9.64 case, which throws not_enough_arguments exception otherwise.
-      return (Audio !== _undefined && (isOpera && opera !== _undefined && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== _undefined);
+      return (window.Audio !== _undefined && (isOpera && opera !== _undefined && opera.version() < 10 ? new Audio(null) : new Audio()).canPlayType !== _undefined);
     } catch(e) {
       return false;
     }
@@ -1471,8 +1471,18 @@ function SoundManager() {
 
       }
 
-      if (s.paused && s.position >= 0) {
+      /**
+       * Streams will pause when their buffer is full if they are being loaded.
+       * In this case paused is true, but the song hasn't started playing yet.
+       * If we just call resume() the onplay() callback will never be called.
+       * So only call resume() if the position is > 0.
+       * Another reason is because options like volume won't have been applied yet.
+       * For normal sounds, just resume.
+       */
 
+      if (s.paused && s.position >= 0 && (!s._iO.serverURL || s.position > 0)) {
+
+        // https://gist.github.com/37b17df75cc4d7a90bf6
         sm2._wD(fN + 'Resuming from paused state', 1);
         s.resume();
 
@@ -2430,9 +2440,6 @@ function SoundManager() {
 
         }
 
-        // Audio() title is reflected in the lock screen on iOS, maybe others.
-        s._a.title = instanceOptions.title;
-
         // assign local reference
         a = s._a;
 
@@ -3050,7 +3057,7 @@ function SoundManager() {
       var s = this._s;
 
       if (!s) return;
-      sm2._wD(s.id + ': ended');
+      sm2._wD(s.id + ': ended □');
 
       s._onfinish();
 
@@ -3082,30 +3089,16 @@ function SoundManager() {
 
     loadstart: html5_event(function() {
 
-      var s = this._s;
-      if (!s) return;
-      sm2._wD(s.id + ': loadstart');
+      if (!this._s) return;
+      sm2._wD(this._s.id + ': loadstart');
       // assume buffering at first
-      s._onbufferchange(1);
-
-    }),
-
-    pause: html5_event(function() {
-
-      var s = this._s;
-      if (!s) return;
-      sm2._wD(this._s.id + ': HTML5 pause');
-      // a device may forcefully pause this sound, e.g., device sleep or playing audio elsewhere.
-      // update SM2 state and fire events accordingly.
-      // if paused by user interaction, this should cause no ill effect.
-      s.pause();
+      this._s._onbufferchange(1);
 
     }),
 
     play: html5_event(function() {
 
       if (!this._s) return;
-      // sm2._wD(this._s.id + ': play()');
       // once play starts, no buffering
       this._s._onbufferchange(0);
 
@@ -3125,6 +3118,7 @@ function SoundManager() {
       // note: can fire repeatedly after "loaded" event, due to use of HTTP range/partials
 
       if (!this._s) return;
+
       var s = this._s,
           i, j, progStr, buffered = 0,
           isProgress = (e.type === 'progress'),
@@ -3197,7 +3191,9 @@ function SoundManager() {
 
       // download paused/stopped, may have finished (eg. onload)
       var s = this._s;
+
       if (!s) return;
+
       sm2._wD(this._s.id + ': suspend');
       html5_events.progress.call(this, e);
       s._onsuspend();
@@ -3221,6 +3217,7 @@ function SoundManager() {
     waiting: html5_event(function() {
 
       var s = this._s;
+
       if (!s) return;
 
       // see also: seeking
@@ -3393,7 +3390,7 @@ function SoundManager() {
      */
 
     // double-whammy: Opera 9.64 throws WRONG_ARGUMENTS_ERR if no parameter passed to Audio(), and Webkit + iOS happily tries to load "null" as a URL. :/
-    var a = (Audio !== _undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
+    var a = (window.Audio !== _undefined ? (isOpera && opera.version() < 10 ? new Audio(null) : new Audio()) : null),
         item, lookup, support = {}, aF, i;
 
     function cp(m) {
@@ -3904,7 +3901,7 @@ function SoundManager() {
     }
 
     if (allOK) {
-      sm2._wD(strings.support + ' ' + formats.join(', ') + ' 💯✅', 1);
+      sm2._wD(strings.support + ' ' + formats.join(', ') + ' 💯👌', 1);
     } else {
       complain(strings.support + ' ' + tests.join(' · ') + ' - likely browser/OS limitation. 😒', 1);
     }
