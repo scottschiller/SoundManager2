@@ -388,9 +388,10 @@
         // list of nodes?
         playlist: [],
 
-        // NOTE: not implemented yet.
-        // shuffledIndex: [],
-        // shuffleMode: false,
+        shuffledIndex: [],
+        shuffleMode: false,
+        shuffleProgress: 0,
+        firstplayed: false,
 
         // selection
         selectedIndex: 0,
@@ -400,6 +401,28 @@
         timer: null
 
       };
+
+      function setShuffleList(key = null) {
+        data.shuffledIndex = [];
+        data.shuffleProgress = 0;
+  
+        var tmpIndex = [];
+  
+        for (var i = 0; i < data.playlist.length; i++) {
+          tmpIndex[i] = i;
+        }
+  
+        if (key) {
+          data.shuffledIndex[0] = key;
+          tmpIndex.splice(key, 1);
+        }
+  
+        for (var i = 1; i < data.playlist.length; i++) {
+          var k = Math.floor(Math.random() * tmpIndex.length);
+          data.shuffledIndex[i] = tmpIndex[k];
+          tmpIndex.splice(k, 1);
+        }
+      }
 
       function getPlaylist() {
 
@@ -647,6 +670,7 @@
       return {
         data: data,
         refresh: refreshDOM,
+        setShuffleList: setShuffleList,
         getNext: getNext,
         getPrevious: getPrevious,
         getItem: getItem,
@@ -1078,13 +1102,21 @@
 
       shuffle: function(e) {
 
-        // NOTE: not implemented yet.
-
         var target = (e ? e.target || e.srcElement : utils.dom.get(dom.o, '.shuffle'));
 
         if (target && !utils.css.has(target, css.disabled)) {
           utils.css.toggle(target.parentNode, css.active);
           playlistController.data.shuffleMode = !playlistController.data.shuffleMode;
+
+          if (playlistController.data.shuffleMode) {
+            if (playlistController.data.firstplayed) {
+              playlistController.setShuffleList(playlistController.data.selectedIndex);
+            }
+            else {
+              playlistController.setShuffleList();
+              playlistController.playlistController.playItemByOffset(playlistController.data.shuffledIndex[playlistController.data.shuffleProgress]);
+            }
+          }
         }
 
       },
